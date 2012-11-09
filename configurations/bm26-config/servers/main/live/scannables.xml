@@ -1,0 +1,982 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="dummyMotor01" class="gda.device.scannable.ScannableMotor">
+		<property name="motor" ref="DummyMotor01" />
+		<property name="protectionLevel" value="3" />
+		<property name="initialUserUnits" value="mm" />
+		<property name="hardwareUnitString" value="mm" />
+	</bean>
+	<bean id="DummyMotor01" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="dummyMotor02" class="gda.device.scannable.ScannableMotor">
+		<property name="motor" ref="DummyMotor02" />
+		<property name="protectionLevel" value="3" />
+		<property name="initialUserUnits" value="mm" />
+		<property name="hardwareUnitString" value="mm" />
+	</bean>
+	<bean id="DummyMotor02" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="samplex" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="samplexMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="samplexMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="sampleXmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="sampleXmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/samplex" />
+	</bean>
+
+	<bean id="sampley" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="sampleyMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="sampleyMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="sampleYmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="sampleYmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sampley" />
+	</bean>
+
+	<bean id="beamstopx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="beamstopxMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="beamstopxMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="beamstopXmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="beamstopXmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/beamstx" />
+	</bean>
+
+	<bean id="beamstopy" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="beamstopyMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="beamstopyMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="beamstopYmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="beamstopYmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/beamsty" />
+	</bean>
+
+	<bean id="cradle" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="cradleMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="cradleMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="cradlemotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="cradlemotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/cradle" />
+	</bean>
+
+	<bean id="detectorx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="detectorxMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="detectorxMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="detectorXmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="detectorXmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/detectx" />
+	</bean>
+
+	<bean id="detectory" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="detectoryMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="detectoryMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="detectorYmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="detectorYmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/detecty" />
+	</bean>
+
+	<bean id="shutter" class="gda.device.enumpositioner.TangoShutter">
+		<property name="tangoDeviceProxy" ref="shutterDeviceProxy" />
+	</bean>
+	<bean id="shutterDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/bshutter/1" />
+	</bean>
+
+
+	<!-- ####################################################################################### -->
+	<!-- Sample stage scanable definitions -->
+	<bean id="sx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="sxMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="sxMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="sxMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="sxMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sx" />
+	</bean>
+
+	<bean id="sy" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="syMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="syMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="syMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="syMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sy" />
+	</bean>
+
+	<bean id="sz" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="szMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="szMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="szMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="szMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sz" />
+	</bean>
+
+	<!-- END: Sample stage scanable definitions -->
+
+
+
+
+	<!--ztable scannable definition -->
+	<bean id="ztable" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="ztableMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="ztableMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="ztableMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="ztableMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/ztable" />
+	</bean>
+
+	<!--xtable scannable definition -->
+	<bean id="xtable" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="xtableMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="xtableMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="xtableMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="xtableMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/xtable" />
+	</bean>
+
+
+	<!-- ###################################### Slit 1 motor definitions ###################################### -->
+	<!--h1horg scannable definition -->
+	<bean id="h1horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horg" />
+	</bean>
+
+	<!--h1horl scannable definition -->
+	<bean id="h1horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horl" />
+	</bean>
+
+	<!--h1horo scannable definition -->
+	<bean id="h1horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horo" />
+	</bean>
+
+	<!--h1horr scannable definition -->
+	<bean id="h1horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horr" />
+	</bean>
+
+	<!--h1verb scannable definition -->
+	<bean id="h1verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1verb" />
+	</bean>
+
+	<!--h1verg scannable definition -->
+	<bean id="h1verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1verg" />
+	</bean>
+
+	<!--h1vero scannable definition -->
+	<bean id="h1vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1vero" />
+	</bean>
+
+	<!--h1vert scannable definition -->
+	<bean id="h1vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1vert" />
+	</bean>
+
+	<!-- ###################################### Slit 3 motor definitions ###################################### -->
+	<!--h3horg scannable definition -->
+	<bean id="h3horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horg" />
+	</bean>
+
+	<!--h3horl scannable definition -->
+	<bean id="h3horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horl" />
+	</bean>
+
+	<!--h3horo scannable definition -->
+	<bean id="h3horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horo" />
+	</bean>
+
+	<!--h3horr scannable definition -->
+	<bean id="h3horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horr" />
+	</bean>
+
+	<!--h3verb scannable definition -->
+	<bean id="h3verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3verb" />
+	</bean>
+
+	<!--h3verg scannable definition -->
+	<bean id="h3verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3verg" />
+	</bean>
+
+	<!--h3vero scannable definition -->
+	<bean id="h3vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3vero" />
+	</bean>
+
+	<!--h3vert scannable definition -->
+	<bean id="h3vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3vert" />
+	</bean>
+
+	<!-- ###################################### Slit 4 motor definitions ###################################### -->
+	<!--h4horg scannable definition -->
+	<bean id="h4horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horg" />
+	</bean>
+
+	<!--h4horl scannable definition -->
+	<bean id="h4horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horl" />
+	</bean>
+
+	<!--h4horo scannable definition -->
+	<bean id="h4horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horo" />
+	</bean>
+
+	<!--h4horr scannable definition -->
+	<bean id="h4horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horr" />
+	</bean>
+
+	<!--h4verb scannable definition -->
+	<bean id="h4verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4verb" />
+	</bean>
+
+	<!--h4verg scannable definition -->
+	<bean id="h4verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4verg" />
+	</bean>
+
+	<!--h4vero scannable definition -->
+	<bean id="h4vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4vero" />
+	</bean>
+
+	<!--h4vert scannable definition -->
+	<bean id="h4vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4vert" />
+	</bean>
+
+	<!-- ###################################### Slit 5 motor definitions ###################################### -->
+	<!--h5horg scannable definition -->
+	<bean id="h5horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horg" />
+	</bean>
+
+	<!--h5horl scannable definition -->
+	<bean id="h5horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horl" />
+	</bean>
+
+	<!--h5horo scannable definition -->
+	<bean id="h5horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horo" />
+	</bean>
+
+	<!--h5horr scannable definition -->
+	<bean id="h5horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horr" />
+	</bean>
+
+	<!--h5verb scannable definition -->
+	<bean id="h5verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5verb" />
+	</bean>
+
+	<!--h5verg scannable definition -->
+	<bean id="h5verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5verg" />
+	</bean>
+
+	<!--h5vero scannable definition -->
+	<bean id="h5vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5vero" />
+	</bean>
+
+	<!--h5vert scannable definition -->
+	<bean id="h5vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5vert" />
+	</bean>
+
+	<!-- ###################################### Slit 6 motor definitions ###################################### -->
+	<!--h6horg scannable definition -->
+	<bean id="h6horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horg" />
+	</bean>
+
+	<!--h6horl scannable definition -->
+	<bean id="h6horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horl" />
+	</bean>
+
+	<!--h6horo scannable definition -->
+	<bean id="h6horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horo" />
+	</bean>
+
+	<!--h6horr scannable definition -->
+	<bean id="h6horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horr" />
+	</bean>
+
+	<!--h6verb scannable definition -->
+	<bean id="h6verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6verb" />
+	</bean>
+
+	<!--h6verg scannable definition -->
+	<bean id="h6verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6verg" />
+	</bean>
+
+	<!--h6vero scannable definition -->
+	<bean id="h6vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6vero" />
+	</bean>
+
+	<!--h6vert scannable definition -->
+	<bean id="h6vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6vert" />
+	</bean>
+
+
+
+
+
+
+
+
+
+
+</beans>

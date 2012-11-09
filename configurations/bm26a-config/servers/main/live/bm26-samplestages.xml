@@ -1,0 +1,43 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="serial" class="gda.device.serial.SerialComm">
+		<property name="local" value="true" /> 
+		<property name="configureAtStartup" value="true" />
+		<property name="portName" value="/dev/ttyS0" />
+	</bean>
+
+	<bean id="linkam" class="gda.device.temperature.LinkamCI">
+		<property name="name" value="Linkam" />
+		<property name="serial" ref="serial" /> 
+		<property name="configureAtStartup" value="false" />
+		<property name="probeNames">
+			<list>
+				<value>temp</value>
+			</list>
+		</property>
+        <property name="accuracy" value="0.2" />
+        <property name="fileSuffix" value="dat" />
+        <property name="upperTemp" value="600" /> 
+        <property name="lowerTemp" value="-195" />
+        <property name="samplingTime" value="0.9" /> 
+	</bean>
+<!--
+	<bean id="EuroTherm" class="gda.device.temperature.Eurotherm2000">
+		<property name="name" value="EuroTherm" />
+		<property name="serial" ref="serial" /> 
+		<property name="configureAtStartup" value="false" />
+		<property name="accuracy" value="2" /> 
+		<property name="polltime" value="5000" /> 
+		<property name="gid" value="0" /> 
+		<property name="uid" value="1" /> 
+		<property name="fileSuffix" value="dat" /> 
+	</bean>
+
+	<bean id="DummyTemp" class="gda.device.temperature.DummyTemp">
+		<property name="configureAtStartup" value="false" />
+	</bean>
+-->
+</beans>

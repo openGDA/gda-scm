@@ -1,0 +1,198 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="StepperMotorM1" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m1"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM2" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m2"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM3" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m3"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM4" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m4"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM5" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m5"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM6" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m6"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM7" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m7"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM8" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m8"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM9" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m9"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM10" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m10"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM11" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m11"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM12" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m12"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM13" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m13"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM14" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m14"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM15" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m15"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM16" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m16"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM17" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m17"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM18" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m18"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM19" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m19"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM20" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m20"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM21" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m21"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM22" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m22"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM23" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m23"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM24" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m24"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM25" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m25"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM26" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m26"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM27" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m27"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM28" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m28"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM29" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m29"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM30" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m30"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM31" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m31"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM32" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m32"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM33" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m33"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM34" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m34"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM35" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m35"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM36" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m36"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM37" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m37"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM38" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m38"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM39" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m39"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM40" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m40"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM41" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m41"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM42" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m42"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM43" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m43"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM44" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m44"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM45" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m45"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM46" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m46"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM47" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m47"/>
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="StepperMotorM48" class="gda.device.motor.EpicsMotor">
+		<property name="pvName" value="18ID:e:m48"/>
+		<property name="local" value="true"/>
+	</bean>
+</beans>

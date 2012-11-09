@@ -1,0 +1,84 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+>
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+	>
+		<property name="location"
+			value="file:${gda.config}/properties/java.properties" />
+	</bean>
+	<bean class="gda.factory.AdapterObjectCreator">
+		<property name="name" value="${gda.factory.factoryName}" />
+	</bean>
+	<bean class="gda.factory.ServerXmlObjectCreator">
+		<property name="xmlFile" value="${gda.config}/xml/ncdsim_Server.xml" />
+		<property name="buildProxies" value="${gda.accesscontrol.useAccessControl}" />
+	</bean>
+	<import resource="ncdsim_beans_server.xml" />
+	<bean id="jythonServerFacade" class="gda.jython.JythonServerFacade">
+		<constructor-arg ref="command_server" />
+	</bean>
+	<bean id="plot_server"
+		class="uk.ac.diamond.scisoft.analysis.plotserver.PlotServerBase" />
+	<bean id="bcm"
+		class="gda.server.beamlineConfigurationManager.BeamlineConfigurationManager" />
+	<bean id="FileRegistrar" class="gda.data.fileregistrar.FileRegistrar">
+		<property name="name" value="FileRegistrar" />
+		<property name="directory" value="/tmp/ncdsim-" />
+	</bean>
+	<bean id="scan2elog" class="gda.data.ScanToElogExtender">
+		<property name="logID" value="DAG" />
+		<property name="groupID" value="SCAN" />
+		<property name="extractorList">
+			<list>
+				<bean class="uk.ac.gda.server.ncd.data.TfgSettingsExtractor" />
+			</list>
+		</property>
+	</bean>
+	<bean id="DataWriterFactory" class="gda.data.scan.datawriter.DefaultDataWriterFactory">
+		<property name="name" value="DataWriterFactory" />
+		<property name="dataWriterExtenders">
+			<list>
+				<ref bean="FileRegistrar" />
+				<!-- <ref bean="scan2elog" /> -->
+			</list>
+		</property>
+	</bean>
+	<bean id="command_server" class="gda.jython.JythonServer">
+		<property name="jythonScriptPaths">
+			<bean class="gda.jython.ScriptPaths">
+				<property name="projects">
+					<list>
+						<bean class="gda.jython.ScriptProject">
+							<property name="path" value="${gda.config}/users/scripts/" />
+							<property name="name" value="Scripts: User" />
+							<property name="type" value="USER" />
+						</bean>
+						<bean class="gda.jython.ScriptProject">
+							<property name="path" value="${gda.config}/scripts/" />
+							<property name="name" value="Scripts: Config" />
+							<property name="type" value="CONFIG" />
+						</bean>
+						<bean class="gda.jython.ScriptProject">
+							<property name="path" value="${gda.root}/uk.ac.gda.core/scripts/" />
+							<property name="name" value="Scripts: Core" />
+							<property name="type" value="CORE" />
+						</bean>
+						<bean class="gda.jython.ScriptProject">
+							<property name="path"
+								value="${gda.root}/uk.ac.gda.server.ncd/scripts/" />
+							<property name="name" value="Scripts: Ncd" />
+							<property name="type" value="CORE" />
+						</bean>
+					</list>
+				</property>
+				<property name="startupScript" value="${gda.config}/scripts/localStation.py" />
+			</bean>
+		</property>
+		<property name="gdaVarDirectory" value="${gda.config}/var" />
+		<property name="cacheDirectory" value="${gda.config}/var/jythonCache" />
+		<property name="remotePort" value="9999" />
+	</bean>
+</beans>

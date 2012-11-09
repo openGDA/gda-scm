@@ -1,0 +1,59 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util-2.0.xsd
+           http://www.diamond.ac.uk/schema/gda/corba
+           http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
+
+	<import resource="file:${gda.config}/servers/main/server-common.xml" />
+
+	<!-- Meta Data File -->
+	<import resource="file:${gda.config}/servers/main/${gda.mode}/bm26a-meta-data.xml" />
+
+	<!-- Definition of the ascii data format -->
+	<import resource="file:${gda.config}/servers/main/${gda.mode}/bm26a-dataformat.xml" />
+
+
+<!--	 GDA configuration split up by part type -->
+ 	<import resource="file:${gda.config}/servers/main/${gda.mode}/bm26a-detectors.xml" />
+ 	<import resource="file:${gda.config}/servers/main/${gda.mode}/bm26a-scannables.xml" />
+
+	<!--should normally be called last -->
+	<import resource="file:${gda.config}/servers/main/${gda.mode}/bm26a-command-server.xml" />
+
+
+	<bean id="XASLoggingScriptController"
+		class="gda.jython.scriptcontroller.logging.LoggingScriptController">
+		<property name="messageClassToLog"
+			value="gda.jython.scriptcontroller.logging.XasLoggingMessage" />
+		<property name="directory" value="${gda.var}/" />
+		<property name="local" value="true"/>
+	</bean>
+
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/XASLoggingScriptController" />
+		<property name="service" ref="XASLoggingScriptController" />
+		<property name="serviceInterface"
+			value="gda.jython.scriptcontroller.logging.ILoggingScriptController" />
+	</bean>
+	
+	<bean id="commandQueue" class="gda.commandqueue.CommandQueue">
+	</bean>
+
+	<bean id="commandQueueProcessor" class="gda.commandqueue.FindableProcessorQueue">
+		<property name="queue" ref="commandQueue" />
+		<property name="startImmediately" value="false" />
+		<property name="pauseWhenQueueEmpty" value="true" />
+		<property name="logFilePath" value="${gda.logs.dir}/commandQueueProcessor.log" />
+	</bean>
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/commandQueueProcessor" />
+		<property name="service" ref="commandQueueProcessor" />
+		<property name="serviceInterface" value="gda.commandqueue.IFindableQueueProcessor" />
+	</bean>
+	
+
+</beans>

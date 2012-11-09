@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Synoptic Launcher
+Type=Application
+Exec= sh -c "`configure-ioc s -p BL22I-gui`"
+TryExec=
+Icon=/usr/share/pixmaps/gnome-eyes.png
+X-GNOME-DocPath=
+Terminal=false
+Name[en_GB]=Synoptic Launcher
+GenericName[en_GB]=
+Comment[en_GB]=

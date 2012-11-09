@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: bm26a Plug-in
+Bundle-SymbolicName: fr.esrf.gda.beamline.bm26a;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: fr.esrf.gda.beamline.bm26a.BM26aBeamlineActivator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ uk.ac.gda.client.exafs;bundle-version="1.0.0",
+ uk.ac.gda.core;bundle-version="1.0.0",
+ uk.ac.gda.common;bundle-version="1.0.0",
+ uk.ac.gda.common.rcp;bundle-version="1.0.0",
+ uk.ac.gda.libs,
+ uk.ac.gda.client.experimentdefinition;bundle-version="1.0.0",
+ uk.ac.gda.server.exafs;bundle-version="1.0.0",
+ org.eclipse.core.resources;bundle-version="3.6.1"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: fr.esrf.gda.beamline.bm26a,
+ gda.device.scannable
+Bundle-Vendor: Daresbury Laboratory
+Import-Package: Jama,
+ org.eclipse.ui.intro.config,
+ org.eclipse.ui.texteditor,
+ org.slf4j

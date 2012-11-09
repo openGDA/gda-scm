@@ -1,0 +1,42 @@
+<hashtable>
+  <entry>
+    <string>Auto Toggle Strobe</string>
+    <boolean>true</boolean>
+  </entry>
+  <entry>
+    <string>Boxcar Width</string>
+    <int>0</int>
+  </entry>
+  <entry>
+    <string>External Strobe Rate</string>
+    <int>5</int>
+  </entry>
+  <entry>
+    <string>Integration Time</string>
+    <int>25</int>
+  </entry>
+  <entry>
+    <string>Internal Trigger</string>
+    <boolean>true</boolean>
+  </entry>
+  <entry>
+    <string>Internal Trigger Rate</string>
+    <int>25</int>
+  </entry>
+  <entry>
+    <string>Scans To Average</string>
+    <int>10</int>
+  </entry>
+  <entry>
+    <string>Simulation</string>
+    <boolean>false</boolean>
+  </entry>
+  <entry>
+    <string>Timeout</string>
+    <int>3000</int>
+  </entry>
+  <entry>
+    <string>Wavelength</string>
+    <double>280.0</double>
+  </entry>
+</hashtable>

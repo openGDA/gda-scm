@@ -1,0 +1,172 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="DAServer2" class="gda.device.detector.DummyDAServer">
+		<property name="local" value="true"/>
+		<property name="host" value="bm26-saxs-vme"/>
+		<property name="port" value="1972"/>
+		<property name="startupCommands">
+			<list>
+				<value>close-all</value>
+				<value>vvhist config 'saxs' '/dev/vvhist0'</value>
+				<value>tfg config '/dev/etfg0' tfg2</value>
+				<value>vtdc config '/dev/vtdc40'</value>
+				<value>vtdc set timeout-register 295</value>
+				<value>vtdc set offset 254</value>
+				<value>vtdc enable</value>
+				<value>tfg setup-cc-mode scaler64</value>
+				<value>tfg setup-cc-chan -1 edge</value>
+				<value>tfg setup-tfout mask-width 3</value>
+			</list>
+		</property>
+		<property name="dataPort" value="20030"/>
+		<property name="replyTimeOut" value="30000"/>
+	</bean>
+
+	<bean id="Area" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
+		<property name="detectorType" value="SAXS" /> 
+		<property name="memory" ref="SaxsMemory" /> 
+	</bean>
+
+	<bean id="Pilatus4Saxs" class="uk.ac.gda.server.ncd.subdetector.NcdSubDetector">
+		<property name="detectorType" value="SAXS" /> 
+		<property name="detector" ref="saxsPilatus" /> 
+	</bean>
+
+	<bean id="Pilatus4Waxs" class="uk.ac.gda.server.ncd.subdetector.NcdSubDetector">
+		<property name="detectorType" value="WAXS" /> 
+		<property name="detector" ref="waxsPilatus" /> 
+	</bean>
+
+
+	<bean id="Scaler" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
+		<property name="detectorType" value="CALIB" /> 
+		<property name="memory" ref="CalMemory" /> 
+	</bean>
+
+	<bean id="TfgTimes" class="uk.ac.gda.server.ncd.subdetector.NcdTimesDetector">
+		<property name="detectorType" value="TIMES" /> 
+		<property name="memory" ref="TimesMemory" /> 
+	</bean>
+
+	<bean id="ncddetectors" class="uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem">
+		<property name="timer" ref="tfg" />
+		<property name="detectors">
+			<list>
+				<ref bean="Pilatus4Saxs" />
+				<ref bean="Pilatus4Waxs" />
+				<ref bean="Scaler" />
+				<ref bean="TfgTimes" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="SaxsMemory" class="gda.device.memory.Vvhist">
+		<property name="daServer" ref="DAServer2" /> 
+		<property name="width" value="512" /> 
+		<property name="height" value="512" /> 
+		<property name="supportedDimensions">
+			<list>
+				<value>256</value> 
+				<value>512</value> 
+				<value>1024</value> 
+				<value>2048</value> 
+				<value>4096</value> 
+			</list>
+		</property>
+		<property name="openCommand" value="vvhist open 'saxs' 0" /> 
+		<property name="sizeCommand" value="vvhist get-mem-size 'saxs'" /> 
+	</bean>
+
+	<bean id="CalMemory" class="gda.device.memory.Scaler">
+		<property name="daServer" ref="DAServer2" />
+<!-- this is 9 for tfg2 as it uses the first channel for time -->
+		<property name="width" value="9" /> 
+		<property name="height" value="1" /> 
+		<property name="openCommand" value="tfg open-cc" /> 
+	</bean>
+
+	<bean id="TimesMemory" class="gda.device.memory.GdhistTimes">
+		<property name="daServer" ref="DAServer2" /> 
+		<property name="width" value="8" /> 
+		<property name="height" value="1" /> 
+		<property name="openCommand" value="module open 'tfg_times' header" /> 
+	</bean>
+
+	<bean id="tfg" class="gda.device.timer.Etfg">
+		<property name="daServerName" value="DAServer2" />
+	</bean>
+
+	<bean id="counterTimer01" class="gda.device.detector.countertimer.TfgScaler">
+		<property name="extraNames">
+			<list>
+				<value>Time</value>
+				<value>I0</value>
+				<value>It</value>
+				<value>Iref</value>
+				<value>c5</value>
+				<value>c6</value>
+				<value>c7</value>
+				<value>c8</value>
+			</list>
+		</property>
+		<property name="scaler" ref="CalMemory" />
+		<property name="timer" ref="tfg" />
+		<property name="timeChannelRequired" value="false" />
+		<property name="outputFormat">
+			<list>
+				<value>%5.2g</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="counterTimer02" class="gda.device.detector.countertimer.DummyCounterTimer">
+		<property name="extraNames">
+			<list>
+				<value>Time</value>
+				<value>I0</value>
+				<value>It</value>
+				<value>Iref</value>
+				<value>c5</value>
+				<value>c6</value>
+				<value>c7</value>
+				<value>c8</value>
+			</list>
+		</property>
+		<property name="timer" ref="tfg" />
+		<property name="timeChannelRequired" value="false" />
+		<property name="useGaussian" value="true" />
+		<property name="outputFormat">
+			<list>
+				<value>%5.2g</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="saxsPilatus" class="gda.device.detector.DummyDetector">
+	</bean>
+
+	<bean id="waxsPilatus" class="gda.device.detector.DummyDetector">
+	</bean>
+
+	<bean id="ncdlistener" class="uk.ac.gda.server.ncd.plotting.ListenerDispatcher">
+	<property name="ncdDetector" ref="ncddetectors"></property> </bean>
+</beans>

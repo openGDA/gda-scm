@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.eclipse.ui.views">
+            <view
+            category="gda.rcp.ncd"
+            class="gda.rcp.ncd.views.NcdTimeFrameConfigure"
+            id="uk.ac.gda.client.ncd.NcdTimeFrameConfigure"
+            name="New Time Frame Generator Configure"
+            restorable="true">
+      </view>
+      <view
+            category="gda.rcp.ncd"
+            class="gda.rcp.ncd.views.NcdTemperatureView"
+            id="uk.ac.gda.client.ncd.NcdTemperatureView"
+            name="Ncd Temperature Configure"
+            restorable="true">
+      </view>      
+         </extension>
+            <extension
+            point="org.eclipse.ui.preferencePages">
+         <page
+               category="uk.ac.gda.client.preferences.gdaroot"
+               class="gda.rcp.ncd.ui.preferences.TfgPreferencePage"
+               id="uk.ac.gda.client.ncd.TfgPreferencePage"
+               name="TfgPreferencePage">
+         </page>
+      </extension>
+            <extension
+                  point="org.eclipse.ui.perspectives">
+               <perspective
+                     class="gda.rcp.ncd.perspectives.SaxsWaxsPerspective"
+                     id="gda.rcp.ncd.perspectives.SaxsWaxsPerspective"
+                     name="Live Saxs /WaxsData">
+               </perspective>
+            </extension>
+</fragment>

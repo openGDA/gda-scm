@@ -1,0 +1,10 @@
+<hashtable>
+  <entry>
+    <string>Timeout</string>
+    <int>3000</int>
+  </entry>
+  <entry>
+    <string>Simulation</string>
+    <boolean>false</boolean>
+  </entry>
+</hashtable>
