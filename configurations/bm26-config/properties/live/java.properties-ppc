@@ -1,0 +1,10 @@
+# BM26 dummy java properties
+#
+include=../common-java.properties
+#
+gda.var                 = ${gda.config}/var
+gda.data                = /home/ppc/users/data
+gda.logs.dir			= /home/ppc/users/logs
+gda.rcp.workspace       = /home/ppc/users/
+gda.factory.factoryName = bm26
+gda.beamline.name = BM26

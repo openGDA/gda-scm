@@ -1,0 +1,22 @@
+var compatibleProperties = "sds.path";
+var description = "open window(window name)";
+var parameters = new Array("Window name here");
+
+var s1 = new Packages.org.eclipse.core.runtime.Path("screens/s1.css-sds");
+var t1 = new Packages.org.eclipse.core.runtime.Path("screens/t1.css-sds");
+var dd = new Packages.org.eclipse.core.runtime.Path("screens/dummy.css-sds");
+
+function execute(args) {
+
+	var argument1 = args[0];
+	var result;
+
+	if ( argument1 == 's1') {
+	    result = s1;
+	}else if ( argument1 == 't1') {
+	    result = t1;
+	}else{
+	    result = new Packages.org.eclipse.core.runtime.Path("screens/dummy.css-sds");
+	}	
+	return result;
+}

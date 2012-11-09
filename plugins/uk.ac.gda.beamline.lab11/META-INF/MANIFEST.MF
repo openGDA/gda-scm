@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: lab11 Plug-in
+Bundle-SymbolicName: uk.ac.gda.beamline.lab11;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: uk.ac.gda.beamline.lab11.Lab11BeamlineActivator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ uk.ac.gda.client,
+ uk.ac.gda.common.rcp;bundle-version="1.0.0",
+ uk.ac.gda.client.ncd;bundle-version="1.0.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: uk.ac.gda.beamline.lab11
+Bundle-Vendor: Diamond Light Source
+Import-Package: org.eclipse.ui.intro.config,
+ org.slf4j

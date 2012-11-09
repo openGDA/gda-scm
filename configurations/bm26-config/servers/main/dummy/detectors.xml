@@ -1,0 +1,364 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="DAServer2" class="gda.device.detector.DummyDAServer">
+		<property name="local" value="true"/>
+		<property name="host" value="tcfippc3"/>
+<!--		<property name="host" value="bm26-saxs-vme"/>-->
+		<property name="port" value="1972"/>
+		<property name="startupCommands">
+			<list>
+				<value>close-all</value>
+<!--			<value>vvhist config 'saxs' '/dev/vvhist0'</value>
+				<value>vtdc set timeout-register 295</value>
+				<value>vtdc set offset 254</value>
+				<value>vtdc enable</value>
+				<value>vtdc config '/dev/vtdc40'</value> -->
+				<value>tfg config '/dev/etfg0' tfg2</value>
+				<value>tfg setup-cc-mode scaler64</value>
+				<value>tfg setup-cc-chan -1 edge</value>
+				<value>tfg setup-tfout mask-width 3</value>
+			</list>
+		</property>
+		<property name="dataPort" value="20030"/>
+		<property name="replyTimeOut" value="30000"/>
+	</bean>
+<!--
+	<bean id="Area" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
+		<property name="detectorType" value="SAXS" /> 
+		<property name="memory" ref="SaxsMemory" /> 
+	</bean>
+-->
+	<bean id="Pilatus4Saxs" class="uk.ac.gda.server.ncd.subdetector.NcdPilatusDetector">
+		<property name="detectorType" value="SAXS" /> 
+		<property name="detector" ref="saxsPilatus" /> 
+	</bean>
+
+	<bean id="Pilatus4Waxs" class="uk.ac.gda.server.ncd.subdetector.NcdPilatusDetector">
+		<property name="detectorType" value="WAXS" /> 
+		<property name="detector" ref="waxsPilatus" /> 
+	</bean>
+<!--
+	<bean id="Ccd" class="uk.ac.gda.server.ncd.subdetector.NcdSubDetector">
+		<property name="detectorType" value="WAXS" /> 
+		<property name="detector" ref="simccd" /> 
+	</bean>
+-->
+	<bean id="Scaler" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
+		<property name="detectorType" value="CALIB" /> 
+		<property name="memory" ref="CalMemory" /> 
+	</bean>
+
+	<bean id="TfgTimes" class="uk.ac.gda.server.ncd.subdetector.NcdTimesDetector">
+		<property name="detectorType" value="TIMES" /> 
+		<property name="memory" ref="TimesMemory" /> 
+	</bean>
+
+	<bean id="ncddetectors" class="uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem">
+		<property name="timer" ref="tfg" />
+		<property name="detectors">
+			<list>
+				<ref bean="Pilatus4Saxs" />
+				<ref bean="Pilatus4Waxs" />
+				<ref bean="Scaler" />
+				<ref bean="TfgTimes" />
+			</list>
+		</property>
+	</bean>
+<!--
+	<bean id="OtokoWriter" class="gda.device.detector.ncddetector.detectorsystem.OtokoWriter">
+		<property name="daServer" ref="DAServer2" /> 
+		<property name="local" value="true" /> 
+		<property name="hostName" value="comsolsrv1" /> 
+		<property name="userName" value="ppc" /> 
+		<property name="password" value="cHBjNGxpbnV4" />
+		<property name="directory" value="/home/ppc/gm/data" />
+	</bean>
+
+	<bean id="SaxsMemory" class="gda.device.memory.Vvhist">
+		<property name="daServer" ref="DAServer2" /> 
+		<property name="width" value="512" /> 
+		<property name="height" value="512" /> 
+		<property name="supportedDimensions">
+			<list>
+				<value>256</value> 
+				<value>512</value> 
+				<value>1024</value> 
+				<value>2048</value> 
+				<value>4096</value> 
+			</list>
+		</property>
+		<property name="openCommand" value="vvhist open 'saxs' 0" /> 
+		<property name="sizeCommand" value="vvhist get-mem-size 'saxs'" /> 
+	</bean>
+-->
+	<bean id="CalMemory" class="gda.device.memory.Scaler">
+		<property name="daServer" ref="DAServer2" />
+<!-- this is 9 for tfg2 as it uses the first channel for time -->
+		<property name="width" value="9" /> 
+		<property name="height" value="1" /> 
+		<property name="openCommand" value="tfg open-cc" /> 
+	</bean>
+
+	<bean id="TimesMemory" class="gda.device.memory.GdhistTimes">
+		<property name="daServer" ref="DAServer2" /> 
+		<property name="width" value="8" /> 
+		<property name="height" value="1" /> 
+		<property name="openCommand" value="module open 'tfg_times' header" /> 
+	</bean>
+
+	<bean id="tfg" class="gda.device.timer.Etfg">
+		<property name="daServer" ref="DAServer2" /> 
+	</bean>
+
+	<bean id="counterTimer01" class="gda.device.detector.countertimer.TfgScaler">
+		<property name="extraNames">
+			<list>
+				<value>Time</value>
+				<value>I0</value>
+				<value>It</value>
+				<value>Iref</value>
+				<value>c5</value>
+				<value>c6</value>
+				<value>c7</value>
+				<value>c8</value>
+			</list>
+		</property>
+		<property name="scaler" ref="CalMemory" />
+		<property name="timer" ref="tfg" />
+		<property name="timeChannelRequired" value="false" />
+		<property name="outputFormat">
+			<list>
+				<value>%5.2g</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="counterTimer02" class="gda.device.detector.countertimer.DummyCounterTimer">
+		<property name="extraNames">
+			<list>
+				<value>Time</value>
+				<value>I0</value>
+				<value>It</value>
+				<value>Iref</value>
+				<value>c5</value>
+				<value>c6</value>
+				<value>c7</value>
+				<value>c8</value>
+			</list>
+		</property>
+		<property name="timer" ref="tfg" />
+		<property name="timeChannelRequired" value="true" />
+		<property name="useGaussian" value="true" />
+		<property name="outputFormat">
+			<list>
+				<value>%5.2g</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="counterTimer03" class="gda.device.detector.countertimer.TangoVCT6">
+		<property name="TangoDeviceProxy" ref="counterDeviceProxy"/>
+		<property name="extraNames">
+			<list>
+				<value>Time</value>
+				<value>I0</value>
+				<value>c1</value>
+				<value>c2</value>
+				<value>c3</value>
+				<value>c4</value>
+			</list>
+		</property>
+		<property name="timeChannelRequired" value="false" />
+		<property name="outputFormat">
+			<list>
+				<value>%5.2g</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+				<value>%9d</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="counterDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="counterDeviceImpl"/>
+	</bean>
+	<bean id="counterDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/vct6261_0/5" />
+	</bean>
+
+	<bean id="saxsPilatus" class="gda.device.detector.pilatus.TangoPilatusDetector">
+		<property name="limaTangoDeviceProxy" ref="limaSaxsDeviceProxy"/>
+		<property name="pilatusTangoDeviceProxy" ref="pilatusSaxsDeviceProxy"/>
+		<property name="local" value="true"/>
+		<property name="detectorID" value="01"/>
+		<property name="triggerMode" value="EXTERNAL_GATE"/>		
+		<property name="savingPrefix" value="bm26-"/>		
+		<property name="savingFormat" value="EDF"/>
+		<property name="savingMode" value="AUTO_FRAME"/>
+		<property name="savingDirectory" value="/disk2/images"/>
+		<property name="imageDirectory" value="/home/ppc/users/data/"/>
+		<property name="timer" ref="tfg" />
+		<property name="deleteAfterOutput" value="false" />
+	</bean>
+
+	<bean id="limaSaxsDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="limaSaxsDeviceImpl"/>
+	</bean>
+	<bean id="limaSaxsDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/limaccd/1M" />
+		<property name="attributeMap">
+			<list>
+				<bean id="saxs_acq_status" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="acq_status"/>
+					<property name="attributeValue" value="Ready"/>
+					<property name="attributeDataType" value="8"/> <!-- TangoConst.Tango_DEV_STRING = 8 -->
+				</bean>
+				<bean id="saxs_image_width" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_width"/>
+					<property name="attributeValue" value="981"/>
+					<property name="attributeDataType" value="7"/> <!-- TangoConst.Tango_DEV_ULONG = 7 -->
+				</bean>
+				<bean id="saxs_image_height" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_height"/>
+					<property name="attributeValue" value="1043"/>
+					<property name="attributeDataType" value="7"/> <!-- TangoConst.Tango_DEV_ULONG = 7 -->
+				</bean>
+				<bean id="saxs_camera_type" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="camera_type"/>
+					<property name="attributeValue" value="Pilatus"/>
+					<property name="attributeDataType" value="8"/> <!-- TangoConst.Tango_DEV_STRING = 8 -->
+				</bean>
+				<bean id="saxs_camera_model" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="camera_model"/>
+					<property name="attributeValue" value="1M"/>
+					<property name="attributeDataType" value="8"/> <!-- TangoConst.Tango_DEV_STRING = 8 -->
+				</bean>
+				<bean id="saxs_image_type" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_type"/>
+					<property name="attributeValue" value="Bpp32S"/>
+					<property name="attributeDataType" value="8"/> <!-- TangoConst.Tango_DEV_STRING = 8 -->
+				</bean>
+				<bean id="saxs_image_ready" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="last_image_ready"/>
+					<property name="attributeValue" value="0"/>
+					<property name="attributeDataType" value="3"/> <!-- TangoConst.Tango_DEV_LONG = 3-->
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="pilatusSaxsDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="pilatusSaxsDeviceImpl"/>
+	</bean>
+
+	<bean id="pilatusSaxsDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/pilatus/1M" />
+	</bean>
+
+	<bean id="waxsPilatus" class="gda.device.detector.pilatus.TangoPilatusDetector">
+		<property name="limaTangoDeviceProxy" ref="limaWaxsDeviceProxy"/>
+		<property name="pilatusTangoDeviceProxy" ref="pilatusWaxsDeviceProxy"/>
+		<property name="local" value="true"/>
+		<property name="detectorID" value="01"/>
+		<property name="triggerMode" value="EXTERNAL_GATE"/>		
+		<property name="savingPrefix" value="bm26-"/>		
+		<property name="savingFormat" value="EDF"/>
+		<property name="savingMode" value="AUTO_FRAME"/>
+		<property name="savingDirectory" value="/disk2/images"/>				
+		<property name="imageDirectory" value="/dec058a_images"/>
+		<property name="timer" ref="tfg" />
+		<property name="deleteAfterOutput" value="false" />
+	</bean>
+
+	<bean id="limaWaxsDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="limaWaxsDeviceImpl"/>
+	</bean>
+	<bean id="limaWaxsDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/limaccd/300K" />
+		<property name="attributeMap">
+			<list>
+				<bean id="waxs_acq_status" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="acq_status"/>
+					<property name="attributeValue" value="Ready"/>
+					<property name="attributeDataType" value="8"/>  <!--TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="waxs_image_width" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_width"/>
+					<property name="attributeValue" value="256"/>
+					<property name="attributeDataType" value="7"/>  <!--TangoConst.Tango_DEV_ULONG -->
+				</bean>
+				<bean id="waxs_image_height" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_height"/>
+					<property name="attributeValue" value="64"/>
+					<property name="attributeDataType" value="7"/>  <!--TangoConst.Tango_DEV_ULONG -->
+				</bean>
+				<bean id="waxs_camera_type" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="camera_type"/>
+					<property name="attributeValue" value="Pilatus"/>
+					<property name="attributeDataType" value="8"/>  <!--TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="waxs_camera_model" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="camera_model"/>
+					<property name="attributeValue" value="300k"/>
+					<property name="attributeDataType" value="8"/>  <!--TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="waxs_image_type" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_type"/>
+					<property name="attributeValue" value="Bpp32S"/>
+					<property name="attributeDataType" value="8"/>  <!--TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="waxs_image_ready" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="last_image_ready"/>
+					<property name="attributeValue" value="0"/>
+					<property name="attributeDataType" value="3"/>   <!--TangoConst.Tango_DEV_LONG -->
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="pilatusWaxsDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="pilatusWaxsDeviceImpl"/>
+	</bean>
+	<bean id="pilatusWaxsDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/pilatus/300K" />
+	</bean>
+
+<!--
+	<bean id="xspress3" class="gda.device.detector.xspress3.TangoXspress3">
+		<property name="tangoDeviceProxy" ref="xspress3DeviceProxy"/>
+		<property name="local" value="true"/>
+	</bean>
+
+	<bean id="xspress3DeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="xspress3DeviceImpl"/>
+	</bean>
+	<bean id="xspress3DeviceImpl" class="gda.device.impl.TangoDeviceImpl">
+		<constructor-arg value="tango://gmvig1:6789/xspress3/tango/1#dbase=no" />
+	</bean>
+-->
+
+	<bean id="ncdlistener" class="uk.ac.gda.server.ncd.plotting.ListenerDispatcher">
+		<property name="ncdDetector" ref="ncddetectors" />
+	</bean>
+</beans>

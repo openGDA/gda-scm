@@ -1,0 +1,24 @@
+<org.embl.bssc.scPrefs>
+  <beam__location>
+    <xmin>195</xmin>
+    <xmax>443</xmax>
+    <ymin>109</ymin>
+    <ymax>216</ymax>
+    <mDefined>true</mDefined>
+  </beam__location>
+  <capillary__location>
+    <xmin>2</xmin>
+    <xmax>676</xmax>
+    <ymin>87</ymin>
+    <ymax>262</ymax>
+    <mDefined>true</mDefined>
+  </capillary__location>
+  <beam__shape__ellipse>true</beam__shape__ellipse>
+  <sample__type>green</sample__type>
+  <viscosity__level>low</viscosity__level>
+  <enable__spectrometer>false</enable__spectrometer>
+  <enable__alidum>true</enable__alidum>
+  <enable__barcode>false</enable__barcode>
+  <allow__critical__alarms>true</allow__critical__alarms>
+  <enable__interlock>true</enable__interlock>
+</org.embl.bssc.scPrefs>

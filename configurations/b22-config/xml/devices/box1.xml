@@ -1,0 +1,103 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+        <bean id="box1_m9pitch_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.M9P" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_m9pitch" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_m9pitch_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_m9roll_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.M9R" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_m9roll" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_m9roll_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_m10pitch_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.M10P" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_m10pitch" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_m10pitch_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_m10roll_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.M10R" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_m10roll" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_m10roll_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_m5z_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.M5Z" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_m5z" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_m5z_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_xexit_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.XEXIT" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_xexit" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_xexit_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_yexit_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.YEXIT" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_yexit" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_yexit_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_thetaexit_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.THETAEXIT" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_thetaexit" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_thetaexit_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1_phiexit_motor" class="gda.device.motor.EpicsMotor">
+		<property name="deviceName" value="BOX1.PHIEXIT" />
+                <property name="local" value="true" />
+        </bean>
+        <bean id="box1_phiexit" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="box1_phiexit_motor" />
+                <property name="local" value="true" />
+        </bean>
+
+        <bean id="box1" class="gda.device.scannable.scannablegroup.ScannableGroup">
+                <property name="groupMembers">
+                        <list>
+                                <ref bean="box1_m9pitch" />
+                                <ref bean="box1_m9roll" />
+                                <ref bean="box1_m10pitch" />
+                                <ref bean="box1_m10roll" />
+                                <ref bean="box1_m5z" />
+                                <ref bean="box1_xexit" />
+                                <ref bean="box1_yexit" />
+                                <ref bean="box1_thetaexit" />
+                                <ref bean="box1_phiexit" />
+                        </list>
+                </property>
+                <property name="local" value="true" />
+        </bean>
+</beans>

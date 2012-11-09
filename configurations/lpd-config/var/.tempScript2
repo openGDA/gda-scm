@@ -1,0 +1,11 @@
+from femApi.femTransaction import FemTransaction
+
+femClient.write(FemTransaction.BUS_RAW_REG,FemTransaction.WIDTH_LONG,0x1000,(0x12345,))
+print femClient.read(FemTransaction.BUS_RAW_REG,FemTransaction.WIDTH_LONG,0x1000,1)
+
+femClient.write(FemTransaction.BUS_RAW_REG,FemTransaction.WIDTH_LONG,0x1003,(0x67890,))
+print femClient.read(FemTransaction.BUS_RAW_REG,FemTransaction.WIDTH_LONG,0x1000,4)
+for i in range(0, 100):
+   femClient.write(FemTransaction.BUS_RAW_REG,FemTransaction.WIDTH_LONG,i,(i,))
+   
+print femClient.read(FemTransaction.BUS_RAW_REG,FemTransaction.WIDTH_LONG,0x0,100)

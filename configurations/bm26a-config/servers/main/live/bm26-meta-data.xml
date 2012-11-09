@@ -1,0 +1,52 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+<!--
+	<bean id="tango1" class="gda.device.DummyTangoDeviceProxy">
+		<property name="local" value="true" />
+		<property name="deviceName" value="tango://gmvig1:12345/test/tango/1#dbase=no" />
+	</bean>
+-->				
+	<bean id="GDAMetadata" class="gda.data.metadata.GdaMetadata">
+		<property name="metadataEntries">
+			<list>
+				<bean class="gda.data.metadata.PropertyMetadataEntry">
+					<property name="name" value="instrument" />
+					<property name="propertyName" value="gda.instrument" />
+				</bean>
+				<bean class="gda.data.metadata.PropertyMetadataEntry">
+					<property name="name" value="facility" />
+					<property name="propertyName" value="gda.facility" />
+				</bean>
+				<bean class="gda.data.metadata.PropertyMetadataEntry">
+					<property name="name" value="facilityType" />
+					<property name="propertyName" value="gda.facility.type" />
+				</bean>
+				<bean class="gda.data.metadata.PropertyMetadataEntry">
+					<property name="name" value="probe" />
+					<property name="propertyName" value="gda.facility.probe" />
+				</bean>
+				<ref bean="subdirectory" />
+				<bean class="gda.data.metadata.StoredMetadataEntry">
+					<property name="name" value="title" />
+					<property name="value" value="undefined" />
+				</bean>
+<!--
+				<bean class="gda.data.metadata.TangoMetadataEntry">
+					<property name="name" value="instrument.source.current" />
+					<property name="tangoDeviceProxy" ref="tango1" />
+					<property name="attributeName" value="double_scalar_w" />
+				</bean>
+-->
+			</list>
+		</property>
+	</bean>
+	<bean id="subdirectory" class="uk.ac.gda.server.ncd.metadata.SubdirectoryMetadataEntry"/>
+
+    <bean class="uk.ac.gda.server.ncd.metadata.MetadataBlaster" id="observableSubdirectory">
+    <property name="storedMetadataEntry" ref="subdirectory"/></bean>
+    
+
+</beans>

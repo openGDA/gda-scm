@@ -1,0 +1,34 @@
+<hashtable>
+  <entry>
+    <string>Maximum Value</string>
+    <double>60.0</double>
+  </entry>
+  <entry>
+    <string>Message Timer</string>
+    <int>0</int>
+  </entry>
+  <entry>
+    <string>Minimum Value</string>
+    <double>4.0</double>
+  </entry>
+  <entry>
+    <string>Negative Rate</string>
+    <double>1.0</double>
+  </entry>
+  <entry>
+    <string>Positive Rate</string>
+    <double>2.0</double>
+  </entry>
+  <entry>
+    <string>Retries</string>
+    <int>1</int>
+  </entry>
+  <entry>
+    <string>Simulation</string>
+    <boolean>false</boolean>
+  </entry>
+  <entry>
+    <string>Timeout</string>
+    <int>3000</int>
+  </entry>
+</hashtable>

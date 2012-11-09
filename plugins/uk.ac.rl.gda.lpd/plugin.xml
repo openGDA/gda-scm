@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="uk.ac.gda.client.application"
+            name="LPD Client">
+         <property
+               name="appName"
+               value="LPD Client">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+         <property
+               name="windowImages"
+               value="platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo16.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo32.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo48.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo64.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo128.png">
+         </property>
+      </product>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="uk.ac.rl.gda.lpd.Activator">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="*">
+
+         <perspectiveShortcut
+               id="uk.ac.gda.pydev.extension.ui.JythonPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="uk.ac.gda.client.general.category"
+            class="views.LpdButtonView"
+            id="views.LpdButtonView"
+            name="LpdButtonView"
+            restorable="true">
+      </view>
+      <view
+            class="uk.ac.diamond.scisoft.analysis.rcp.views.PlotView"
+            id="uk.ac.rl.gda.lpd.imageview"
+            name="Lpd image"
+            restorable="true">
+      </view>
+      <view
+            class="views.LpdConfigureView"
+            id="views.LpdConfigureView"
+            name="LpdConfigure"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         id="1"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ant.core.antRunner"
+            name="LPD Detector system">
+         <property
+               name="windowImages"
+               value="platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo16.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo32.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo48.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo64.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo128.png">
+         </property>
+         <property
+               name="aboutImage"
+               value="platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogomed.png">
+         </property>
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="perspectives.LpdPerspective"
+            id="uk.ac.rl.lpd.LpdPerspective"
+            name="lpd perspective">
+      </perspective>
+   </extension>
+  
+
+</plugin>

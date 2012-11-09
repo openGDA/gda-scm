@@ -1,0 +1,112 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="testtango1" class="gda.device.scannable.TangoScannable">
+		<property name="tangoDeviceProxy" ref="testDeviceProxy"/>
+		<property name="attributeName" value="long_scalar_w" />
+		<property name="local" value="true"/>
+	</bean>
+	<bean id="testDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="testDeviceImpl"/>
+	</bean>
+	<bean id="testDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://gmvig1:1234/test/tango/1#dbase=no" />
+		<property name="attributeMap">
+			<list>
+				<bean class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="long_scalar_w" />
+					<property name="attributeValue" value="32" />
+					<property name="attributeDataType" value="3"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="samplex" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3"/>
+		<property name="motor" ref="samplexMotor"/>
+		<property name="hardwareUnitString" value="mm"/>
+		<property name="lowerGdaLimits" value="-999999"/>
+		<property name="upperGdaLimits" value="999999"/>
+	</bean>
+
+	<bean id="sampley" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3"/>
+		<property name="motor" ref="sampleyMotor"/>
+		<property name="hardwareUnitString" value="mm"/>
+		<property name="lowerGdaLimits" value="-999999"/>
+		<property name="upperGdaLimits" value="999999"/>
+	</bean>
+
+	<bean id="samplexMotor" class="gda.device.motor.TangoMotor">
+		<property name="tangoDeviceProxy" ref="sampleXmotorDeviceProxy"/>
+		<property name="local" value="true"/>
+	</bean>
+
+	<bean id="sampleXmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="sampleXmotorDeviceImpl"/>
+	</bean>
+	<bean id="sampleXmotorDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/maxe261_4_4/samplex"/>
+		<property name="attributeMap">
+			<list>
+				<bean id="x_positionAttribute" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="Position"/>
+					<property name="attributeValue" value="3.5"/>
+					<property name="attributeDataType" value="5"/>
+				</bean>
+			</list>
+		</property>
+		<property name="propertyMap">
+			<list>
+				<bean id="x_calibratedProperty" class="gda.device.DummyDbDatum">
+					<property name="propertyName" value="calibrated"/>
+					<property name="propertyValue" value="true"/>
+					<property name="propertyType" value="1"/>
+				</bean>
+			</list>
+		</property>		
+	</bean>
+
+	<bean id="sampleyMotor" class="gda.device.motor.TangoMotor">
+		<property name="tangoDeviceProxy" ref="sampleYmotorDeviceProxy"/>
+		<property name="local" value="true"/>
+	</bean>
+
+	<bean id="sampleYmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="sampleYmotorDeviceImpl"/>
+	</bean>
+	<bean id="sampleYmotorDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/maxe261_4_5/sampley"/>
+		<property name="attributeMap">
+			<list>
+				<bean id="y_positionAttribute" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="Position"/>
+					<property name="attributeValue" value="2.5"/>
+					<property name="attributeDataType" value="5"/>
+				</bean>
+			</list>
+		</property>
+		<property name="propertyMap">
+			<list>
+				<bean id="y_calibratedProperty" class="gda.device.DummyDbDatum">
+					<property name="propertyName" value="calibrated"/>
+					<property name="propertyValue" value="true"/>
+					<property name="propertyType" value="1"/>
+				</bean>
+			</list>
+		</property>		
+	</bean>
+  	
+	<bean id="testscannable" class="gda.device.scannable.ScannableMotor">
+		<property name="motor" ref="DummyMotor"/>
+		<property name="protectionLevel" value="3" />
+		<property name="initialUserUnits" value="mm" />
+		<property name="hardwareUnitString" value="mm" />
+	</bean>
+	<bean id="DummyMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true"/>
+	</bean>
+</beans>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="uk.ac.gda.client.application"
+            name="Beamline BM26 Client">
+         <property
+               name="appName"
+               value="Beamline BM26 Client">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+         <property
+               name="windowImages"
+               value="platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo16.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo32.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo48.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo64.png,platform:/plugin/uk.ac.gda.core/icons/GDAlogos/GDALogo128.png">
+         </property>
+      </product>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="fr.esrf.gda.beamline.bm26.BM26Activator">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="*">
+
+         <perspectiveShortcut
+               id="gda.rcp.ncd.perspectives.SetupPerspective">
+         </perspectiveShortcut>
+         <perspectiveShortcut
+               id="gda.rcp.ncd.perspectives.NcdDetectorPerspective">
+         </perspectiveShortcut>
+         <perspectiveShortcut
+               id="gda.rcp.ncd.perspectives.SaxsPerspective">
+         </perspectiveShortcut>
+         <perspectiveShortcut
+               id="gda.rcp.ncd.perspectives.WaxsPerspective">
+         </perspectiveShortcut>
+         <perspectiveShortcut
+               id="gda.rcp.ncd.perspectives.DataPerspective">
+         </perspectiveShortcut>
+         <perspectiveShortcut
+               id="uk.ac.gda.pydev.extension.ui.JythonPerspective">
+         </perspectiveShortcut>
+         <perspectiveShortcut
+               id="gda.rcp.ncd.perspectives.SaxsWaxsPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="uk.ac.gda.client.preferences">
+      <preference
+            name="gda.client.max.size.cached.points"
+            value="10000">
+      </preference>
+   </extension>
+
+</plugin>

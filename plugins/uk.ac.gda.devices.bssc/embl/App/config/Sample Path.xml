@@ -1,0 +1,50 @@
+<hashtable>
+  <entry>
+    <string>Dead Volume</string>
+    <double>170.66666666666666</double>
+  </entry>
+  <entry>
+    <string>Detected Volume</string>
+    <double>156.0</double>
+  </entry>
+  <entry>
+    <string>Flow Offset</string>
+    <double>1.0</double>
+  </entry>
+  <entry>
+    <string>Focus Far</string>
+    <double>93.92</double>
+  </entry>
+  <entry>
+    <string>Focus Near</string>
+    <double>47.839999999999996</double>
+  </entry>
+  <entry>
+    <string>Focus Position</string>
+    <org.embl.bssc.scDevSamplePath_-FocusPosition>middle</org.embl.bssc.scDevSamplePath_-FocusPosition>
+  </entry>
+  <entry>
+    <string>Image Scale</string>
+    <double>0.025108225108225083</double>
+  </entry>
+  <entry>
+    <string>Light Default</string>
+    <double>58.0</double>
+  </entry>
+  <entry>
+    <string>Light Level</string>
+    <int>5</int>
+  </entry>
+  <entry>
+    <string>Load Offset</string>
+    <double>1.0</double>
+  </entry>
+  <entry>
+    <string>Spectro Position</string>
+    <double>45.0</double>
+  </entry>
+  <entry>
+    <string>Temp Exch Offset</string>
+    <double>14.0</double>
+  </entry>
+</hashtable>
