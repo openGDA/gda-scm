@@ -36,5 +36,5 @@
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="gda.util.ObjectServer"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="uk.ac.gda.core"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgda.root=${project_loc:uk.ac.gda.core}/..&#10;-Dgda.config=${project_loc:bm26-config}&#10;-Dgda.propertiesFile=${project_loc:bm26-config}/properties/live/java.properties&#10;-Djacorb.config.dir=${project_loc:bm26-config}/jacorb/live&#10;-Dgda.mode=live&#10;-Xms128m&#10;-Xmx1024m"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgda.install.git.loc=${workspace_loc}_git&#10;-Dgda.install.workspace.loc=${workspace_loc}&#10;-Dgda.config=${project_loc:bm26-config}&#10;-Dgda.propertiesFile=${project_loc:bm26-config}/properties/dummy/java.properties&#10;-Djacorb.config.dir=${project_loc:bm26-config}/jacorb/dummy&#10;-Dgda.mode=dummy&#10;-Xms128m&#10;-Xmx1024m"/>
 </launchConfiguration>

@@ -17,6 +17,13 @@
             name="Ncd Temperature Configure"
             restorable="true">
       </view>      
+   <view
+            category="gda.rcp.ncd"
+            class="gda.rcp.ncd.views.NcdTemperatureView"
+            id="gda.rcp.ncd.views.NcdTemperatureView"
+            name="Ncd Linkam"
+            restorable="false">
+      </view>
          </extension>
             <extension
             point="org.eclipse.ui.preferencePages">

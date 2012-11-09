@@ -42,11 +42,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 @CorbaAdapterClass(DetectorAdapter.class)
 @CorbaImplClass(DetectorImpl.class)
-public class TangoPilatusDetector extends TangoLimaDetector implements InitializingBean, IObserver {
+public class TangoPilatusDetector extends TangoLimaDetector implements IObserver {
 
 	private static final Logger logger = LoggerFactory.getLogger(TangoPilatusDetector.class);
 	private TangoDeviceProxy dev = null;
@@ -62,36 +61,29 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 	private Boolean deleteAfterOutput = false;
 	private static int detectorCount = 0;
 	private static int ready = 0;
-	private static int scanPoint;
 	
 	@Override
 	public void configure() throws FactoryException {
 		super.configure();
 		try {
-			init();
-			if (energyThreshold != null)
-				writeEnergyThreshold(energyThreshold);
-			if (threshold != null)
-				writeThreshold(threshold);
-			if (triggerDelay != null)
-				writeTriggerDelay(triggerDelay);
-			if (fillMode != null)
-				writeFillMode(fillMode);
-			if (thresholdGain != null)
-				writeThresholdGain(thresholdGain);
-			if (timer != null)
-				timer.addIObserver(this);
-			configured = true;
+			if (dev != null) {
+				init();
+				if (energyThreshold != null)
+					writeEnergyThreshold(energyThreshold);
+				if (threshold != null)
+					writeThreshold(threshold);
+				if (triggerDelay != null)
+					writeTriggerDelay(triggerDelay);
+				if (fillMode != null)
+					writeFillMode(fillMode);
+				if (thresholdGain != null)
+					writeThresholdGain(thresholdGain);
+				if (timer != null)
+					timer.addIObserver(this);
+					
+			}
 		} catch (Exception e) {
-			configured = false;
 			logger.error("TangoPilatusDetector {} configure: {}", getName(), e);
-		}
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (dev == null) {
-			throw new IllegalArgumentException("tango device proxy needs to be set");
 		}
 	}
 
@@ -102,46 +94,17 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 		configure();
 	}
 	
-	@Override
-	public void atScanStart() throws DeviceException {
-		scanPoint = 0;
-		deleteExistingFiles();
-//		writeSavingNextNumber(0);
-		writeSavingOverwritePolicy("OVERWRITE");
-		writeSavingPrefix(getSavingPrefix());
-		writeSavingSuffix(getSavingSuffix());
-		writeSavingDirectory(getSavingDirectory());
-	}
-	
-	public void deleteExistingFiles() {
-		String prefix = getSavingPrefix();
-		String suffix = getSavingSuffix();
-		String filename;
-		File f = null;
-		int i = 0;
-		while(true) {
-			filename = String.format("%s/%s%04d%s", imageDirectory, prefix, i, suffix);
-			f = new File(filename);
-			if (!f.exists())
-				break;
-			f.delete();
-			i++;
-		}
-	}
-	
+
 	@Override
 	public void collectData() throws DeviceException {
 		detectorCount++;
 		writeNbFrames(timer.getCurrentFrames(1));
 		writeExposureTime(timer.getCurrentLiveTime(1));
 		writeLatencyTime(timer.getCurrentDeadTime(1));
-		if (scanPoint != 0) {
-			writeSavingOverwritePolicy("ABORT");
-			writeSavingPrefix(getSavingPrefix());
-		}
+		writeSavingOverwritePolicy("OVERWRITE");
+		writeSavingPrefix(getSavingPrefix());
 		super.collectData();
 		System.out.println("DetectorCount is now " + detectorCount);
-		scanPoint++;
 	}
 
 	/**
@@ -390,7 +353,7 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 
 	@Override
 	public boolean createsOwnFiles() throws DeviceException {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -399,13 +362,12 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 		String filename = null;
 		try {
 			String prefix = getSavingPrefix();
-			String suffix = getSavingSuffix();
 			data = new int[getWidth()*getHeight()];
-			filename = String.format("%s/%s%04d%s", imageDirectory, prefix, imageToReadout, suffix);
+			filename = String.format("%s/%s%04d.edf", imageDirectory, prefix, imageToReadout);
 			logger.info("Translating {} into NeXus", filename);
 			data = edfLoader(filename);
 		} catch (Exception e) {
-			logger.error("Unable to translate file {} into hdf5: {}", filename, e.getMessage());
+			logger.error("Unable to translate {} file into hdf5", filename);			
 		}
 		return data;
 	}
@@ -416,19 +378,10 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 		int index = 0;
 		FileInputStream fi = null;
 		File f = null;
-		int count = 0;
-
+		
 		try {
 			f = new File(fileName);
-			while (true) {
-				// Either the file exists or we've waited a second so allow a failure
-				if (f.exists() || count == 1000) {
-					break;
-				}
-				Thread.sleep(10);
-				count ++;
-			}
-			fi = new FileInputStream(f);
+	        fi = new FileInputStream(f);
 
 			BufferedReader br = new BufferedReader(new FileReader(f));
 			String line = br.readLine();
@@ -493,7 +446,7 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 				}
 			}
 		} catch (Exception e) {
-			throw new Exception("File failed to load " + fileName + ": " + e.getMessage());
+			throw new Exception("File failed to load " + fileName, e);
 		} finally {
 			if (fi != null) {
 				try {
@@ -503,8 +456,8 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 				}
 				fi = null;
 			}
-//			if (f != null && deleteAfterOutput)
-//				f.delete();
+			if (f != null && deleteAfterOutput)
+				f.delete();
 		}		
 		return data;	
 	}

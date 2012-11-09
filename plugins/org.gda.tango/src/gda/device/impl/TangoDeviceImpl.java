@@ -39,8 +39,8 @@ public class TangoDeviceImpl implements TangoDevice {
 			if (deviceName != null) {
 				deviceProxy = new DeviceProxy(deviceName);
 			}
-		} catch (DevFailed e) {
-			logger.warn("The tango server {} is not running: {}", deviceName, e.errors[0].desc);
+		} catch (Exception e) {
+			logger.warn("The tango server {} is not running", deviceName);
 		}
 	}
 
@@ -103,4 +103,5 @@ public class TangoDeviceImpl implements TangoDevice {
 	public void put_property(DbDatum property) throws DevFailed {
 		deviceProxy.put_property(property);
 	}
+
 }

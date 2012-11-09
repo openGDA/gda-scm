@@ -3,12 +3,5 @@
     <cs:dependencies>
         <cs:dependency name="fr.esrf.gda.beamline.bm26.site" componentType="eclipse.feature"/>
         <cs:dependency name="org.gda.tango" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.gda.server.ncd" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.diamond.scisoft.analysis" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.diamond.scisoft.python" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.gda.analysis" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.gda.nexus" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.gda.common" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.gda.api" componentType="osgi.bundle"/>
     </cs:dependencies>
 </cs:cspec>
