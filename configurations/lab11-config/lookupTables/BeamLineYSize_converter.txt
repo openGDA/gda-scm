@@ -1,0 +1,4 @@
+# This is used to go from beam size to slit size
+Units micron mm
+0. 0.
+1000. 1.
