@@ -1,0 +1,15 @@
+# Lookup table for the default region of interest in eV for fluorescence light given out by a particular atomic edges.
+# This information is used to setup the detector
+# Lines starting with a # are treated as comments and ignored
+# Each line gives the region of interest for a particular edge. 
+#
+# Each line starts with a name of the form 'Element'_'Edge'
+# e.g. The K edge for Vanadium is identified by the name V_K
+# e.g. The L2 edge for Astatine is identified by the name At_L2
+#
+# After the name of the  edge is the low and high value for the region of interest for the detector. The number can be commana, space or tab separated.
+V_K 4000 5000
+#Se_K, 4000, 6000
+Se_K, 11000, 12800
+At_L2	6000	 7000
+Mn_K,  5000, 7000
