@@ -36,10 +36,11 @@ import gda.factory.corba.util.CorbaImplClass;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 @CorbaAdapterClass(DetectorAdapter.class)
 @CorbaImplClass(DetectorImpl.class)
-public class TangoLimaDetector extends DetectorBase implements Detector, Scannable, Configurable {
+public class TangoLimaDetector extends DetectorBase implements Detector, Scannable, Configurable, InitializingBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(TangoLimaDetector.class);
 	private TangoDeviceProxy dev = null;
@@ -70,31 +71,38 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 	@Override
 	public void configure() throws FactoryException {
 		try {
-			if (dev != null)
-				init();
-				getWidth();
-				getHeight();
-				readDetectorType();
-				readDetectorDescription();
-				readImageType();
-				if (triggerMode != null)
-					writeTriggerMode(triggerMode);
-				if (latencyTime != null)
-					writeLatencyTime(latencyTime);
-				if (acqMode != null)
-					writeAcqMode(acqMode);
-				if (savingFormat != null)
-					writeSavingFormat(savingFormat);
-				if (savingSuffix != null)
-					writeSavingSuffix(savingSuffix);
-				if (savingPrefix != null)
-					writeSavingPrefix(savingPrefix);
-				if (savingDirectory != null)
-					writeSavingDirectory(savingDirectory);
-				if (savingMode != null)
-					writeSavingMode(savingMode);
+			init();
+			getWidth();
+			getHeight();
+			readDetectorType();
+			readDetectorDescription();
+			readImageType();
+			if (triggerMode != null)
+				writeTriggerMode(triggerMode);
+			if (latencyTime != null)
+				writeLatencyTime(latencyTime);
+			if (acqMode != null)
+				writeAcqMode(acqMode);
+			if (savingFormat != null)
+				writeSavingFormat(savingFormat);
+			if (savingSuffix != null)
+				writeSavingSuffix(savingSuffix);
+			if (savingPrefix != null)
+				writeSavingPrefix(savingPrefix);
+			if (savingDirectory != null)
+				writeSavingDirectory(savingDirectory);
+			if (savingMode != null)
+				writeSavingMode(savingMode);
+			configured = true;
 		} catch (Exception e) {
 			logger.error("TangoLimaDetector {} configure: {}", getName(), e);
+		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (dev == null) {
+			throw new IllegalArgumentException("tango device proxy needs to be set");
 		}
 	}
 
@@ -234,7 +242,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 			throw new DeviceException("failed to reset "+ getName(), e);
 		}
 	}
-
+	
 	@Override
 	public void collectData() throws DeviceException {
 		isAvailable();
@@ -249,9 +257,14 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 			} catch (InterruptedException e) {
 				// ignore
 			}
+//			dev.command_inout("StartAcq");
+		} catch (DevFailed e) {
+			throw new DeviceException("failed to prepare for acq " + getName(), e);
+		}		
+		try {
 			dev.command_inout("StartAcq");
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to start " + getName(), e);
+			throw new DeviceException("failed to start acq " + getName(), e);
 		}		
 	}
 
@@ -594,6 +607,15 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 			dev.write_attribute(new DeviceAttribute("saving_format", format));
 		} catch (DevFailed e) {
 			throw new DeviceException("failed to set saving format ", e);
+		}		
+	}
+
+	public void writeSavingNextNumber(int nextNumber) throws DeviceException {
+		isAvailable();
+		try {
+			dev.write_attribute(new DeviceAttribute("saving_next_number", nextNumber));
+		} catch (DevFailed e) {
+			throw new DeviceException("failed to set saving next number ", e);
 		}		
 	}
 

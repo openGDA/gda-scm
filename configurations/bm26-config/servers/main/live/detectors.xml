@@ -45,14 +45,25 @@
 		<property name="detector" ref="simccd" /> 
 	</bean>
 -->
-	<bean id="Scaler" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
+	<bean id="Scaler" class="uk.ac.gda.server.ncd.subdetector.NcdScalerDetector">
 		<property name="detectorType" value="CALIB" /> 
 		<property name="memory" ref="CalMemory" /> 
+<!--  		<property name="transposedData" value="true"/> -->
 	</bean>
 
 	<bean id="TfgTimes" class="uk.ac.gda.server.ncd.subdetector.NcdTimesDetector">
 		<property name="detectorType" value="TIMES" /> 
 		<property name="memory" ref="TimesMemory" /> 
+	</bean>
+
+	<bean id="Linkam" class="uk.ac.gda.server.ncd.subdetector.NcdTemperatureDetector">
+		<property name="detectorType" value="OTHER" /> 
+		<property name="temperature" ref="LinkamT95" /> 
+	</bean>
+
+	<bean id="Eurotherm" class="uk.ac.gda.server.ncd.subdetector.NcdTemperatureDetector">
+		<property name="detectorType" value="OTHER" /> 
+		<property name="temperature" ref="Eurotherm2400" /> 
 	</bean>
 
 	<bean id="ncddetectors" class="uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem">
@@ -95,7 +106,7 @@
 
 	<bean id="TimesMemory" class="gda.device.memory.GdhistTimes">
 		<property name="daServer" ref="DAServer2" /> 
-		<property name="width" value="8" /> 
+		<property name="width" value="8" />
 		<property name="height" value="1" /> 
 		<property name="openCommand" value="module open 'tfg_times' header" /> 
 	</bean>
@@ -108,21 +119,24 @@
 		<property name="extraNames">
 			<list>
 				<value>Time</value>
-				<value>I0</value>
-				<value>It</value>
-				<value>Iref</value>
+				<value>I1</value>
+				<value>I2</value>
+				<value>Photo</value>
 				<value>c5</value>
 				<value>c6</value>
 				<value>c7</value>
 				<value>c8</value>
+				<value>c9</value>
 			</list>
 		</property>
 		<property name="scaler" ref="CalMemory" />
 		<property name="timer" ref="tfg" />
-		<property name="timeChannelRequired" value="false" />
+		<property name="timeChannelRequired" value="true" />
+		<property name="TFGv2" value="true" />
 		<property name="outputFormat">
 			<list>
 				<value>%5.2g</value>
+				<value>%9d</value>
 				<value>%9d</value>
 				<value>%9d</value>
 				<value>%9d</value>
@@ -146,14 +160,18 @@
 				<value>c6</value>
 				<value>c7</value>
 				<value>c8</value>
+				<value>c9</value>
 			</list>
 		</property>
 		<property name="timer" ref="tfg" />
-		<property name="timeChannelRequired" value="false" />
+		<property name="timeChannelRequired" value="true" />
+		<property name="TFGv2" value="true" />
 		<property name="useGaussian" value="true" />
+		<property name="totalChans" value="9" />
 		<property name="outputFormat">
 			<list>
 				<value>%5.2g</value>
+				<value>%9d</value>
 				<value>%9d</value>
 				<value>%9d</value>
 				<value>%9d</value>
@@ -200,16 +218,40 @@
 		<property name="pilatusTangoDeviceProxy" ref="pilatusSaxsDeviceProxy"/>
 		<property name="local" value="true"/>
 		<property name="detectorID" value="01"/>
-		<property name="triggerMode" value="EXTERNAL_GATE"/>		
-		<property name="savingPrefix" value="bm26-"/>		
+		<property name="triggerMode" value="EXTERNAL_GATE"/>
+		<property name="savingPrefix" value="bm26_img_"/>
+		<property name="savingSuffix" value=".fde"/>
 		<property name="savingFormat" value="EDF"/>
 		<property name="savingMode" value="AUTO_FRAME"/>
-		<property name="savingDirectory" value="/disk2/images"/>				
+		<property name="savingDirectory" value="/lima_data"/>
+		<property name="imageDirectory" value="/dec206/lima_data"/>
+		<property name="timer" ref="tfg" />
+		<property name="deleteAfterOutput" value="true" />
+	</bean>
+	
+	<!-- 
+	<bean id="saxsPilatus" class="gda.device.detector.pilatus.TangoPilatusDetector">
+		<property name="limaTangoDeviceProxy" ref="limaSaxsDeviceProxy"/>
+		<property name="pilatusTangoDeviceProxy" ref="pilatusSaxsDeviceProxy"/>
+		<property name="local" value="true"/>
+		<property name="detectorID" value="01"/>
+		<property name="triggerMode" value="EXTERNAL_GATE"/>
+		<property name="savingPrefix" value="bm26-"/>
+		<property name="savingFormat" value="EDF"/>
+		<property name="savingMode" value="AUTO_FRAME"/>
+		<property name="savingDirectory" value="/disk2/images"/>
 		<property name="imageDirectory" value="/dec206_images"/>
 		<property name="timer" ref="tfg" />
 		<property name="deleteAfterOutput" value="false" />
 	</bean>
-
+	
+	
+	
+	 -->
+	
+	
+	
+	
 	<bean id="limaSaxsDeviceProxy" class="gda.device.TangoDeviceProxy">
 		<constructor-arg value="tango://dubble27:20000/d26h/limaccd/1M" />
 	</bean>
@@ -224,15 +266,39 @@
 		<property name="local" value="true"/>
 		<property name="detectorID" value="01"/>
 		<property name="triggerMode" value="EXTERNAL_GATE"/>		
-		<property name="savingPrefix" value="bm26-"/>		
+		<property name="savingPrefix" value="bm26_img_"/>		
+		<property name="savingSuffix" value=".fde"/>
 		<property name="savingFormat" value="EDF"/>
 		<property name="savingMode" value="AUTO_FRAME"/>
-		<property name="savingDirectory" value="/home/det/p2_det/images"/>				
+		<property name="savingDirectory" value="/lima_data"/>				
+		<property name="imageDirectory" value="/dec058a/lima_data"/>
+		<property name="timer" ref="tfg" />
+		<property name="deleteAfterOutput" value="false" />
+	</bean>
+	
+	<!-- 
+	<bean id="waxsPilatus" class="gda.device.detector.pilatus.TangoPilatusDetector">
+		<property name="limaTangoDeviceProxy" ref="limaWaxsDeviceProxy"/>
+		<property name="pilatusTangoDeviceProxy" ref="pilatusWaxsDeviceProxy"/>
+		<property name="local" value="true"/>
+		<property name="detectorID" value="01"/>
+		<property name="triggerMode" value="EXTERNAL_GATE"/>
+		<property name="savingPrefix" value="bm26-"/>
+		<property name="savingFormat" value="EDF"/>
+		<property name="savingMode" value="AUTO_FRAME"/>
+		<property name="savingDirectory" value="/home/det/p2_det/images"/>
 		<property name="imageDirectory" value="/dec058a_images"/>
 		<property name="timer" ref="tfg" />
 		<property name="deleteAfterOutput" value="false" />
 	</bean>
-
+	
+	
+	
+	 -->
+	
+	
+	
+	
 	<bean id="limaWaxsDeviceProxy" class="gda.device.TangoDeviceProxy">
 		<constructor-arg value="tango://dubble27:20000/d26h/limaccd/300K" />
 	</bean>

@@ -56,6 +56,16 @@
 		<property name="memory" ref="TimesMemory" /> 
 	</bean>
 
+	<bean id="LinkamDet" class="uk.ac.gda.server.ncd.subdetector.NcdTemperatureDetector">
+		<property name="detectorType" value="OTHER" /> 
+		<property name="temperature" ref="Linkam" /> 
+	</bean>
+
+	<bean id="EurothermDet" class="uk.ac.gda.server.ncd.subdetector.NcdTemperatureDetector">
+		<property name="detectorType" value="OTHER" /> 
+		<property name="temperature" ref="Eurotherm" /> 
+	</bean>
+
 	<bean id="ncddetectors" class="uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem">
 		<property name="timer" ref="tfg" />
 		<property name="detectors">
@@ -104,7 +114,7 @@
 
 	<bean id="TimesMemory" class="gda.device.memory.GdhistTimes">
 		<property name="daServer" ref="DAServer2" /> 
-		<property name="width" value="8" /> 
+		<property name="width" value="9" /> <!-- <property name="width" value="8" />  -->
 		<property name="height" value="1" /> 
 		<property name="openCommand" value="module open 'tfg_times' header" /> 
 	</bean>
@@ -124,6 +134,7 @@
 				<value>c6</value>
 				<value>c7</value>
 				<value>c8</value>
+				<value>c9</value>
 			</list>
 		</property>
 		<property name="scaler" ref="CalMemory" />
@@ -343,20 +354,6 @@
 	<bean id="pilatusWaxsDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
 		<constructor-arg value="tango://dubble27:20000/d26h/pilatus/300K" />
 	</bean>
-
-<!--
-	<bean id="xspress3" class="gda.device.detector.xspress3.TangoXspress3">
-		<property name="tangoDeviceProxy" ref="xspress3DeviceProxy"/>
-		<property name="local" value="true"/>
-	</bean>
-
-	<bean id="xspress3DeviceProxy" class="gda.device.TangoDeviceProxy">
-		<constructor-arg ref="xspress3DeviceImpl"/>
-	</bean>
-	<bean id="xspress3DeviceImpl" class="gda.device.impl.TangoDeviceImpl">
-		<constructor-arg value="tango://gmvig1:6789/xspress3/tango/1#dbase=no" />
-	</bean>
--->
 
 	<bean id="ncdlistener" class="uk.ac.gda.server.ncd.plotting.ListenerDispatcher">
 		<property name="ncdDetector" ref="ncddetectors" />

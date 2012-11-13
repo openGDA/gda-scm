@@ -3,36 +3,35 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="serial" class="gda.device.serial.SerialComm">
-		<property name="local" value="true" /> 
-		<property name="configureAtStartup" value="false" />
-		<property name="portName" value="/dev/ttyS0" />
+	<bean id="serial00DeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26/serial/linkam" />
 	</bean>
 
-	<bean id="linkam" class="gda.device.temperature.LinkamCI">
-		<property name="serial" ref="serial" /> 
-		<property name="configureAtStartup" value="false" />
-		<property name="probeNames">
-			<list>
-				<value>temp</value>
-			</list>
-		</property>
-        <property name="accuracy" value="0.2" />
-        <property name="fileSuffix" value="dat" />
-        <property name="upperTemp" value="600" /> 
-        <property name="lowerTemp" value="-195" />
-        <property name="samplingTime" value="0.9" /> 
-	</bean>
-<!--
-	<bean id="eurotherm" class="gda.device.temperature.Eurotherm2000">
-		<property name="serial" ref="serial" /> 
-		<property name="configureAtStartup" value="false" />
-		<property name="accuracy" value="2" /> 
-		<property name="polltime" value="5000" /> 
-		<property name="gid" value="0" /> 
-		<property name="uid" value="1" /> 
-		<property name="fileSuffix" value="dat" /> 
+	<bean id="serial00" class="gda.device.serial.TangoSerial">
+		<property name="tangoDeviceProxy" ref="serial00DeviceProxy" />
 	</bean>
 
--->
+	<bean id="ReaderWriter00" class="gda.device.temperature.TangoReaderWriter">
+		<property name="tangoSerial" ref="serial00" />
+	</bean>
+
+	<bean id="LinkamT95" class="gda.device.temperature.LinkamT95">
+		<property name="serialReaderWriter" ref="ReaderWriter00" />
+		<property name="configureAtStartup" value="false" />
+		<property name="fileSuffix" value="dat" />
+		<property name="upperTemp" value="600" />
+		<property name="lowerTemp" value="-195" />
+	</bean>
+
+	<bean id="eurothermDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/Eurotherm2400/0" />
+	</bean>
+
+	<bean id="Eurotherm2400" class="gda.device.temperature.TangoEurotherm2400">
+		<property name="tangoDeviceProxy" ref="eurothermDeviceProxy" />
+		<property name="configureAtStartup" value="false" />
+		<property name="accuracy" value="0.5" />
+		<property name="polltime" value="2000" />
+	</bean>
+
 </beans>
