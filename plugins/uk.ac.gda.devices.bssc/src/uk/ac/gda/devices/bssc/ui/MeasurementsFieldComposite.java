@@ -18,8 +18,14 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.text.TabExpander;
+
+import org.apache.commons.beanutils.BeanUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -39,7 +45,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+
+import persistence.antlr.collections.impl.Vector;
 
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.richbeans.components.FieldComposite;
@@ -247,6 +257,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 			@Override
 			protected void setValue(Object element, Object value) {
+				if (value == null) return;
 				((TitrationBean) element).getLocation().setColumn(Integer.valueOf((String) value).shortValue());
 				super.setValue(element, value);
 			} 
@@ -451,34 +462,6 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		}
 
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		// FIXME bug in eclipse. Remove the comments below and see the mess.
-//		tableViewer.setComparator(new ViewerComparator(new Comparator<TitrationBean>() {
-//			@Override
-//			public int compare(TitrationBean o1, TitrationBean o2) {
-//				LocationBean l1 = o1.getLocation();
-//				LocationBean l2 = o2.getLocation();
-//				if (l1.getPlate() < l2.getPlate()) {
-//					return -1;
-//				} else (l1.getPlate() > l2.getPlate()) {
-//					return 1;
-//				} else {
-//					if (l1.getRow() < l2.getRow()) {
-//						return -1;
-//					} else (l1.getRow() > l2.getRow()) {
-//						return 1;
-//					} else {
-//						if (l1.getColumn() < l2.getColumn()) {
-//							return -1;
-//						} else (l1.getColumn() > l2.getColumn()) {
-//							return 1;
-//						} else {
-//							return o1.getSampleName().compareTo(o2.getSampleName());
-//						}
-//					}
-//				}
-//				return 0;
-//			}
-//		}));
 
 		composite_1 = new Composite(this, SWT.NONE);
 		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
@@ -502,11 +485,43 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		return value;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(Object value) {
 		this.value = value;
-		sampleCount.setText(String.valueOf(((List<TitrationBean>) value).size()));
+		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.setInput(value);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<TitrationBean> getList() {
+		return ((List<TitrationBean>) value);
+	}
+	
+	public void deleteSelection() {
+		if (table.getSelectionIndices().length == 0) return;
+		int[] selectionIndices = table.getSelectionIndices();
+		Arrays.sort(selectionIndices);
+		for (int i = selectionIndices.length - 1; i >= 0; i--) {
+			getList().remove(selectionIndices[i]);
+		}
+		sampleCount.setText(String.valueOf(getList().size()));
+		tableViewer.refresh();
+	}
+	
+	public void addSample() {
+		if (table.getSelectionIndices().length == 0) {
+			getList().add(new TitrationBean());
+		} else {
+			int[] selectionIndices = table.getSelectionIndices();
+			List<TitrationBean> toadd = new ArrayList<TitrationBean>(table.getSelectionIndices().length);
+			for(int i : selectionIndices)
+				try {
+					toadd.add((TitrationBean) BeanUtils.cloneBean(getList().get(i)));
+				} catch (Exception e) {
+				} 
+			getList().addAll(selectionIndices[selectionIndices.length-1]+1, toadd);
+		}
+		sampleCount.setText(String.valueOf(getList().size()));
+		tableViewer.refresh();
 	}
 }
