@@ -45,7 +45,7 @@ public final class BSSCSessionBeanComposite extends Composite {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanComposite.class);
 
 	private NumberBox sampleStorageTemperature;
-	private FieldComposite measurements;
+	private MeasurementsFieldComposite measurements;
 	private GridData layoutData;
 
 	public BSSCSessionBeanComposite(Composite parent, int style, final RichBeanEditorPart editor) {
@@ -65,9 +65,30 @@ public final class BSSCSessionBeanComposite extends Composite {
 		
 		Button btnNewSample = new Button(composite, SWT.NONE);
 		btnNewSample.setText("New Sample");
+		btnNewSample.setToolTipText("add line(s) for new sample(s)");
+		btnNewSample.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				// TODO
+				if (measurements != null)
+					measurements.addSample();		
+			}
+		});
 		
 		Button btnDelete = new Button(composite, SWT.NONE);
 		btnDelete.setText("Delete");
+		btnDelete.setToolTipText("remove selected rows");
+		btnDelete.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				if (measurements != null)
+					measurements.deleteSelection();			
+			}
+		});
 		
 		Button btnQueueExperiment = new Button(this, SWT.NONE);
 		layoutData = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
