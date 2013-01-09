@@ -198,21 +198,6 @@
     </measurement>
     <measurement>
         <location>
-            <plate>2</plate>
-            <row>B</row>
-            <column>5</column>
-        </location>
-        <sampleName>soup</sampleName>
-        <bufferName>CO2</bufferName>
-        <yellowSample>true</yellowSample>
-        <concentration>0.25</concentration>
-        <viscosity>high</viscosity>
-        <timePerFrame>1.0</timePerFrame>
-        <frames>2</frames>
-        <exposureTemperature>23.0</exposureTemperature>
-    </measurement>
-    <measurement>
-        <location>
             <plate>3</plate>
             <row>B</row>
             <column>4</column>
@@ -240,6 +225,51 @@
         <timePerFrame>1.0</timePerFrame>
         <frames>2</frames>
         <exposureTemperature>23.0</exposureTemperature>
+    </measurement>
+    <measurement>
+        <location>
+            <plate>3</plate>
+            <row>B</row>
+            <column>4</column>
+        </location>
+        <sampleName>mark</sampleName>
+        <bufferName>life long</bufferName>
+        <yellowSample>true</yellowSample>
+        <concentration>0.25</concentration>
+        <viscosity>high</viscosity>
+        <timePerFrame>9.0</timePerFrame>
+        <frames>1</frames>
+        <exposureTemperature>25.0</exposureTemperature>
+    </measurement>
+    <measurement>
+        <location>
+            <plate>3</plate>
+            <row>B</row>
+            <column>4</column>
+        </location>
+        <sampleName>mark</sampleName>
+        <bufferName>life long</bufferName>
+        <yellowSample>true</yellowSample>
+        <concentration>0.25</concentration>
+        <viscosity>high</viscosity>
+        <timePerFrame>9.0</timePerFrame>
+        <frames>1</frames>
+        <exposureTemperature>25.0</exposureTemperature>
+    </measurement>
+    <measurement>
+        <location>
+            <plate>3</plate>
+            <row>B</row>
+            <column>4</column>
+        </location>
+        <sampleName>mark</sampleName>
+        <bufferName>life long</bufferName>
+        <yellowSample>true</yellowSample>
+        <concentration>0.25</concentration>
+        <viscosity>high</viscosity>
+        <timePerFrame>9.0</timePerFrame>
+        <frames>1</frames>
+        <exposureTemperature>25.0</exposureTemperature>
     </measurement>
     <measurement>
         <location>
