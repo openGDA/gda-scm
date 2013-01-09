@@ -199,7 +199,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				super.setValue(element, value);
 			} 
 		} }, 
-		{ "Row", 40, new ColumnLabelProvider() {
+		{ "Row", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -256,7 +256,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			} 
 		}
 		}, 
-		{ "Sample Name", 110, new ColumnLabelProvider() {
+		{ "Sample Name", 120, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -279,7 +279,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				super.setValue(element, value);
 			}
 		} }, 
-		{ "Bu Plate", 50, new ColumnLabelProvider() {
+		{ "Buffer\nPlate", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -317,7 +317,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				super.setValue(element, value);
 			} 
 		} }, 
-		{ "Bu Row", 40, new ColumnLabelProvider() {
+		{ "Buffer\nRow", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -345,7 +345,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			} 
 		}
 		}, 
-		{ "Bu Column", 65, new ColumnLabelProvider() {
+		{ "Buffer\nColumn", 65, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -374,7 +374,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			} 
 		}
 		}, 
-		{ "Yellow Sample", 112, new ColumnLabelProvider() {
+		{ "Yellow\nSample", 70, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -397,7 +397,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				super.setValue(element, value);
 			} 
 		} }, 
-		{ "Recouperate", 112, new ColumnLabelProvider() {
+		{ "Recoup", 60, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -420,7 +420,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				super.setValue(element, value);
 			} 
 		} }, 
-		{ "Concentration", 110, new ColumnLabelProvider() {
+		{ "Concentration", 100, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -469,7 +469,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				super.setValue(element, value);
 			} 
 		}
-		}, { "Time per Frame", 122, new ColumnLabelProvider() {
+		}, { "Time per\nFrame", 80, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -513,7 +513,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				((TitrationBean) element).setFrames((Integer) value);
 				super.setValue(element, value);
 			} 
-		} }, { "Exposure Temperature", 170, new ColumnLabelProvider() {
+		} }, { "Exposure\nTemperature", 90, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -538,7 +538,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		} } };
 
 		for (Object[] column : columns) {
-			TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.NONE);
+			TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.CENTER);
 			int width = Integer.valueOf(column[1].toString());
 			col.getColumn().setWidth(width);
 			col.getColumn().setText(column[0].toString());
