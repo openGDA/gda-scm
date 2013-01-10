@@ -17,7 +17,7 @@
         <recouperate>false</recouperate>
         <concentration>0.25</concentration>
         <viscosity>high</viscosity>
-        <timePerFrame>18.0</timePerFrame>
+        <timePerFrame>1.0</timePerFrame>
         <frames>10</frames>
         <exposureTemperature>25.0</exposureTemperature>
     </measurement>
@@ -37,7 +37,7 @@
         <recouperate>true</recouperate>
         <concentration>0.25</concentration>
         <viscosity>high</viscosity>
-        <timePerFrame>9.0</timePerFrame>
+        <timePerFrame>1.0</timePerFrame>
         <frames>1</frames>
         <exposureTemperature>25.0</exposureTemperature>
     </measurement>
