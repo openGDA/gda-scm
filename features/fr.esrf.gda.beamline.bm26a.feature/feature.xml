@@ -2,7 +2,7 @@
 <feature
       id="fr.esrf.gda.beamline.bm26a.feature"
       label="bm26a Feature"
-      version="8.28.0"
+      version="8.30.0"
       provider-name="Diamond Light Source">
 
    <description url="http://www.example.com/description">
