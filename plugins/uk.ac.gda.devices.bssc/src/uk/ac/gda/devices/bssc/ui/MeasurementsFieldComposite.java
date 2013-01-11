@@ -374,29 +374,6 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			} 
 		}
 		}, 
-		{ "Yellow\nSample", 70, new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TitrationBean tb = (TitrationBean) element;
-				return String.valueOf(tb.isYellowSample());
-			}
-		}, new OurEditingSupport() {
-			@Override
-			protected CellEditor getOurCellEditor(Object element) {
-				return new CheckboxCellEditor(viewer.getTable());
-			}
-
-			@Override
-			protected Object getValue(Object element) {
-				return ((TitrationBean) element).isYellowSample();
-			}
-
-			@Override
-			protected void setValue(Object element, Object value) {
-				((TitrationBean) element).setYellowSample((Boolean) value);
-				super.setValue(element, value);
-			} 
-		} }, 
 		{ "Recoup", 60, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
