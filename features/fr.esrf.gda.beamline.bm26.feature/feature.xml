@@ -2,7 +2,7 @@
 <feature
       id="fr.esrf.gda.beamline.bm26.feature"
       label="bm26 Feature"
-      version="8.26.0"
+      version="8.28.0"
       provider-name="ESRF &amp; Daresbury Laboratory">
 
    <description url="http://www.example.com/description">
