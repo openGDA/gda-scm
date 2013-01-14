@@ -1,7 +1,5 @@
 package uk.ac.gda.devices.bssc.wizards;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +32,6 @@ import org.eclipse.ui.ide.IDE;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
-import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class BSSCSessionWizard extends Wizard implements INewWizard {
 	private BSSCSessionWizardPage page;
@@ -106,8 +103,7 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 		IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));
 		try {
-			File tempfile = getContentInTempFile();
-			InputStream stream = new FileInputStream(tempfile);
+			InputStream stream = getContentStream();
 			if (file.exists()) {
 				throwCoreException("Will not overwrite existing file "+fileName+".");
 
@@ -117,6 +113,7 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 			}
 			stream.close();
 		} catch (IOException e) {
+			throwCoreException("error creating file contents.");
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
@@ -135,9 +132,8 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 
 	/**
 	 * We will initialize file contents with a sample text.
-	 * @throws CoreException 
 	 */
-	private File getContentInTempFile() throws CoreException {
+	private InputStream getContentStream() {
 		BSSCSessionBean sessionBean = new BSSCSessionBean();
 		sessionBean.setSampleStorageTemperature(sampleStorageTemperature);
 		List<TitrationBean> measurements = new ArrayList<TitrationBean>();
@@ -172,15 +168,7 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 		}
 		sessionBean.setMeasurements(measurements);
 		
-		try {
-			File tempFile = File.createTempFile("bssc-", ".xml");
-			tempFile.deleteOnExit();
-			XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, tempFile);
-			return tempFile;
-		} catch (Exception e) {
-		}
-		throwCoreException("failure to create file contents");
-		return null; // make compiler happy
+		return BSSCWizardUtils.sessionBeanToStream(sessionBean);
 	}
 
 	private void throwCoreException(String message) throws CoreException {

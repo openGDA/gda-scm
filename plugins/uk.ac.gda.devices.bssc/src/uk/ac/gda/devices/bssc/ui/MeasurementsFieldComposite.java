@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2011 Diamond Light Source Ltd.
+ * Copyright © 2013 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.eclipse.gef.dnd.SimpleObjectTransfer;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -37,12 +38,26 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Widget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.richbeans.components.FieldComposite;
@@ -51,13 +66,30 @@ import uk.ac.gda.richbeans.event.ValueEvent;
 
 public class MeasurementsFieldComposite extends FieldComposite {
 
+	private static final Logger logger = LoggerFactory.getLogger(MeasurementsFieldComposite.class);
+
 	Object value = null;
 	private Table table;
 	private Label sampleCount;
 	private final TableViewer tableViewer;
 	private Composite composite_1;
 	private final RichBeanEditorPart rbeditor;
+	
+	private static final SimpleObjectTransfer TRANSFER = new SimpleObjectTransfer() {
+		private final String TYPE_NAME = "uk.ac.gda.devices.bssc.ui.TitrationBeanTransfer"+System.currentTimeMillis(); //$NON-NLS-1$
+		private final int TYPE_ID = registerType(TYPE_NAME);
 
+		@Override
+		protected int[] getTypeIds() {
+			return new int[] { TYPE_ID };
+		}
+
+		@Override
+		protected String[] getTypeNames() {
+			return new String[] { TYPE_NAME };
+		}
+	};
+	
 	public abstract class OurEditingSupport extends EditingSupport {
 
 		protected TableViewer viewer = tableViewer;
@@ -71,11 +103,12 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 		@Override
 		final protected CellEditor getCellEditor(Object element) {
-			if (cachedCellEditor == null)
+			if (cachedCellEditor == null) {
 				cachedCellEditor = getOurCellEditor(element);
+			}
 			return cachedCellEditor;
 		}
-		
+
 		abstract protected CellEditor getOurCellEditor(Object element);
 
 		@Override
@@ -103,7 +136,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 		@Override
 		protected void doSetValue(final Object value) {
-			if (value==null) {
+			if (value == null) {
 				super.doSetValue(String.valueOf(new Double(0)));
 			} else {
 				super.doSetValue(String.valueOf(value.toString()));
@@ -131,7 +164,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 		@Override
 		protected void doSetValue(final Object value) {
-			if (value==null) {
+			if (value == null) {
 				super.doSetValue(String.valueOf(new Integer(0)));
 			} else {
 				super.doSetValue(String.valueOf(value.toString()));
@@ -160,15 +193,16 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		Object[][] columns = { 
-		{ "Plate", 50, new ColumnLabelProvider() {
+		Object[][] columns = { { "Plate", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
 				short plate = tb.getLocation().getPlate();
 				switch (plate) {
-				case 1: return "I";
-				case 2: return "II";
+				case 1:
+					return "I";
+				case 2:
+					return "II";
 				}
 				return "III";
 			}
@@ -178,7 +212,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
 				ce.setContentProvider(new ArrayContentProvider());
 				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] {"I", "II", "III"});
+				ce.setInput(new String[] { "I", "II", "III" });
 				return ce;
 			}
 
@@ -187,8 +221,10 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				TitrationBean tb = (TitrationBean) element;
 				short plate = tb.getLocation().getPlate();
 				switch (plate) {
-				case 1: return "I";
-				case 2: return "II";
+				case 1:
+					return "I";
+				case 2:
+					return "II";
 				}
 				return "III";
 			}
@@ -197,13 +233,12 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).getLocation().setPlate((short) String.valueOf(value).length());
 				super.setValue(element, value);
-			} 
-		} }, 
-		{ "Row", 50, new ColumnLabelProvider() {
+			}
+		} }, { "Row", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%c",tb.getLocation().getRow());
+				return String.format("%c", tb.getLocation().getRow());
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -211,7 +246,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
 				ce.setContentProvider(new ArrayContentProvider());
 				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] {"A", "B", "C", "D", "E", "F", "G", "H"});
+				ce.setInput(new String[] { "A", "B", "C", "D", "E", "F", "G", "H" });
 				return ce;
 			}
 
@@ -224,14 +259,12 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).getLocation().setRow(String.valueOf(value).charAt(0));
 				super.setValue(element, value);
-			} 
-		}
-		}, 
-		{ "Column", 65, new ColumnLabelProvider() {
+			}
+		} }, { "Column", 65, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%d",tb.getLocation().getColumn());
+				return String.format("%d", tb.getLocation().getColumn());
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -239,7 +272,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
 				ce.setContentProvider(new ArrayContentProvider());
 				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+				ce.setInput(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
 				return ce;
 			}
 
@@ -250,13 +283,13 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 			@Override
 			protected void setValue(Object element, Object value) {
-				if (value == null) return;
+				if (value == null) {
+					return;
+				}
 				((TitrationBean) element).getLocation().setColumn(Integer.valueOf((String) value).shortValue());
 				super.setValue(element, value);
-			} 
-		}
-		}, 
-		{ "Sample Name", 120, new ColumnLabelProvider() {
+			}
+		} }, { "Sample Name", 120, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -278,15 +311,16 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				((TitrationBean) element).setSampleName(String.valueOf(value));
 				super.setValue(element, value);
 			}
-		} }, 
-		{ "Buffer\nPlate", 50, new ColumnLabelProvider() {
+		} }, { "Buffer\nPlate", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
 				short plate = tb.getBufferLocation().getPlate();
 				switch (plate) {
-				case 1: return "I";
-				case 2: return "II";
+				case 1:
+					return "I";
+				case 2:
+					return "II";
 				}
 				return "III";
 			}
@@ -296,7 +330,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
 				ce.setContentProvider(new ArrayContentProvider());
 				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] {"I", "II", "III"});
+				ce.setInput(new String[] { "I", "II", "III" });
 				return ce;
 			}
 
@@ -305,8 +339,10 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				TitrationBean tb = (TitrationBean) element;
 				short plate = tb.getBufferLocation().getPlate();
 				switch (plate) {
-				case 1: return "I";
-				case 2: return "II";
+				case 1:
+					return "I";
+				case 2:
+					return "II";
 				}
 				return "III";
 			}
@@ -315,13 +351,12 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).getBufferLocation().setPlate((short) String.valueOf(value).length());
 				super.setValue(element, value);
-			} 
-		} }, 
-		{ "Buffer\nRow", 50, new ColumnLabelProvider() {
+			}
+		} }, { "Buffer\nRow", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%c",tb.getBufferLocation().getRow());
+				return String.format("%c", tb.getBufferLocation().getRow());
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -329,7 +364,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
 				ce.setContentProvider(new ArrayContentProvider());
 				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] {"A", "B", "C", "D", "E", "F", "G", "H"});
+				ce.setInput(new String[] { "A", "B", "C", "D", "E", "F", "G", "H" });
 				return ce;
 			}
 
@@ -342,14 +377,12 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).getBufferLocation().setRow(String.valueOf(value).charAt(0));
 				super.setValue(element, value);
-			} 
-		}
-		}, 
-		{ "Buffer\nColumn", 65, new ColumnLabelProvider() {
+			}
+		} }, { "Buffer\nColumn", 65, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%d",tb.getBufferLocation().getColumn());
+				return String.format("%d", tb.getBufferLocation().getColumn());
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -357,7 +390,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
 				ce.setContentProvider(new ArrayContentProvider());
 				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+				ce.setInput(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
 				return ce;
 			}
 
@@ -368,13 +401,13 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 			@Override
 			protected void setValue(Object element, Object value) {
-				if (value == null) return;
+				if (value == null) {
+					return;
+				}
 				((TitrationBean) element).getBufferLocation().setColumn(Integer.valueOf((String) value).shortValue());
 				super.setValue(element, value);
-			} 
-		}
-		}, 
-		{ "Recoup", 60, new ColumnLabelProvider() {
+			}
+		} }, { "Recoup", 60, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -395,9 +428,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).setRecouperate((Boolean) value);
 				super.setValue(element, value);
-			} 
-		} }, 
-		{ "Concentration", 100, new ColumnLabelProvider() {
+			}
+		} }, { "Concentration", 100, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -418,7 +450,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).setConcentration((Double) value);
 				super.setValue(element, value);
-			} 
+			}
 		} }, { "Viscosity", 75, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -431,7 +463,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
 				ce.setContentProvider(new ArrayContentProvider());
 				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] {"low", "medium", "high"});
+				ce.setInput(new String[] { "low", "medium", "high" });
 				return ce;
 			}
 
@@ -444,9 +476,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).setViscosity(String.valueOf(value));
 				super.setValue(element, value);
-			} 
-		}
-		}, { "Time per\nFrame", 80, new ColumnLabelProvider() {
+			}
+		} }, { "Time per\nFrame", 80, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -467,7 +498,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).setTimePerFrame((Double) value);
 				super.setValue(element, value);
-			} 
+			}
 		} }, { "Frames", 60, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -489,7 +520,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).setFrames((Integer) value);
 				super.setValue(element, value);
-			} 
+			}
 		} }, { "Exposure\nTemperature", 90, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -511,7 +542,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).setExposureTemperature(((Number) value).floatValue());
 				super.setValue(element, value);
-			} 
+			}
 		} } };
 
 		for (Object[] column : columns) {
@@ -525,6 +556,107 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			col.setLabelProvider((CellLabelProvider) column[2]);
 			col.setEditingSupport((EditingSupport) column[3]);
 		}
+
+		DragSource source = new DragSource(table, DND.DROP_MOVE | DND.DROP_COPY);
+		source.setTransfer(new Transfer[] { TRANSFER, TextTransfer.getInstance() });
+
+		source.addDragListener(new DragSourceAdapter() {
+			@Override
+			public void dragSetData(DragSourceEvent event) {
+				// Get the selected items in the drag source
+				DragSource ds = (DragSource) event.widget;
+				Table table = (Table) ds.getControl();
+				TableItem[] selection = table.getSelection();
+
+				 if (TRANSFER.isSupportedType(event.dataType)) {
+					List<TitrationBean> data = new ArrayList<TitrationBean>();
+					try {
+					for (TableItem element : selection) {
+							data.add((TitrationBean) BeanUtils.cloneBean(element.getData()));
+					}
+						} catch (Exception e) {
+							logger.error("error cloning titrationbean for outgoing drag and drop", e);
+						} 
+					event.data = data;
+				} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+					StringBuffer buff = new StringBuffer();
+					for (TableItem element : selection) {
+						buff.append(((TitrationBean) element.getData()).getSampleName());
+					}
+	
+					event.data = buff.toString();
+				} 
+			}
+			
+			@Override
+			public void dragFinished(DragSourceEvent event) {
+				super.dragFinished(event);
+				if ((event.detail & DND.DROP_MOVE) != 0) {
+					logger.debug(event.toString());
+					DragSource ds = (DragSource) event.widget;
+					Table table = (Table) ds.getControl();
+					TableItem[] selection = table.getSelection();
+					if (selection.length == 0)
+						logger.debug("selection empty");
+					for (TableItem element : selection) {
+						if (!getList().remove(element.getData()))
+							logger.debug("data not there or not removed");
+					}
+					
+					sampleCount.setText(String.valueOf(getList().size()));
+					tableViewer.refresh();
+				} else {
+					logger.debug("not move");
+				}
+			}
+		});
+
+		// Create the drop target
+		DropTarget target = new DropTarget(table, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_DEFAULT);
+		target.setTransfer(new Transfer[] { TRANSFER });
+		target.addDropListener(new DropTargetAdapter() {
+			@Override
+			public void dragEnter(DropTargetEvent event) {
+				if (event.detail == DND.DROP_DEFAULT) {
+					event.detail = (event.operations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+				}
+
+				for (TransferData dataType : event.dataTypes) {
+					if (TRANSFER.isSupportedType(dataType)) {
+						event.currentDataType = dataType;
+					}
+				}
+			}
+
+			@Override
+			public void dragOver(DropTargetEvent event) {
+				event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+			}
+
+			@Override
+			public void drop(DropTargetEvent event) {
+				if (TRANSFER.isSupportedType(event.currentDataType)) {
+					@SuppressWarnings("unchecked")
+					List<TitrationBean> data = (List<TitrationBean>) event.data;
+					List<TitrationBean> list = getList();
+
+					int before = 0;
+					
+					Widget intoitem = event.item;
+					if (intoitem == null) {
+						before = list.size();
+					} else {
+						before = list.indexOf(intoitem.getData());
+					}
+					
+
+					list.addAll(before, data);
+
+					sampleCount.setText(String.valueOf(getList().size()));
+					tableViewer.refresh();
+				}
+			}
+		});
 
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
@@ -556,14 +688,16 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.setInput(value);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<TitrationBean> getList() {
 		return ((List<TitrationBean>) value);
 	}
-	
+
 	public void deleteSelection() {
-		if (table.getSelectionIndices().length == 0) return;
+		if (table.getSelectionIndices().length == 0) {
+			return;
+		}
 		int[] selectionIndices = table.getSelectionIndices();
 		Arrays.sort(selectionIndices);
 		for (int i = selectionIndices.length - 1; i >= 0; i--) {
@@ -572,19 +706,20 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.refresh();
 	}
-	
+
 	public void addSample() {
 		if (table.getSelectionIndices().length == 0) {
 			getList().add(new TitrationBean());
 		} else {
 			int[] selectionIndices = table.getSelectionIndices();
 			List<TitrationBean> toadd = new ArrayList<TitrationBean>(table.getSelectionIndices().length);
-			for(int i : selectionIndices)
+			for (int i : selectionIndices) {
 				try {
 					toadd.add((TitrationBean) BeanUtils.cloneBean(getList().get(i)));
 				} catch (Exception e) {
-				} 
-			getList().addAll(selectionIndices[selectionIndices.length-1]+1, toadd);
+				}
+			}
+			getList().addAll(selectionIndices[selectionIndices.length - 1] + 1, toadd);
 		}
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.refresh();

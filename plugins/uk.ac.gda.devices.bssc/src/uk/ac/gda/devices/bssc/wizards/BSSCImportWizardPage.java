@@ -1,10 +1,17 @@
 package uk.ac.gda.devices.bssc.wizards;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -19,9 +26,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 
+import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
+import uk.ac.gda.devices.bssc.beans.LocationBean;
+import uk.ac.gda.devices.bssc.beans.TitrationBean;
+
 public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 
 	protected FileFieldEditor editor;
+	private float sampleStorageTemperature = 15;
 
 	public BSSCImportWizardPage(String pageName, IStructuredSelection selection) {
 		super(pageName, selection);
@@ -58,12 +70,54 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 	@Override
 	protected void createLinkTarget() {
 	}
+	
+	private LocationBean locationFromCells(Cell platec, Cell rowc, Cell columnc) {
+		LocationBean location = new LocationBean();
+		location.setPlate(Short.parseShort(platec.getStringCellValue()));
+		location.setRow(rowc.getStringCellValue().charAt(0));
+		location.setColumn((short) columnc.getNumericCellValue());
+		return location;
+	}
 
 	@Override
 	protected InputStream getInitialContents() {
 		try {
-			return new FileInputStream(new File(editor.getStringValue()));
-		} catch (FileNotFoundException e) {
+			InputStream excelDocumentStream = new FileInputStream(new File(editor.getStringValue()));
+			POIFSFileSystem fsPOI = new POIFSFileSystem(new BufferedInputStream(excelDocumentStream));
+			HSSFWorkbook workBook = new HSSFWorkbook(fsPOI);
+			HSSFSheet sheet = workBook.getSheetAt(0);
+
+			BSSCSessionBean sessionBean = new BSSCSessionBean();
+			sessionBean.setSampleStorageTemperature(sampleStorageTemperature);
+			List<TitrationBean> measurements = new ArrayList<TitrationBean>();
+
+			for (Row row : sheet) {
+
+				TitrationBean tibi = new TitrationBean();
+
+				LocationBean location = locationFromCells(row.getCell(0), row.getCell(1), row.getCell(2));
+				tibi.setLocation(location);
+			
+				tibi.setSampleName(row.getCell(3).getStringCellValue());
+
+				location = locationFromCells(row.getCell(4), row.getCell(5), row.getCell(6));
+				tibi.setBufferLocation(location);
+
+//				tibi.setConcentration(concentration); 
+//				tibi.setExposureTemperature(exposureTemperature); 
+//				tibi.setFrames(frames); 
+//				tibi.setRecouperate(recouperate);
+//				tibi.setTimePerFrame(timePerFrame);
+//				tibi.setViscosity(viscosity);
+
+				measurements.add(tibi);
+			}
+			excelDocumentStream.close();
+
+			sessionBean.setMeasurements(measurements);
+
+			return BSSCWizardUtils.sessionBeanToStream(sessionBean);
+		} catch (Exception e) {
 			return null;
 		}
 	}
