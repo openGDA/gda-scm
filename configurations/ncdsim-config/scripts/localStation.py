@@ -39,3 +39,21 @@ ncdredux = NcdRedux(ncddetectors)
 
 from installStandardScansWithProcessing import *
 scan_processor.rootNamespaceDict=globals()
+
+import gridscan
+ 
+print "Create ncdgridscan"
+try:
+    del(gridxy)
+except:
+    pass
+
+
+from gda.device.scannable.scannablegroup import ScannableGroup
+gridxy=ScannableGroup()
+gridxy.setName("gridxy")
+gridxy.setGroupMembers([x, y])
+gridxy.configure()
+camera=bsdiode
+ncdgridscan=gridscan.Grid("Saxs Plot", "Mapping Grid", camera, gridxy, ncddetectors)
+ncdgridscan.snap()
