@@ -20,11 +20,16 @@ package uk.ac.gda.devices.bssc.ui;
 
 import java.net.URL;
 
+import org.eclipse.ui.IEditorInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
 
 public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
+	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanEditor.class);
 
 	public BSSCSessionBeanEditor() {
 		super();
@@ -48,5 +53,16 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	@Override
 	public URL getSchemaUrl() {
 		return BSSCSessionBean.schemaURL; // Please make sure this field is present and the schema
+	}
+	
+	@Override
+	public void setInput(final IEditorInput input) {
+		try{
+	        assignInput(input);
+	        createBean();
+	        linkUI();
+		} catch (Throwable th){
+			logger.error("Error setting input for editor from input " + input.getName(), th);
+		}
 	}
 }
