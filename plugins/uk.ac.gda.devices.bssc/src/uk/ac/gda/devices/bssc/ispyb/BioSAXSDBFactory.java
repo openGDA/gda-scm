@@ -20,7 +20,7 @@ package uk.ac.gda.devices.bssc.ispyb;
 
 public class BioSAXSDBFactory {
 	
-	public static BioSAXSISPyB makeDB(BioSAXSISPyB.RDBMSTYPE rdbms, BioSAXSISPyB.MODE mode) {
+	public static BioSAXSISPyB makeAPI(BioSAXSISPyB.RDBMSTYPE rdbms, BioSAXSISPyB.MODE mode) {
 		if (rdbms == BioSAXSISPyB.RDBMSTYPE.Oracle) {
 				return new BioSAXSOracleUtils(mode);
 		}
