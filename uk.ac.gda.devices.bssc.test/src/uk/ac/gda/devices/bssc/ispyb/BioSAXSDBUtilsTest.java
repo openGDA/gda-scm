@@ -16,16 +16,13 @@ public class BioSAXSDBUtilsTest {
 	@BeforeClass
 	public static void setup() {
 		
-		bioSAXSISPyB = BioSAXSDBFactory.makeDB(BioSAXSISPyB.RDBMSTYPE.Oracle, BioSAXSISPyB.MODE.testing);
-	}
-	
-	@Test
-	public void testGetSessionForVisit() throws SQLException {
-		assertEquals(bioSAXSISPyB.getSessionForVisit("nt20-12"), 434);
+		bioSAXSISPyB = BioSAXSDBFactory.makeAPI(BioSAXSISPyB.RDBMSTYPE.Oracle, BioSAXSISPyB.MODE.testing);
 	}
 	
 	@Test
 	public void testcreateMeasurementsAndRegisterBufferForSample() throws SQLException {
+		assertEquals(bioSAXSISPyB.getSessionForVisit("nt20-12"), 434);
+
 		long bufferId = bioSAXSISPyB.createBufferMeasurement(434L, (short)0, (short)1, (short)1, 20.0f, 21.0f, 10, 1.0, 2.0, 5.0, 10.0, 
 				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9999.nxs", "/entry1/detector/data");
 		assertTrue(bufferId >= 0);
@@ -36,5 +33,7 @@ public class BioSAXSDBUtilsTest {
 		assertTrue(sampleId >= 0);
 		
 		bioSAXSISPyB.registerBufferForSample(434L, sampleId, bufferId);
+
+		bioSAXSISPyB.disconnect();
 	}
 }
