@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2011 Diamond Light Source Ltd.
+ * Copyright © 2013 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -35,17 +35,15 @@ import java.sql.PreparedStatement;
  * TODO run create_ro_role.sql, create_rw_role.sql and users.sql on live database
  */
 
-public class BioSAXSOracleUtils extends BioSAXSISPyB {
+public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	Connection conn = null;
 	
-	public BioSAXSOracleUtils(BioSAXSISPyB.MODE mode) {
-		if (mode == BioSAXSISPyB.MODE.live)
-			URL = liveURL;
-		else if (mode == BioSAXSISPyB.MODE.testing)
-			URL = testURL;
+	public BioSAXSISPyBviaOracle(String mode) {
+		URL = mode;
 	}
 	
+	@Override
 	public void disconnect() throws SQLException {
 		if (conn != null) {
 			if (!conn.isClosed()) {
@@ -54,8 +52,9 @@ public class BioSAXSOracleUtils extends BioSAXSISPyB {
 		}
 	}
 	
-	protected String testURL = "jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe";
-	protected String liveURL = "jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb";
+//	protected String testURL = "jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe";
+//	protected String liveURL = "jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb";
+	
 	String URL = null;
 	
 	protected boolean connect() throws SQLException {
@@ -73,7 +72,6 @@ public class BioSAXSOracleUtils extends BioSAXSISPyB {
 			connect();
 		}
 	}
-
 	
 	@Override
 	public long getSessionForVisit(String visitname) throws SQLException {
@@ -97,12 +95,7 @@ public class BioSAXSOracleUtils extends BioSAXSISPyB {
 	}
 
 	@Override
-	public long createExperiment(long sessionID) {
-		// Won't be implemented
-		return -1;
-	}
-
-	protected long createSaxsDataCollection(long blsessionId) throws SQLException {
+	public long createSaxsDataCollection(long blsessionId) throws SQLException {
 		long saxsDataCollectionId = -1;
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SaxsDataCollection (datacollectionId, blsessionId) " +
 				"VALUES (ispyb4a_db.s_SaxsDataCollection.nextval, ?) RETURNING datacollectionId INTO ?; END;";
@@ -280,7 +273,8 @@ public class BioSAXSOracleUtils extends BioSAXSISPyB {
 	 * Add row to the MeasurementToDataCollection table with a dataCollectionOrder which is 1 greater than the max
 	 * for existing entries for this dataCollectionId.
 	 */
-	protected long createMeasurementToDataCollection(long saxsDataCollectionId, long measurementId) throws SQLException {
+	@Override
+	public long createMeasurementToDataCollection(long saxsDataCollectionId, long measurementId) throws SQLException {
 		long measurementToDataCollectionId = -1;
 
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.MeasurementToDataCollection (" +
@@ -335,41 +329,5 @@ public class BioSAXSOracleUtils extends BioSAXSISPyB {
 		long frameSetId = createFrameSet(runId, fileName, internalPath);
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
 		return measurementId;
-	}
-
-	/* If the sample measurement is not connected to a SaxsDataCollection already then
-	 * create new row in SaxsDataCollection and then create new rows in 
-	 * MeasurementToDataCollection for buffer measurement (dataCollectionOrder 1) and 
-	 * sample measurement (dataCollectionOrder 2).
-	 * Otherwise get the existing datacollectionId and use it to create a new 
-	 * SaxsDataCollection row for the buffer only.
-	 */
-	@Override
-	public void registerBufferForSample(long blsessionId, long sampleMeasurementId, long bufferMeasurementId) 
-			throws SQLException {
-		connectIfNotConnected();
-
-		String selectSql = "SELECT dataCollectionId " +
-				"FROM ispyb4a_db.MeasurementToDataCollection " +
-				"WHERE measurementId = ?";
-
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, sampleMeasurementId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			if (rs.next()) {
-				long sampleDataCollectionId = rs.getLong(1);
-				createMeasurementToDataCollection(sampleDataCollectionId, bufferMeasurementId);
-				return;
-			}
-		}
-		// insert into SaxsDataCollection
-		long dataCollectionId = createSaxsDataCollection(blsessionId);
-		// insert bufferId into MeasurementToDataCollection
-		createMeasurementToDataCollection(dataCollectionId, bufferMeasurementId);
-
-		// insert sampleId into MeasurementToDataCollection
-		createMeasurementToDataCollection(dataCollectionId, sampleMeasurementId);
 	}
 }

@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2011 Diamond Light Source Ltd.
+ * Copyright © 2013 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -20,10 +20,20 @@ package uk.ac.gda.devices.bssc.ispyb;
 
 public class BioSAXSDBFactory {
 	
-	public static BioSAXSISPyB makeAPI(BioSAXSISPyB.RDBMSTYPE rdbms, BioSAXSISPyB.MODE mode) {
-		if (rdbms == BioSAXSISPyB.RDBMSTYPE.Oracle) {
-				return new BioSAXSOracleUtils(mode);
+	private static String jdbcURL;
+	
+	public static BioSAXSISPyB makeAPI() {
+		if (jdbcURL == null) {
+			throw new IllegalArgumentException("jdbcURL unspecified");
 		}
-		return null;
+		return new BioSAXSISPyBviaOracle(jdbcURL);
+	}
+
+	public String getJdbcURL() {
+		return jdbcURL;
+	}
+
+	public void setJdbcURL(String jdbcURL) {
+		BioSAXSDBFactory.jdbcURL = jdbcURL;
 	}
 }
