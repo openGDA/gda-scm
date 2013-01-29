@@ -14,24 +14,37 @@ public class BioSAXSDBUtilsTest {
 	
 	@BeforeClass
 	public static void setup() {
-		
-		bioSAXSISPyB = BioSAXSDBFactory.makeAPI(BioSAXSISPyB.RDBMSTYPE.Oracle, BioSAXSISPyB.MODE.testing);
+		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe");
+		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 	}
 	
 	@Test
 	public void testcreateMeasurementsAndRegisterBufferForSample() throws SQLException {
 		assertEquals(bioSAXSISPyB.getSessionForVisit("nt20-12"), 434);
 
-		long bufferId = bioSAXSISPyB.createBufferMeasurement(434L, (short)0, (short)1, (short)1, 20.0f, 21.0f, 10, 1.0, 2.0, 5.0, 10.0, 
-				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9999.nxs", "/entry1/detector/data");
-		assertTrue(bufferId >= 0);
+		long sdc = bioSAXSISPyB.createSaxsDataCollection(434L);
+		
+		long bufferId1 = bioSAXSISPyB.createBufferMeasurement(434L, (short)0, (short)1, (short)1, 20.0f, 21.0f, 10, 1.0, 2.0, 5.0, 10.0, 
+				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9990.nxs", "/entry1/detector/data");
+		assertTrue(bufferId1 >= 0);
+
+		long someid = bioSAXSISPyB.createMeasurementToDataCollection(sdc, bufferId1);
+		assertTrue(someid >= 0);
 
 		long sampleId = bioSAXSISPyB.createSampleMeasurement(434L, (short)1, (short)1, (short)2, "The blue one",
 				19.0, 20.0f, 21.0f, 10, 1.0, 2.0, 3.0, 11.0, 
-				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9999.nxs", "/entry1/detector/data");
+				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9991.nxs", "/entry1/detector/data");
 		assertTrue(sampleId >= 0);
 		
-		bioSAXSISPyB.registerBufferForSample(434L, sampleId, bufferId);
+		someid = bioSAXSISPyB.createMeasurementToDataCollection(sdc, sampleId);
+		assertTrue(someid >= 0);
+		
+		long bufferId2 = bioSAXSISPyB.createBufferMeasurement(434L, (short)0, (short)1, (short)1, 20.0f, 21.0f, 10, 1.0, 2.0, 5.0, 10.0, 
+				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9992.nxs", "/entry1/detector/data");
+		assertTrue(bufferId2 >= 0);
+		
+		someid = bioSAXSISPyB.createMeasurementToDataCollection(sdc, bufferId2);
+		assertTrue(someid >= 0);
 
 		bioSAXSISPyB.disconnect();
 	}
