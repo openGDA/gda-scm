@@ -18,14 +18,12 @@
 
 package uk.ac.gda.devices.bssc.ispyb;
 
-import org.apache.commons.lang.NotImplementedException;
-
 public class BioSAXSDBFactory {
 	
-	public static BioSAXSISPyB makeAPI(BioSAXSISPyB.RDBMSTYPE rdbms, BioSAXSISPyB.MODE mode) throws NotImplementedException {
+	public static BioSAXSISPyB makeAPI(BioSAXSISPyB.RDBMSTYPE rdbms, BioSAXSISPyB.MODE mode) {
 		if (rdbms == BioSAXSISPyB.RDBMSTYPE.Oracle) {
 				return new BioSAXSOracleUtils(mode);
 		}
-		throw new NotImplementedException("The code for that RDBMS has not yet been implemented.");
+		return null;
 	}
 }

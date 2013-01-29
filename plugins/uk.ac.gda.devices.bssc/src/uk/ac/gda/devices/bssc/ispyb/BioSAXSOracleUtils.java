@@ -35,7 +35,7 @@ import java.sql.PreparedStatement;
  * TODO run create_ro_role.sql, create_rw_role.sql and users.sql on live database
  */
 
-public class BioSAXSOracleUtils implements BioSAXSISPyB {
+public class BioSAXSOracleUtils extends BioSAXSISPyB {
 
 	Connection conn = null;
 	
