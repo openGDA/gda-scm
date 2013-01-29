@@ -1,10 +1,9 @@
 package uk.ac.gda.devices.bssc.ispyb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
-
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSOracleUtils;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
