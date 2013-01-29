@@ -213,6 +213,13 @@
 		<property name="hostname" value="diamrd2336"/>
 		<property name="port" value="9555"/>
 	</bean>	
+	
+	<bean class="uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory">
+		<property name="jdbcURL" value="jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe" />
+		<!-- //	protected String testURL = "jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe"; -->
+		<!-- //	protected String liveURL = "jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb"; -->
+	</bean>
+	
 	<bean id="jythonServerFacade" class="gda.jython.JythonServerFacade">
 		<constructor-arg ref="command_server" />
 	</bean>
