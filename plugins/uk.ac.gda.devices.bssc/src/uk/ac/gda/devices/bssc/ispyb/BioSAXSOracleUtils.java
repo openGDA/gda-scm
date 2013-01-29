@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2011 Diamond Light Source Ltd.
+ * Copyright © 2013 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -35,7 +35,7 @@ import java.sql.PreparedStatement;
  * TODO run create_ro_role.sql, create_rw_role.sql and users.sql on live database
  */
 
-public class BioSAXSOracleUtils extends BioSAXSISPyB {
+public class BioSAXSOracleUtils implements BioSAXSISPyB {
 
 	Connection conn = null;
 	
@@ -46,6 +46,7 @@ public class BioSAXSOracleUtils extends BioSAXSISPyB {
 			URL = testURL;
 	}
 	
+	@Override
 	public void disconnect() throws SQLException {
 		if (conn != null) {
 			if (!conn.isClosed()) {

@@ -24,6 +24,6 @@ public class BioSAXSDBFactory {
 		if (rdbms == BioSAXSISPyB.RDBMSTYPE.Oracle) {
 				return new BioSAXSOracleUtils(mode);
 		}
-		return null;
+		throw new IllegalArgumentException("rdbms mode unsupported");
 	}
 }
