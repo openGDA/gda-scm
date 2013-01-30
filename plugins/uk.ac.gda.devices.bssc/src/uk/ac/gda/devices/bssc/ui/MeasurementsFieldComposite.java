@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
@@ -74,9 +75,9 @@ public class MeasurementsFieldComposite extends FieldComposite {
 	private final TableViewer tableViewer;
 	private Composite composite_1;
 	private final RichBeanEditorPart rbeditor;
-	
+
 	private static final SimpleObjectTransfer TRANSFER = new SimpleObjectTransfer() {
-		private final String TYPE_NAME = "uk.ac.gda.devices.bssc.ui.TitrationBeanTransfer"+System.currentTimeMillis(); //$NON-NLS-1$
+		private final String TYPE_NAME = "uk.ac.gda.devices.bssc.ui.TitrationBeanTransfer" + System.currentTimeMillis(); //$NON-NLS-1$
 		private final int TYPE_ID = registerType(TYPE_NAME);
 
 		@Override
@@ -89,7 +90,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			return new String[] { TYPE_NAME };
 		}
 	};
-	
+
 	public abstract class OurEditingSupport extends EditingSupport {
 
 		protected TableViewer viewer = tableViewer;
@@ -568,26 +569,30 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				Table table = (Table) ds.getControl();
 				TableItem[] selection = table.getSelection();
 
-				 if (TRANSFER.isSupportedType(event.dataType)) {
+				if (TRANSFER.isSupportedType(event.dataType)) {
 					List<TitrationBean> data = new ArrayList<TitrationBean>();
 					try {
-					for (TableItem element : selection) {
-							data.add((TitrationBean) BeanUtils.cloneBean(element.getData()));
+						for (TableItem element : selection) {
+							TitrationBean oldBean = (TitrationBean) element.getData();
+							TitrationBean copiedBean = (TitrationBean) BeanUtils.cloneBean(oldBean);
+							copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
+							copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
+							data.add(copiedBean);
+						}
+					} catch (Exception e) {
+						logger.error("error cloning titrationbean for outgoing drag and drop", e);
 					}
-						} catch (Exception e) {
-							logger.error("error cloning titrationbean for outgoing drag and drop", e);
-						} 
 					event.data = data;
 				} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 					StringBuffer buff = new StringBuffer();
 					for (TableItem element : selection) {
 						buff.append(((TitrationBean) element.getData()).getSampleName());
 					}
-	
+
 					event.data = buff.toString();
-				} 
+				}
 			}
-			
+
 			@Override
 			public void dragFinished(DragSourceEvent event) {
 				super.dragFinished(event);
@@ -602,7 +607,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 						if (!getList().remove(element.getData()))
 							logger.debug("data not there or not removed");
 					}
-					
+
 					sampleCount.setText(String.valueOf(getList().size()));
 					tableViewer.refresh();
 				} else {
@@ -641,14 +646,13 @@ public class MeasurementsFieldComposite extends FieldComposite {
 					List<TitrationBean> list = getList();
 
 					int before = 0;
-					
+
 					Widget intoitem = event.item;
 					if (intoitem == null) {
 						before = list.size();
 					} else {
 						before = list.indexOf(intoitem.getData());
 					}
-					
 
 					list.addAll(before, data);
 
