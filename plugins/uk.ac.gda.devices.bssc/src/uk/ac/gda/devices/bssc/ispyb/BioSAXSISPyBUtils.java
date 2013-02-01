@@ -32,7 +32,9 @@ import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB.SampleInfo;
 public class BioSAXSISPyBUtils {
 
 	public static void dumpCollectionReport(long collectionid) throws SQLException, IOException {
-		List<SampleInfo> collectionInfo = BioSAXSDBFactory.makeAPI().getSaxsDataCollectionInfo(collectionid);
+		BioSAXSISPyB api = BioSAXSDBFactory.makeAPI();
+		List<SampleInfo> collectionInfo = api.getSaxsDataCollectionInfo(collectionid);
+		api.disconnect();
 		if (collectionInfo.isEmpty()) 
 			return;
 		String filename = PathConstructor.createFromDefaultProperty() + String.format("bssc-collection-%d.dat", collectionid);
