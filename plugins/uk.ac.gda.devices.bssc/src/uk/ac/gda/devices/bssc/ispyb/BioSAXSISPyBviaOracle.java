@@ -18,15 +18,19 @@
 
 package uk.ac.gda.devices.bssc.ispyb;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import oracle.jdbc.OracleConnection;
 import java.sql.Driver;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.util.Properties;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import oracle.jdbc.OracleConnection;
+import uk.ac.gda.devices.bssc.beans.LocationBean;
 
 /*
  * An Oracle extension of the abstract BioSAXSISPyB class
@@ -38,6 +42,7 @@ import java.sql.PreparedStatement;
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	Connection conn = null;
+	String URL = null;
 	
 	public BioSAXSISPyBviaOracle(String mode) {
 		URL = mode;
@@ -51,11 +56,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			}
 		}
 	}
-	
-//	protected String testURL = "jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe";
-//	protected String liveURL = "jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb";
-	
-	String URL = null;
 	
 	protected boolean connect() throws SQLException {
 		Driver driver = new oracle.jdbc.OracleDriver();
@@ -329,5 +329,69 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long frameSetId = createFrameSet(runId, fileName, internalPath);
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
 		return measurementId;
+	}
+
+	@Override
+	public List<SampleInfo> getSaxsDataCollectionInfo(long saxsDataCollectionId) throws SQLException {
+		List<SampleInfo> sinfos = new ArrayList<SampleInfo>();
+		SampleInfo sinfo = new SampleInfo();
+		
+		connectIfNotConnected();
+
+		String selectSql = "SELECT ispyb4a_db.sampleplate.name AS plate, ispyb4a_db.sampleplateposition.rownumber, ispyb4a_db.sampleplateposition.columnnumber, ispyb4a_db.stocksolution.name, ispyb4a_db.frameset.filepath FROM ispyb4a_db.MeasurementToDataCollection INNER JOIN ispyb4a_db.measurement ON ispyb4a_db.MeasurementToDataCollection.measurementid = ispyb4a_db.measurement.specimenid INNER JOIN ispyb4a_db.sample ON ispyb4a_db.measurement.sampleid = ispyb4a_db.sample.sampleid INNER JOIN ispyb4a_db.frameset ON ispyb4a_db.measurement.runid = ispyb4a_db.frameset.runid INNER JOIN ispyb4a_db.sampleplateposition ON ispyb4a_db.sample.sampleplatepositionid = ispyb4a_db.sampleplateposition.sampleplatepositionid INNER JOIN ispyb4a_db.sampleplate ON ispyb4a_db.sampleplate.sampleplateid = ispyb4a_db.sampleplateposition.sampleplateid LEFT JOIN ispyb4a_db.stocksolution ON ispyb4a_db.sample.stocksolutionid = ispyb4a_db.stocksolution.stocksolutionid WHERE ispyb4a_db.MeasurementToDataCollection.dataCollectionId=? ORDER BY ispyb4a_db.MeasurementToDataCollection.datacollectionorder ASC";
+			
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, saxsDataCollectionId);
+		boolean success = stmt.execute();
+		if (success){
+			ResultSet rs = stmt.getResultSet();
+			while (rs.next()) {
+				String name = rs.getString(4);
+				String filename = rs.getString(5);
+				if (name == null) {
+					if (sinfo.name == null) {
+						sinfo.bufferBeforeFileName = filename;
+					} else {
+						sinfo.bufferAfterFileName = filename;
+						sinfos.add(sinfo);
+						sinfo = new SampleInfo();
+						sinfo.bufferBeforeFileName = filename;
+					}
+				} else {
+					sinfo.name = name;
+					sinfo.sampleFileName = filename;
+					LocationBean loc = new LocationBean();
+					loc.setPlate(Short.parseShort(rs.getString(1)));
+					loc.setRow((char) ('A' + rs.getInt(2) - 1));
+					loc.setColumn(rs.getShort(3));
+					sinfo.location = loc;
+				}
+			}
+		}
+
+		return sinfos;
+	}
+
+	@Override
+	public List<Long> getSaxsDataCollectionsForSession(long blsessionId) throws SQLException {
+		List<Long> collections = new ArrayList<Long>();
+		
+		connectIfNotConnected();
+
+		String selectSql = "SELECT datacollectionId " +
+				"FROM ispyb4a_db.SaxsDataCollection " +
+				"WHERE blsessionId = ? " +
+				"ORDER BY datacollectionId ASC";
+		
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, blsessionId);
+		boolean success = stmt.execute();
+		if (success){
+			ResultSet rs = stmt.getResultSet();
+			while (rs.next()) 
+				collections.add(rs.getLong(1));
+		}
+
+		return collections;
 	}
 }
