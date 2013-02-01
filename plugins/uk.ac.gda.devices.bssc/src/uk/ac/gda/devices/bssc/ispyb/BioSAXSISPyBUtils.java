@@ -41,7 +41,7 @@ public class BioSAXSISPyBUtils {
 		try {
 			bw.write("#location, sample name, sample file, before buffer file, after buffer file\n");
 			for(SampleInfo si: collectionInfo) {
-				bw.write(si.location.toString()+","+si.name+","+si.bufferBeforeFileName+","+si.bufferAfterFileName+"\n");
+				bw.write(si.location.toString()+","+si.name+","+si.sampleFileName+","+si.bufferBeforeFileName+","+si.bufferAfterFileName+"\n");
 			}
 		} finally {
 			bw.close();
