@@ -719,7 +719,11 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			List<TitrationBean> toadd = new ArrayList<TitrationBean>(table.getSelectionIndices().length);
 			for (int i : selectionIndices) {
 				try {
-					toadd.add((TitrationBean) BeanUtils.cloneBean(getList().get(i)));
+					TitrationBean oldBean = getList().get(i);
+					TitrationBean copiedBean = (TitrationBean) BeanUtils.cloneBean(oldBean);
+					copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
+					copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
+					toadd.add(copiedBean);
 				} catch (Exception e) {
 				}
 			}
