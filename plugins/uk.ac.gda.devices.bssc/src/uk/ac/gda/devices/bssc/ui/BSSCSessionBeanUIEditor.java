@@ -23,6 +23,8 @@ import java.net.URL;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.widgets.Composite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.editors.DirtyContainer;
@@ -30,10 +32,13 @@ import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 
 public final class BSSCSessionBeanUIEditor extends RichBeanEditorPart {
 
+	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanUIEditor.class);
+
 	private BSSCSessionBeanComposite beanComposite;
 
 	public BSSCSessionBeanUIEditor(String path, URL mappingURL, DirtyContainer dirtyContainer, Object editingBean) {
 		super(path, mappingURL, dirtyContainer, editingBean);
+		logger.info(String.format("created editor for %s", path));
 	}
 	
 	@Override
@@ -64,5 +69,10 @@ public final class BSSCSessionBeanUIEditor extends RichBeanEditorPart {
 
 	public FieldComposite getMeasurements() {
 		return beanComposite.getMeasurements();
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 }
