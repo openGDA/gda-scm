@@ -33,6 +33,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 
 	public BSSCSessionBeanEditor() {
 		super();
+		setPartProperty("RichBeanEditorPart", null);
 	}
 	
 	@Override
