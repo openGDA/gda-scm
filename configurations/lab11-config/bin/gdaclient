@@ -55,4 +55,5 @@ export MOZILLA_FIVE_HOME=/dls_sw/apps/firefox/8/x86_64/
 
 ulimit -c 10000000
 
+export BEAMLINE=lab11
 exec /scratch/gda/client/gda-$BEAMLINE -showLocation $DATA -configuration /tmp/.gda-config-${USER}

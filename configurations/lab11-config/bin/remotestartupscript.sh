@@ -1,6 +1,6 @@
 #! /bin/bash
 
-export BEAMLINE=i22
+export BEAMLINE=lab11
 . /usr/share/Modules/init/bash
 module load java/gda
 

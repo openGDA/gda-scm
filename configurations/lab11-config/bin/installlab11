@@ -20,5 +20,4 @@ cd workspace
 /dls_sw/dasc/dawn.py product
 /dls_sw/dasc/dawn.py product uk.ac.gda.beamline.lab11.site
 cp -r /tmp/uk.ac.gda.beamline.lab11.site/output/uk.ac.gda.beamline.lab11.site_1.0.0-eclipse.feature/lab11.gtk.linux.x86_64/. /scratch/gda/client
-cp /scratch/gda/config/client/* /scratch/gda/client
-
+#cp /scratch/gda/config/client/* /scratch/gda/client
