@@ -1,6 +1,8 @@
 module load buckminster
 module load python
 mkdir -p /scratch/gda/logs
+mkdir -p /scratch/gda/var
+mkdir -p /scratch/gda/data/cm0-0
 cd /scratch/gda/
 /dls_sw/dasc/dawn.py -k ~/.eclipse.keyring -w workspace materialize lab11 gda v8.28
 ln -s workspace_git/gda-scm.git/configurations/lab11-config .
@@ -9,6 +11,8 @@ ln -s config/bin .
 sudo ln -s /scratch/gda/config/localhome /
 sudo chmod -R go= /scratch/gda/config/localhome/gda2
 sudo chown gda2 config/lab11ssh.key
+sudo chgrp gda2 /scratch/gda/logs /scratch/gda/data/cm0-0
+chmod a+rwx /scratch/gda/var
 chmod a+x workspace_git/gda-core.git/uk.ac.gda.core/bin/gda
 cd workspace
 /dls_sw/dasc/dawn.py clean

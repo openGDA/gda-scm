@@ -29,7 +29,7 @@ mknod $PIP p
 tail -n 1 -f /scratch/gda/logs/gda_server.log >  $PIP &
 awk '{
         if (!/DEBUG/) print ;
-        if (/gda.util.ObjectServer - Server initialisation complete.*i22_server_beans/) {
+        if (/gda.util.ObjectServer.* Server initialisation complete./) {
                 print "\nAll done, you can start the client now\n" ;
                 exit ;
         }
