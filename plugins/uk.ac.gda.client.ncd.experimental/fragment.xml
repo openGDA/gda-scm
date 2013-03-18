@@ -27,12 +27,4 @@
                name="TfgPreferencePage">
          </page>
       </extension>
-            <extension
-                  point="org.eclipse.ui.perspectives">
-               <perspective
-                     class="gda.rcp.ncd.perspectives.SaxsWaxsPerspective"
-                     id="gda.rcp.ncd.perspectives.SaxsWaxsPerspective"
-                     name="Live Saxs /WaxsData">
-               </perspective>
-            </extension>
 </fragment>
