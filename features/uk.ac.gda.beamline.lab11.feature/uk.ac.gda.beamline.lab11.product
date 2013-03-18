@@ -8,6 +8,7 @@
    </aboutInfo>
 
    <configIni use="default">
+      <linux>/uk.ac.gda.beamline.lab11.feature/gda-lab11.ini</linux>
    </configIni>
 
    <launcherArgs>
