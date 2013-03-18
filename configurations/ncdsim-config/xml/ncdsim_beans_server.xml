@@ -13,10 +13,6 @@
 	<bean class="gda.factory.AdapterObjectCreator">
 		<property name="name" value="${gda.factory.factoryName}" />
 	</bean>
-	<bean class="gda.factory.ServerXmlObjectCreator">
-		<property name="xmlFile" value="${gda.config}/xml/ncdsim_Server.xml" />
-		<property name="buildProxies" value="${gda.accesscontrol.useAccessControl}" />
-	</bean>
 	
 	<bean class="gda.spring.FindableNameSetterPostProcessor" />
 	<bean id="GDAMetadata" class="gda.data.metadata.GdaMetadata">
@@ -36,13 +32,25 @@
 					<property name="value" value="sm0" />
 				</bean>
 				<ref bean="subdirectory" />
+				<ref bean="samplename" />
 			</list>
 		</property>
 	</bean>
+	
 	<bean id="subdirectory" class="gda.data.metadata.SubdirectoryMetadataEntry" />
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSubdirectory">
 		<property name="storedMetadataEntry" ref="subdirectory" />
 	</bean>
+	
+	    <bean class="gda.data.metadata.StoredMetadataEntry" id="samplename">
+                <property name="name" value="samplename" />
+                <property name="value" value="none" />
+        </bean>
+        <bean class="gda.data.metadata.MetadataBlaster" id="observableSamplename">
+                <property name="storedMetadataEntry" ref="samplename" />
+        </bean>
+	
+	
 	<bean id="GDAHashtable" class="gda.util.findableHashtable.FindableHashtable" />
 		
 	<bean id="commandQueue" class="gda.commandqueue.CommandQueue" />
@@ -298,4 +306,44 @@
 		<property name="cacheDirectory" value="${gda.config}/var/jythonCache" />
 		<property name="remotePort" value="9999" />
 	</bean>
+	
+	        <bean
+                class="gda.device.scannable.DummyMultiElementScannable" id="dummystage">
+                <property name="inputNames"><list><value>x</value><value>y</value></list></property>
+                <property name="outputFormat"><list><value>%5.5g</value><value>%5.5g</value></list></property>
+                <property name="protectionLevel" value="3"></property>
+        </bean>
+        <bean
+                class="gda.device.scannable.DummyUnitsScannable" id="sample_temp">
+                <property name="inputNames"><list><value>sample_temp</value></list></property>
+                <property name="outputFormat"><list><value>%5.5g</value></list></property>
+                <property name="protectionLevel" value="3"></property>
+        </bean>
+
+        <bean
+                class="gda.device.scannable.DummyUnitsScannable" id="analyser_slit">
+                <property name="inputNames"><list><value>analyser_slit</value></list></property>
+                <property name="outputFormat"><list><value>%5.0f</value></list></property>
+                <property name="protectionLevel" value="3"></property>
+                <property name="lowerGdaLimits" value="0" />
+                <property name="upperGdaLimits" value="1000" />
+        </bean>
+
+        <bean
+                class="gda.device.scannable.DummyUnitsScannable" id="exit_slit">
+                <property name="inputNames"><list><value>exit_slit</value></list></property>
+                <property name="outputFormat"><list><value>%5.5g</value></list></property>
+                <property name="protectionLevel" value="3"></property>
+                <property name="lowerGdaLimits" value="0" />
+                <property name="upperGdaLimits" value="5" />
+        </bean>
+	    
+	    <bean id="motor_motor" class="gda.device.motor.DummyMotor">
+                <property name="local" value="true" />
+        </bean>
+        <bean id="motor" class="gda.device.scannable.ScannableMotor">
+                <property name="motor" ref="motor_motor" />
+                <property name="local" value="false" />
+        </bean>
+	
 </beans>

@@ -54,6 +54,6 @@ gridxy=ScannableGroup()
 gridxy.setName("gridxy")
 gridxy.setGroupMembers([x, y])
 gridxy.configure()
-camera=bsdiode
-ncdgridscan=gridscan.Grid("Saxs Plot", "Mapping Grid", camera, gridxy, ncddetectors)
+# bsdiode should be camera
+ncdgridscan=gridscan.Grid("Saxs Plot", "Mapping Grid", bsdiode, gridxy, ncddetectors)
 ncdgridscan.snap()
