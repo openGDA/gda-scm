@@ -3,5 +3,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.server.ncd"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.beamline.lab11"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.video"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.video.mjpeg"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.video.rtp"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.devices.bssc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/uk.ac.gda.video.views"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,0 +1,8 @@
+#! /bin/sh
+#
+#
+
+. /usr/share/Modules/init/bash
+module load java/gda
+
+exec /scratch/gda/bin/gda logpanel

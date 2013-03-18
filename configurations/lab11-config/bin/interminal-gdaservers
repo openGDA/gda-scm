@@ -1,0 +1,3 @@
+#! /bin/sh
+
+gnome-terminal -t "gda server startup" -x /scratch/gda/bin/gdaservers
