@@ -5326,6 +5326,63 @@
 	<simpleMotor desc="Position" name="D6.POSN">
 		<RECORD IOC="BL21B-MO-IOC-01" desc="Motor" pv="BL21B-DI-PHDGN-06:POSN" ro="false" type="motor"/>
 	</simpleMotor>
+	<positioner desc="Filter Positioner" name="D1.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-01" desc="Position Selection" pv="BL21B-DI-PHDGN-01:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-01" desc="Done Moving Indicator" pv="BL21B-DI-PHDGN-01:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-01" desc="Error Indicator" pv="BL21B-DI-PHDGN-01:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-01" desc="In Position Indicator" pv="BL21B-DI-PHDGN-01:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-01" desc="Stop Button" pv="BL21B-DI-PHDGN-01:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<positioner desc="Filter Positioner" name="D2.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-01" desc="Position Selection" pv="BL21B-DI-PHDGN-02:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-01" desc="Done Moving Indicator" pv="BL21B-DI-PHDGN-02:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-01" desc="Error Indicator" pv="BL21B-DI-PHDGN-02:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-01" desc="In Position Indicator" pv="BL21B-DI-PHDGN-02:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-01" desc="Stop Button" pv="BL21B-DI-PHDGN-02:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<positioner desc="Filter Positioner" name="D3.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-01" desc="Position Selection" pv="BL21B-DI-PHDGN-03:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-01" desc="Done Moving Indicator" pv="BL21B-DI-PHDGN-03:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-01" desc="Error Indicator" pv="BL21B-DI-PHDGN-03:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-01" desc="In Position Indicator" pv="BL21B-DI-PHDGN-03:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-01" desc="Stop Button" pv="BL21B-DI-PHDGN-03:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<positioner desc="Filter Positioner" name="D4.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-01" desc="Position Selection" pv="BL21B-DI-PHDGN-04:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-01" desc="Done Moving Indicator" pv="BL21B-DI-PHDGN-04:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-01" desc="Error Indicator" pv="BL21B-DI-PHDGN-04:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-01" desc="In Position Indicator" pv="BL21B-DI-PHDGN-04:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-01" desc="Stop Button" pv="BL21B-DI-PHDGN-04:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<positioner desc="Filter Positioner" name="D5.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-01" desc="Position Selection" pv="BL21B-DI-PHDGN-05:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-01" desc="Done Moving Indicator" pv="BL21B-DI-PHDGN-05:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-01" desc="Error Indicator" pv="BL21B-DI-PHDGN-05:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-01" desc="In Position Indicator" pv="BL21B-DI-PHDGN-05:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-01" desc="Stop Button" pv="BL21B-DI-PHDGN-05:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<positioner desc="Filter Positioner" name="D6.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-01" desc="Position Selection" pv="BL21B-DI-PHDGN-06:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-01" desc="Done Moving Indicator" pv="BL21B-DI-PHDGN-06:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-01" desc="Error Indicator" pv="BL21B-DI-PHDGN-06:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-01" desc="In Position Indicator" pv="BL21B-DI-PHDGN-06:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-01" desc="Stop Button" pv="BL21B-DI-PHDGN-06:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<simpleMotor desc="Pitch (compound)" name="T1.PITCH">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-MO-TABLE-01:PITCH" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="Roll (compound)" name="T1.ROLL">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-MO-TABLE-01:ROLL" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="Y (compound)" name="T1.Y">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-MO-TABLE-01:Y" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="X (compound)" name="T1.X">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-MO-TABLE-01:X" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="Yaw (compound)" name="T1.YAW">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-MO-TABLE-01:YAW" ro="false" type="motor"/>
+	</simpleMotor>
 	<simpleMotor desc="X Centre (compound)" name="S4.XCENTRE">
 		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-AL-SLITS-04:X:CENTRE" ro="false" type="motor"/>
 	</simpleMotor>
@@ -5349,6 +5406,18 @@
 	</simpleMotor>
 	<simpleMotor desc="Y Size (compound)" name="S5.YSIZE">
 		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-AL-SLITS-05:Y:SIZE" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="X Centre (compound)" name="S6.XCENTRE">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-AL-SLITS-06:X:CENTRE" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="X Size (compound)" name="S6.XSIZE">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-AL-SLITS-06:X:SIZE" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="Y Centre (compound)" name="S6.YCENTRE">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-AL-SLITS-06:Y:CENTRE" ro="false" type="motor"/>
+	</simpleMotor>
+	<simpleMotor desc="Y Size (compound)" name="S6.YSIZE">
+		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-AL-SLITS-06:Y:SIZE" ro="false" type="motor"/>
 	</simpleMotor>
 	<simpleMotor desc="Y Jack 1" name="T1.Y1">
 		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-MO-TABLE-01:Y1" ro="false" type="motor"/>
@@ -5407,4 +5476,22 @@
 	<simpleMotor desc="Y Minus" name="S6.YMINUS">
 		<RECORD IOC="BL21B-MO-IOC-02" desc="Motor" pv="BL21B-AL-SLITS-06:Y:MINUS" ro="false" type="motor"/>
 	</simpleMotor>
+	<positioner desc="Shutter Positioner" name="FS1.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-02" desc="Position Selection" pv="BL21B-EA-SHTR-01:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-02" desc="Done Moving Indicator" pv="BL21B-EA-SHTR-01:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-02" desc="Error Indicator" pv="BL21B-EA-SHTR-01:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-02" desc="In Position Indicator" pv="BL21B-EA-SHTR-01:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-02" desc="Stop Button" pv="BL21B-EA-SHTR-01:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<positioner desc="Shutter Positioner" name="FS2.FILTER">
+		<SELECT IOC="BL21B-MO-IOC-02" desc="Position Selection" pv="BL21B-EA-SHTR-02:MP:SELECT" ro="false" type="mbbinary"/>
+		<DMOV IOC="BL21B-MO-IOC-02" desc="Done Moving Indicator" pv="BL21B-EA-SHTR-02:MP:DMOV" ro="true" type="pv"/>
+		<ERROR IOC="BL21B-MO-IOC-02" desc="Error Indicator" pv="BL21B-EA-SHTR-02:MP:ERROR.K" ro="true" type="pv"/>
+		<INPOS IOC="BL21B-MO-IOC-02" desc="In Position Indicator" pv="BL21B-EA-SHTR-02:MP:INPOS" ro="true" type="pv"/>
+		<STOP IOC="BL21B-MO-IOC-02" desc="Stop Button" pv="BL21B-EA-SHTR-02:MP:STOP.PROC" ro="false" type="pv"/>
+	</positioner>
+	<pneumaticCallback desc="" name="ES">
+		<CONTROL IOC="BL21B-VA-IOC-01" desc="CONTROL" pv="BL21B-PS-SHTR-01:CON" ro="false" type="mbbinary"/>
+		<STA IOC="BL21B-VA-IOC-01" desc="STA" pv="BL21B-PS-SHTR-01:STA" ro="true" type="mbbinary"/>
+	</pneumaticCallback>
 </devices>
