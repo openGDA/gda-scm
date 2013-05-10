@@ -45,6 +45,11 @@ try:
 except:
     pass
 
+from ncdutils import DetectorMeta
+waxs_distance = DetectorMeta("waxs_distance", ncddetectors, "WAXS", "distance", "m")
+saxs_distance = DetectorMeta("saxs_distance", ncddetectors, "SAXS", "distance", "m")
+saxs_centre_x = DetectorMeta("saxs_centre_x", ncddetectors, "SAXS", "beam_center_x")
+saxs_centre_y = DetectorMeta("saxs_centre_y", ncddetectors, "SAXS", "beam_center_y")
 
 from gda.device.scannable.scannablegroup import ScannableGroup
 gridxy=ScannableGroup()
