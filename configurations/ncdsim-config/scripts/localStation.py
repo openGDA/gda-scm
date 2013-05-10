@@ -34,9 +34,6 @@ mie=MultiInputExtraFieldsDummyPD('mie',['i1'],['e2','e3'])
 print "Creating zero input/extra field device, zie"
 zie=ZeroInputExtraFieldsDummyPD('zie')
 
-from redux import NcdRedux
-ncdredux = NcdRedux(ncddetectors)
-
 from installStandardScansWithProcessing import *
 scan_processor.rootNamespaceDict=globals()
 
@@ -48,12 +45,18 @@ try:
 except:
     pass
 
+from ncdutils import DetectorMeta
+waxs_distance = DetectorMeta("waxs_distance", ncddetectors, "WAXS", "distance", "m")
+saxs_distance = DetectorMeta("saxs_distance", ncddetectors, "SAXS", "distance", "m")
+saxs_centre_x = DetectorMeta("saxs_centre_x", ncddetectors, "SAXS", "beam_center_x")
+saxs_centre_y = DetectorMeta("saxs_centre_y", ncddetectors, "SAXS", "beam_center_y")
 
 from gda.device.scannable.scannablegroup import ScannableGroup
 gridxy=ScannableGroup()
 gridxy.setName("gridxy")
 gridxy.setGroupMembers([x, y])
 gridxy.configure()
-# bsdiode should be camera
-ncdgridscan=gridscan.Grid("Saxs Plot", "Mapping Grid", bsdiode, gridxy, ncddetectors)
+# make work without camera
+camera=bsdiode
+ncdgridscan=gridscan.Grid("Saxs Plot", "Mapping Grid", camera, gridxy, ncddetectors)
 ncdgridscan.snap()
