@@ -34,9 +34,6 @@ mie=MultiInputExtraFieldsDummyPD('mie',['i1'],['e2','e3'])
 print "Creating zero input/extra field device, zie"
 zie=ZeroInputExtraFieldsDummyPD('zie')
 
-from redux import NcdRedux
-ncdredux = NcdRedux(ncddetectors)
-
 from installStandardScansWithProcessing import *
 scan_processor.rootNamespaceDict=globals()
 
