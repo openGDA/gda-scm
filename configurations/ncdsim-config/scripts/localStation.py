@@ -16,10 +16,10 @@ x=DummyPD("x")
 y=DummyPD("y")
 z=DummyPD("z")
 
-energy=DummyPD("energy")
-energy(12.4)
+
 bkeV=DummyPD("bkeV")
 bkeV(12.4)
+
 
 print "Creating timer devices t, dt, and w"
 t = showtimeClass("t") # cannot also be driven.
