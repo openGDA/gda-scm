@@ -217,8 +217,12 @@
 		<property name="host" value="i22-keyence01.diamond.ac.uk" /> </bean> <bean 
 		id="keyence02" class="gda.device.scannable.keyence.Keyence"> <property name="host" 
 		value="i22-keyence02.diamond.ac.uk" /> </bean> -->
+	<bean id="energy" class="uk.ac.gda.server.ncd.scannable.EnergyScannable">
+			<property name="bragg" ref="bragg" />
+		</bean>
 	<bean id="ncdlistener" class="uk.ac.gda.server.ncd.plotting.ListenerDispatcher">
 		<property name="ncdDetector" ref="ncddetectors"></property>
+		<property name="energyScannable" ref="energy" />
 	</bean>
 
 	<bean id="bssc" class="uk.ac.gda.devices.bssc.BioSAXSSampleChanger">
