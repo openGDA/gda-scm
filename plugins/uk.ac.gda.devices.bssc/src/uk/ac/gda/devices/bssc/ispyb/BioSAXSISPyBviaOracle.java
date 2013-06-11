@@ -88,8 +88,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success){
 			ResultSet rs = stmt.getResultSet();
 			if (rs.next()) 
-				return rs.getLong(1);
+				sessionId = rs.getLong(1);
+			rs.close();
 		}
+		stmt.close();
 
 		return sessionId;
 	}
@@ -104,6 +106,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
 		stmt.execute();
 		saxsDataCollectionId = stmt.getLong(2);
+		stmt.close();
+		
 		return saxsDataCollectionId;
 	}
 	
@@ -123,6 +127,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(6, java.sql.Types.VARCHAR);
 		stmt.execute();
 		measurementId = stmt.getLong(6);
+		stmt.close();
+		
 		return measurementId;
 	}
 	
@@ -135,6 +141,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
 		stmt.execute();
 		bufferId = stmt.getLong(2);
+		stmt.close();
+		
 		return bufferId;
 	}
 	
@@ -149,10 +157,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(3, java.sql.Types.VARCHAR);
 		stmt.execute();
 		samplePlateId = stmt.getLong(3);
+		stmt.close();
+
 		return samplePlateId;
-		
 	}
-	
 	
 	protected long createSamplePlatePosition(long samplePlateId, short row, short column) throws SQLException {
 		long samplePlatePositionId = -1;
@@ -167,9 +175,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 		stmt.execute();
 		samplePlatePositionId = stmt.getLong(4);
+		stmt.close();
+		
 		return samplePlatePositionId;
 	}
-	
 	
 	protected long createSample(long blsessionId, Long bufferId, Long macromoleculeId, Long samplePlatePositionId, 
 			Long stockSolutionId, Double concentration, Double volume) throws SQLException {
@@ -213,10 +222,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(8, java.sql.Types.VARCHAR);
 		stmt.execute();
 		sampleId = stmt.getLong(8);
+		stmt.close();
 		return sampleId;
 	}
 
-	
 	protected long createRun(float storageTemperature, double energyInkeV, int numFrames, double timePerFrame) 
 			throws SQLException {
 		long runId = -1;
@@ -232,6 +241,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(5, java.sql.Types.VARCHAR);
 		stmt.execute();
 		runId = stmt.getLong(5);
+		stmt.close();
+		
 		return runId;
 	}
 	
@@ -248,6 +259,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 		stmt.execute();
 		frameSetId = stmt.getLong(4);
+		stmt.close();
+		
 		return frameSetId;
 	}
 
@@ -265,6 +278,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 		stmt.execute();
 		stockSolutionId = stmt.getLong(4);
+		stmt.close();
 		return stockSolutionId;
 	}
 
@@ -292,6 +306,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 		stmt.execute();
 		measurementToDataCollectionId = stmt.getLong(4);
+		stmt.close();
+		
 		return measurementToDataCollectionId;
 	}
 	
@@ -345,6 +361,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		boolean success = stmt.execute();
 		if (success){
 			ResultSet rs = stmt.getResultSet();
+			stmt.close();
 			while (rs.next()) {
 				String name = rs.getString(4);
 				String filename = rs.getString(5);
@@ -367,6 +384,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 					sinfo.location = loc;
 				}
 			}
+			rs.close();
 		}
 
 		return sinfos;
@@ -390,7 +408,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			ResultSet rs = stmt.getResultSet();
 			while (rs.next()) 
 				collections.add(rs.getLong(1));
+			rs.close();
 		}
+		stmt.close();
 
 		return collections;
 	}
