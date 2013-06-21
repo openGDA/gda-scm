@@ -8,7 +8,7 @@
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location"
-			value="file:${gda.config}/properties/java.properties" />
+			value="file:${gda.config}/properties/${gda.mode}/java.properties" />
 	</bean>
 
 	<bean class="gda.spring.FindableNameSetterPostProcessor" />
@@ -109,6 +109,7 @@
 	</bean>
 
 	<import resource="b21_server_dummy.xml" />
+	<import resource="b21_server_devices.xml" />
 	<import resource="b21_server_ncd.xml" /> 
 	<import resource="bsaxs-axes.xml" /> 
 
@@ -133,13 +134,16 @@
 							<property name="name" value="Scripts: Core" />
 							<property name="type" value="CORE" />
 						</bean>
-						<!-- <bean class="gda.jython.ScriptProject"> <property name="path" 
-							value="${gda.install.workspace.loc}/plugins/uk.ac.gda.server.ncd/scripts/" 
-							/> <property name="name" value="Scripts: Ncd" /> <property name="type" value="CORE" 
-							/> </bean> <bean class="gda.jython.ScriptProject"> <property name="path" 
-							value="${gda.install.workspace.loc}/plugins/uk.ac.gda.devices.bssc/scripts/" 
-							/> <property name="name" value="Scripts: BSSC" /> <property name="type" value="CORE" 
-							/> </bean> -->
+						<bean class="gda.jython.ScriptProject">
+							<property name="path" value="${gda.install.git.loc}/gda-scm.git/plugins/uk.ac.gda.server.ncd/scripts/" /> 
+							<property name="name" value="Scripts: Ncd" /> 
+							<property name="type" value="CORE" /> 
+						</bean> 
+						<bean class="gda.jython.ScriptProject"> 
+							<property name="path" value="${gda.install.git.loc}/gda-scm.git/plugins/uk.ac.gda.devices.bssc/scripts/" /> 
+							<property name="name" value="Scripts: BSSC" /> 
+							<property name="type" value="CORE" /> 
+						</bean> 
 					</list>
 				</property>
 				<property name="startupScript" value="${gda.config}/scripts/localStation.py" />
@@ -198,8 +202,6 @@
 		<property name="service" ref="commandQueueProcessor" />
 		<property name="serviceInterface" value="gda.commandqueue.IFindableQueueProcessor" />
 	</bean>
-
-	<import resource="b21_server_devices.xml" />
 
 	<corba:export namespace="b21" />
 
