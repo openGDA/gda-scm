@@ -361,7 +361,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		boolean success = stmt.execute();
 		if (success){
 			ResultSet rs = stmt.getResultSet();
-			stmt.close();
 			while (rs.next()) {
 				String name = rs.getString(4);
 				String filename = rs.getString(5);
@@ -385,6 +384,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				}
 			}
 			rs.close();
+			stmt.close();
 		}
 
 		return sinfos;
