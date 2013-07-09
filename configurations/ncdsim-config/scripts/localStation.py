@@ -58,5 +58,5 @@ gridxy.setGroupMembers([x, y])
 gridxy.configure()
 # make work without camera
 camera=bsdiode
-ncdgridscan=gridscan.Grid("Saxs Plot", "Mapping Grid", camera, gridxy, ncddetectors)
+ncdgridscan=gridscan.Grid("Camera View", "Mapping Grid", camera, gridxy, ncddetectors)
 ncdgridscan.snap()
