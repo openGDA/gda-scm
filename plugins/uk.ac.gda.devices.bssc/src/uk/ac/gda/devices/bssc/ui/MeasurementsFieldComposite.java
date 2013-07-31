@@ -412,7 +412,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.valueOf(tb.isRecouperate());
+				return String.valueOf(tb.getRecouperateLocation() != null);
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -422,12 +422,16 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 			@Override
 			protected Object getValue(Object element) {
-				return ((TitrationBean) element).isRecouperate();
+				return ((TitrationBean) element).getRecouperateLocation() != null;
 			}
 
 			@Override
 			protected void setValue(Object element, Object value) {
-				((TitrationBean) element).setRecouperate((Boolean) value);
+				if ((Boolean) value) {
+					((TitrationBean) element).setRecouperateLocation(new LocationBean());
+				} else {
+					((TitrationBean) element).setRecouperateLocation(null);
+				}
 				super.setValue(element, value);
 			}
 		} }, { "Concentration", 100, new ColumnLabelProvider() {
