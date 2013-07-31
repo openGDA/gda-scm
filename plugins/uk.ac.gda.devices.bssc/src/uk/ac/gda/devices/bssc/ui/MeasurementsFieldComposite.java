@@ -434,6 +434,125 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				}
 				super.setValue(element, value);
 			}
+		} }, { "Recoup\nPlate", 60, new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					return "--";
+				short plate = tb.getRecouperateLocation().getPlate();
+				switch (plate) {
+				case 1:
+					return "I";
+				case 2:
+					return "II";
+				}
+				return "III";
+			}
+		}, new OurEditingSupport() {
+			@Override
+			protected CellEditor getOurCellEditor(Object element) {
+				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
+				ce.setContentProvider(new ArrayContentProvider());
+				ce.setLabelProvider(new LabelProvider());
+				ce.setInput(new String[] { "I", "II", "III" });
+				return ce;
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					return "--";
+				short plate = tb.getRecouperateLocation().getPlate();
+				switch (plate) {
+				case 1:
+					return "I";
+				case 2:
+					return "II";
+				}
+				return "III";
+			}
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					tb.setRecouperateLocation(new LocationBean());
+				tb.getRecouperateLocation().setPlate((short) String.valueOf(value).length());
+				super.setValue(element, value);
+			}
+		} }, { "Recoup\nRow", 60, new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					return "--";
+				return String.format("%c", tb.getRecouperateLocation().getRow());
+			}
+		}, new OurEditingSupport() {
+			@Override
+			protected CellEditor getOurCellEditor(Object element) {
+				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
+				ce.setContentProvider(new ArrayContentProvider());
+				ce.setLabelProvider(new LabelProvider());
+				ce.setInput(new String[] { "A", "B", "C", "D", "E", "F", "G", "H" });
+				return ce;
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					return "--";
+				return tb.getRecouperateLocation().getRow();
+			}
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					tb.setRecouperateLocation(new LocationBean());
+				tb.getRecouperateLocation().setRow(String.valueOf(value).charAt(0));
+				super.setValue(element, value);
+			}
+		} }, { "Recoup\nColumn", 65, new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					return "--";
+				return String.format("%d", tb.getRecouperateLocation().getColumn());
+			}
+		}, new OurEditingSupport() {
+			@Override
+			protected CellEditor getOurCellEditor(Object element) {
+				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
+				ce.setContentProvider(new ArrayContentProvider());
+				ce.setLabelProvider(new LabelProvider());
+				ce.setInput(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" });
+				return ce;
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					return "--";
+				return tb.getRecouperateLocation().getColumn();
+			}
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				if (value == null) {
+					return;
+				}
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getRecouperateLocation() == null)
+					tb.setRecouperateLocation(new LocationBean());
+				tb.getRecouperateLocation().setColumn(Integer.valueOf((String) value).shortValue());
+				super.setValue(element, value);
+			}
 		} }, { "Concentration", 100, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
