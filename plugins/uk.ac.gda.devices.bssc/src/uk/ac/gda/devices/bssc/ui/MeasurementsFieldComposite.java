@@ -482,11 +482,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public Color getBackground(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				if (tb.getLocation().equals(tb.getRecouperateLocation())) {
-					logger.debug("warning for "+tb.getSampleName());
+				if (tb.getLocation().equals(tb.getRecouperateLocation()))
 					return warning;
-				}
-				logger.debug("okay for "+tb.getSampleName());
 				return okay;
 			}
 		}, new OurEditingSupport() {
