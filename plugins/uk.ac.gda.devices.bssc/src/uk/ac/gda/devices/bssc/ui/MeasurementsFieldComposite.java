@@ -48,11 +48,17 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
@@ -75,6 +81,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 	private final TableViewer tableViewer;
 	private Composite composite_1;
 	private final RichBeanEditorPart rbeditor;
+	
+	Color okay, warning;
 
 	private static final SimpleObjectTransfer TRANSFER = new SimpleObjectTransfer() {
 		private final String TYPE_NAME = "uk.ac.gda.devices.bssc.ui.TitrationBeanTransfer" + System.currentTimeMillis(); //$NON-NLS-1$
@@ -94,12 +102,11 @@ public class MeasurementsFieldComposite extends FieldComposite {
 	public abstract class OurEditingSupport extends EditingSupport {
 
 		protected TableViewer viewer = tableViewer;
-		protected RichBeanEditorPart editor;
+		protected RichBeanEditorPart editor = rbeditor;
 		protected CellEditor cachedCellEditor = null;
 
 		public OurEditingSupport() {
 			super(tableViewer);
-			editor = rbeditor;
 		}
 
 		@Override
@@ -177,6 +184,10 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		super(parent, style);
 		this.rbeditor = editor;
 
+		final Display display = Display.getCurrent();
+		okay = null;
+		warning = new Color(display, 255,160,30);
+		
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginWidth = 0;
 		setLayout(gridLayout);
@@ -187,13 +198,32 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		TableColumnLayout layout = new TableColumnLayout();
 		comp.setLayout(layout);
 
-		tableViewer = new TableViewer(comp, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
+		tableViewer = new TableViewer(comp, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.FULL_SELECTION);
 
 		table = tableViewer.getTable();
 		table.setLayoutData(layoutData);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.addListener(SWT.EraseItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				event.detail &= ~SWT.HOT;
+				if ((event.detail & SWT.SELECTED) == 0) return; /// item not selected
 
+//				Table table =(Table)event.widget;
+//				TableItem item =(TableItem)event.item;
+//				TitrationBean element = (TitrationBean) item.getData();
+//				int clientWidth = table.getClientArea().width;
+
+				GC gc = event.gc;				
+				Rectangle rect = event.getBounds();
+				gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+				gc.setBackground(display.getSystemColor(SWT.COLOR_LIST_SELECTION));
+				gc.fillRectangle(rect);
+				event.detail &= ~SWT.SELECTED;
+			}
+		});
+		
 		Object[][] columns = { { "Plate", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -449,6 +479,16 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				}
 				return "III";
 			}
+			@Override
+			public Color getBackground(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getLocation().equals(tb.getRecouperateLocation())) {
+					logger.debug("warning for "+tb.getSampleName());
+					return warning;
+				}
+				logger.debug("okay for "+tb.getSampleName());
+				return okay;
+			}
 		}, new OurEditingSupport() {
 			@Override
 			protected CellEditor getOurCellEditor(Object element) {
@@ -490,6 +530,13 @@ public class MeasurementsFieldComposite extends FieldComposite {
 					return "--";
 				return String.format("%c", tb.getRecouperateLocation().getRow());
 			}
+			@Override
+			public Color getBackground(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getLocation().equals(tb.getRecouperateLocation()))
+					return warning;
+				return okay;
+			}
 		}, new OurEditingSupport() {
 			@Override
 			protected CellEditor getOurCellEditor(Object element) {
@@ -523,6 +570,13 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				if (tb.getRecouperateLocation() == null)
 					return "--";
 				return String.format("%d", tb.getRecouperateLocation().getColumn());
+			}
+			@Override
+			public Color getBackground(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getLocation().equals(tb.getRecouperateLocation()))
+					return warning;
+				return okay;
 			}
 		}, new OurEditingSupport() {
 			@Override
