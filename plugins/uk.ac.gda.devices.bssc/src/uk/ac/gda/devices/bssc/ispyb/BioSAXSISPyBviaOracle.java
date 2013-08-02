@@ -38,7 +38,6 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
  * TODO run ispybb-oracle.sql on live database
  * TODO run create_ro_role.sql, create_rw_role.sql and users.sql on live database
  */
-
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	Connection conn = null;
