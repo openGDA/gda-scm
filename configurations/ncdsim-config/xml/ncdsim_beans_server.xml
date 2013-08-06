@@ -210,6 +210,10 @@
 			</list>
 		</property>
 	</bean>
+	<bean id="dcm_energy" class="gda.device.scannable.ScannableMotor">
+		<property name="motor" ref="bragg_motor" />
+		<property name="scalingFactor" value="-1" />
+	</bean>
 	
 	<bean id="shutter" class="gda.device.enumpositioner.DummyValve" />
 	
