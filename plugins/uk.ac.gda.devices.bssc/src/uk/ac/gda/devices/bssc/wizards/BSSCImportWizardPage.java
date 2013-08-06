@@ -1,21 +1,15 @@
 package uk.ac.gda.devices.bssc.wizards;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.ss.util.WorkbookUtil;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -117,19 +111,30 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 					TitrationBean tibi = new TitrationBean();
 	
 					LocationBean location = locationFromCells(row.getCell(0), row.getCell(1), row.getCell(2));
+					if (!location.isValid())
+						throw new Exception("invalid sample location");
 					tibi.setLocation(location);
 				
 					tibi.setSampleName(row.getCell(3).getStringCellValue());
 	
 					location = locationFromCells(row.getCell(4), row.getCell(5), row.getCell(6));
+					if (!location.isValid())
+						throw new Exception("invalid buffer location");
 					tibi.setBufferLocation(location);
 	
-					tibi.setRecouperate(row.getCell(7).getBooleanCellValue());
-					tibi.setConcentration(row.getCell(8).getNumericCellValue()); 
-					tibi.setViscosity(row.getCell(9).getStringCellValue());
-					tibi.setTimePerFrame(row.getCell(10).getNumericCellValue());
-					tibi.setFrames((int) row.getCell(11).getNumericCellValue()); 
-					tibi.setExposureTemperature((float) row.getCell(12).getNumericCellValue()); 
+					try {
+						location = locationFromCells(row.getCell(7), row.getCell(8), row.getCell(9));
+						if (!location.isValid())
+							location = null;
+					} catch (Exception e) {
+						location = null;
+					}
+					tibi.setRecouperateLocation(location);
+					tibi.setConcentration(row.getCell(10).getNumericCellValue()); 
+					tibi.setViscosity(row.getCell(11).getStringCellValue());
+					tibi.setTimePerFrame(row.getCell(12).getNumericCellValue());
+					tibi.setFrames((int) row.getCell(13).getNumericCellValue()); 
+					tibi.setExposureTemperature((float) row.getCell(14).getNumericCellValue()); 
 	
 					measurements.add(tibi);
 				} catch (Exception e) {

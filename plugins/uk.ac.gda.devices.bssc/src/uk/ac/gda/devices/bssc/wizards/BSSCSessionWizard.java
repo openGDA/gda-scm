@@ -40,7 +40,6 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 	private double concentration = 0.1;
 	private float exposureTemperature = 20;
 	private int frames = 10;
-	private boolean recouperate = false;
 	private double timePerFrame = 0.2;
 	private String viscosity = "medium";
 	private boolean yellowsample = false;
@@ -157,7 +156,7 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 					tibi.setConcentration(concentration);
 					tibi.setExposureTemperature(exposureTemperature);
 					tibi.setFrames(frames);
-					tibi.setRecouperate(recouperate);
+					tibi.setRecouperateLocation(null);
 					tibi.setTimePerFrame(timePerFrame);
 					tibi.setViscosity(viscosity);
 					tibi.setYellowSample(yellowsample);
