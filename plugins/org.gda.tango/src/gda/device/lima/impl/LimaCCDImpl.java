@@ -588,12 +588,12 @@ public class LimaCCDImpl extends BaseImpl implements LimaCCD, InitializingBean {
 	}
 
 	@Override
-	public long getSavingFramePerFile() throws DevFailed {
-		return getTangoDeviceProxy().getAttributeAsLong(ATTRIBUTE_SAVING_FRAME_PER_FILE);
+	public int getSavingFramePerFile() throws DevFailed {
+		return getTangoDeviceProxy().getAttributeAsInt(ATTRIBUTE_SAVING_FRAME_PER_FILE);
 	}
 
 	@Override
-	public void setSavingFramePerFile(long savingFramePerFile) throws DevFailed {
+	public void setSavingFramePerFile(int savingFramePerFile) throws DevFailed {
 		getTangoDeviceProxy().setAttribute(ATTRIBUTE_SAVING_FRAME_PER_FILE, savingFramePerFile);
 	}
 
