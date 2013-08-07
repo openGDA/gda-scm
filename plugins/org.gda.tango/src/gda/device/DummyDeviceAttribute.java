@@ -125,7 +125,7 @@ public class DummyDeviceAttribute {
 			}
 			return super.toString() + "name:[" + name + "[ val:[" + suffix +"]";
 		}
-		catch (DevFailed e) {
+		catch (Exception e) {
 			//do nothing
 		}
 		return asSimpleString();
