@@ -29,7 +29,12 @@ import gda.device.TangoUtils;
 import gda.device.detector.DetectorBase;
 import gda.device.detector.NXDetectorData;
 import gda.device.detector.NexusDetector;
+import gda.device.lima.LimaBin;
 import gda.device.lima.LimaCCD;
+import gda.device.lima.LimaCCD.AcqMode;
+import gda.device.lima.LimaFlip;
+import gda.device.lima.LimaROIInt;
+import gda.device.maxipix2.MaxiPix2;
 import gda.device.scannable.PositionCallableProvider;
 import gda.factory.FactoryException;
 
@@ -84,7 +89,7 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 	@Override
 	public void collectData() throws DeviceException {
 		maxiPix2MultiFrameDetector.collectData();
-		nexusMetaDataForLima = getNexusMetaDataForLima(maxiPix2MultiFrameDetector.getLimaCCD());
+		nexusMetaDataForLima = getNexusMetaDataForLima(maxiPix2MultiFrameDetector.getLimaCCD(), maxiPix2MultiFrameDetector.getMaxiPix2());
 		double collectionTimeCurrentAcq = getCollectionTime();
 		numberOfFramesCurrentAcq = getNumberOfFrames();
 		timesCurrentAcq = new double[numberOfFramesCurrentAcq];
@@ -107,11 +112,46 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 		NexusGroupData groupData = new NexusGroupData(new int[] { 1 }, NexusFile.NX_FLOAT64, new double[] { data });
 		return new NexusTreeNode(label, NexusExtractor.SDSClassName, null, groupData);
 	}
+	INexusTree makeNexusTreeNode(String label, String data) {
+		return new NexusTreeNode(label, NexusExtractor.SDSClassName, null, new NexusGroupData(data));
+	}
+	INexusTree makeNexusTreeNode(String label, Boolean data) {
+		return new NexusTreeNode(label, NexusExtractor.SDSClassName, null, new NexusGroupData(data));
+	}
 
-	INexusTree getNexusMetaDataForLima(LimaCCD limaCCD) throws DeviceException {
+	INexusTree getNexusMetaDataForLima(LimaCCD limaCCD, MaxiPix2 maxiPix2) throws DeviceException {
 		try {
 			NexusTreeNode top = new NexusTreeNode("top", NexusExtractor.NXDetectorClassName, null);
 			top.addChildNode(makeNexusTreeNode("exposureTime", limaCCD.getAcqExpoTime()));
+			top.addChildNode(makeNexusTreeNode("fillMode", maxiPix2.getFillMode().toString()));
+			top.addChildNode(makeNexusTreeNode("energyThreshold", maxiPix2.getEnergyThreshold()));
+			top.addChildNode(makeNexusTreeNode("threshold", maxiPix2.getThreshold()));
+			AcqMode acqMode = limaCCD.getAcqMode();
+			top.addChildNode(makeNexusTreeNode("acqMode", acqMode.toString()));
+			if( acqMode.equals(LimaCCD.AcqMode.ACCUMULATION)){
+				top.addChildNode(makeNexusTreeNode("accDeadTime", limaCCD.getAccDeadTime()));
+				top.addChildNode(makeNexusTreeNode("accExpoTime", limaCCD.getAccExpoTime()));
+				top.addChildNode(makeNexusTreeNode("accLiveTime", limaCCD.getAccLiveTime()));
+				top.addChildNode(makeNexusTreeNode("accMaxExpoTime", limaCCD.getAccMaxExpoTime()));
+				top.addChildNode(makeNexusTreeNode("accNbFrames", limaCCD.getAccNbFrames()));
+				top.addChildNode(makeNexusTreeNode("accTimeMode", limaCCD.getAccTimeMode().toString()));
+			}
+			top.addChildNode(makeNexusTreeNode("latencyTime", limaCCD.getLatencyTime()));
+			top.addChildNode(makeNexusTreeNode("acqNbFrames", limaCCD.getAcqNbFrames()));
+			top.addChildNode(makeNexusTreeNode("imageType", limaCCD.getImageType().toString()));
+			LimaBin imageBin = limaCCD.getImageBin();
+			top.addChildNode(makeNexusTreeNode("imageBinX", imageBin.getBinX()));
+			top.addChildNode(makeNexusTreeNode("imageBinY", imageBin.getBinY()));
+			LimaFlip imageFlip = limaCCD.getImageFlip();
+			top.addChildNode(makeNexusTreeNode("imageFlipX",imageFlip.getFlipX()));
+			top.addChildNode(makeNexusTreeNode("imageFlipY",imageFlip.getFlipY()));
+
+			LimaROIInt imageROIInt = limaCCD.getImageROIInt();
+			top.addChildNode(makeNexusTreeNode("imageROIBeginX",imageROIInt.getBeginX()));
+			top.addChildNode(makeNexusTreeNode("imageROIBeginY",imageROIInt.getBeginY()));
+			top.addChildNode(makeNexusTreeNode("imageROIEndX",imageROIInt.getEndX()));
+			top.addChildNode(makeNexusTreeNode("imageROIEndY",imageROIInt.getEndY()));
+			
 			return top;
 		} catch (DevFailed e) {
 			throw new DeviceException("Error getting metadata for limaCCD", TangoUtils.createDeviceExceptionStack(e));
