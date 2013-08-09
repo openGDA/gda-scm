@@ -24,10 +24,10 @@
 				<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
 					<property name="value" value="undefined" />
 				</bean>
-			    <bean id="instrument.monochromator.energy" class="gda.data.metadata.ScannableMetadataEntry">
-                     <property name="name" value="instrument.monochromator.energy" />
-                     <property name="scannableName" value="bkeV" />
-                </bean>
+				<bean id="instrument.monochromator.energy" class="gda.data.metadata.ScannableMetadataEntry">
+					<property name="name" value="instrument.monochromator.energy" />
+					<property name="scannableName" value="bkeV" />
+				</bean>
 				<bean id="visit" class="gda.data.metadata.StoredMetadataEntry">
 					<property name="value" value="sm0" />
 				</bean>
@@ -42,14 +42,13 @@
 		<property name="storedMetadataEntry" ref="subdirectory" />
 	</bean>
 	
-	    <bean class="gda.data.metadata.StoredMetadataEntry" id="samplename">
-                <property name="name" value="samplename" />
-                <property name="value" value="none" />
-        </bean>
-        <bean class="gda.data.metadata.MetadataBlaster" id="observableSamplename">
-                <property name="storedMetadataEntry" ref="samplename" />
-        </bean>
-	
+	<bean class="gda.data.metadata.StoredMetadataEntry" id="samplename">
+		<property name="name" value="samplename" />
+		<property name="value" value="none" />
+	</bean>
+	<bean class="gda.data.metadata.MetadataBlaster" id="observableSamplename">
+		<property name="storedMetadataEntry" ref="samplename" />
+	</bean>
 	
 	<bean id="GDAHashtable" class="gda.util.findableHashtable.FindableHashtable" />
 		
@@ -123,19 +122,6 @@
 		<property name="daServerName" value="DAServerT" /> 
 		<property name="showArmed" value="true" />
 	</bean>
-    <!--     <bean id="realDAServer" class="uk.ac.gda.server.ncd.detector.DAServer">
-                <property name="host" value="i22-rapid-mem-gig" />
-                <property name="port" value="1972" />
-                <property name="local" value="true" />
-                <property name="dataPort" value="20030" />
-                <property name="startupCommands">
-                        <list>
-                                <value>~config2d</value>
-                                <value>tfg setup-cc-mode scaler64</value>
-                                <value>tfg setup-cc-chan -1 edge</value>
-                        </list>
-                </property>
-        </bean> -->
 
 	<bean id="Saxs" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
 		<property name="detectorType" value="SAXS" />
@@ -155,6 +141,7 @@
 		<property name="detectorType" value="WAXS" />
 		<property name="memory" ref="SaxsMemory" />
 	</bean>
+	
 	<bean id="Scaler" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
 		<property name="detectorType" value="CALIB" />
 		<property name="memory" ref="CalibMemory" />
@@ -179,9 +166,7 @@
 		<property name="detectorType" value="TIMES" />
 		<property name="memory" ref="TimesMemory" />
 	</bean>
-	<!-- <bean id="mar165" class="uk.ac.gda.server.ncd.mar.Mar165Detector"> 
-		<property name="host" value="i22-mar01" /> </bean> <bean id="Mar" class="uk.ac.gda.server.ncd.subdetector.NcdMarDetector"> 
-		<property name="mar" ref="mar165" /> </bean> -->
+
 	<bean id="ncddetectors" class="uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem">
 		<property name="timer" ref="Tfg" />
 		<property name="detectors">
@@ -194,8 +179,6 @@
 			</list>
 		</property>
 	</bean>
-	
-	<!--  <import resource="ncdsim_pilad.xml" /> -->
 	
 	<bean id="bragg_motor" class="gda.device.motor.DummyMotor">
 	</bean>
@@ -217,10 +200,6 @@
 	
 	<bean id="shutter" class="gda.device.enumpositioner.DummyValve" />
 	
-	<!-- <bean id="keyence01" class="gda.device.scannable.keyence.Keyence"> 
-		<property name="host" value="i22-keyence01.diamond.ac.uk" /> </bean> <bean 
-		id="keyence02" class="gda.device.scannable.keyence.Keyence"> <property name="host" 
-		value="i22-keyence02.diamond.ac.uk" /> </bean> -->
 	<bean id="energy" class="uk.ac.gda.server.ncd.scannable.EnergyScannable">
 			<property name="bragg" ref="bragg" />
 		</bean>
@@ -233,7 +212,11 @@
 		<property name="hostname" value="diamrd2336"/>
 		<property name="port" value="9555"/>
 	</bean>	
+	<bean id="bsscscannable" class="uk.ac.gda.devices.bssc.scannable.BSSCScannable">
+		<property name="bssc" ref="bssc" />
+	</bean>
 	
+	<!--   -->
 	<bean class="uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory">
 		<property name="jdbcURL" value="jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe" />
 		<!-- //	protected String testURL = "jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe"; -->
