@@ -85,6 +85,14 @@ public class DummyDeviceAttribute {
 		this.attributeValue = attributeValue;
 	}
 
+	public void setAttributeValue(String attributeValue) {
+		this.attributeValue = attributeValue;
+	}
+
+	public String getAttributeValue() {
+		return attributeValue;
+	}
+
 	public int getAttributeDataType() {
 		return attributeDataType;
 	}
