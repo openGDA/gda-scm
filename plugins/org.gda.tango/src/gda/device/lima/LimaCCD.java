@@ -217,9 +217,9 @@ public interface LimaCCD extends Base {
 
 	void setSavingOverwritePolicy(SavingOverwritePolicy savingOverwritePolicy) throws DevFailed;
 
-	long getSavingFramePerFile() throws DevFailed;
+	int getSavingFramePerFile() throws DevFailed;
 
-	void setSavingFramePerFile(long savingFramePerFile) throws DevFailed;
+	void setSavingFramePerFile(int savingFramePerFile) throws DevFailed;
 
 	String[] getSavingCommonHeader() throws DevFailed;
 

@@ -163,7 +163,12 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 					timeIntervalWhilstWaiting_ms = maxTimeToWaitForImage_ms/2;
 					startAcqPerFrame= true;
 				}
-				getLimaCCD().setAcqNbFrames(isFastMode() ? fastModeFramesRequired:numberOfFrames);
+				int acqNbFrames = isFastMode() ? fastModeFramesRequired:numberOfFrames;
+				int savingFramePerFile = getLimaCCD().getSavingFramePerFile();
+				getLimaCCD().setAcqNbFrames(acqNbFrames);
+				if( (savingFramePerFile != 1) && (acqNbFrames != savingFramePerFile)){
+					throw new DeviceException("(savingFramePerFile != 1) && (acqNbFrames != savingFramePerFile)");
+				}
 				//if using external trigger then we do not know the collectionTime so wait 
 				savingNextNumberStartAcq = getLimaCCD().getSavingNextNumber(); 
 				lastImageNumberPositionInputStream = new LastImagedPositionInputStreamImpl(getLimaCCD(), savingNextNumberStartAcq,numberOfFrames,
@@ -290,8 +295,10 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 	 */
 	FilePathNumber[] getFilePathNumberArray() throws DeviceException {
 		int savingNextNumber;
+		int savingFramePerFile;
 		try {
 			savingNextNumber = getLimaCCD().getSavingNextNumber();
+			savingFramePerFile = getLimaCCD().getSavingFramePerFile();
 		} catch (DevFailed e) {
 			throw new DeviceException(getName() + " getSavingPrefix failed ", TangoUtils.createDeviceExceptionStack(e));
 		}
@@ -307,8 +314,9 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 			}
 			return createFilePathNumberArray(fileTemplateForCurrentAcq, savingNextNumberStartAcq+fastModeFramesStarted-1,1 );		
 		} 
-		if( savingNextNumber != savingNextNumberStartAcq + numberOfFrames){
-			throw new DeviceException("savingNextNumber != savingNextNumberStartAcq + numberOfFrames");
+		if( savingNextNumber != savingNextNumberStartAcq + (numberOfFrames/savingFramePerFile)){
+			//TODO we expect savingFramePerFile to be 1 or equal to numberOfFrames
+			throw new DeviceException("savingNextNumber != savingNextNumberStartAcq + numberOfFrames/savingFramePerFile");
 		}
 		return createFilePathNumberArray(fileTemplateForCurrentAcq, savingNextNumberStartAcq, numberOfFrames);		
 	}
