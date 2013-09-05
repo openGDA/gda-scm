@@ -12,11 +12,9 @@
 	<bean class="gda.factory.AdapterObjectCreator">
 		<property name="name" value="${gda.factory.factoryName}" />
 	</bean>
-	<bean class="gda.factory.ServerXmlObjectCreator">
-		<property name="xmlFile" value="${gda.config}/xml/lab11_Server.xml" />
-		<property name="buildProxies" value="${gda.accesscontrol.useAccessControl}" />
-	</bean>
+
 	<import resource="lab11_beans_server.xml" />
+
 	<bean id="jythonServerFacade" class="gda.jython.JythonServerFacade">
 		<constructor-arg ref="command_server" />
 	</bean>
