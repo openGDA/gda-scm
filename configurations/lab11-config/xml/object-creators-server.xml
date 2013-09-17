@@ -1,17 +1,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
->
-	<bean
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
-	>
-		<property name="location"
-			value="file:${gda.config}/properties/java.properties" />
+	http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.1.xsd
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd" >
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
+		<property name="location" value="file:${gda.config}/properties/java.properties" />
 	</bean>
-	<bean class="gda.factory.AdapterObjectCreator">
-		<property name="name" value="${gda.factory.factoryName}" />
-	</bean>
+	
+	<corba:adapterfactory namespace="${gda.factory.factoryName}" />
 
 	<import resource="lab11_beans_server.xml" />
 
