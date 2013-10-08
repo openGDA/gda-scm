@@ -22,7 +22,6 @@ import gda.device.DeviceException;
 import gda.device.Scannable;
 import gda.device.scannable.ScannableUtils;
 import gda.factory.Finder;
-import gda.observable.IObservable;
 import gda.observable.IObserver;
 
 import org.csstudio.swt.widgets.figures.AbstractLinearMarkedFigure;
@@ -32,6 +31,7 @@ import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -43,8 +43,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.scannable.BSSCScannable;
-
 public class BSSCStatus extends ViewPart implements IObserver {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCStatus.class);
 
@@ -54,6 +52,11 @@ public class BSSCStatus extends ViewPart implements IObserver {
 	private TankFigure detergent_tank;
 	private TankFigure water_tank;
 	private TankFigure waste_tank;
+	
+	private Color tank;
+	private Color thermometer;
+	private Color red;
+	private Color amber;
 	
 	private Double seu_temperature, storage_temperature, detergent_level, water_level, waste_level;
 
@@ -66,6 +69,11 @@ public class BSSCStatus extends ViewPart implements IObserver {
 	 */
 	@Override
 	public void createPartControl(Composite parent) {
+		red = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+		amber = Display.getCurrent().getSystemColor(SWT.COLOR_DARK_YELLOW);
+		thermometer = Display.getCurrent().getSystemColor(SWT.COLOR_GREEN);
+		tank = Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE);
+		
 		Composite container = new Composite(parent, SWT.NONE);
 		
 		GridLayout gl_container = new GridLayout(5, true);
@@ -88,6 +96,8 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			thermo_seu.setHihiLevel(80);
 			thermo_seu.setShowMarkers(false);
 			thermo_seu.setMajorTickMarkStepHint(20);
+			thermo_seu.setFillColor(thermometer);
+//			thermo_seu.setForegroundColor(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 			
 			lws.setContents(thermo_seu);		}
 		{
@@ -105,7 +115,9 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			thermo_storage.setHihiLevel(80);
 			thermo_storage.setShowMarkers(false);
 			thermo_storage.setMajorTickMarkStepHint(20);
-			
+			thermo_storage.setFillColor(thermometer);
+//			thermo_storage.setForegroundColor(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+
 			lws.setContents(thermo_storage);
 		}
 		
@@ -123,6 +135,7 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			detergent_tank.setHihiLevel(80);
 			detergent_tank.setShowMarkers(false);
 			detergent_tank.setMajorTickMarkStepHint(20);
+			detergent_tank.setFillColor(tank);
 			
 			lws.setContents(detergent_tank);
 		}
@@ -140,6 +153,7 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			water_tank.setHihiLevel(80);
 			water_tank.setShowMarkers(false);
 			water_tank.setMajorTickMarkStepHint(20);
+			water_tank.setFillColor(tank);
 			
 			lws.setContents(water_tank);
 		}
@@ -157,6 +171,7 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			waste_tank.setHihiLevel(80);
 			waste_tank.setShowMarkers(false);
 			waste_tank.setMajorTickMarkStepHint(20);
+			waste_tank.setFillColor(tank);
 			
 			lws.setContents(waste_tank);
 		}
@@ -189,7 +204,6 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			btnLoad.setText("Load");
 		}
 
-
 		createActions();
 		initializeToolBar();
 		initializeMenu();
@@ -198,8 +212,13 @@ public class BSSCStatus extends ViewPart implements IObserver {
 	}
 
 	private void setupMonitoring() {
-		IObservable findable = (IObservable) Finder.getInstance().find("bsscscannable");
+		Scannable findable = (Scannable) Finder.getInstance().find("bsscscannable");
 		findable.addIObserver(this);
+		try {
+			update(findable, findable.getPosition());
+		} catch (DeviceException e) {
+			logger.error("initialisation from bssc scannable failed", e);
+		}
 	}
 
 	/**
@@ -255,20 +274,36 @@ public class BSSCStatus extends ViewPart implements IObserver {
 					}
 				});
 				} catch (DeviceException e) {
-				// TODO Auto-generated catch block
-				logger.error("TODO put description of error here", e);
+					logger.error("error processing update from bssc scannable", e);
 			}
 		}
-		
 	}
 	
 	private void updateUI() { 
 		for(Object[] tuple : new Object[][] {{seu_temperature, thermo_seu}, {storage_temperature, thermo_storage},{detergent_level, detergent_tank},{water_level, water_tank},{waste_level, waste_tank}}) {
-			if (tuple[0] == null) {
-				((AbstractLinearMarkedFigure) tuple[1]).setVisible(false);
+			AbstractLinearMarkedFigure almf = (AbstractLinearMarkedFigure) tuple[1];
+			Double val = (Double) tuple[0];
+			if (val == null) {
+				almf.setVisible(false);
 			} else {
-				((AbstractLinearMarkedFigure) tuple[1]).setVisible(true);
-				((AbstractLinearMarkedFigure) tuple[1]).setValue((Double) tuple[0]);
+				almf.setVisible(true);
+				almf.setValue(val);
+				if (almf instanceof ThermometerFigure) {
+					((ThermometerFigure) almf).setFillColor(thermometer);
+				} else if (almf instanceof TankFigure) {
+					((TankFigure) almf).setFillColor(tank);
+					if (almf == waste_tank) {
+						if (val >= 90)
+							((TankFigure) almf).setFillColor(amber);
+						if (val >= 95)
+							((TankFigure) almf).setFillColor(red);
+					} else {
+						if (val <= 10)
+							((TankFigure) almf).setFillColor(amber);
+						if (val <= 5)
+							((TankFigure) almf).setFillColor(red);
+					}
+				}
 			}
 		}
 	}
