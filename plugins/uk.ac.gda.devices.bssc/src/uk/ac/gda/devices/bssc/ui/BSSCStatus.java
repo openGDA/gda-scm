@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2011 Diamond Light Source Ltd.
+ * Copyright © 2013 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -22,6 +22,7 @@ import gda.device.DeviceException;
 import gda.device.Scannable;
 import gda.device.scannable.ScannableUtils;
 import gda.factory.Finder;
+import gda.jython.JythonServerFacade;
 import gda.observable.IObserver;
 
 import org.csstudio.swt.widgets.figures.AbstractLinearMarkedFigure;
@@ -31,6 +32,8 @@ import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -47,6 +50,7 @@ public class BSSCStatus extends ViewPart implements IObserver {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCStatus.class);
 
 	public static final String ID = "uk.ac.gda.devices.bssc.ui.BSSCStatus"; //$NON-NLS-1$
+	public String bsscscannablename = "bsscscannable";
 	private ThermometerFigure thermo_seu;
 	private ThermometerFigure thermo_storage;
 	private TankFigure detergent_tank;
@@ -97,7 +101,6 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			thermo_seu.setShowMarkers(false);
 			thermo_seu.setMajorTickMarkStepHint(20);
 			thermo_seu.setFillColor(thermometer);
-//			thermo_seu.setForegroundColor(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 			
 			lws.setContents(thermo_seu);		}
 		{
@@ -116,7 +119,6 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			thermo_storage.setShowMarkers(false);
 			thermo_storage.setMajorTickMarkStepHint(20);
 			thermo_storage.setFillColor(thermometer);
-//			thermo_storage.setForegroundColor(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 
 			lws.setContents(thermo_storage);
 		}
@@ -196,12 +198,30 @@ public class BSSCStatus extends ViewPart implements IObserver {
 			Button btnScanPark = new Button(container, SWT.NONE);
 			btnScanPark.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
 			btnScanPark.setText("Scan + Park");
+			btnScanPark.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					JythonServerFacade.getInstance().runCommand(bsscscannablename+".scanAndPark()");
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
 		}
 		new Label(container, SWT.NONE);
 		{
 			Button btnLoad = new Button(container, SWT.NONE);
 			btnLoad.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
 			btnLoad.setText("Load");
+			btnLoad.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					JythonServerFacade.getInstance().runCommand(bsscscannablename+".load()");
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
 		}
 
 		createActions();
@@ -212,7 +232,7 @@ public class BSSCStatus extends ViewPart implements IObserver {
 	}
 
 	private void setupMonitoring() {
-		Scannable findable = (Scannable) Finder.getInstance().find("bsscscannable");
+		Scannable findable = (Scannable) Finder.getInstance().find(bsscscannablename);
 		findable.addIObserver(this);
 		try {
 			update(findable, findable.getPosition());
