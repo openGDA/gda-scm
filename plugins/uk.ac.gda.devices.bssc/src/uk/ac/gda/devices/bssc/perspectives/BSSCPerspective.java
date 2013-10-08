@@ -26,7 +26,7 @@ public class BSSCPerspective implements IPerspectiveFactory {
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
-		layout.addView("gda.rcp.ncd.views.NCDStatus", IPageLayout.RIGHT, 0.75f, IPageLayout.ID_EDITOR_AREA);
+		layout.addView("gda.rcp.ncd.views.NCDStatus", IPageLayout.RIGHT, 0.7f, IPageLayout.ID_EDITOR_AREA);
 		{
 			IFolderLayout folderLayout = layout.createFolder("folder", IPageLayout.BOTTOM, 0.73f, IPageLayout.ID_EDITOR_AREA);
 			folderLayout.addView("gda.rcp.jythonterminalview");
@@ -36,7 +36,8 @@ public class BSSCPerspective implements IPerspectiveFactory {
 		
 		layout.addView("org.eclipse.ui.navigator.ProjectExplorer", IPageLayout.LEFT, 0.31f, IPageLayout.ID_EDITOR_AREA);
 		layout.addView("uk.ac.gda.video.views.cameraview", IPageLayout.TOP, 0.45f, IPageLayout.ID_EDITOR_AREA);
-		layout.addView("uk.ac.gda.client.CommandQueueViewFactory", IPageLayout.TOP, 0.45f, "gda.rcp.ncd.views.NCDStatus");
+		layout.addView("uk.ac.gda.client.CommandQueueViewFactory", IPageLayout.TOP, 0.22f, "gda.rcp.ncd.views.NCDStatus");
+		layout.addView("uk.ac.gda.devices.bssc.ui.BSSCStatus", IPageLayout.BOTTOM, 0.46f, "gda.rcp.ncd.views.NCDStatus");
 	}
 
 }
