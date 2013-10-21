@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+
+setfacl -m g:i22_staff:rwx -m u:i22user:rwx configurations/i22-config/xml/user_permissions.xml configurations/i22-config/xml/beamlinestaff.xml plugins/uk.ac.gda.devices.bssc/scripts/BSSC.py
