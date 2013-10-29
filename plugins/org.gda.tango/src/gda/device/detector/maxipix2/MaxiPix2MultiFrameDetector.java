@@ -469,7 +469,7 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 				limaCCD.setSavingNextNumber(startNumber);
 				if( highestExistingFileMonitor != null){
 					HighestExitingFileMonitorSettings highestExitingFileMonitorSettings = 
-							new HighestExitingFileMonitorSettings(getFullSavingFileTemplate(), "", startNumber);
+							new HighestExitingFileMonitorSettings(getSavingDirectory(), getSavingFileTemplate(), startNumber);
 					highestExistingFileMonitor.setHighestExitingFileMonitorSettings(highestExitingFileMonitorSettings);
 				}
 				Thread.sleep(1000);
