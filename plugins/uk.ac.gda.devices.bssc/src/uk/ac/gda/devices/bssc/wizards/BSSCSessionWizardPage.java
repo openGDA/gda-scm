@@ -1,6 +1,9 @@
 package uk.ac.gda.devices.bssc.wizards;
 
+import gda.rcp.DataProject;
+
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -86,7 +89,12 @@ public class BSSCSessionWizardPage extends WizardPage {
 	 * Tests if the current workbench selection is a suitable container to use.
 	 */
 	private void initialize() {
-		if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection) {
+		populateContainer();
+		fileText.setText("biosaxs.xml");
+	}
+
+	private void populateContainer() {
+		if (selection != null && !selection.isEmpty() && selection instanceof IStructuredSelection) {
 			IStructuredSelection ssel = (IStructuredSelection) selection;
 			if (ssel.size() > 1) {
 				return;
@@ -100,11 +108,16 @@ public class BSSCSessionWizardPage extends WizardPage {
 					container = ((IResource) obj).getParent();
 				}
 				containerText.setText(container.getFullPath().toString());
+				return;
 			}
-		}
-		fileText.setText("biosaxs.xml");
-	}
+		} 
 
+		IProject dataProject = DataProject.getDataProjectIfExists();
+		if (dataProject != null) {
+			containerText.setText(dataProject.getFolder("data/xml").getFullPath().toString());
+		}
+	}
+	
 	/**
 	 * Uses the standard container selection dialog to choose the new value for the container field.
 	 */

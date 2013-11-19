@@ -158,7 +158,7 @@ public class TangoSpecMotor extends MotorBase implements Motor {
 	
 	@Override
 	public double getSpeed() throws MotorException {
-		logger.error("setPosition() is not implemented");
+		logger.error("getSpeed() is not implemented");
 		return 0.0;
 	}
 
