@@ -207,7 +207,7 @@
 	</bean>
 
 	<bean id="bssc" class="uk.ac.gda.devices.bssc.BioSAXSSampleChanger">
-		<property name="hostname" value="diamrd2336"/>
+		<property name="hostname" value="diamrd2801"/>
 		<property name="port" value="9555"/>
 	</bean>	
 	<bean id="bsscscannable" class="uk.ac.gda.devices.bssc.scannable.BSSCScannable">
