@@ -24,14 +24,10 @@ execfile(gdascripts + "/utils.py");
 #Set up the Bimorph Mirror 
 #print "Setting up access to Bimorph Mirror Channels...";
 execfile(gdaScriptDir + "fastshuttershutter.py");
-execfile(gdaScriptDir + "bimorph.py");
+execfile(gdaScriptDir + "notchrissbimorph.py");
 
 execfile(gdaScriptDir + "LookupTables.py");
 #execfile(gdaScriptDir + "CheckShutter.py");
-
-#bsdiode=DisplayEpicsPVClass('bsdiode', 'BL22I-RS-ABSB-02:DIODE:I', '', '%5.5g')
-#d10d1=DisplayEpicsPVClass('d10d1', 'BL22I-DI-PHDGN-10:DIODE1:I', '', '%5.5g')
-#d10d2=DisplayEpicsPVClass('d10d2', 'BL22I-DI-PHDGN-10:DIODE2:I', '', '%5.5g')
 
 i0xplus=DisplayEpicsPVClass("i0xplus","BL22I-DI-IAMP-06:PHD1:I_C","ua","%.3e")
 i0xminus=DisplayEpicsPVClass("i0xplus","BL22I-DI-IAMP-06:PHD2:I_C","ua","%.3e")
