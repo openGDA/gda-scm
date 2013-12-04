@@ -96,29 +96,34 @@ public class BioSaxsProgressView extends ViewPart {
 		bioSaxsTable.setLayout(new FillLayout());
 
 		TableColumn column1 = new TableColumn(bioSaxsTable, SWT.NONE);
-		column1.setWidth(140);
+		column1.setWidth(100);
 		column1.setResizable(true);
-		column1.setText("Measurement Name");
+		column1.setText("Session");
 
 		final TableColumn column2 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column2.setWidth(100);
 		column2.setResizable(true);
-		column2.setText("Well Position");
+		column2.setText("Measurement");
 
 		TableColumn column3 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column3.setWidth(100);
 		column3.setResizable(true);
-		column3.setText("Data Collection");
+		column3.setText("WellPosition (C,R)");
 
 		TableColumn column4 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column4.setWidth(100);
 		column4.setResizable(true);
-		column4.setText("Data Reduction");
+		column4.setText("Acquisition");
 
 		TableColumn column5 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column5.setWidth(100);
 		column5.setResizable(true);
-		column5.setText("Data Analysis");
+		column5.setText("Reduction");
+		
+		TableColumn column6 = new TableColumn(bioSaxsTable, SWT.NONE);
+		column6.setWidth(100);
+		column6.setResizable(true);
+		column6.setText("Analysis");
 
 		bioSaxsProgressViewer.setContentProvider(new BioSaxsProgressContentProvider());
 		bioSaxsProgressViewer.setLabelProvider(new BioSaxsProgressLabelProvider());
@@ -138,7 +143,7 @@ public class BioSaxsProgressView extends ViewPart {
 
 		bioSaxsTable.addListener(SWT.PaintItem, new Listener() {
 			public void handleEvent(Event event) {
-				if ((event.index == 2) || (event.index == 3) || (event.index == 4)) {
+				if ((event.index == 3) || (event.index == 4) || (event.index == 5)) {
 					Display display = bioSaxsTable.getDisplay();
 					GC gc = event.gc;
 					TableItem item = (TableItem) event.item;
@@ -146,7 +151,7 @@ public class BioSaxsProgressView extends ViewPart {
 					int percent = percents[index];
 					Color foreground = gc.getForeground();
 					Color background = gc.getBackground();
-					gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+					gc.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
 					// gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
 					int width = (column2.getWidth() - 1) * percent / 100;
 					gc.fillGradientRectangle(event.x, event.y, width, event.height, true);
@@ -173,7 +178,7 @@ public class BioSaxsProgressView extends ViewPart {
 		for (int columnIndex = 0; columnIndex < 7; columnIndex++) {
 			for (int rowIndex = 0; rowIndex < 7; rowIndex++) {
 				BioSaxsMeasurement bioSaxsMeasurement = new BioSaxsMeasurement(session, columnIndex, rowIndex,
-						"Measurement (" + columnIndex + ", " + rowIndex);
+						"Measurement");
 				bioSaxsProgressModel.addMeasurement(bioSaxsMeasurement);
 			}
 		}

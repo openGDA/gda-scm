@@ -58,7 +58,7 @@ public class BioSaxsMeasurement {
 		this.name = name;
 	}
 
-	public Object getSession() {
+	public BioSaxsSession getSession() {
 		return session;
 	}
 
