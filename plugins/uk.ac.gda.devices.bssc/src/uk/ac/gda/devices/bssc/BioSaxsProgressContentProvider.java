@@ -18,18 +18,14 @@
 
 package uk.ac.gda.devices.bssc;
 
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public class BioSaxsProgressContentProvider implements ITreeContentProvider {
+public class BioSaxsProgressContentProvider implements IStructuredContentProvider {
 
 	private BioSaxsProgressModel model;
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -38,26 +34,14 @@ public class BioSaxsProgressContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		return model.getSessions().toArray();
+		return model.getMeasurements().toArray();
 	}
 
 	@Override
-	public Object[] getChildren(Object parentElement) {
-		BioSaxsSession session = (BioSaxsSession) parentElement;
-		return session.getMeasurements().toArray();
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	@Override
-	public Object getParent(Object element) {
-		BioSaxsMeasurement measurement = (BioSaxsMeasurement) element;
-		return measurement.getSession();
-	}
 
-	@Override
-	public boolean hasChildren(Object element) {
-		if (element instanceof BioSaxsSession) {
-			return true;
-		}
-		return false;
-	}
 }

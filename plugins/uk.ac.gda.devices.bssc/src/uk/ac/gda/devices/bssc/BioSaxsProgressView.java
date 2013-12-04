@@ -21,6 +21,9 @@ package uk.ac.gda.devices.bssc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -28,8 +31,15 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.custom.TreeEditor;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -37,10 +47,16 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BioSaxsProgressView extends ViewPart {
-
+	private static final Logger logger = LoggerFactory.getLogger(BioSaxsProgressView.class);
 	private static final int DEFAULT_COLUMN_WIDTH = 140;
 	private Composite bioSaxsProgressComposite;
 	private TableViewer bioSaxsProgressViewer;
@@ -54,50 +70,55 @@ public class BioSaxsProgressView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		bioSaxsProgressComposite = new Composite(parent, SWT.NONE);
 		bioSaxsProgressComposite.setLayout(new FillLayout());
-		
-//		bioSaxsProgressViewer = new TreeViewer(bioSaxsProgressComposite, SWT.NONE);
-//		Tree bioSaxsTree = bioSaxsProgressViewer.getTree();
-//		bioSaxsTree.setLayout(new FillLayout());
-		
+
+		// bioSaxsProgressViewer = new TreeViewer(bioSaxsProgressComposite, SWT.NONE);
+		// Tree bioSaxsTree = bioSaxsProgressViewer.getTree();
+		// bioSaxsTree.setLayout(new FillLayout());
+
 		bioSaxsProgressViewer = new TableViewer(bioSaxsProgressComposite, SWT.NONE);
-		Table bioSaxsTable = bioSaxsProgressViewer.getTable();
+		bioSaxsProgressViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(final SelectionChangedEvent event) {
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				BioSaxsMeasurement selectedMeasurement = (BioSaxsMeasurement) selection.getFirstElement();
+
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+				try {
+					page.openEditor(new DummyEditorInput(selectedMeasurement.getName()),
+							"org.eclipse.ui.DefaultTextEditor");
+				} catch (PartInitException e) {
+					logger.error("TODO put description of error here", e);
+				}
+			}
+		});
+
+		final Table bioSaxsTable = bioSaxsProgressViewer.getTable();
 		bioSaxsTable.setLayout(new FillLayout());
 
-		TableViewerColumn viewerColumn1 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
-		TableColumn column1 = viewerColumn1.getColumn();
-		column1.setWidth(100);
+		TableColumn column1 = new TableColumn(bioSaxsTable, SWT.NONE);
+		column1.setWidth(140);
 		column1.setResizable(true);
-		column1.setText("Session");
+		column1.setText("Measurement Name");
 
-		TableViewerColumn viewerColumn2 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
-		TableColumn column2 = viewerColumn2.getColumn();
-		column2.setWidth(140);
+		final TableColumn column2 = new TableColumn(bioSaxsTable, SWT.NONE);
+		column2.setWidth(100);
 		column2.setResizable(true);
-		column2.setText("Measurement Name");
+		column2.setText("Well Position");
 
-		TableViewerColumn viewerColumn3 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
-		TableColumn column3 = viewerColumn3.getColumn();
+		TableColumn column3 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column3.setWidth(100);
 		column3.setResizable(true);
-		column3.setText("Well Position");
+		column3.setText("Data Collection");
 
-		TableViewerColumn viewerColumn4 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
-		TableColumn column4 = viewerColumn4.getColumn();
+		TableColumn column4 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column4.setWidth(100);
 		column4.setResizable(true);
-		column4.setText("Data Collection");
+		column4.setText("Data Reduction");
 
-		TableViewerColumn viewerColumn5 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
-		TableColumn column5 = viewerColumn5.getColumn();
+		TableColumn column5 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column5.setWidth(100);
 		column5.setResizable(true);
-		column5.setText("Data Reduction");
-
-		TableViewerColumn viewerColumn6 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
-		TableColumn column6 = viewerColumn6.getColumn();
-		column6.setWidth(100);
-		column6.setResizable(true);
-		column6.setText("Data Analysis");
+		column5.setText("Data Analysis");
 
 		bioSaxsProgressViewer.setContentProvider(new BioSaxsProgressContentProvider());
 		bioSaxsProgressViewer.setLabelProvider(new BioSaxsProgressLabelProvider());
@@ -108,16 +129,39 @@ public class BioSaxsProgressView extends ViewPart {
 		populateDummyModel();
 		bioSaxsProgressViewer.refresh();
 
-		for (int i = 1; i < bioSaxsTable.getItemCount(); i++) {
-			TableItem item = bioSaxsTable.getItem(i);
-			ProgressBar bar = new ProgressBar(bioSaxsTable, SWT.NONE);
-			bar.setSelection(i);
-			TableEditor editor = new TableEditor(bioSaxsTable);
-			editor.grabHorizontal = editor.grabVertical = true;
-			editor.setEditor(bar, item, 3);
-			editor.setEditor(bar, item, 4);
-			editor.setEditor(bar, item, 5);
+		int measurementCount = bioSaxsProgressModel.getMeasurements().size();
+
+		final int[] percents = new int[bioSaxsProgressModel.getMeasurements().size()];
+		for (int i = 0; i < measurementCount; i++) {
+			percents[i] = 100;
 		}
+
+		bioSaxsTable.addListener(SWT.PaintItem, new Listener() {
+			public void handleEvent(Event event) {
+				if ((event.index == 2) || (event.index == 3) || (event.index == 4)) {
+					Display display = bioSaxsTable.getDisplay();
+					GC gc = event.gc;
+					TableItem item = (TableItem) event.item;
+					int index = bioSaxsTable.indexOf(item);
+					int percent = percents[index];
+					Color foreground = gc.getForeground();
+					Color background = gc.getBackground();
+					gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+					// gc.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
+					int width = (column2.getWidth() - 1) * percent / 100;
+					gc.fillGradientRectangle(event.x, event.y, width, event.height, true);
+					Rectangle rect2 = new Rectangle(event.x, event.y, width - 1, event.height - 1);
+					gc.drawRectangle(rect2);
+					gc.setForeground(bioSaxsTable.getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+					String text = percent + "%";
+					Point size = event.gc.textExtent(text);
+					int offset = Math.max(0, (event.height - size.y) / 2);
+					gc.drawText(text, event.x + 2, event.y + offset, true);
+					gc.setForeground(background);
+					gc.setBackground(foreground);
+				}
+			}
+		});
 	}
 
 	private void createDummyModel() {
@@ -126,11 +170,13 @@ public class BioSaxsProgressView extends ViewPart {
 
 	private void populateDummyModel() {
 		BioSaxsSession session = new BioSaxsSession("Session 1");
-		for (int i = 0; i < 7; i++) {
-			BioSaxsMeasurement bioSaxsMeasurement = new BioSaxsMeasurement(session, i, "Measurement # " + (i + 1));
-			session.addMeasurement(bioSaxsMeasurement);
+		for (int columnIndex = 0; columnIndex < 7; columnIndex++) {
+			for (int rowIndex = 0; rowIndex < 7; rowIndex++) {
+				BioSaxsMeasurement bioSaxsMeasurement = new BioSaxsMeasurement(session, columnIndex, rowIndex,
+						"Measurement (" + columnIndex + ", " + rowIndex);
+				bioSaxsProgressModel.addMeasurement(bioSaxsMeasurement);
+			}
 		}
-		bioSaxsProgressModel.addSession(session);
 	}
 
 	@Override

@@ -20,24 +20,34 @@ package uk.ac.gda.devices.bssc;
 
 public class BioSaxsMeasurement {
 	private BioSaxsSession session;
-	private int wellPosition;
+	private int wellRow;
+	private int wellColumn;
 	private String name;
 	private int collectionProgress;
 	private int reductionProgress;
 	private int analysisProgress;
 
-	public BioSaxsMeasurement(BioSaxsSession session, int wellposition, String name) {
+	public BioSaxsMeasurement(BioSaxsSession session, int wellRow, int wellColumn, String name) {
 		this.session = session;
-		this.wellPosition = wellposition;
+		this.wellRow = wellRow;
+		this.wellColumn = wellColumn;
 		this.name = name;
 	}
 
-	public int getWellPosition() {
-		return wellPosition;
+	public int getWellRow() {
+		return wellRow;
 	}
 
-	public void setWellPosition(int wellPosition) {
-		this.wellPosition = wellPosition;
+	public void setWellRow(int wellRow) {
+		this.wellRow = wellRow;
+	}
+
+	public int getWellColumn() {
+		return wellColumn;
+	}
+
+	public void setWellColumn(int wellColumn) {
+		this.wellColumn = wellColumn;
 	}
 
 	public String getName() {

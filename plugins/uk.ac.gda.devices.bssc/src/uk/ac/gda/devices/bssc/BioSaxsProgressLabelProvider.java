@@ -59,20 +59,20 @@ public class BioSaxsProgressLabelProvider implements ITableLabelProvider {
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
-		if (element instanceof BioSaxsSession) {
-			BioSaxsSession session = (BioSaxsSession) element;
-			
-			switch (columnIndex) {
-			case 0:
-				return session.getName();
-			}
-		} else if (element instanceof BioSaxsMeasurement) {
+//		if (element instanceof BioSaxsSession) {
+//			BioSaxsSession session = (BioSaxsSession) element;
+//			
+//			switch (columnIndex) {
+//			case 0:
+//				return session.getName();
+//			}
+//		} else if (element instanceof BioSaxsMeasurement) {
 			BioSaxsMeasurement measurement = (BioSaxsMeasurement) element;
 
 			switch (columnIndex) {
-			case 1:
+			case 0:
 				return measurement.getName();
-			case 2:
+			case 1:
 				return String.valueOf(measurement.getWellPosition());
 //			case 3:
 //				return String.valueOf(measurement.getCollectionProgress());
@@ -80,7 +80,7 @@ public class BioSaxsProgressLabelProvider implements ITableLabelProvider {
 //				return String.valueOf(measurement.getReductionProgress());
 //			case 5:
 //				return String.valueOf(measurement.getAnalysisProgress());
-			}
+//			}
 		}
 		return null;
 	}

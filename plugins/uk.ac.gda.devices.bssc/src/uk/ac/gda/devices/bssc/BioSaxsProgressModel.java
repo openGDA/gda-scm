@@ -25,21 +25,15 @@ public class BioSaxsProgressModel {
 
 	List<BioSaxsMeasurement> measurements;
 
-	
 	public BioSaxsProgressModel() {
-		measurem = new ArrayList<BioSaxsSession>();
-	}
-
-	public List<BioSaxsSession> getSessions() {
-		return sessions;
-	}
-
-	public void addSession(BioSaxsSession session) {
-		sessions.add(session);
+		measurements = new ArrayList<BioSaxsMeasurement>();
 	}
 
 	public void addMeasurement(BioSaxsMeasurement bioSaxsMeasurement) {
 		measurements.add(bioSaxsMeasurement);
 	}
 
+	public List<BioSaxsMeasurement> getMeasurements() {
+		return measurements;
+	}
 }
