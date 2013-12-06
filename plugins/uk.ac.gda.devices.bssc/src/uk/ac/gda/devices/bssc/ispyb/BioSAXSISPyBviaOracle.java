@@ -319,6 +319,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		
 		long bufferId = createBuffer(blsessionId);
 		long samplePlateId = createSamplePlate(blsessionId, String.valueOf(plate));
+		long experimentId = createExperiment(proposalId, fileName, "TEMPLATE", "BSSC");
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSample(blsessionId, bufferId, null, samplePlatePositionId, null, null, volume);
 		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);		
@@ -337,6 +338,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		connectIfNotConnected();
 
 		long stockSolutionId = createStockSolution(blsessionId, name, concentration);
+		long experimentId = createExperiment(proposalId, fileName, "TEMPLATE", "BSSC");
 		long samplePlateId = createSamplePlate(blsessionId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSample(blsessionId, (Long)null, (Long)null, samplePlatePositionId, stockSolutionId, concentration, volume);
@@ -412,5 +414,25 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.close();
 
 		return collections;
+	}
+	
+	@Override
+	public long createExperiment(long proposalId, String name, String experimentType, String comments) throws SQLException {
+		long experimentId = -1;
+
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Experiment (" +
+				"experimentId, proposalId, name, experimentType, sourceFilePath, comments, dataAcquisitionFilePath) " +
+				"VALUES (ispyb4a_db.s_Experiment.nextval, ?, ?, ?, ?) RETURNING experimentId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		stmt.setLong(1, proposalId);
+		stmt.setString(2, name);
+		stmt.setString(3, experimentType);
+		stmt.setString(4, comments);
+
+		stmt.registerOutParameter(5, java.sql.Types.VARCHAR);
+		stmt.execute();
+		experimentId = stmt.getLong(5);
+		stmt.close();
+		return experimentId;
 	}
 }
