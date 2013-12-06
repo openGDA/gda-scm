@@ -73,11 +73,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 	
 	@Override
-	public long getSessionForVisit(String visitname) throws SQLException {
-		long sessionId = -1;
+	public long getProposalForVisit(String visitname) throws SQLException {
+		long proposalId = -1;
 		connectIfNotConnected();
 
-		String selectSql = "SELECT sessionId " +
+		String selectSql = "SELECT bs.proposalId " +
 				"FROM ispyb4a_db.BLSession bs INNER JOIN ispyb4a_db.Proposal p on (bs.proposalId = p.proposalId) " +
 				"WHERE p.proposalCode || p.proposalNumber || '-' || bs.visit_number = ?";
 
@@ -87,12 +87,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success){
 			ResultSet rs = stmt.getResultSet();
 			if (rs.next()) 
-				sessionId = rs.getLong(1);
+				proposalId = rs.getLong(1);
 			rs.close();
 		}
 		stmt.close();
 
-		return sessionId;
+		return proposalId;
 	}
 
 	@Override
