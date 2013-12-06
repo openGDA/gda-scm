@@ -21,21 +21,25 @@ package uk.ac.gda.devices.bssc.perspectives;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.IViewLayout;
 import org.eclipse.ui.IWorkbenchPage;
 
 public class BioSaxsSetupPerspective implements IPerspectiveFactory {
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
-		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.TOP, 0.60f, IPageLayout.ID_EDITOR_AREA);
-		
+		layout.addStandaloneView("uk.ac.gda.devices.bssc.biosaxssetupview", false, IPageLayout.TOP, 0.60f,
+				IPageLayout.ID_EDITOR_AREA);
+		IViewLayout vLayout = layout.getViewLayout("uk.ac.gda.devices.bssc.biosaxsprogressview");
+		vLayout.setCloseable(false);
+		vLayout.setMoveable(false);
+
 		IFolderLayout folderLayout = layout.createFolder("folder", IPageLayout.BOTTOM, 0.73f,
 				IPageLayout.ID_EDITOR_AREA);
-		
 
 		folderLayout.addView("uk.ac.gda.client.CommandQueueViewFactory");
 		folderLayout.addView("gda.rcp.jythonterminalview");
-		
+
 		layout.setEditorAreaVisible(false);
 	}
 

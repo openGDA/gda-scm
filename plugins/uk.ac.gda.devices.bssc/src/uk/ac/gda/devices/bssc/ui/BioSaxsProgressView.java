@@ -16,7 +16,7 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.devices.bssc;
+package uk.ac.gda.devices.bssc.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +54,14 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.gda.devices.bssc.BioSaxsMeasurement;
+import uk.ac.gda.devices.bssc.BioSaxsProgressContentProvider;
+import uk.ac.gda.devices.bssc.BioSaxsProgressLabelProvider;
+import uk.ac.gda.devices.bssc.BioSaxsProgressModel;
+import uk.ac.gda.devices.bssc.BioSaxsSession;
+import uk.ac.gda.devices.bssc.DummyEditorInput;
+
 
 public class BioSaxsProgressView extends ViewPart {
 	private static final Logger logger = LoggerFactory.getLogger(BioSaxsProgressView.class);
@@ -175,8 +183,8 @@ public class BioSaxsProgressView extends ViewPart {
 
 	private void populateDummyModel() {
 		BioSaxsSession session = new BioSaxsSession("Session 1");
-		for (int columnIndex = 0; columnIndex < 7; columnIndex++) {
-			for (int rowIndex = 0; rowIndex < 7; rowIndex++) {
+		for (int columnIndex = 1; columnIndex < 8; columnIndex++) {
+			for (int rowIndex = 1; rowIndex < 8; rowIndex++) {
 				BioSaxsMeasurement bioSaxsMeasurement = new BioSaxsMeasurement(session, columnIndex, rowIndex,
 						"Measurement");
 				bioSaxsProgressModel.addMeasurement(bioSaxsMeasurement);
