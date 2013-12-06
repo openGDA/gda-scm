@@ -131,15 +131,20 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementId;
 	}
 	
-	protected long createBuffer(long proposalId) throws SQLException {
+	protected long createBuffer(long proposalId, String name, String acronym, String composition) throws SQLException {
 		long bufferId = -1;
-		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Buffer (bufferId, proposalId) " +
-				"VALUES (ispyb4a_db.s_Buffer.nextval, ?) RETURNING bufferId INTO ?; END;";
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Buffer (bufferId, proposalId, name, acronym, composition) " +
+				"VALUES (ispyb4a_db.s_Buffer.nextval, ?, ?, ?, ?) RETURNING bufferId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
-		stmt.setLong(1, proposalId);
-		stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
+		int index = 1;
+		stmt.setLong(index++, proposalId);
+		stmt.setString(index++, name);
+		stmt.setString(index++, acronym);
+		stmt.setString(index++, composition);
+
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
-		bufferId = stmt.getLong(2);
+		bufferId = stmt.getLong(index);
 		stmt.close();
 		
 		return bufferId;
@@ -318,7 +323,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		connectIfNotConnected();
 		
-		long bufferId = createBuffer(proposalId);
+		long bufferId = createBuffer(proposalId, "buffer", "acronym", "composition");
 		long samplePlateId = createSamplePlate(proposalId, String.valueOf(plate));
 		long experimentId = createExperiment(proposalId, fileName, "TEMPLATE", "BSSC");
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
@@ -338,7 +343,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		connectIfNotConnected();
 
-		long bufferId = createBuffer(proposalId);
+		long bufferId = createBuffer(proposalId, name+"Buffer", name+"Buffer", name+"Composition");
 		long macromoleculeId = createMacromolecule(proposalId, name+"Macromolecule", name+"Macromolecule");
 		long experimentId = createExperiment(proposalId, fileName, "TEMPLATE", "BSSC");
 		long samplePlateId = createSamplePlate(proposalId, String.valueOf(plate));
