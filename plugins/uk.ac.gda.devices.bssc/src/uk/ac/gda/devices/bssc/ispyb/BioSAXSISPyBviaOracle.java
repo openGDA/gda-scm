@@ -184,12 +184,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return samplePlatePositionId;
 	}
 	
-	protected long createSample(long experimentId, Long bufferId, Long macromoleculeId, Long samplePlatePositionId, 
+	protected long createSpecimen(long experimentId, Long bufferId, Long macromoleculeId, Long samplePlatePositionId, 
 			Long stockSolutionId, Double concentration, Double volume) throws SQLException {
-		long sampleId = -1;
-		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Sample (" +
-				"sampleId, experimentId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, concentration, volumen) " +
-				"VALUES (ispyb4a_db.s_Sample.nextval, ?, ?, ?, ?, ?, ?, ?) RETURNING sampleId INTO ?; END;";
+		long specimenId = -1;
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen (" +
+				"specimenId, experimentId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, concentration, volumen) " +
+				"VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 
@@ -225,9 +225,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		stmt.registerOutParameter(8, java.sql.Types.VARCHAR);
 		stmt.execute();
-		sampleId = stmt.getLong(8);
+		specimenId = stmt.getLong(8);
 		stmt.close();
-		return sampleId;
+		return specimenId;
 	}
 
 	protected long createRun(float storageTemperature, double energyInkeV, int numFrames, double timePerFrame) 
@@ -327,7 +327,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long samplePlateId = createSamplePlate(proposalId, String.valueOf(plate));
 		long experimentId = createExperiment(proposalId, fileName, "TEMPLATE", "BSSC");
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSample(experimentId, bufferId, null, samplePlatePositionId, null, null, volume);
+		long sampleId = createSpecimen(experimentId, bufferId, null, samplePlatePositionId, null, 0., volume);
 		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);		
 		long frameSetId = createFrameSet(runId, fileName, internalPath);
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
@@ -348,7 +348,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long experimentId = createExperiment(proposalId, fileName, "TEMPLATE", "BSSC");
 		long samplePlateId = createSamplePlate(proposalId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSample(experimentId, bufferId, macromoleculeId, samplePlatePositionId, null, concentration, volume);
+		long sampleId = createSpecimen(experimentId, bufferId, macromoleculeId, samplePlatePositionId, null, concentration, volume);
 		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);		
 		long frameSetId = createFrameSet(runId, fileName, internalPath);
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
