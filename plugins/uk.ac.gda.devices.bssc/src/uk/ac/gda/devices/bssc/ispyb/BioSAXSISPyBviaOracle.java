@@ -263,22 +263,23 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return frameSetId;
 	}
 
-	protected long createStockSolution(long proposalId, String name, double concentration) throws SQLException {
-		long stockSolutionId = -1;
+	protected long createMacromolecule(long proposalId, String name, String acronym) throws SQLException {
+		long macromoleculeId = -1;
 
-		String insertSql = "BEGIN INSERT INTO ispyb4a_db.StockSolution (" +
-				"stockSolutionId, proposalId, name, concentration) " +
-				"VALUES (ispyb4a_db.s_FrameSet.nextval, ?, ?, ?) RETURNING stockSolutionId INTO ?; END;";
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Macromolecule (" +
+				"macromoleculeId, proposalId, name, acronym) " +
+				"VALUES (ispyb4a_db.s_Macromolecule.nextval, ?, ?, ?) RETURNING macromoleculeId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
-		stmt.setLong(1, proposalId);
-		stmt.setString(2, name);
-		stmt.setDouble(3, concentration);
+		int index = 1;
+		stmt.setLong(index++, proposalId);
+		stmt.setString(index++, name);
+		stmt.setString(index++, acronym);
 
-		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
-		stockSolutionId = stmt.getLong(4);
+		macromoleculeId = stmt.getLong(index);
 		stmt.close();
-		return stockSolutionId;
+		return macromoleculeId;
 	}
 
 	
@@ -337,11 +338,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		connectIfNotConnected();
 
-		long stockSolutionId = createStockSolution(proposalId, name, concentration);
+		long bufferId = createBuffer(proposalId);
+		long macromoleculeId = createMacromolecule(proposalId, name+"Macromolecule", name+"Macromolecule");
 		long experimentId = createExperiment(proposalId, fileName, "TEMPLATE", "BSSC");
 		long samplePlateId = createSamplePlate(proposalId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSample(experimentId, (Long)null, (Long)null, samplePlatePositionId, stockSolutionId, concentration, volume);
+		long sampleId = createSample(experimentId, bufferId, macromoleculeId, samplePlatePositionId, null, concentration, volume);
 		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);		
 		long frameSetId = createFrameSet(runId, fileName, internalPath);
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
