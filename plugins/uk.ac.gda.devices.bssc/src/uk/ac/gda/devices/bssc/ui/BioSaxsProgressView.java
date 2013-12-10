@@ -62,7 +62,6 @@ import uk.ac.gda.devices.bssc.BioSaxsProgressModel;
 import uk.ac.gda.devices.bssc.BioSaxsSession;
 import uk.ac.gda.devices.bssc.DummyEditorInput;
 
-
 public class BioSaxsProgressView extends ViewPart {
 	private static final Logger logger = LoggerFactory.getLogger(BioSaxsProgressView.class);
 	private static final int DEFAULT_COLUMN_WIDTH = 140;
@@ -92,8 +91,10 @@ public class BioSaxsProgressView extends ViewPart {
 				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 				try {
-					page.openEditor(new DummyEditorInput(selectedMeasurement.getName()),
-							"org.eclipse.ui.DefaultTextEditor");
+					page.openEditor(
+							new DummyEditorInput(selectedMeasurement.getName() + " ("
+									+ selectedMeasurement.getWellColumn() + ", " + selectedMeasurement.getWellRow()
+									+ ")"), "org.eclipse.ui.DefaultTextEditor");
 				} catch (PartInitException e) {
 					logger.error("TODO put description of error here", e);
 				}
@@ -127,7 +128,7 @@ public class BioSaxsProgressView extends ViewPart {
 		column5.setWidth(100);
 		column5.setResizable(true);
 		column5.setText("Reduction");
-		
+
 		TableColumn column6 = new TableColumn(bioSaxsTable, SWT.NONE);
 		column6.setWidth(100);
 		column6.setResizable(true);

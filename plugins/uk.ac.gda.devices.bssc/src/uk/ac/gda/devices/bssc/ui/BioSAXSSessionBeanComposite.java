@@ -81,8 +81,8 @@ public class BioSAXSSessionBeanComposite extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				// TODO
-//				if (measurements != null)
-//					measurements.addSample();		
+				if (measurements != null)
+					measurements.addSample();		
 			}
 		});
 		
@@ -94,8 +94,8 @@ public class BioSAXSSessionBeanComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-//				if (measurements != null)
-//					measurements.deleteSelection();			
+				if (measurements != null)
+					measurements.deleteSelection();			
 			}
 		});
 		

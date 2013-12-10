@@ -19,6 +19,7 @@
 package uk.ac.gda.devices.bssc.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -84,7 +85,7 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 	private Composite composite_1;
 	private final IViewPart bioSAXASessionBeanUIView;
 	Color okay, warning;
-	
+
 	private static final SimpleObjectTransfer TRANSFER = new SimpleObjectTransfer() {
 		private final String TYPE_NAME = "uk.ac.gda.devices.bssc.ui.TitrationBeanTransfer" + System.currentTimeMillis(); //$NON-NLS-1$
 		private final int TYPE_ID = registerType(TYPE_NAME);
@@ -99,7 +100,7 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 			return new String[] { TYPE_NAME };
 		}
 	};
-	
+
 	public abstract class OurEditingSupport extends EditingSupport {
 
 		protected TableViewer viewer = tableViewer;
@@ -127,11 +128,11 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 
 		@Override
 		protected void setValue(Object element, Object value) {
-//			editor.valueChangePerformed(new ValueEvent(this, null));
+			// editor.valueChangePerformed(new ValueEvent(this, null));
 			viewer.refresh();
 		}
 	}
-	
+
 	public final class DoubleCellEditor extends TextCellEditor {
 		public DoubleCellEditor(final Composite parent) {
 			super(parent);
@@ -180,15 +181,15 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 			}
 		}
 	}
-	
+
 	public BioSAXSMeasurementsFieldComposite(Composite parent, int style, IViewPart bioSAXASessionBeanUIView) {
 		super(parent, style);
 		this.bioSAXASessionBeanUIView = bioSAXASessionBeanUIView;
 
 		final Display display = Display.getCurrent();
 		okay = null;
-		warning = new Color(display, 255,160,30);
-		
+		warning = new Color(display, 255, 160, 30);
+
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginWidth = 0;
 		setLayout(gridLayout);
@@ -209,14 +210,15 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public void handleEvent(Event event) {
 				event.detail &= ~SWT.HOT;
-				if ((event.detail & SWT.SELECTED) == 0) return; /// item not selected
+				if ((event.detail & SWT.SELECTED) == 0)
+					return; // / item not selected
 
-//				Table table =(Table)event.widget;
-//				TableItem item =(TableItem)event.item;
-//				TitrationBean element = (TitrationBean) item.getData();
-//				int clientWidth = table.getClientArea().width;
+				// Table table =(Table)event.widget;
+				// TableItem item =(TableItem)event.item;
+				// TitrationBean element = (TitrationBean) item.getData();
+				// int clientWidth = table.getClientArea().width;
 
-				GC gc = event.gc;				
+				GC gc = event.gc;
 				Rectangle rect = event.getBounds();
 				gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 				gc.setBackground(display.getSystemColor(SWT.COLOR_LIST_SELECTION));
@@ -224,7 +226,7 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 				event.detail &= ~SWT.SELECTED;
 			}
 		});
-		
+
 		Object[][] columns = { { "Plate", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -480,6 +482,7 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 				}
 				return "III";
 			}
+
 			@Override
 			public Color getBackground(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -528,6 +531,7 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 					return "--";
 				return String.format("%c", tb.getRecouperateLocation().getRow());
 			}
+
 			@Override
 			public Color getBackground(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -569,6 +573,7 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 					return "--";
 				return String.format("%d", tb.getRecouperateLocation().getColumn());
 			}
+
 			@Override
 			public Color getBackground(Object element) {
 				TitrationBean tb = (TitrationBean) element;
@@ -858,18 +863,53 @@ public class BioSAXSMeasurementsFieldComposite extends FieldComposite {
 
 	@Override
 	public Object getValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return value;
 	}
 
 	@Override
 	public void setValue(Object value) {
-		// TODO Auto-generated method stub
-
+		this.value = value;
+		sampleCount.setText(String.valueOf(getList().size()));
+		tableViewer.setInput(value);
 	}
 
 	@SuppressWarnings("unchecked")
 	private List<TitrationBean> getList() {
 		return ((List<TitrationBean>) value);
+	}
+
+	public void deleteSelection() {
+		if (table.getSelectionIndices().length == 0) {
+			return;
+		}
+		int[] selectionIndices = table.getSelectionIndices();
+		Arrays.sort(selectionIndices);
+		for (int i = selectionIndices.length - 1; i >= 0; i--) {
+			getList().remove(selectionIndices[i]);
+		}
+		sampleCount.setText(String.valueOf(getList().size()));
+		tableViewer.refresh();
+	}
+
+	public void addSample() {
+		if (table.getSelectionIndices().length == 0) {
+			getList().add(new TitrationBean());
+		} else {
+			int[] selectionIndices = table.getSelectionIndices();
+			List<TitrationBean> toadd = new ArrayList<TitrationBean>(table.getSelectionIndices().length);
+			for (int i : selectionIndices) {
+				try {
+					TitrationBean oldBean = getList().get(i);
+					TitrationBean copiedBean = (TitrationBean) BeanUtils.cloneBean(oldBean);
+					copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
+					copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
+					toadd.add(copiedBean);
+				} catch (Exception e) {
+				}
+			}
+			getList().addAll(selectionIndices[selectionIndices.length - 1] + 1, toadd);
+		}
+		sampleCount.setText(String.valueOf(getList().size()));
+		tableViewer.refresh();
 	}
 }
