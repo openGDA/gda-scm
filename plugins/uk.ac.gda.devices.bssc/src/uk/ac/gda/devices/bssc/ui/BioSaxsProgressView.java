@@ -18,9 +18,20 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import gda.rcp.GDAClientActivator;
+import gda.rcp.util.OSGIServiceRegister;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.core.databinding.property.Properties;
+import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -67,7 +78,8 @@ public class BioSaxsProgressView extends ViewPart {
 	private static final int DEFAULT_COLUMN_WIDTH = 140;
 	private Composite bioSaxsProgressComposite;
 	private TableViewer bioSaxsProgressViewer;
-	private BioSaxsProgressModel bioSaxsProgressModel;
+	private BioSaxsProgressModel model;
+	private IObservableList observableModel;
 
 	public BioSaxsProgressView() {
 		// TODO Auto-generated constructor stub
@@ -77,10 +89,6 @@ public class BioSaxsProgressView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		bioSaxsProgressComposite = new Composite(parent, SWT.NONE);
 		bioSaxsProgressComposite.setLayout(new FillLayout());
-
-		// bioSaxsProgressViewer = new TreeViewer(bioSaxsProgressComposite, SWT.NONE);
-		// Tree bioSaxsTree = bioSaxsProgressViewer.getTree();
-		// bioSaxsTree.setLayout(new FillLayout());
 
 		bioSaxsProgressViewer = new TableViewer(bioSaxsProgressComposite, SWT.NONE);
 		bioSaxsProgressViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -134,23 +142,61 @@ public class BioSaxsProgressView extends ViewPart {
 		column6.setResizable(true);
 		column6.setText("Analysis");
 
-		bioSaxsProgressViewer.setContentProvider(new BioSaxsProgressContentProvider());
-		bioSaxsProgressViewer.setLabelProvider(new BioSaxsProgressLabelProvider());
+		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+		bioSaxsProgressViewer.setContentProvider(contentProvider);
+
+		// Create the label provider including monitoring of the changes of the
+		// labels
+		IObservableSet knownElements = contentProvider.getKnownElements();
+		final IObservableMap sessions = BeanProperties.value(BioSaxsMeasurement.class, "sessionName").observeDetail(
+				knownElements);
+		final IObservableMap names = BeanProperties.value(BioSaxsMeasurement.class, "name")
+				.observeDetail(knownElements);
+		final IObservableMap positions = BeanProperties.value(BioSaxsMeasurement.class, "position").observeDetail(
+				knownElements);
+		final IObservableMap collectionProgressValues = BeanProperties.value(BioSaxsMeasurement.class,
+				"collectionProgress").observeDetail(knownElements);
+		final IObservableMap reductionProgressValues = BeanProperties.value(BioSaxsMeasurement.class,
+				"reductionProgress").observeDetail(knownElements);
+		final IObservableMap analysisProgressValues = BeanProperties
+				.value(BioSaxsMeasurement.class, "analysisProgress").observeDetail(knownElements);
+
+		IObservableMap[] labelMaps = { sessions, names, positions, collectionProgressValues, reductionProgressValues,
+				analysisProgressValues };
+
+		ILabelProvider labelProvider = new ObservableMapLabelProvider(labelMaps) {
+			@Override
+			public String getText(Object element) {
+				return sessions.get(element) + " " + names.get(element) + " " + positions.get(element) + " "
+						+ collectionProgressValues.get(element) + " " + reductionProgressValues.get(element) + " "
+						+ analysisProgressValues.get(element);
+			}
+		};
+
+		bioSaxsProgressViewer.setLabelProvider(labelProvider);
 		bioSaxsTable.setHeaderVisible(true);
 
-		createDummyModel();
-		bioSaxsProgressViewer.setInput(bioSaxsProgressModel);
+		try {
+			createDummyModel();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("TODO put description of error here", e);
+		}
+
 		populateDummyModel();
-		bioSaxsProgressViewer.refresh();
 
-		int measurementCount = bioSaxsProgressModel.getMeasurements().size();
+		observableModel = Properties.selfList(BioSaxsMeasurement.class).observe(model.getMeasurements());
+		bioSaxsProgressViewer.setInput(observableModel);
 
-		final int[] percents = new int[bioSaxsProgressModel.getMeasurements().size()];
+		int measurementCount = model.getMeasurements().size();
+
+		final int[] percents = new int[model.getMeasurements().size()];
 		for (int i = 0; i < measurementCount; i++) {
 			percents[i] = 100;
 		}
 
 		bioSaxsTable.addListener(SWT.PaintItem, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				if ((event.index == 3) || (event.index == 4) || (event.index == 5)) {
 					Display display = bioSaxsTable.getDisplay();
@@ -178,8 +224,15 @@ public class BioSaxsProgressView extends ViewPart {
 		});
 	}
 
-	private void createDummyModel() {
-		bioSaxsProgressModel = new BioSaxsProgressModel();
+	private void createDummyModel() throws Exception {
+		model = new BioSaxsProgressModel();
+
+		OSGIServiceRegister modelReg = new OSGIServiceRegister();
+		modelReg.setClass(BioSaxsProgressModel.class);
+		modelReg.setService(model);
+		modelReg.afterPropertiesSet();
+
+		model = (BioSaxsProgressModel) GDAClientActivator.getNamedService(BioSaxsProgressModel.class, null);
 	}
 
 	private void populateDummyModel() {
@@ -188,7 +241,7 @@ public class BioSaxsProgressView extends ViewPart {
 			for (int rowIndex = 1; rowIndex < 8; rowIndex++) {
 				BioSaxsMeasurement bioSaxsMeasurement = new BioSaxsMeasurement(session, columnIndex, rowIndex,
 						"Measurement");
-				bioSaxsProgressModel.addMeasurement(bioSaxsMeasurement);
+				model.addMeasurement(bioSaxsMeasurement);
 			}
 		}
 	}

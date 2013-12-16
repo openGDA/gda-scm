@@ -71,7 +71,7 @@ public class BioSaxsProgressLabelProvider implements ITableLabelProvider {
 
 		switch (columnIndex) {
 		case 0:
-			return measurement.getSession().getName();
+			return measurement.getSessionName();
 		case 1:
 			return measurement.getName();
 		case 2:

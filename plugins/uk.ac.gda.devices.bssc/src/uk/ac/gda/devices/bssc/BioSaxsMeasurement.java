@@ -18,14 +18,20 @@
 
 package uk.ac.gda.devices.bssc;
 
-public class BioSaxsMeasurement {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+public class BioSaxsMeasurement implements PropertyChangeListener {
 	private BioSaxsSession session;
 	private int wellRow;
 	private int wellColumn;
 	private String name;
+	private String position;
 	private int collectionProgress;
 	private int reductionProgress;
 	private int analysisProgress;
+	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
 	public BioSaxsMeasurement(BioSaxsSession session, int wellRow, int wellColumn, String name) {
 		this.session = session;
@@ -34,12 +40,20 @@ public class BioSaxsMeasurement {
 		this.name = name;
 	}
 
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(listener);
+	}
+
 	public int getWellRow() {
 		return wellRow;
 	}
 
 	public void setWellRow(int wellRow) {
-		this.wellRow = wellRow;
+		propertyChangeSupport.firePropertyChange("wellRow", this.wellRow, this.wellRow = wellRow);
 	}
 
 	public int getWellColumn() {
@@ -47,7 +61,7 @@ public class BioSaxsMeasurement {
 	}
 
 	public void setWellColumn(int wellColumn) {
-		this.wellColumn = wellColumn;
+		propertyChangeSupport.firePropertyChange("wellColumn", this.wellColumn, this.wellColumn = wellColumn);
 	}
 
 	public String getName() {
@@ -55,11 +69,11 @@ public class BioSaxsMeasurement {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		propertyChangeSupport.firePropertyChange("name", this.name, this.name = name);
 	}
 
-	public BioSaxsSession getSession() {
-		return session;
+	public String getSessionName() {
+		return session.getName();
 	}
 
 	public int getCollectionProgress() {
@@ -67,7 +81,8 @@ public class BioSaxsMeasurement {
 	}
 
 	public void setCollectionProgress(int collectionProgress) {
-		this.collectionProgress = collectionProgress;
+		propertyChangeSupport.firePropertyChange("collectionProgress", this.collectionProgress,
+				this.collectionProgress = collectionProgress);
 	}
 
 	public int getReductionProgress() {
@@ -75,7 +90,8 @@ public class BioSaxsMeasurement {
 	}
 
 	public void setReductionProgress(int reductionProgress) {
-		this.reductionProgress = reductionProgress;
+		propertyChangeSupport.firePropertyChange("reductionProgress", this.reductionProgress,
+				this.reductionProgress = reductionProgress);
 	}
 
 	public int getAnalysisProgress() {
@@ -83,7 +99,17 @@ public class BioSaxsMeasurement {
 	}
 
 	public void setAnalysisProgress(int analysisProgress) {
-		this.analysisProgress = analysisProgress;
+		propertyChangeSupport.firePropertyChange("analysisProgress", this.analysisProgress,
+				this.analysisProgress = analysisProgress);
 	}
 
+	public String getPosition() {
+		position = "(" + wellRow + ", " + wellColumn + ")";
+		return position;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		propertyChangeSupport.firePropertyChange("session", null, session);
+	}
 }
