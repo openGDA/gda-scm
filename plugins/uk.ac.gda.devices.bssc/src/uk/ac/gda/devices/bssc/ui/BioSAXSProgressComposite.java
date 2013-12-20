@@ -18,11 +18,8 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
-import java.awt.Color;
-
 import gda.rcp.GDAClientActivator;
 
-import org.apache.poi.sl.usermodel.Fill;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
@@ -40,6 +37,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider.ControlFactoryAndUpdater;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
