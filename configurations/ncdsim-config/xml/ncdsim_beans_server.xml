@@ -23,13 +23,14 @@
 				<bean id="instrument" class="gda.data.metadata.PropertyMetadataEntry">
 					<property name="propertyName" value="gda.instrument" />
 				</bean>
-				<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
-					<property name="value" value="undefined" />
-				</bean>
+<!-- 				<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry"> -->
+<!-- 					<property name="value" value="undefined" /> -->
+<!-- 				</bean> -->
 				<bean id="instrument.monochromator.energy" class="gda.data.metadata.ScannableMetadataEntry">
 					<property name="name" value="instrument.monochromator.energy" />
 					<property name="scannableName" value="bkeV" />
 				</bean>
+				<ref bean="title" />
 				<ref bean="subdirectory" />
 				<ref bean="samplename" />
 			</list>
@@ -37,8 +38,17 @@
 	</bean>
 
 	<bean id="subdirectory" class="gda.data.metadata.SubdirectoryMetadataEntry" />
+	
+	<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
+		<property name="value" value="undefined" />
+	</bean>
+	
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSubdirectory">
 		<property name="storedMetadataEntry" ref="subdirectory" />
+	</bean>
+	
+	<bean class="gda.data.metadata.MetadataBlaster" id="observableScanTitle">
+		<property name="storedMetadataEntry" ref="title" />
 	</bean>
 
 	<bean class="gda.data.metadata.StoredMetadataEntry" id="samplename">
