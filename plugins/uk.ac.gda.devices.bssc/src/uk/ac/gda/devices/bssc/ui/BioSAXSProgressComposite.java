@@ -48,12 +48,12 @@ public class BioSAXSProgressComposite extends Composite {
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
 	private ISampleProgressCollection model;
-	
+
 	public BioSAXSProgressComposite(Composite parent, int style) {
 		super(parent, style);
 
 		setLayout(new FillLayout());
-		
+
 		bioSaxsProgressViewer = new TableViewer(this, SWT.NONE);
 		bioSaxsTable = bioSaxsProgressViewer.getTable();
 
@@ -197,10 +197,12 @@ public class BioSAXSProgressComposite extends Composite {
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
-		
+
 		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
 
-		IObservableList input = model.getItems();
-		bioSaxsProgressViewer.setInput(input);
+		if (model != null) {
+			IObservableList input = model.getItems();
+			bioSaxsProgressViewer.setInput(input);
+		}
 	}
 }
