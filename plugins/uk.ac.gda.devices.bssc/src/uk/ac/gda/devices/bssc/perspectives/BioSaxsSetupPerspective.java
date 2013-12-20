@@ -28,19 +28,9 @@ public class BioSaxsSetupPerspective implements IPerspectiveFactory {
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
-		layout.addStandaloneView("uk.ac.gda.devices.bssc.biosaxssetupview", false, IPageLayout.TOP, 0.60f,
-				IPageLayout.ID_EDITOR_AREA);
-		IViewLayout vLayout = layout.getViewLayout("uk.ac.gda.devices.bssc.biosaxsprogressview");
-		vLayout.setCloseable(false);
-		vLayout.setMoveable(false);
-
 		IFolderLayout folderLayout = layout.createFolder("folder", IPageLayout.BOTTOM, 0.73f,
 				IPageLayout.ID_EDITOR_AREA);
 
 		folderLayout.addView("uk.ac.gda.client.CommandQueueViewFactory");
-		folderLayout.addView("gda.rcp.jythonterminalview");
-
-		layout.setEditorAreaVisible(false);
 	}
-
 }
