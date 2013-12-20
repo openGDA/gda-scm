@@ -18,22 +18,17 @@
 
 package uk.ac.gda.devices.bssc;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.beans.PropertyChangeListener;
 
-public class BioSaxsProgressModel {
-
-	List<BioSaxsMeasurement> measurements;
-
-	public BioSaxsProgressModel() {
-		measurements = new ArrayList<BioSaxsMeasurement>();
-	}
-
-	public void addMeasurement(BioSaxsMeasurement bioSaxsMeasurement) {
-		measurements.add(bioSaxsMeasurement);
-	}
-
-	public List<BioSaxsMeasurement> getMeasurements() {
-		return measurements;
-	}
+public interface ISampleProgress {
+	public static final String COLLECTION_PROGRESS="collectionProgress";
+	public static final String REDUCTION_PROGRESS="reductionProgress";
+	public static final String ANALYSIS_PROGRESS="analysisProgress";
+	
+	public double getCollectionProgress();
+	public double getReductionProgress();
+	public double getAnalysisProgress();
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener);
+	public void removePropertyChangeListener(PropertyChangeListener listener);
 }

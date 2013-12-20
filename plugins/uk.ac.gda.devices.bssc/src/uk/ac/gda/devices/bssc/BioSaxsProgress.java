@@ -18,98 +18,43 @@
 
 package uk.ac.gda.devices.bssc;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import uk.ac.gda.beans.ObservableModel;
 
-public class BioSaxsMeasurement implements PropertyChangeListener {
-	private BioSaxsSession session;
-	private int wellRow;
-	private int wellColumn;
-	private String name;
-	private String position;
-	private int collectionProgress;
-	private int reductionProgress;
-	private int analysisProgress;
-	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+public class BioSaxsProgress extends ObservableModel implements ISampleProgress {
+	private double collectionProgress;
+	private double reductionProgress;
+	private double analysisProgress;
 
-	public BioSaxsMeasurement(BioSaxsSession session, int wellRow, int wellColumn, String name) {
-		this.session = session;
-		this.wellRow = wellRow;
-		this.wellColumn = wellColumn;
-		this.name = name;
-	}
+	public BioSaxsProgress() {
 
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-	}
-
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
-		propertyChangeSupport.removePropertyChangeListener(listener);
-	}
-
-	public int getWellRow() {
-		return wellRow;
-	}
-
-	public void setWellRow(int wellRow) {
-		propertyChangeSupport.firePropertyChange("wellRow", this.wellRow, this.wellRow = wellRow);
-	}
-
-	public int getWellColumn() {
-		return wellColumn;
-	}
-
-	public void setWellColumn(int wellColumn) {
-		propertyChangeSupport.firePropertyChange("wellColumn", this.wellColumn, this.wellColumn = wellColumn);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		propertyChangeSupport.firePropertyChange("name", this.name, this.name = name);
-	}
-
-	public String getSessionName() {
-		return session.getName();
-	}
-
-	public int getCollectionProgress() {
-		return collectionProgress;
-	}
-
-	public void setCollectionProgress(int collectionProgress) {
-		propertyChangeSupport.firePropertyChange("collectionProgress", this.collectionProgress,
-				this.collectionProgress = collectionProgress);
-	}
-
-	public int getReductionProgress() {
-		return reductionProgress;
-	}
-
-	public void setReductionProgress(int reductionProgress) {
-		propertyChangeSupport.firePropertyChange("reductionProgress", this.reductionProgress,
-				this.reductionProgress = reductionProgress);
-	}
-
-	public int getAnalysisProgress() {
-		return analysisProgress;
-	}
-
-	public void setAnalysisProgress(int analysisProgress) {
-		propertyChangeSupport.firePropertyChange("analysisProgress", this.analysisProgress,
-				this.analysisProgress = analysisProgress);
-	}
-
-	public String getPosition() {
-		position = "(" + wellRow + ", " + wellColumn + ")";
-		return position;
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		propertyChangeSupport.firePropertyChange("session", null, session);
+	public double getCollectionProgress() {
+		return collectionProgress;
 	}
+
+	@Override
+	public double getReductionProgress() {
+		return reductionProgress;
+	}
+
+	@Override
+	public double getAnalysisProgress() {
+		return analysisProgress;
+	}
+
+	public void setCollectionProgress(double newVal) {
+		firePropertyChange(ISampleProgress.COLLECTION_PROGRESS, this.collectionProgress,
+				this.collectionProgress = newVal);
+	}
+
+	public void setReductionProgress(double newVal) {
+		firePropertyChange(ISampleProgress.REDUCTION_PROGRESS, this.reductionProgress, this.reductionProgress = newVal);
+	}
+
+	public void setAnalysisProgress(double newVal) {
+		firePropertyChange(ISampleProgress.ANALYSIS_PROGRESS, this.analysisProgress, this.analysisProgress = newVal);
+	}
+
 }
