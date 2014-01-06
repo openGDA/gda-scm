@@ -115,10 +115,9 @@ public class BioSAXSProgressComposite extends Composite {
 
 		final IObservableMap reductionProgressValues = BeanProperties.value(ISampleProgress.class,
 				ISampleProgress.REDUCTION_PROGRESS).observeDetail(knownElements);
-		// viewerColumn3.setLabelProvider(new ObservableMapColumnLabelProvider(reductionProgressValues));
+
 		viewerColumn3.setLabelProvider(new ObservableMapOwnerDrawProvider(reductionProgressValues) {
 			org.eclipse.swt.graphics.Color green = null;
-			org.eclipse.swt.graphics.Color yellow = null;
 			org.eclipse.swt.graphics.Color original = null;
 
 			@Override
@@ -137,20 +136,15 @@ public class BioSAXSProgressComposite extends Composite {
 
 			@Override
 			protected void paint(Event event, Object element) {
-				if (green == null) {
-					original = event.gc.getBackground();
-					green = event.display.getSystemColor(SWT.COLOR_GREEN);
-					yellow = event.display.getSystemColor(SWT.COLOR_YELLOW);
-				}
+				green = event.display.getSystemColor(SWT.COLOR_GREEN);
+				event.gc.setBackground(green);
 
 				Object value = attributeMaps[0].get(element);
-				boolean complete = ((Double) value).intValue() > 10;
-				event.gc.setBackground(complete ? green : yellow);
 
 				int columnWidth = viewerColumn3.getColumn().getWidth();
 				int percentage = ((Double) value).intValue();
-				int percentageToFill = (int) ((columnWidth * 0.01) * percentage);
-				event.setBounds(new Rectangle(event.x, event.y, percentageToFill, (event.height - 1)));
+				int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
+				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
 
 				event.gc.fillRectangle(event.getBounds());
 			}
@@ -158,9 +152,9 @@ public class BioSAXSProgressComposite extends Composite {
 
 		final IObservableMap analysisProgressValues = BeanProperties.value(ISampleProgress.class,
 				ISampleProgress.ANALYSIS_PROGRESS).observeDetail(knownElements);
+
 		viewerColumn4.setLabelProvider(new ObservableMapOwnerDrawProvider(analysisProgressValues) {
 			org.eclipse.swt.graphics.Color green = null;
-			org.eclipse.swt.graphics.Color yellow = null;
 			org.eclipse.swt.graphics.Color original = null;
 
 			@Override
@@ -179,25 +173,21 @@ public class BioSAXSProgressComposite extends Composite {
 
 			@Override
 			protected void paint(Event event, Object element) {
-				if (green == null) {
-					original = event.gc.getBackground();
-					green = event.display.getSystemColor(SWT.COLOR_GREEN);
-					yellow = event.display.getSystemColor(SWT.COLOR_YELLOW);
-				}
+				green = event.display.getSystemColor(SWT.COLOR_GREEN);
+				event.gc.setBackground(green);
 
 				Object value = attributeMaps[0].get(element);
-				boolean complete = ((Double) value).intValue() > 10;
-				event.gc.setBackground(complete ? green : yellow);
 
 				int columnWidth = viewerColumn4.getColumn().getWidth();
 				int percentage = ((Double) value).intValue();
-				int percentageToFill = (int) ((columnWidth * 0.01) * percentage);
-				event.setBounds(new Rectangle(event.x, event.y, percentageToFill, (event.height - 1)));
+				int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
+				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
 
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
 
+		
 		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
 
 		if (model != null) {
