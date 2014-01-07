@@ -114,8 +114,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			throws SQLException {
 		long measurementId = -1;
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Measurement (" +
-				"specimenId, sampleId, runId, exposureTemperature, flow, viscosity) " +
-				"VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
+				"measurementId, specimenId, runId, exposureTemperature, flow, viscosity) " +
+				"VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?, ?) RETURNING measurementId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, sampleId);
 		stmt.setLong(2, runId);
