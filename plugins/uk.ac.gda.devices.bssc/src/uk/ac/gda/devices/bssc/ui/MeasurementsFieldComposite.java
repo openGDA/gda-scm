@@ -65,6 +65,8 @@ import org.eclipse.swt.widgets.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
+import uk.ac.gda.devices.bssc.ISampleProgressCollection;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.richbeans.components.FieldComposite;
@@ -83,6 +85,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 	private final RichBeanEditorPart rbeditor;
 	
 	Color okay, warning;
+
+	private ISampleProgressCollection progressModel;
 
 	private static final SimpleObjectTransfer TRANSFER = new SimpleObjectTransfer() {
 		private final String TYPE_NAME = "uk.ac.gda.devices.bssc.ui.TitrationBeanTransfer" + System.currentTimeMillis(); //$NON-NLS-1$
@@ -865,6 +869,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		this.value = value;
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.setInput(value);
+		
+		progressModel = new BioSAXSSampleProgressCollection(value);
 	}
 
 	@SuppressWarnings("unchecked")
