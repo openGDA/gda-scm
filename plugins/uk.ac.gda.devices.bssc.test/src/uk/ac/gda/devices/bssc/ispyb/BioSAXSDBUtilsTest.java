@@ -30,7 +30,7 @@ public class BioSAXSDBUtilsTest {
 
 		long experimentId = bioSAXSISPyB.createExperiment(proposalId, "test", "TEMPLATE", "test");
 
-		long sdc = bioSAXSISPyB.createSaxsDataCollection(experimentId);
+		long sdc = bioSAXSISPyB.createSaxsDataCollection(blsessionId, experimentId);
 		
 		long bufferId1 = bioSAXSISPyB.createBufferMeasurement(blsessionId, experimentId, (short)0, (short)1, (short)1, 20.0f, 21.0f, 10, 1.0, 2.0, 5.0, 10.0, 
 				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9990.nxs", "/entry1/detector/data");
