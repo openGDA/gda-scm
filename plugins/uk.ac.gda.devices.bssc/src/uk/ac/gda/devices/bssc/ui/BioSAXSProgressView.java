@@ -18,24 +18,32 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 public class BioSAXSProgressView extends ViewPart {
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsprogressview";
+	private BioSAXSProgressComposite bioSAXSComposite;
+	
 	public BioSAXSProgressView() {
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
-		new BioSAXSProgressComposite(parent, SWT.NONE);
+		bioSAXSComposite = new BioSAXSProgressComposite(parent, SWT.NONE);
 	}
 
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public Viewer getViewer()
+	{
+		return bioSAXSComposite.getViewer();
 	}
 }

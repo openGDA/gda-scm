@@ -36,6 +36,7 @@ import uk.ac.gda.richbeans.xml.string.StringStorage;
 
 public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 
+	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 	private IWorkbenchPage page;
 
 	@Override

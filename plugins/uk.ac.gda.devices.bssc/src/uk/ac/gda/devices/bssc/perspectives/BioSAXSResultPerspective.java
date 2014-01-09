@@ -22,13 +22,10 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
 public class BioSAXSResultPerspective implements IPerspectiveFactory {
-
+	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsresultperspective";
+	
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
-//		IFolderLayout folderLayout = layout.createFolder("folder", IPageLayout.BOTTOM, 0.73f,
-//				IPageLayout.ID_EDITOR_AREA);
-
-		// layout.addView("uk.ac.gda.devices.bssc.3DPlotView", IPageLayout.TOP, 0.45f, IPageLayout.ID_EDITOR_AREA);
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
 	}

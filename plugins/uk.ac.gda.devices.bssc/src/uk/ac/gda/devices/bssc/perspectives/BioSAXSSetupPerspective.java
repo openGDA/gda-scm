@@ -18,28 +18,13 @@
 
 package uk.ac.gda.devices.bssc.perspectives;
 
-import org.eclipse.core.resources.IStorage;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IStorageEditorInput;
-import org.eclipse.ui.IViewLayout;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPartReference;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-
-import uk.ac.gda.devices.bssc.ui.BioSAXSProgressView;
-import uk.ac.gda.richbeans.xml.string.StringInput;
-import uk.ac.gda.richbeans.xml.string.StringStorage;
 
 public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 
-	private IWorkbenchPage page;
+	public static String ID = "uk.ac.gda.devices.bssc.biosaxssetupperspective";
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {

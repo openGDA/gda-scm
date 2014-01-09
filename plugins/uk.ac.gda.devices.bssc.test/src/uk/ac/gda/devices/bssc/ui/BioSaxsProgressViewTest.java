@@ -12,12 +12,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import uk.ac.gda.devices.bssc.ISampleProgress;
 import uk.ac.gda.devices.bssc.ISampleProgressCollection;
 
 public class BioSaxsProgressViewTest {
+	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 	private static final Logger logger = LoggerFactory
 			.getLogger(BioSaxsProgressViewTest.class);
 	private static BioSAXSProgressView view;
@@ -38,6 +41,7 @@ public class BioSaxsProgressViewTest {
 	public static void setUpBeforeClass() throws Exception {
 		model = new MyISampleProgressCollection();
 		populateModel();
+		
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
 		modelReg.setClass(ISampleProgressCollection.class);
 		modelReg.setService(model);
@@ -64,15 +68,15 @@ public class BioSaxsProgressViewTest {
 	@Test
 	public void testMeasurementProgress() throws Exception {
 		ObservableList items = (ObservableList) model.getItems();
-		for (int i = 0; i < 100; i++) {
-			BioSaxsProgress e = new BioSaxsProgress();
-			items.add(e);
+		for (int i = 0; i < model.size(); i++) {
+			items.add(model.get(i));
 		}
-		for (int i = 0; i < 100; i++) {
+
+		for (int i = 0; i < model.size(); i++) {
 			for (int j = 0; j < 100; j++) {
-				((BioSaxsProgress) items.get(j)).setCollectionProgress(i + j);
-				((BioSaxsProgress) items.get(j)).setReductionProgress(i + j);
-				((BioSaxsProgress) items.get(j)).setAnalysisProgress(i + j);
+				((BioSaxsProgress) items.get(i)).setCollectionProgress(i + j);
+				((BioSaxsProgress) items.get(i)).setReductionProgress(i + j);
+				((BioSaxsProgress) items.get(i)).setAnalysisProgress(i + j);
 			}
 			delay(50);
 		}
@@ -84,6 +88,15 @@ public class BioSaxsProgressViewTest {
 		// Add test here to assert that when a measurement is selectecd then the
 		// correct editor part is opened
 		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testAddMeasurementToModel() {
+		ObservableList items = (ObservableList) model.getItems();
+		items.add(new BioSaxsProgress());
+		view.getViewer().refresh();
+		Assert.assertEquals(21, ((TableViewer) view.getViewer()).getTable()
+				.getItemCount());
 	}
 
 	@AfterClass

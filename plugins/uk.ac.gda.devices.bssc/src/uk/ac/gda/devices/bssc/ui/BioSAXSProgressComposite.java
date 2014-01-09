@@ -28,6 +28,7 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -43,8 +44,9 @@ import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider.Contr
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.ISampleProgress;
 import uk.ac.gda.devices.bssc.ISampleProgressCollection;
+import uk.ac.gda.richbeans.components.FieldComposite;
 
-public class BioSAXSProgressComposite extends Composite {
+public class BioSAXSProgressComposite extends FieldComposite {
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
 	private ISampleProgressCollection model;
@@ -194,5 +196,20 @@ public class BioSAXSProgressComposite extends Composite {
 			IObservableList input = model.getItems();
 			bioSaxsProgressViewer.setInput(input);
 		}
+	}
+
+	public Viewer getViewer() {
+		return bioSaxsProgressViewer;
+	}
+
+	@Override
+	public Object getValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setValue(Object value) {
+		System.out.println();
 	}
 }
