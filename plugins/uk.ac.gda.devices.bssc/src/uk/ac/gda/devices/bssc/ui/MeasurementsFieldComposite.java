@@ -343,6 +343,76 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				((TitrationBean) element).setSampleName(String.valueOf(value));
 				super.setValue(element, value);
 			}
+		} }, { "Concentration", 100, new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				return String.format("%5.5f", tb.getConcentration());
+			}
+		}, new OurEditingSupport() {
+			@Override
+			protected CellEditor getOurCellEditor(Object element) {
+				return new DoubleCellEditor(viewer.getTable());
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				return ((TitrationBean) element).getConcentration();
+			}
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				((TitrationBean) element).setConcentration((Double) value);
+				super.setValue(element, value);
+			}
+		} }, { "Viscosity", 75, new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				return tb.getViscosity();
+			}
+		}, new OurEditingSupport() {
+			@Override
+			protected CellEditor getOurCellEditor(Object element) {
+				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
+				ce.setContentProvider(new ArrayContentProvider());
+				ce.setLabelProvider(new LabelProvider());
+				ce.setInput(new String[] { "low", "medium", "high" });
+				return ce;
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				return ((TitrationBean) element).getViscosity();
+			}
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				((TitrationBean) element).setViscosity(String.valueOf(value));
+				super.setValue(element, value);
+			}
+		} }, { "Molecular\nWeight", 90, new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				return String.valueOf(tb.getMolecularWeight());
+			}
+		}, new OurEditingSupport() {
+			@Override
+			protected CellEditor getOurCellEditor(Object element) {
+				return new DoubleCellEditor(viewer.getTable());
+			}
+
+			@Override
+			protected Object getValue(Object element) {
+				return ((TitrationBean) element).getMolecularWeight();
+			}
+
+			@Override
+			protected void setValue(Object element, Object value) {
+				((TitrationBean) element).setMolecularWeight(((Number) value).doubleValue());
+				super.setValue(element, value);
+			}
 		} }, { "Buffer\nPlate", 50, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -608,54 +678,6 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				tb.getRecouperateLocation().setColumn(Integer.valueOf((String) value).shortValue());
 				super.setValue(element, value);
 			}
-		} }, { "Concentration", 100, new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TitrationBean tb = (TitrationBean) element;
-				return String.format("%5.5f", tb.getConcentration());
-			}
-		}, new OurEditingSupport() {
-			@Override
-			protected CellEditor getOurCellEditor(Object element) {
-				return new DoubleCellEditor(viewer.getTable());
-			}
-
-			@Override
-			protected Object getValue(Object element) {
-				return ((TitrationBean) element).getConcentration();
-			}
-
-			@Override
-			protected void setValue(Object element, Object value) {
-				((TitrationBean) element).setConcentration((Double) value);
-				super.setValue(element, value);
-			}
-		} }, { "Viscosity", 75, new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TitrationBean tb = (TitrationBean) element;
-				return tb.getViscosity();
-			}
-		}, new OurEditingSupport() {
-			@Override
-			protected CellEditor getOurCellEditor(Object element) {
-				ComboBoxViewerCellEditor ce = new ComboBoxViewerCellEditor((Composite) viewer.getControl());
-				ce.setContentProvider(new ArrayContentProvider());
-				ce.setLabelProvider(new LabelProvider());
-				ce.setInput(new String[] { "low", "medium", "high" });
-				return ce;
-			}
-
-			@Override
-			protected Object getValue(Object element) {
-				return ((TitrationBean) element).getViscosity();
-			}
-
-			@Override
-			protected void setValue(Object element, Object value) {
-				((TitrationBean) element).setViscosity(String.valueOf(value));
-				super.setValue(element, value);
-			}
 		} }, { "Time per\nFrame", 80, new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -720,28 +742,6 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			protected void setValue(Object element, Object value) {
 				((TitrationBean) element).setExposureTemperature(((Number) value).floatValue());
-				super.setValue(element, value);
-			}
-		} }, { "Molecular\nWeight", 90, new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				TitrationBean tb = (TitrationBean) element;
-				return String.valueOf(tb.getMolecularWeight());
-			}
-		}, new OurEditingSupport() {
-			@Override
-			protected CellEditor getOurCellEditor(Object element) {
-				return new DoubleCellEditor(viewer.getTable());
-			}
-
-			@Override
-			protected Object getValue(Object element) {
-				return ((TitrationBean) element).getMolecularWeight();
-			}
-
-			@Override
-			protected void setValue(Object element, Object value) {
-				((TitrationBean) element).setMolecularWeight(((Number) value).doubleValue());
 				super.setValue(element, value);
 			}
 		} } };
