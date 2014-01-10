@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider.ControlFactoryAndUpdater;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
+import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
 import uk.ac.gda.devices.bssc.ISampleProgress;
 import uk.ac.gda.devices.bssc.ISampleProgressCollection;
 import uk.ac.gda.richbeans.components.FieldComposite;
@@ -189,6 +190,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
+		BioSAXSSampleProgressCollection bioSAXSSampleProgressCollection = new BioSAXSSampleProgressCollection();
 		
 		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
 

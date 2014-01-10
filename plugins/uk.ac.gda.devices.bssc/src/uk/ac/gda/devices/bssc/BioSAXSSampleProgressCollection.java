@@ -36,9 +36,8 @@ public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> 
 
 	WritableList items;
 
-	public BioSAXSSampleProgressCollection(Object value) {
-		items = new WritableList((List<?>) value,
-				ISampleProgress.class);
+	public BioSAXSSampleProgressCollection() {
+
 	}
 
 	@Override
