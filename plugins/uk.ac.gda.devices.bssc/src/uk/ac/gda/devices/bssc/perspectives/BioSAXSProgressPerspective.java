@@ -53,7 +53,6 @@ public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
 
-
 		// Need add listener to workbench to always have at least one editor available
 		final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		page = window.getActivePage();
@@ -67,13 +66,15 @@ public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 						IStorage storage = new StringStorage(string);
 						IStorageEditorInput input = new StringInput(storage);
 						IWorkbenchPage page = window.getActivePage();
-						if (page != null)
-							try {
-								page.openEditor(input, "org.eclipse.ui.DefaultTextEditor");
-							} catch (PartInitException e) {
-								// TODO Auto-generated catch block
-								// logger.error("TODO put description of error here", e);
-							}
+
+						// open a new blank editor here
+						// if (page != null)
+						// try {
+						// page.openEditor(input, "org.eclipse.ui.DefaultTextEditor");
+						// } catch (PartInitException e) {
+						// // TODO Auto-generated catch block
+						// // logger.error("TODO put description of error here", e);
+						// }
 					}
 				}
 			}
