@@ -33,6 +33,23 @@ import uk.ac.gda.devices.bssc.beans.TitrationBean;
 public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 
 	private static final Logger logger = LoggerFactory.getLogger(BSSCImportWizardPage.class);
+	private static final int PLATE_COL_NO = 0;
+	private static final int PLATE_ROW_COL_NO = 1;
+	private static final int PLATE_COLUMN_COL_NO = 2;
+	private static final int SAMPLE_NAME_COL_NO = 3;
+	private static final int CONCENTRATION_COL_NO = 4;
+	private static final int VISCOSITY_COL_NO = 5;
+	private static final int MOLECULAR_WEIGHT_COL_NO = 6;
+	private static final int BUFFER_PLATE_COL_NO = 7;
+	private static final int BUFFER_ROW_COL_NO = 8;
+	private static final int BUFFER_COLUMN_COL_NO = 9;
+	private static final int RECOUP_COL_NO = 10;
+	private static final int RECOUP_PLATE_COL_NO = 11;
+	private static final int RECOUP_ROW_COL_NO = 12;
+	private static final int RECOUP_COLUMN_COL_NO = 13;
+	private static final int TIME_PER_FRAME_COL_NO = 14;
+	private static final int FRAMES_COL_NO = 15;
+	private static final int EXPOSURE_TEMP_COL_NO = 16;
 
 	protected FileFieldEditor editor;
 	private float sampleStorageTemperature = 15;
@@ -110,31 +127,32 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 				try {
 					TitrationBean tibi = new TitrationBean();
 	
-					LocationBean location = locationFromCells(row.getCell(0), row.getCell(1), row.getCell(2));
+					LocationBean location = locationFromCells(row.getCell(PLATE_COL_NO), row.getCell(PLATE_ROW_COL_NO), row.getCell(PLATE_COLUMN_COL_NO));
 					if (!location.isValid())
 						throw new Exception("invalid sample location");
 					tibi.setLocation(location);
 				
-					tibi.setSampleName(row.getCell(3).getStringCellValue());
+					tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
 	
-					location = locationFromCells(row.getCell(4), row.getCell(5), row.getCell(6));
+					location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
 					if (!location.isValid())
 						throw new Exception("invalid buffer location");
 					tibi.setBufferLocation(location);
 	
 					try {
-						location = locationFromCells(row.getCell(7), row.getCell(8), row.getCell(9));
+						location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO), row.getCell(RECOUP_COLUMN_COL_NO));
 						if (!location.isValid())
 							location = null;
 					} catch (Exception e) {
 						location = null;
 					}
 					tibi.setRecouperateLocation(location);
-					tibi.setConcentration(row.getCell(10).getNumericCellValue()); 
-					tibi.setViscosity(row.getCell(11).getStringCellValue());
-					tibi.setTimePerFrame(row.getCell(12).getNumericCellValue());
-					tibi.setFrames((int) row.getCell(13).getNumericCellValue()); 
-					tibi.setExposureTemperature((float) row.getCell(14).getNumericCellValue()); 
+					tibi.setConcentration(row.getCell(CONCENTRATION_COL_NO).getNumericCellValue()); 
+					tibi.setViscosity(row.getCell(VISCOSITY_COL_NO).getStringCellValue());
+					tibi.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL_NO).getNumericCellValue());
+					tibi.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL_NO).getNumericCellValue());
+					tibi.setFrames((int) row.getCell(FRAMES_COL_NO).getNumericCellValue()); 
+					tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue()); 
 	
 					measurements.add(tibi);
 				} catch (Exception e) {
