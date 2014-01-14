@@ -43,13 +43,13 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 	private static final int BUFFER_PLATE_COL_NO = 7;
 	private static final int BUFFER_ROW_COL_NO = 8;
 	private static final int BUFFER_COLUMN_COL_NO = 9;
-	private static final int RECOUP_COL_NO = 10;
-	private static final int RECOUP_PLATE_COL_NO = 11;
-	private static final int RECOUP_ROW_COL_NO = 12;
-	private static final int RECOUP_COLUMN_COL_NO = 13;
-	private static final int TIME_PER_FRAME_COL_NO = 14;
-	private static final int FRAMES_COL_NO = 15;
-	private static final int EXPOSURE_TEMP_COL_NO = 16;
+//	private static final int RECOUP_COL_NO = 10;
+	private static final int RECOUP_PLATE_COL_NO = 10;
+	private static final int RECOUP_ROW_COL_NO = 11;
+	private static final int RECOUP_COLUMN_COL_NO = 12;
+	private static final int TIME_PER_FRAME_COL_NO = 13;
+	private static final int FRAMES_COL_NO = 14;
+	private static final int EXPOSURE_TEMP_COL_NO = 15;
 
 	protected FileFieldEditor editor;
 	private float sampleStorageTemperature = 15;
