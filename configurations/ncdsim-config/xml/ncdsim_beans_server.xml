@@ -1,8 +1,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gda="http://www.diamond.ac.uk/schema/gda/gda"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:gda="http://www.diamond.ac.uk/schema/gda/gda"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
 	http://www.diamond.ac.uk/schema/gda/gda http://www.diamond.ac.uk/schema/gda/gda/gda-gda-1.0.xsd
 	http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.1.xsd">
 	<gda:rbac />
@@ -23,13 +25,14 @@
 				<bean id="instrument" class="gda.data.metadata.PropertyMetadataEntry">
 					<property name="propertyName" value="gda.instrument" />
 				</bean>
-				<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
-					<property name="value" value="undefined" />
-				</bean>
+<!-- 				<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry"> -->
+<!-- 					<property name="value" value="undefined" /> -->
+<!-- 				</bean> -->
 				<bean id="instrument.monochromator.energy" class="gda.data.metadata.ScannableMetadataEntry">
 					<property name="name" value="instrument.monochromator.energy" />
 					<property name="scannableName" value="bkeV" />
 				</bean>
+				<ref bean="title" />
 				<ref bean="subdirectory" />
 				<ref bean="samplename" />
 			</list>
@@ -37,8 +40,17 @@
 	</bean>
 
 	<bean id="subdirectory" class="gda.data.metadata.SubdirectoryMetadataEntry" />
+	
+	<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
+		<property name="value" value="undefined" />
+	</bean>
+	
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSubdirectory">
 		<property name="storedMetadataEntry" ref="subdirectory" />
+	</bean>
+	
+	<bean class="gda.data.metadata.MetadataBlaster" id="observableScanTitle">
+		<property name="storedMetadataEntry" ref="title" />
 	</bean>
 
 	<bean class="gda.data.metadata.StoredMetadataEntry" id="samplename">
@@ -371,4 +383,14 @@
 		<property name="local" value="false" />
 	</bean>
 	<corba:export namespace="ncdsim" />
+	
+	<bean id="biosaxsprocessingrunner" class="uk.ac.gda.server.ncd.data.ProcessingRunner">
+		<property name="environment">
+			<map>
+				<entry key="DAWN" value="/dev/null" />
+			</map>
+		</property>
+		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" />
+	</bean>
+	
 </beans>
