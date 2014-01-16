@@ -184,9 +184,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.setLong(2,  blsessionId);
 		stmt.setString(3, name);
 
-		stmt.registerOutParameter(3, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
 		stmt.execute();
-		samplePlateId = stmt.getLong(3);
+		samplePlateId = stmt.getLong(4);
 		stmt.close();
 
 		return samplePlateId;
