@@ -454,7 +454,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long experimentId = -1;
 
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Experiment (" +
-				"experimentId, proposalId, name, experimentType, sourceFilePath, comments, dataAcquisitionFilePath) " +
+				"experimentId, proposalId, name, experimentType, comments) " +
 				"VALUES (ispyb4a_db.s_Experiment.nextval, ?, ?, ?, ?) RETURNING experimentId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, proposalId);
