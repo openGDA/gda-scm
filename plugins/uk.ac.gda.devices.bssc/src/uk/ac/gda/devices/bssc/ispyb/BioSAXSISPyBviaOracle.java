@@ -122,7 +122,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	public long createSaxsDataCollection(long blsessionId, long experimentId) throws SQLException {
 		long saxsDataCollectionId = -1;
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SaxsDataCollection (datacollectionId, blsessionId, experimentId) " +
-				"VALUES (ispyb4a_db.s_SaxsDataCollection.nextval, ?) RETURNING datacollectionId INTO ?, ?; END;";
+				"VALUES (ispyb4a_db.s_SaxsDataCollection.nextval, ?, ?) RETURNING datacollectionId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, blsessionId);
 		stmt.setLong(2, experimentId);
