@@ -40,6 +40,9 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
  */
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
+	private static final String DATA_REDUCTION_STARTED = "DataReductionStarted";
+	private static final String DATA_REDUCTION_ERROR = "DataReductionError";
+
 	Connection conn = null;
 	String URL = null;
 	
@@ -356,6 +359,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, null, samplePlatePositionId, null, 0., volume);
 		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);		
+		@SuppressWarnings("unused")
 		long frameSetId = createFrameSet(runId, fileName, internalPath);
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
 		return measurementId;
@@ -376,6 +380,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId, null, concentration, volume);
 		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);		
+		@SuppressWarnings("unused")
 		long frameSetId = createFrameSet(runId, fileName, internalPath);
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
 		return measurementId;
@@ -453,6 +458,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	public long createExperiment(long proposalId, String name, String experimentType, String comments) throws SQLException {
 		long experimentId = -1;
 
+		connectIfNotConnected();
+
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Experiment (" +
 				"experimentId, proposalId, name, experimentType, comments) " +
 				"VALUES (ispyb4a_db.s_Experiment.nextval, ?, ?, ?, ?) RETURNING experimentId INTO ?; END;";
@@ -490,6 +497,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return proposalId;
 	}
 
+	@SuppressWarnings("unused")
 	private long getProposalFromExperiment(long experimentId) throws SQLException {
 		long proposalId = -1;
 
@@ -509,5 +517,140 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.close();
 
 		return proposalId;
+	}
+
+
+	@Override
+	public long getDataCollectionForExperiment(long experimentId) throws SQLException {
+		long dataCollectionId = -1;
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT dataCollectionId FROM ispyb4a_db.SaxsDataCollection sd WHERE sd.experimentId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, experimentId);
+		boolean success = stmt.execute();
+		if (success){
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) 
+				dataCollectionId = rs.getLong(1);
+			rs.close();
+		}
+		stmt.close();
+
+		return dataCollectionId;
+	}
+
+	@Override
+	public long createDataReductionStarted(long dataCollectionId) throws SQLException {
+		long subtractionId = -1;
+
+		connectIfNotConnected();
+
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Subtraction (" +
+				"subtractionId, dataCollectionId, gnomFilePath) " +
+				"VALUES (ispyb4a_db.s_Subtraction.nextval, ?, ?) RETURNING experimentId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		int index = 1;
+		stmt.setLong(index++, dataCollectionId);
+		stmt.setString(index++, DATA_REDUCTION_STARTED);
+
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
+		stmt.execute();
+		subtractionId = stmt.getLong(index);
+		stmt.close();
+		return subtractionId;
+	}
+
+	@Override
+	public boolean isDataReductionRunning(long subtractionId) throws SQLException {
+		String gnomFilePath = getGnomFilePathFromSubtraction(subtractionId);
+
+		return (gnomFilePath != null) && (gnomFilePath.equals(DATA_REDUCTION_STARTED));
+	}
+
+	@Override
+	public boolean clearDataReductionStarted(long subtractionId) {
+		try {	
+			//now remove the current dataCollectionId so that it's effectively been deleted
+			String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET dataCollectionId=-1 WHERE su.subtractionId = ?";
+			PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+			stmt1.setLong(1, subtractionId);
+			boolean success1 = stmt1.execute();
+			return success1;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
+
+	private String getGnomFilePathFromSubtraction(long subtractionId) throws SQLException {
+		String gnomFilePath = null;
+		connectIfNotConnected();
+		String selectSql = "SELECT gnomFilePath FROM ispyb4a_db.Subtraction su WHERE su.subtractionId = ?";
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, subtractionId);
+		boolean success = stmt.execute();
+		if (success){
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) 
+				gnomFilePath = rs.getString(1);
+			rs.close();
+		}
+		stmt.close();
+		return gnomFilePath;
+	}
+
+	@Override
+	public boolean isDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+		String gnomFilePath = getGnomFilePathFromSubtraction(dataCollectionId);
+		return (gnomFilePath != null && gnomFilePath.equals(DATA_REDUCTION_ERROR));
+	}
+
+
+	@Override
+	public void setDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		int index = 1;
+		stmt1.setString(index++, DATA_REDUCTION_ERROR);
+		stmt1.setLong(index++, dataCollectionId);
+
+		@SuppressWarnings("unused")
+		boolean success1 = stmt1.execute();
+		return;
+	}
+
+	@Override
+	public boolean isDataReductionFailed(long dataCollectionId) throws SQLException {
+		String rg = null;
+		String rgGnom = null;
+		String gnomFilePath = null;
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT rg, rggnom, subtractedFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, dataCollectionId);
+		boolean success = stmt.execute();
+		if (success){
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				rg = rs.getString(1);
+				rgGnom = rs.getString(2);
+				gnomFilePath = rs.getString(3);
+			}
+
+			rs.close();
+		}
+		stmt.close();
+
+		return (gnomFilePath == null || rg == null || rgGnom == null);
+	}
+
+	@Override
+	public boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
+		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
 	}
 }
