@@ -393,7 +393,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		
 		connectIfNotConnected();
 
-		String selectSql = "SELECT ispyb4a_db.sampleplate.name AS plate, ispyb4a_db.sampleplateposition.rownumber, ispyb4a_db.sampleplateposition.columnnumber, ispyb4a_db.stocksolution.name, ispyb4a_db.frameset.filepath FROM ispyb4a_db.MeasurementToDataCollection INNER JOIN ispyb4a_db.measurement ON ispyb4a_db.MeasurementToDataCollection.measurementid = ispyb4a_db.measurement.specimenid INNER JOIN ispyb4a_db.specimen ON ispyb4a_db.measurement.specimenid = ispyb4a_db.specimen.specimenid INNER JOIN ispyb4a_db.frameset ON ispyb4a_db.measurement.runid = ispyb4a_db.frameset.runid INNER JOIN ispyb4a_db.sampleplateposition ON ispyb4a_db.sample.sampleplatepositionid = ispyb4a_db.sampleplateposition.sampleplatepositionid INNER JOIN ispyb4a_db.sampleplate ON ispyb4a_db.sampleplate.sampleplateid = ispyb4a_db.sampleplateposition.sampleplateid LEFT JOIN ispyb4a_db.stocksolution ON ispyb4a_db.specimen.stocksolutionid = ispyb4a_db.stocksolution.stocksolutionid WHERE ispyb4a_db.MeasurementToDataCollection.dataCollectionId=? ORDER BY ispyb4a_db.MeasurementToDataCollection.datacollectionorder ASC";
+		String selectSql = "SELECT ispyb4a_db.sampleplate.name AS plate, ispyb4a_db.sampleplateposition.rownumber, ispyb4a_db.sampleplateposition.columnnumber, ispyb4a_db.stocksolution.name, ispyb4a_db.frameset.filepath FROM ispyb4a_db.MeasurementToDataCollection INNER JOIN ispyb4a_db.measurement ON ispyb4a_db.MeasurementToDataCollection.measurementid = ispyb4a_db.measurement.specimenid INNER JOIN ispyb4a_db.specimen ON ispyb4a_db.measurement.specimenid = ispyb4a_db.specimen.specimenid INNER JOIN ispyb4a_db.frameset ON ispyb4a_db.measurement.runid = ispyb4a_db.frameset.runid INNER JOIN ispyb4a_db.sampleplateposition ON ispyb4a_db.specimen.sampleplatepositionid = ispyb4a_db.sampleplateposition.sampleplatepositionid INNER JOIN ispyb4a_db.sampleplate ON ispyb4a_db.sampleplate.sampleplateid = ispyb4a_db.sampleplateposition.sampleplateid LEFT JOIN ispyb4a_db.stocksolution ON ispyb4a_db.specimen.stocksolutionid = ispyb4a_db.stocksolution.stocksolutionid WHERE ispyb4a_db.MeasurementToDataCollection.dataCollectionId=? ORDER BY ispyb4a_db.MeasurementToDataCollection.datacollectionorder ASC";
 			
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, saxsDataCollectionId);
@@ -429,6 +429,48 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return sinfos;
 	}
 
+	@Override
+	public List<SampleInfo> getSaxsSamples(long sessionId) throws SQLException {
+		List<SampleInfo> sinfos = new ArrayList<SampleInfo>();
+		SampleInfo sinfo = new SampleInfo();
+		
+		connectIfNotConnected();
+
+		String selectSql = "SELECT * FROM ispyb4a_db.Specimen";
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, sessionId);
+		boolean success = stmt.execute();
+		if (success){
+			ResultSet rs = stmt.getResultSet();
+			while (rs.next()) {
+				String name = rs.getString(4);
+				String filename = rs.getString(5);
+				if (name == null) {
+					if (sinfo.name == null) {
+						sinfo.bufferBeforeFileName = filename;
+					} else {
+						sinfo.bufferAfterFileName = filename;
+						sinfos.add(sinfo);
+						sinfo = new SampleInfo();
+						sinfo.bufferBeforeFileName = filename;
+					}
+				} else {
+					sinfo.name = name;
+					sinfo.sampleFileName = filename;
+					LocationBean loc = new LocationBean();
+					loc.setPlate(Short.parseShort(rs.getString(1)));
+					loc.setRow((char) ('A' + rs.getInt(2) - 1));
+					loc.setColumn(rs.getShort(3));
+					sinfo.location = loc;
+				}
+			}
+			rs.close();
+			stmt.close();
+		}
+
+		return sinfos;
+	}
+	
 	@Override
 	public List<Long> getSaxsDataCollectionsForSession(long blsessionId) throws SQLException {
 		List<Long> collections = new ArrayList<Long>();
