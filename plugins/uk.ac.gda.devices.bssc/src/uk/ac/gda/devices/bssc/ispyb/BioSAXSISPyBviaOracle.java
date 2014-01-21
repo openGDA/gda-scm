@@ -436,9 +436,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		
 		connectIfNotConnected();
 
-		String selectSql = "SELECT * FROM ispyb4a_db.Specimen";
+		String selectSql = "SELECT ispyb4a_db.specimen.specimenId FROM ispyb4a_db.Specimen";
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, sessionId);
+//		stmt.setLong(1, sessionId);
 		boolean success = stmt.execute();
 		if (success){
 			ResultSet rs = stmt.getResultSet();
