@@ -22,7 +22,9 @@ import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 
-public interface ISampleProgressCollection extends List<ISampleProgress>{
+import uk.ac.gda.devices.bssc.ispyb.SampleInfo;
+
+public interface ISampleProgressCollection extends List<SampleInfo>{
 	//To allow the list to be updated outside of the UI we need to return an ObservableList whose getElementType returns MvcExampleItem
 	//rather than a List
 	IObservableList getItems();

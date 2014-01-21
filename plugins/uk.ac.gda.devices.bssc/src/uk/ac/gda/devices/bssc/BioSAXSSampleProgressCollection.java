@@ -27,14 +27,17 @@ import java.util.ListIterator;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 
-public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress>  implements ISampleProgressCollection {
+import uk.ac.gda.devices.bssc.ispyb.SampleInfo;
+
+public class BioSAXSSampleProgressCollection extends ArrayList<SampleInfo> implements ISampleProgressCollection {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	WritableList items;
+	WritableList items = new WritableList(new ArrayList<SampleInfo>(),
+			SampleInfo.class);
 
 	public BioSAXSSampleProgressCollection() {
 
