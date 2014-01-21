@@ -20,12 +20,17 @@ package uk.ac.gda.devices.bssc;
 
 import uk.ac.gda.beans.ObservableModel;
 
-public class BioSaxsProgress extends ObservableModel implements ISampleProgress {
+public class BioSaxsSampleProgress extends ObservableModel implements ISampleProgress {
 	private double collectionProgress;
 	private double reductionProgress;
 	private double analysisProgress;
+	private String experimentId;
+	private String sampleName;
+	private String collectionStatus;
+	private String reductionStatus;
+	private String analysisStatus;
 
-	public BioSaxsProgress() {
+	public BioSaxsSampleProgress() {
 
 	}
 
@@ -55,6 +60,46 @@ public class BioSaxsProgress extends ObservableModel implements ISampleProgress 
 
 	public void setAnalysisProgress(double newVal) {
 		firePropertyChange(ISampleProgress.ANALYSIS_PROGRESS, this.analysisProgress, this.analysisProgress = newVal);
+	}
+
+	public String getExperimentId() {
+		return experimentId;
+	}
+
+	public void setExperimentId(String experimentId) {
+		this.experimentId = experimentId;
+	}
+
+	public String getSampleName() {
+		return sampleName;
+	}
+
+	public void setSampleName(String sampleName) {
+		this.sampleName = sampleName;
+	}
+
+	public String getCollectionStatus() {
+		return collectionStatus;
+	}
+
+	public void setCollectionStatus(String collectionStatus) {
+		this.collectionStatus = collectionStatus;
+	}
+
+	public String getReductionStatus() {
+		return reductionStatus;
+	}
+
+	public void setReductionStatus(String reductionStatus) {
+		this.reductionStatus = reductionStatus;
+	}
+
+	public String getAnalysisStatus() {
+		return analysisStatus;
+	}
+
+	public void setAnalysisStatus(String analysisStatus) {
+		this.analysisStatus = analysisStatus;
 	}
 
 }

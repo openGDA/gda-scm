@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Properties;
 
 import oracle.jdbc.OracleConnection;
+import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
+import uk.ac.gda.devices.bssc.ISampleProgress;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 
 /*
@@ -427,8 +429,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public List<SampleInfo> getSaxsSamples() throws SQLException {
-		List<SampleInfo> sinfos = new ArrayList<SampleInfo>();
+	public List<ISampleProgress> getSaxsSamples() throws SQLException {
+		List<ISampleProgress> sinfos = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
 		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid";
@@ -438,11 +440,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
 			while (rs.next()) {
-				SampleInfo sinfo = new SampleInfo();
-				sinfo.setExperimentId(rs.getString(1));
-				sinfo.setSampleId(rs.getString(2));
-				sinfo.setName(rs.getString(3));
-				sinfos.add(sinfo);
+				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
+				bioSaxsProgress.setExperimentId(rs.getString(1));
+				bioSaxsProgress.setSampleName(rs.getString(3));
+				sinfos.add(bioSaxsProgress);
 			}
 			rs.close();
 			stmt.close();

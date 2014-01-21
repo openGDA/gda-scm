@@ -29,15 +29,15 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 
 import uk.ac.gda.devices.bssc.ispyb.SampleInfo;
 
-public class BioSAXSSampleProgressCollection extends ArrayList<SampleInfo> implements ISampleProgressCollection {
+public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> implements ISampleProgressCollection {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	WritableList items = new WritableList(new ArrayList<SampleInfo>(),
-			SampleInfo.class);
+	WritableList items = new WritableList(new ArrayList<ISampleProgress>(),
+			ISampleProgress.class);
 
 	public BioSAXSSampleProgressCollection() {
 
@@ -46,6 +46,11 @@ public class BioSAXSSampleProgressCollection extends ArrayList<SampleInfo> imple
 	@Override
 	public WritableList getItems() {
 		return items;
+	}
+
+	@Override
+	public void clearItems() {
+		items.clear();
 	}
 
 }
