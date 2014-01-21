@@ -429,8 +429,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public List<ISampleProgress> getSaxsSamples() throws SQLException {
-		List<ISampleProgress> sinfos = new ArrayList<ISampleProgress>();
+	public List<ISampleProgress> getBioSAXSSamples() throws SQLException {
+		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
 		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid";
@@ -443,13 +443,40 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
 				bioSaxsProgress.setExperimentId(rs.getString(1));
 				bioSaxsProgress.setSampleName(rs.getString(3));
-				sinfos.add(bioSaxsProgress);
+				samples.add(bioSaxsProgress);
 			}
 			rs.close();
 			stmt.close();
 		}
 
-		return sinfos;
+		return samples;
+	}
+
+	@Override
+	public List<ISampleProgress> getBioSAXSSamples(String experimentId) throws SQLException {
+		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
+		connectIfNotConnected();
+
+		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid";
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		// stmt.setLong(1, sessionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			while (rs.next()) {
+				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
+				String expID = rs.getString(1);
+				if (expID.equals(experimentId)) {
+					bioSaxsProgress.setExperimentId(expID);
+					bioSaxsProgress.setSampleName(rs.getString(3));
+					samples.add(bioSaxsProgress);
+				}
+			}
+			rs.close();
+			stmt.close();
+		}
+
+		return samples;
 	}
 
 	@Override

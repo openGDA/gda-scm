@@ -271,7 +271,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 		try {
-			model.getItems().addAll(bioSAXSISPyB.getSaxsSamples());
+			model.getItems().addAll(bioSAXSISPyB.getBioSAXSSamples());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			// logger.error("TODO put description of error here", e);
