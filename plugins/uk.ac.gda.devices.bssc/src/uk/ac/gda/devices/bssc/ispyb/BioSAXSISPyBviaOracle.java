@@ -433,7 +433,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
-		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid";
+		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid ORDER BY ispyb4a_db.specimen.experimentId ASC";
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		// stmt.setLong(1, sessionId);
 		boolean success = stmt.execute();

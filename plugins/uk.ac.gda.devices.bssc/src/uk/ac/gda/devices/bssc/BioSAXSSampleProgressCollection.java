@@ -19,25 +19,17 @@
 package uk.ac.gda.devices.bssc;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 
-import uk.ac.gda.devices.bssc.ispyb.SampleInfo;
-
 public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> implements ISampleProgressCollection {
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	WritableList items = new WritableList(new ArrayList<ISampleProgress>(),
-			ISampleProgress.class);
+	WritableList items = new WritableList(new ArrayList<ISampleProgress>(), ISampleProgress.class);
 
 	public BioSAXSSampleProgressCollection() {
 
@@ -50,7 +42,24 @@ public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> 
 
 	@Override
 	public void clearItems() {
-		items.clear();
+		items.getRealm().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				items.clear();
+			}
+		});
+	}
+
+	@Override
+	public void addItems(final List<ISampleProgress> bioSAXSSamples) {
+		items.getRealm().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				items.addAll(bioSAXSSamples);
+			}
+		});
+
 	}
 
 }

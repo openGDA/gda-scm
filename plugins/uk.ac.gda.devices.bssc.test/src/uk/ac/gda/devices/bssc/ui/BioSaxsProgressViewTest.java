@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 import gda.rcp.util.OSGIServiceRegister;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
@@ -176,6 +177,11 @@ class MyISampleProgressCollection extends ArrayList<ISampleProgress> implements
 	@Override
 	public void clearItems() {
 		items.clear();
+	}
+
+	@Override
+	public void addItems(List<ISampleProgress> bioSAXSSamples) {
+		items.add(bioSAXSSamples);
 	}
 
 }

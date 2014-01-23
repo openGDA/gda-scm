@@ -31,7 +31,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 	private String analysisStatus;
 
 	public BioSaxsSampleProgress() {
-
+		
 	}
 
 	@Override

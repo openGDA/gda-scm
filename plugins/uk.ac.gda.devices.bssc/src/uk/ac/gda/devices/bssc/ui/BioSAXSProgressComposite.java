@@ -27,6 +27,10 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -36,14 +40,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider;
-import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider.ControlFactoryAndUpdater;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
 import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
@@ -54,6 +57,7 @@ import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
 import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
+	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
 	private ISampleProgressCollection model;
@@ -86,19 +90,19 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		TableColumn column3 = viewerColumn3.getColumn();
 		column3.setWidth(80);
 		column3.setResizable(true);
-		column3.setText("Collection\nProgress");
+		column3.setText("Collection\nStatus");
 
 		final TableViewerColumn viewerColumn4 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
 		TableColumn column4 = viewerColumn4.getColumn();
 		column4.setWidth(80);
 		column4.setResizable(true);
-		column4.setText("Reduction\nProgress");
+		column4.setText("Reduction\nStatus");
 
 		final TableViewerColumn viewerColumn5 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
 		TableColumn column5 = viewerColumn5.getColumn();
 		column5.setWidth(80);
 		column5.setResizable(true);
-		column5.setText("Analysis\nProgress");
+		column5.setText("Analysis\nStatus");
 
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		bioSaxsProgressViewer.setContentProvider(contentProvider);
@@ -107,8 +111,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		// labels
 		IObservableSet knownElements = contentProvider.getKnownElements();
 
-		final IObservableMap collectionProgress = BeanProperties.value(ISampleProgress.class,
-				ISampleProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
+		// final IObservableMap collectionProgress = BeanProperties.value(ISampleProgress.class,
+		// ISampleProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
 
 		viewerColumn1.setLabelProvider(new ColumnLabelProvider() {
 			@Override
@@ -134,38 +138,38 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
-		viewerColumn4.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
-				return progress.getReductionStatus();
-			}
-		});
-
-		viewerColumn5.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
-				return progress.getAnalysisStatus();
-			}
-		});
-
-		ControlFactoryAndUpdater factory = new ObservableMapCellControlProvider.ControlFactoryAndUpdater() {
-
-			@Override
-			public Control createControl(Composite parent) {
-				ProgressBar progressBar = new ProgressBar(parent, SWT.NONE);
-				progressBar.setMaximum(100);
-				return progressBar;
-			}
-
-			@Override
-			public void updateControl(Control control, Object value) {
-				((ProgressBar) control).setSelection(((Double) value).intValue());
-
-			}
-		};
-		viewerColumn3.setLabelProvider(new ObservableMapCellControlProvider(collectionProgress, factory, "Column3"));
+		// viewerColumn4.setLabelProvider(new ColumnLabelProvider() {
+		// @Override
+		// public String getText(Object element) {
+		// BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
+		// return progress.getReductionStatus();
+		// }
+		// });
+		//
+		// viewerColumn5.setLabelProvider(new ColumnLabelProvider() {
+		// @Override
+		// public String getText(Object element) {
+		// BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
+		// return progress.getAnalysisStatus();
+		// }
+		// });
+		//
+		// ControlFactoryAndUpdater factory = new ObservableMapCellControlProvider.ControlFactoryAndUpdater() {
+		//
+		// @Override
+		// public Control createControl(Composite parent) {
+		// ProgressBar progressBar = new ProgressBar(parent, SWT.NONE);
+		// progressBar.setMaximum(100);
+		// return progressBar;
+		// }
+		//
+		// @Override
+		// public void updateControl(Control control, Object value) {
+		// ((ProgressBar) control).setSelection(((Double) value).intValue());
+		//
+		// }
+		// };
+		// viewerColumn3.setLabelProvider(new ObservableMapCellControlProvider(collectionProgress, factory, "Column3"));
 
 		final IObservableMap reductionProgressValues = BeanProperties.value(ISampleProgress.class,
 				ISampleProgress.REDUCTION_PROGRESS).observeDetail(knownElements);
@@ -250,31 +254,66 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		try {
 			modelReg.afterPropertiesSet();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			// logger.error("TODO put description of error here", e);
+			logger.error(e.getMessage());
 		}
 
 		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
 
-		populateModel();
+		loadModelFromISPyB();
 
 		if (model != null) {
 			IObservableList input = model.getItems();
 			bioSaxsProgressViewer.setInput(input);
 		}
+
+		final Job pollingJob = new Job("Polling ISpyB") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					clearModel();
+					loadModelFromISPyB();
+
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							bioSaxsProgressViewer.refresh();
+						}
+					});
+
+					if (monitor.isCanceled())
+						return Status.CANCEL_STATUS;
+
+					return Status.OK_STATUS;
+				} finally {
+					// start job again after specified time has elapsed
+					schedule(90000);
+				}
+			}
+		};
+		// job.addJobChangeListener(new JobChangeAdapter() {
+		// @Override
+		// public void done(IJobChangeEvent event) {
+		// if (event.getResult().isOK())
+		// System.out.println("Job completed successfully");
+		// else
+		// System.out.println("Job did not complete successfully");
+		// }
+		// });
+		pollingJob.schedule(); // start as soon as possible
 	}
 
-	private void populateModel() {
+	private void clearModel() {
 		model.clearItems();
-		bioSaxsProgressViewer.refresh();
+	}
 
+	private void loadModelFromISPyB() {
 		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
+
 		try {
-			model.getItems().addAll(bioSAXSISPyB.getBioSAXSSamples());
+			model.addItems(bioSAXSISPyB.getBioSAXSSamples());
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			// logger.error("TODO put description of error here", e);
+			logger.error("SQL EXception getting samples from ISPyB", e.getMessage());
 		}
 	}
 
