@@ -25,7 +25,7 @@ public class BioSAXSISPyBviaOracleTest {
 	}
 
 	@Test
-	public void testGetSaxsSamples() {
+	public void testGetBioSAXSSamples() {
 		String visit = "cm9877-1";
 
 		try {
@@ -37,7 +37,7 @@ public class BioSAXSISPyBviaOracleTest {
 	}
 
 	@Test
-	public void testGetSaxsSamplesForExperiment() {
+	public void testGetBioSAXSSamplesForExperiment() {
 		String experimentID = "34";
 		try {
 			List<ISampleProgress> progressList = bioSAXSISPyB
