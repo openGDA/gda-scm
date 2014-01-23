@@ -259,8 +259,6 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
 
-		loadModelFromISPyB();
-
 		if (model != null) {
 			IObservableList input = model.getItems();
 			bioSaxsProgressViewer.setInput(input);
