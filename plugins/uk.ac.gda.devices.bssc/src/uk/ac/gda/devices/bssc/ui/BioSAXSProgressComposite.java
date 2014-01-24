@@ -18,19 +18,10 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
-import gda.rcp.GDAClientActivator;
-import gda.rcp.util.OSGIServiceRegister;
-
-import java.sql.SQLException;
-
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -40,27 +31,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
-import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
 import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
 import uk.ac.gda.devices.bssc.ISampleProgress;
-import uk.ac.gda.devices.bssc.ISampleProgressCollection;
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
 import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
-	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
-	private ISampleProgressCollection model;
 
 	public BioSAXSProgressComposite(Composite parent, IObservableList input, int style) {
 		super(parent, style);
