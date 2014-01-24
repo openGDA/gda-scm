@@ -2,6 +2,9 @@ package uk.ac.gda.devices.bssc.ispyb;
 
 import static org.junit.Assert.*;
 
+import gda.data.metadata.GDAMetadataProvider;
+import gda.device.DeviceException;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -26,12 +29,21 @@ public class BioSAXSISPyBviaOracleTest {
 
 	@Test
 	public void testGetBioSAXSSamples() {
-		String visit = "cm9877-1";
-
+		String visit = null;
+		long blSessionId;
+		
 		try {
-			bioSAXSISPyB.getBioSAXSSamples();
+			visit = "cm4977-1";
+			blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
+			
+			List<ISampleProgress> progressList = bioSAXSISPyB
+					.getBioSAXSSamples(blSessionId);
+
+			// check blSessionId for each ISampleProgress object is correct
+			for (ISampleProgress progress : progressList) {
+				assertEquals(blSessionId, progress.getBlSessionId());
+			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -39,16 +51,20 @@ public class BioSAXSISPyBviaOracleTest {
 	@Test
 	public void testGetBioSAXSSamplesForExperiment() {
 		String experimentID = "34";
+		String visit = null;
+		long blSessionId;
+		
 		try {
+			visit = "cm4977-1";
+			blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
+			
 			List<ISampleProgress> progressList = bioSAXSISPyB
-					.getBioSAXSSamples(experimentID);
+					.getBioSAXSSamples(experimentID, blSessionId);
 
 			for (ISampleProgress progress : progressList) {
-				assertEquals(experimentID,
-						((BioSaxsSampleProgress) progress).getExperimentId());
+				assertEquals(experimentID, progress.getExperimentId());
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
