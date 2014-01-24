@@ -436,20 +436,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public List<ISampleProgress> getBioSAXSSamples() throws SQLException {
-		String visit = null;
-		long blSessionId;
-
+	public List<ISampleProgress> getBioSAXSSamples(long blSessionId) throws SQLException {
 		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
-
-		try {
-			visit = GDAMetadataProvider.getInstance().getMetadataValue("visit");
-		} catch (DeviceException e) {
-			logger.error("DeviceException getting the visit from GDAMetadataProvider ", e);
-		}
-
-		blSessionId = getSessionForVisit(visit);
 
 		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
@@ -461,6 +450,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
 				bioSaxsProgress.setExperimentId(rs.getString(1));
 				bioSaxsProgress.setSampleName(rs.getString(3));
+				bioSaxsProgress.setBlSessionId(blSessionId);
 				samples.add(bioSaxsProgress);
 			}
 			rs.close();
@@ -471,7 +461,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public List<ISampleProgress> getBioSAXSSamples(String experimentId) throws SQLException {
+	public List<ISampleProgress> getBioSAXSSamples(String experimentId, long blSessionId) throws SQLException {
 		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
@@ -487,6 +477,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				if (expID.equals(experimentId)) {
 					bioSaxsProgress.setExperimentId(expID);
 					bioSaxsProgress.setSampleName(rs.getString(3));
+					bioSaxsProgress.setBlSessionId(blSessionId);
 					samples.add(bioSaxsProgress);
 				}
 			}
