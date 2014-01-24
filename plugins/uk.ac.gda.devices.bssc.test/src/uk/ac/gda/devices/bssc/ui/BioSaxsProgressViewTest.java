@@ -37,13 +37,15 @@ public class BioSaxsProgressViewTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		model = new MyISampleProgressCollection();
-		populateModel();
 
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
 		modelReg.setClass(ISampleProgressCollection.class);
 		modelReg.setService(model);
 		modelReg.afterPropertiesSet();
 
+		//populate model with sample values
+		populateModel();
+		
 		final IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		view = (BioSAXSProgressView) window.getActivePage().showView(
@@ -58,6 +60,8 @@ public class BioSaxsProgressViewTest {
 
 	private static void populateModel() {
 		for (int i = 0; i < 20; i++) {
+			BioSaxsSampleProgress progress = new BioSaxsSampleProgress();
+			progress.setExperimentId(String.valueOf(i));
 			model.add(new BioSaxsSampleProgress());
 		}
 	}
@@ -94,11 +98,15 @@ public class BioSaxsProgressViewTest {
 
 	@Test
 	public void testAddMeasurementToModel() {
+		System.out.println("testAddMeasurementToModel() before model size is "
+				+ model.getItems().size());
 		ObservableList items = (ObservableList) model.getItems();
+		
+		BioSaxsSampleProgress newProgress = new BioSaxsSampleProgress();
+		newProgress.setExperimentId(String.valueOf(21));
 		items.add(new BioSaxsSampleProgress());
-		view.getViewer().refresh();
-		Assert.assertEquals(21, ((TableViewer) view.getViewer()).getTable()
-				.getItemCount());
+		System.out.println("testAddMeasurementToModel() after model size is "
+				+ model.getItems().size());
 	}
 
 	@AfterClass
@@ -182,6 +190,12 @@ class MyISampleProgressCollection extends ArrayList<ISampleProgress> implements
 	@Override
 	public void addItems(List<ISampleProgress> bioSAXSSamples) {
 		items.add(bioSAXSSamples);
+	}
+
+	@Override
+	public void pollISpyB() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
