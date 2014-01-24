@@ -18,22 +18,46 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import gda.rcp.GDAClientActivator;
+import gda.rcp.util.OSGIServiceRegister;
+
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
+import uk.ac.gda.devices.bssc.ISampleProgressCollection;
 
 public class BioSAXSProgressView extends ViewPart {
+	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsprogressview";
 	private BioSAXSProgressComposite bioSAXSComposite;
-	
+	private IObservableList input;
+
 	public BioSAXSProgressView() {
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
-		bioSAXSComposite = new BioSAXSProgressComposite(parent, SWT.NONE);
+		ISampleProgressCollection model = new BioSAXSSampleProgressCollection();
+
+		OSGIServiceRegister modelReg = new OSGIServiceRegister();
+		modelReg.setClass(ISampleProgressCollection.class);
+		modelReg.setService(model);
+		try {
+			modelReg.afterPropertiesSet();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
+		input = model.getItems();
+		bioSAXSComposite = new BioSAXSProgressComposite(parent, input, SWT.NONE);
 	}
 
 	@Override
@@ -41,9 +65,8 @@ public class BioSAXSProgressView extends ViewPart {
 		// TODO Auto-generated method stub
 
 	}
-	
-	public Viewer getViewer()
-	{
+
+	public Viewer getViewer() {
 		return bioSAXSComposite.getViewer();
 	}
 }

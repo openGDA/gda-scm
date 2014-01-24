@@ -61,9 +61,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
 	private ISampleProgressCollection model;
-	private BioSAXSISPyB bioSAXSISPyB;
 
-	public BioSAXSProgressComposite(Composite parent, int style) {
+	public BioSAXSProgressComposite(Composite parent, IObservableList input, int style) {
 		super(parent, style);
 
 		setLayout(new FillLayout());
@@ -138,21 +137,21 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
-		// viewerColumn4.setLabelProvider(new ColumnLabelProvider() {
-		// @Override
-		// public String getText(Object element) {
-		// BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
-		// return progress.getReductionStatus();
-		// }
-		// });
+		viewerColumn4.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
+				return progress.getReductionStatus();
+			}
+		});
 		//
-		// viewerColumn5.setLabelProvider(new ColumnLabelProvider() {
-		// @Override
-		// public String getText(Object element) {
-		// BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
-		// return progress.getAnalysisStatus();
-		// }
-		// });
+		viewerColumn5.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
+				return progress.getAnalysisStatus();
+			}
+		});
 		//
 		// ControlFactoryAndUpdater factory = new ObservableMapCellControlProvider.ControlFactoryAndUpdater() {
 		//
@@ -171,42 +170,42 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		// };
 		// viewerColumn3.setLabelProvider(new ObservableMapCellControlProvider(collectionProgress, factory, "Column3"));
 
-		final IObservableMap reductionProgressValues = BeanProperties.value(ISampleProgress.class,
-				ISampleProgress.REDUCTION_PROGRESS).observeDetail(knownElements);
-
-		viewerColumn4.setLabelProvider(new ObservableMapOwnerDrawProvider(reductionProgressValues) {
-			org.eclipse.swt.graphics.Color green = null;
-			org.eclipse.swt.graphics.Color original = null;
-
-			@Override
-			protected void measure(Event event, Object element) {
-				event.setBounds(new Rectangle(event.x, event.y, 20, 10));
-			}
-
-			@Override
-			protected void erase(Event event, Object element) {
-				if (original != null) {
-					event.gc.setBackground(original);
-					event.gc.fillRectangle(event.getBounds());
-				}
-				super.erase(event, element);
-			}
-
-			@Override
-			protected void paint(Event event, Object element) {
-				green = event.display.getSystemColor(SWT.COLOR_GREEN);
-				event.gc.setBackground(green);
-
-				Object value = attributeMaps[0].get(element);
-
-				int columnWidth = viewerColumn3.getColumn().getWidth();
-				int percentage = ((Double) value).intValue();
-				int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
-				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-
-				event.gc.fillRectangle(event.getBounds());
-			}
-		});
+		// final IObservableMap reductionProgressValues = BeanProperties.value(ISampleProgress.class,
+		// ISampleProgress.REDUCTION_PROGRESS).observeDetail(knownElements);
+		//
+		// viewerColumn4.setLabelProvider(new ObservableMapOwnerDrawProvider(reductionProgressValues) {
+		// org.eclipse.swt.graphics.Color green = null;
+		// org.eclipse.swt.graphics.Color original = null;
+		//
+		// @Override
+		// protected void measure(Event event, Object element) {
+		// event.setBounds(new Rectangle(event.x, event.y, 20, 10));
+		// }
+		//
+		// @Override
+		// protected void erase(Event event, Object element) {
+		// if (original != null) {
+		// event.gc.setBackground(original);
+		// event.gc.fillRectangle(event.getBounds());
+		// }
+		// super.erase(event, element);
+		// }
+		//
+		// @Override
+		// protected void paint(Event event, Object element) {
+		// green = event.display.getSystemColor(SWT.COLOR_GREEN);
+		// event.gc.setBackground(green);
+		//
+		// Object value = attributeMaps[0].get(element);
+		//
+		// int columnWidth = viewerColumn3.getColumn().getWidth();
+		// int percentage = ((Double) value).intValue();
+		// int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
+		// event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
+		//
+		// event.gc.fillRectangle(event.getBounds());
+		// }
+		// });
 
 		final IObservableMap analysisProgressValues = BeanProperties.value(ISampleProgress.class,
 				ISampleProgress.ANALYSIS_PROGRESS).observeDetail(knownElements);
@@ -244,75 +243,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
-
-		BioSAXSSampleProgressCollection bioSAXSSampleProgressCollection = new BioSAXSSampleProgressCollection();
-		model = bioSAXSSampleProgressCollection;
-
-		OSGIServiceRegister modelReg = new OSGIServiceRegister();
-		modelReg.setClass(ISampleProgressCollection.class);
-		modelReg.setService(model);
-		try {
-			modelReg.afterPropertiesSet();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-
-		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
-
-		if (model != null) {
-			IObservableList input = model.getItems();
-			bioSaxsProgressViewer.setInput(input);
-		}
-
-		final Job pollingJob = new Job("Polling ISpyB") {
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					clearModel();
-					loadModelFromISPyB();
-
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							bioSaxsProgressViewer.refresh();
-						}
-					});
-
-					if (monitor.isCanceled())
-						return Status.CANCEL_STATUS;
-
-					return Status.OK_STATUS;
-				} finally {
-					// start job again after specified time has elapsed
-					schedule(90000);
-				}
-			}
-		};
-		// job.addJobChangeListener(new JobChangeAdapter() {
-		// @Override
-		// public void done(IJobChangeEvent event) {
-		// if (event.getResult().isOK())
-		// System.out.println("Job completed successfully");
-		// else
-		// System.out.println("Job did not complete successfully");
-		// }
-		// });
-		pollingJob.schedule(); // start as soon as possible
-	}
-
-	private void clearModel() {
-		model.clearItems();
-	}
-
-	private void loadModelFromISPyB() {
-		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
-		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
-
-		try {
-			model.addItems(bioSAXSISPyB.getBioSAXSSamples());
-		} catch (SQLException e) {
-			logger.error("SQL EXception getting samples from ISPyB", e.getMessage());
-		}
+		
+		bioSaxsProgressViewer.setInput(input);
 	}
 
 	public Viewer getViewer() {
@@ -327,6 +259,6 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 	@Override
 	public void setValue(Object value) {
-		System.out.println();
+
 	}
 }

@@ -31,4 +31,6 @@ public interface ISampleProgressCollection extends List<ISampleProgress> {
 	void clearItems();
 
 	void addItems(List<ISampleProgress> bioSAXSSamples);
+
+	void pollISpyB();
 }
