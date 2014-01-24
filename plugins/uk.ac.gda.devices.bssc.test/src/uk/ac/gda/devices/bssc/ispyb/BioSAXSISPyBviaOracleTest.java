@@ -1,17 +1,14 @@
 package uk.ac.gda.devices.bssc.ispyb;
 
-import static org.junit.Assert.*;
-
-import gda.data.metadata.GDAMetadataProvider;
-import gda.device.DeviceException;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
 import uk.ac.gda.devices.bssc.ISampleProgress;
 
 public class BioSAXSISPyBviaOracleTest {
@@ -27,6 +24,15 @@ public class BioSAXSISPyBviaOracleTest {
 
 	}
 
+	@AfterClass
+	public static void testCleanup() {
+	    try {
+			bioSAXSISPyB.disconnect();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Test
 	public void testGetBioSAXSSamples() {
 		String visit = null;
