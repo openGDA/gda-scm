@@ -43,7 +43,7 @@ public class BioSaxsProgressViewTest {
 		modelReg.setService(model);
 		modelReg.afterPropertiesSet();
 
-		//populate model with sample values
+		// populate model with sample values
 		populateModel();
 		
 		final IWorkbenchWindow window = PlatformUI.getWorkbench()
@@ -84,29 +84,22 @@ public class BioSaxsProgressViewTest {
 			}
 			delay(50);
 		}
-		//
-		// Assert.assertEquals("149.0", view.viewer.getTable().getItem(50)
-		// .getText(0));
 	}
 
 	@Test
 	public void testMeasurementSelection() {
-		// Add test here to assert that when a measurement is selectecd then the
+		// Add test here to assert that when a measurement is selected then the
 		// correct editor part is opened
 		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testAddMeasurementToModel() {
-		System.out.println("testAddMeasurementToModel() before model size is "
-				+ model.getItems().size());
 		ObservableList items = (ObservableList) model.getItems();
 		
 		BioSaxsSampleProgress newProgress = new BioSaxsSampleProgress();
 		newProgress.setExperimentId(String.valueOf(21));
 		items.add(new BioSaxsSampleProgress());
-		System.out.println("testAddMeasurementToModel() after model size is "
-				+ model.getItems().size());
 	}
 
 	@AfterClass
@@ -145,6 +138,7 @@ public class BioSaxsProgressViewTest {
 			}
 			display.update();
 		}
+		
 		// Otherwise, perform a simple sleep.
 
 		else {
