@@ -18,6 +18,9 @@
 
 package uk.ac.gda.devices.bssc;
 
+import gda.data.metadata.GDAMetadataProvider;
+import gda.device.DeviceException;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,13 +108,21 @@ public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> 
 	}
 
 	private void loadModelFromISPyB() {
+		String visit;
+
 		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 
 		try {
-			addItems(bioSAXSISPyB.getBioSAXSSamples());
-		} catch (SQLException e) {
-			logger.error("SQL EXception getting samples from ISPyB", e.getMessage());
+			visit = GDAMetadataProvider.getInstance().getMetadataValue("visit");
+			long blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
+			addItems(bioSAXSISPyB.getBioSAXSSamples(blSessionId));
 		}
+		catch (DeviceException e) {
+			logger.error("Device Exception retrieving visit from GDAMetaDataProvider" + e);
+		}
+		catch (SQLException e) {
+			logger.error("SQL Exception getting samples from ISPyB", e);
+		} 
 	}
 }
