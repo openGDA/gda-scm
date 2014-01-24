@@ -29,6 +29,8 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 	private String collectionStatus;
 	private String reductionStatus;
 	private String analysisStatus;
+	private String visit;
+	private long blSessionId;
 
 	public BioSaxsSampleProgress() {
 		
@@ -62,10 +64,12 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		firePropertyChange(ISampleProgress.ANALYSIS_PROGRESS, this.analysisProgress, this.analysisProgress = newVal);
 	}
 
+	@Override
 	public String getExperimentId() {
 		return experimentId;
 	}
 
+	@Override
 	public void setExperimentId(String experimentId) {
 		this.experimentId = experimentId;
 	}
@@ -100,6 +104,24 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 
 	public void setAnalysisStatus(String analysisStatus) {
 		this.analysisStatus = analysisStatus;
+	}
+
+	public String getVisit() {
+		return visit;
+	}
+
+	public void setVisit(String visit) {
+		this.visit = visit;
+	}
+
+	@Override
+	public long getBlSessionId() {
+		return blSessionId;
+	}
+
+	@Override
+	public void setBlSessionId(long blSessionId) {
+		this.blSessionId = blSessionId;
 	}
 
 }

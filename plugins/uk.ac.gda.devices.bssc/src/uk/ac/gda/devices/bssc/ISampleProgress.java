@@ -28,6 +28,10 @@ public interface ISampleProgress {
 	public double getCollectionProgress();
 	public double getReductionProgress();
 	public double getAnalysisProgress();
+	public long getBlSessionId();
+	public void setBlSessionId(long blSessionId);
+	public String getExperimentId();
+	public void setExperimentId(String experimentId);
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener);
 	public void removePropertyChangeListener(PropertyChangeListener listener);
