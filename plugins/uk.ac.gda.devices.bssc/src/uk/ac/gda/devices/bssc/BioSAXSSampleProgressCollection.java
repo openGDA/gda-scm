@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
-import uk.ac.gda.devices.bssc.ui.BioSAXSProgressComposite;
 
 public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> implements ISampleProgressCollection {
 	/**
@@ -47,6 +46,9 @@ public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> 
 	private BioSAXSISPyB bioSAXSISPyB;
 
 	public BioSAXSSampleProgressCollection() {
+		//Set up connection to ISpyB
+		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
+		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 		pollISpyB();
 	}
 
@@ -109,9 +111,6 @@ public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> 
 
 	private void loadModelFromISPyB() {
 		String visit;
-
-		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
-		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 
 		try {
 			visit = GDAMetadataProvider.getInstance().getMetadataValue("visit");
