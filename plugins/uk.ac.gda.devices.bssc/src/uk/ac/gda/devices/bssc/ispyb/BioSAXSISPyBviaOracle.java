@@ -18,6 +18,9 @@
 
 package uk.ac.gda.devices.bssc.ispyb;
 
+import gda.data.metadata.GDAMetadataProvider;
+import gda.device.DeviceException;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -29,7 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import oracle.jdbc.OracleConnection;
+import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
 import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
 import uk.ac.gda.devices.bssc.ISampleProgress;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
@@ -39,7 +46,7 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
  * create_ro_role.sql, create_rw_role.sql and users.sql on live database
  */
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
-
+	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
 	private static final String DATA_REDUCTION_STARTED = "DataReductionStarted";
 	private static final String DATA_REDUCTION_ERROR = "DataReductionError";
 
@@ -430,12 +437,23 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public List<ISampleProgress> getBioSAXSSamples() throws SQLException {
+		String visit = null;
+		long blSessionId;
+
 		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
-		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid ORDER BY ispyb4a_db.specimen.experimentId ASC";
+		try {
+			visit = GDAMetadataProvider.getInstance().getMetadataValue("visit");
+		} catch (DeviceException e) {
+			logger.error("DeviceException getting the visit from GDAMetadataProvider ", e);
+		}
+
+		blSessionId = getSessionForVisit(visit);
+
+		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		// stmt.setLong(1, sessionId);
+		stmt.setLong(1, blSessionId);
 		boolean success = stmt.execute();
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
