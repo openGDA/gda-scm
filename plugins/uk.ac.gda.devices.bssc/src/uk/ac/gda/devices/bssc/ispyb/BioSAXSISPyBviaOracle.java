@@ -18,9 +18,6 @@
 
 package uk.ac.gda.devices.bssc.ispyb;
 
-import gda.data.metadata.GDAMetadataProvider;
-import gda.device.DeviceException;
-
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -32,11 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import oracle.jdbc.OracleConnection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import oracle.jdbc.OracleConnection;
-import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
 import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
 import uk.ac.gda.devices.bssc.ISampleProgress;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
@@ -369,20 +366,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
 		return measurementId;
 	}
-
-	public void createSpecimens(long blsessionId, long experimentId, short plate, short row, short column,
-			String name, double concentration, double volume) throws SQLException 
-	{
-		connectIfNotConnected();
-
-		long bufferId = createBuffer(blsessionId, name + "Buffer", name + "Buffer", name + "Composition");
-		long macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), name + "Macromolecule", name
-				+ "Macromolecule");
-		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
-		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-				null, concentration, volume);
-	}
 	
 	@Override
 	public long createSampleMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
@@ -698,6 +681,24 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public void setMeasurementCollectionStatus(long measurementId, String status) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMeasurementReductionStatus(long measurementId, String reductionStatus) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMeasurementAnalysisStatus(long measurementId, String analysisStatus) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setMeasurementStartTime(long startTime) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
