@@ -697,7 +697,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public void updateMeasurementStatus(String status) throws SQLException {
+	public void setMeasurementCollectionStatus(long measurementId, String status) throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}
