@@ -16,7 +16,7 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.devices.bssc;
+package uk.ac.gda.devices.bssc.beans;
 
 import uk.ac.gda.beans.ObservableModel;
 

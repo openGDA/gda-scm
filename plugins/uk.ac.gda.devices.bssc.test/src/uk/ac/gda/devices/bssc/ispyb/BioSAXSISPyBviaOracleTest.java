@@ -9,7 +9,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.ISampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISampleProgress;
 
 public class BioSAXSISPyBviaOracleTest {
 

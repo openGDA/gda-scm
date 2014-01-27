@@ -36,8 +36,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
-import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
-import uk.ac.gda.devices.bssc.ISampleProgress;
+import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISampleProgress;
 import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {

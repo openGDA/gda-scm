@@ -34,8 +34,8 @@ import oracle.jdbc.OracleConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.BioSaxsSampleProgress;
-import uk.ac.gda.devices.bssc.ISampleProgress;
+import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISampleProgress;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 
 /*

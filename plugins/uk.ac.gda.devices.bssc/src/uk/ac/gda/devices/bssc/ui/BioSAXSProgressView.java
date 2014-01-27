@@ -29,8 +29,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.BioSAXSSampleProgressCollection;
-import uk.ac.gda.devices.bssc.ISampleProgressCollection;
+import uk.ac.gda.devices.bssc.beans.BioSAXSSampleProgressCollection;
+import uk.ac.gda.devices.bssc.beans.ISampleProgressCollection;
 
 public class BioSAXSProgressView extends ViewPart {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
