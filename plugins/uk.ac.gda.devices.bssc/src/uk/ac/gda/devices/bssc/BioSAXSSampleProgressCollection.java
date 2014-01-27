@@ -115,7 +115,7 @@ public class BioSAXSSampleProgressCollection extends ArrayList<ISampleProgress> 
 		try {
 			visit = GDAMetadataProvider.getInstance().getMetadataValue("visit");
 			long blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
-			addItems(bioSAXSISPyB.getBioSAXSSamples(blSessionId));
+			addItems(bioSAXSISPyB.getBioSAXSMeasurements(blSessionId));
 		}
 		catch (DeviceException e) {
 			logger.error("Device Exception retrieving visit from GDAMetaDataProvider" + e);

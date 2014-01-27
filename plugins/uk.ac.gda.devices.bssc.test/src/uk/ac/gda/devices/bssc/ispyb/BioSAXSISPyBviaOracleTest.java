@@ -43,32 +43,11 @@ public class BioSAXSISPyBviaOracleTest {
 			blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
 			
 			List<ISampleProgress> progressList = bioSAXSISPyB
-					.getBioSAXSSamples(blSessionId);
+					.getBioSAXSMeasurements(blSessionId);
 
 			// check blSessionId for each ISampleProgress object is correct
 			for (ISampleProgress progress : progressList) {
 				assertEquals(blSessionId, progress.getBlSessionId());
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	public void testGetBioSAXSSamplesForExperiment() {
-		String experimentID = "34";
-		String visit = null;
-		long blSessionId;
-		
-		try {
-			visit = "cm4977-1";
-			blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
-			
-			List<ISampleProgress> progressList = bioSAXSISPyB
-					.getBioSAXSSamples(experimentID, blSessionId);
-
-			for (ISampleProgress progress : progressList) {
-				assertEquals(experimentID, progress.getExperimentId());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

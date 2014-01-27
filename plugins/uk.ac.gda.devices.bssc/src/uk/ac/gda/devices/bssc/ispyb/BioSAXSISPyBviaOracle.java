@@ -370,6 +370,20 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementId;
 	}
 
+	public void createSpecimens(long blsessionId, long experimentId, short plate, short row, short column,
+			String name, double concentration, double volume) throws SQLException 
+	{
+		connectIfNotConnected();
+
+		long bufferId = createBuffer(blsessionId, name + "Buffer", name + "Buffer", name + "Composition");
+		long macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), name + "Macromolecule", name
+				+ "Macromolecule");
+		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
+		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
+		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
+				null, concentration, volume);
+	}
+	
 	@Override
 	public long createSampleMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
 			String name, double concentration, float storageTemperature, float exposureTemperature, int numFrames,
@@ -433,59 +447,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 
 		return sinfos;
-	}
-
-	@Override
-	public List<ISampleProgress> getBioSAXSSamples(long blSessionId) throws SQLException {
-		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
-		connectIfNotConnected();
-
-		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, blSessionId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			while (rs.next()) {
-				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
-				bioSaxsProgress.setExperimentId(rs.getString(1));
-				bioSaxsProgress.setSampleName(rs.getString(3));
-				bioSaxsProgress.setBlSessionId(blSessionId);
-				samples.add(bioSaxsProgress);
-			}
-			rs.close();
-			stmt.close();
-		}
-
-		return samples;
-	}
-
-	@Override
-	public List<ISampleProgress> getBioSAXSSamples(String experimentId, long blSessionId) throws SQLException {
-		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
-		connectIfNotConnected();
-
-		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid";
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		// stmt.setLong(1, sessionId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			while (rs.next()) {
-				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
-				String expID = rs.getString(1);
-				if (expID.equals(experimentId)) {
-					bioSaxsProgress.setExperimentId(expID);
-					bioSaxsProgress.setSampleName(rs.getString(3));
-					bioSaxsProgress.setBlSessionId(blSessionId);
-					samples.add(bioSaxsProgress);
-				}
-			}
-			rs.close();
-			stmt.close();
-		}
-
-		return samples;
 	}
 
 	@Override
@@ -708,5 +669,36 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
 		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
+	}
+	
+	@Override
+	public List<ISampleProgress> getBioSAXSMeasurements(long blSessionId) throws SQLException {
+		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
+		connectIfNotConnected();
+
+		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, blSessionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			while (rs.next()) {
+				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
+				bioSaxsProgress.setExperimentId(rs.getString(1));
+				bioSaxsProgress.setSampleName(rs.getString(3));
+				bioSaxsProgress.setBlSessionId(blSessionId);
+				samples.add(bioSaxsProgress);
+			}
+			rs.close();
+			stmt.close();
+		}
+
+		return samples;
+	}
+
+	@Override
+	public void updateMeasurementStatus(String status) throws SQLException {
+		// TODO Auto-generated method stub
+		
 	}
 }
