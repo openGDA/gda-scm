@@ -22,34 +22,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.eclipse.core.resources.IStorage;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PerspectiveAdapter;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
-import org.eclipse.ui.forms.editor.FormEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.ui.BioSAXSProgressView;
 import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
-import uk.ac.gda.richbeans.xml.string.StringInput;
-import uk.ac.gda.richbeans.xml.string.StringStorage;
 
 public class BioSAXSProgressPerspective implements IPerspectiveFactory {
+	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressPerspective.class);
 
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 	private HashMap<String, ArrayList<IEditorReference>> perspectiveEditors = new HashMap<String, ArrayList<IEditorReference>>();
@@ -159,72 +151,70 @@ public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 			}
 		});
 
-		// adding a listener
-		IPartListener2 pl = new IPartListener2() {
-			@Override
-			public void partClosed(IWorkbenchPartReference partRef) {
-				if (partRef instanceof IEditorReference) {
-					if (page.getEditorReferences().length == 0) {
-						String string = "Test";
-						IStorage storage = new StringStorage(string);
-						IStorageEditorInput input = new StringInput(storage);
-						IWorkbenchPage page = window.getActivePage();
-
-						// open a new blank editor here
-						// if (page != null)
-						// try {
-						// page.openEditor(input, "org.eclipse.ui.DefaultTextEditor");
-						// } catch (PartInitException e) {
-						// // TODO Auto-generated catch block
-						// // logger.error("TODO put description of error here", e);
-						// }
-					}
-				}
-			}
-
-			@Override
-			public void partActivated(IWorkbenchPartReference partRef) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partBroughtToTop(IWorkbenchPartReference partRef) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partDeactivated(IWorkbenchPartReference partRef) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partOpened(IWorkbenchPartReference partRef) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partHidden(IWorkbenchPartReference partRef) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partVisible(IWorkbenchPartReference partRef) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partInputChanged(IWorkbenchPartReference partRef) {
-				// TODO Auto-generated method stub
-
-			}
-
-		};
-		page.addPartListener(pl);
+		// // adding a listener
+		// IPartListener2 pl = new IPartListener2() {
+		// @Override
+		// public void partClosed(IWorkbenchPartReference partRef) {
+		// if (partRef instanceof IEditorReference) {
+		// if (page.getEditorReferences().length == 0) {
+		// IStorage storage = new StringStorage("", "");
+		// IStorageEditorInput input = new StringInput(storage);
+		// IWorkbenchPage page = window.getActivePage();
+		//
+		// // open a new blank editor here
+		// if (page != null)
+		// try {
+		// page.openEditor(input, "org.eclipse.ui.DefaultTextEditor");
+		// } catch (PartInitException e) {
+		// logger.error("TODO put description of error here", e);
+		// }
+		// }
+		// }
+		// }
+		//
+		// @Override
+		// public void partActivated(IWorkbenchPartReference partRef) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void partBroughtToTop(IWorkbenchPartReference partRef) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void partDeactivated(IWorkbenchPartReference partRef) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void partOpened(IWorkbenchPartReference partRef) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void partHidden(IWorkbenchPartReference partRef) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void partVisible(IWorkbenchPartReference partRef) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void partInputChanged(IWorkbenchPartReference partRef) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// };
+		// page.addPartListener(pl);
 	}
 }
