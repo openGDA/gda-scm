@@ -31,6 +31,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 	private String analysisStatus;
 	private String visit;
 	private long blSessionId;
+	private long collectionStartTime;
 
 	public BioSaxsSampleProgress() {
 		
@@ -84,6 +85,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		this.sampleName = sampleName;
 	}
 
+	@Override
 	public String getCollectionStatus() {
 		return collectionStatus;
 	}
@@ -92,6 +94,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		this.collectionStatus = collectionStatus;
 	}
 
+	@Override
 	public String getReductionStatus() {
 		return reductionStatus;
 	}
@@ -100,6 +103,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		this.reductionStatus = reductionStatus;
 	}
 
+	@Override
 	public String getAnalysisStatus() {
 		return analysisStatus;
 	}
@@ -124,6 +128,12 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 	@Override
 	public void setBlSessionId(long blSessionId) {
 		this.blSessionId = blSessionId;
+	}
+
+	@Override
+	public long getCollectionStartTime() {
+		// TODO Auto-generated method stub
+		return collectionStartTime;
 	}
 
 }
