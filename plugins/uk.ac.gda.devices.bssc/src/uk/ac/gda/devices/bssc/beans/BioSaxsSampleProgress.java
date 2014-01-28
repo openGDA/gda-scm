@@ -74,10 +74,12 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		this.experimentId = experimentId;
 	}
 
+	@Override
 	public String getSampleName() {
 		return sampleName;
 	}
 
+	@Override
 	public void setSampleName(String sampleName) {
 		this.sampleName = sampleName;
 	}
