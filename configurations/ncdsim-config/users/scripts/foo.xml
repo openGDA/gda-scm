@@ -7,16 +7,16 @@
             <row>A</row>
             <column>1</column>
         </location>
+        <sampleName>matthew</sampleName>
+        <concentration>0.25</concentration>
+        <viscosity>high</viscosity>
+        <molecularWeight>0.0</molecularWeight>
         <bufferLocation>
             <plate>1</plate>
             <row>A</row>
             <column>2</column>
         </bufferLocation>
-        <sampleName>matthew</sampleName>
         <yellowSample>false</yellowSample>
-        <recouperate>false</recouperate>
-        <concentration>0.25</concentration>
-        <viscosity>high</viscosity>
         <timePerFrame>1.0</timePerFrame>
         <frames>10</frames>
         <exposureTemperature>25.0</exposureTemperature>
@@ -27,16 +27,16 @@
             <row>A</row>
             <column>1</column>
         </location>
+        <sampleName>baha</sampleName>
+        <concentration>0.25</concentration>
+        <viscosity>high</viscosity>
+        <molecularWeight>0.0</molecularWeight>
         <bufferLocation>
             <plate>2</plate>
             <row>A</row>
             <column>2</column>
         </bufferLocation>
-        <sampleName>baha</sampleName>
         <yellowSample>false</yellowSample>
-        <recouperate>true</recouperate>
-        <concentration>0.25</concentration>
-        <viscosity>high</viscosity>
         <timePerFrame>1.0</timePerFrame>
         <frames>1</frames>
         <exposureTemperature>25.0</exposureTemperature>
@@ -47,98 +47,18 @@
             <row>A</row>
             <column>1</column>
         </location>
+        <sampleName>fred</sampleName>
+        <concentration>0.1</concentration>
+        <viscosity>low</viscosity>
+        <molecularWeight>0.0</molecularWeight>
         <bufferLocation>
             <plate>3</plate>
             <row>A</row>
             <column>2</column>
         </bufferLocation>
-        <sampleName>fred</sampleName>
         <yellowSample>false</yellowSample>
-        <recouperate>false</recouperate>
-        <concentration>0.1</concentration>
-        <viscosity>low</viscosity>
         <timePerFrame>2.0</timePerFrame>
         <frames>2</frames>
         <exposureTemperature>55.0</exposureTemperature>
-    </measurement>
-    <measurement>
-        <location>
-            <plate>1</plate>
-            <row>B</row>
-            <column>1</column>
-        </location>
-        <bufferLocation>
-            <plate>1</plate>
-            <row>B</row>
-            <column>12</column>
-        </bufferLocation>
-        <sampleName>nick</sampleName>
-        <yellowSample>true</yellowSample>
-        <recouperate>false</recouperate>
-        <concentration>0.25</concentration>
-        <viscosity>high</viscosity>
-        <timePerFrame>5.0</timePerFrame>
-        <frames>5</frames>
-        <exposureTemperature>24.0</exposureTemperature>
-    </measurement>
-    <measurement>
-        <location>
-            <plate>1</plate>
-            <row>B</row>
-            <column>2</column>
-        </location>
-        <bufferLocation>
-            <plate>1</plate>
-            <row>B</row>
-            <column>12</column>
-        </bufferLocation>
-        <sampleName>water</sampleName>
-        <yellowSample>false</yellowSample>
-        <recouperate>false</recouperate>
-        <concentration>0.1</concentration>
-        <viscosity>low</viscosity>
-        <timePerFrame>5.0</timePerFrame>
-        <frames>5</frames>
-        <exposureTemperature>24.0</exposureTemperature>
-    </measurement>
-    <measurement>
-        <location>
-            <plate>1</plate>
-            <row>B</row>
-            <column>3</column>
-        </location>
-        <bufferLocation>
-            <plate>1</plate>
-            <row>B</row>
-            <column>12</column>
-        </bufferLocation>
-        <sampleName>honey</sampleName>
-        <yellowSample>false</yellowSample>
-        <recouperate>true</recouperate>
-        <concentration>0.25</concentration>
-        <viscosity>high</viscosity>
-        <timePerFrame>5.0</timePerFrame>
-        <frames>5</frames>
-        <exposureTemperature>24.0</exposureTemperature>
-    </measurement>
-    <measurement>
-        <location>
-            <plate>1</plate>
-            <row>B</row>
-            <column>4</column>
-        </location>
-        <bufferLocation>
-            <plate>1</plate>
-            <row>B</row>
-            <column>12</column>
-        </bufferLocation>
-        <sampleName>maple syrup</sampleName>
-        <yellowSample>true</yellowSample>
-        <recouperate>true</recouperate>
-        <concentration>0.1</concentration>
-        <viscosity>medium</viscosity>
-        <timePerFrame>2.0</timePerFrame>
-        <frames>2</frames>
-        <exposureTemperature>24.0</exposureTemperature>
     </measurement>
 </BSSCSessionBean>

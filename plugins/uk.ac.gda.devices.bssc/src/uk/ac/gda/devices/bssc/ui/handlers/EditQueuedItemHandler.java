@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2013 Diamond Light Source Ltd.
+ * Copyright © 2011 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -16,24 +16,47 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package gda.rcp.ncd.sideplot;
+package uk.ac.gda.devices.bssc.ui.handlers;
 
-import gda.jython.JythonServerFacade;
-
-import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.commands.IHandlerListener;
 
-public class GridStartScan extends AbstractHandler {
+public class EditQueuedItemHandler implements IHandler {
+
+	@Override
+	public void addHandlerListener(IHandlerListener handlerListener) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+
+	}
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		String errorMessage = "Unable to scan - has grid been deleted?";
-		String jythonCommand = 
-				"try:\n\tncdgridscan.scan()\nexcept AttributeError, e:\n\tif e.message == \"'NoneType' object has no attribute \'_jroi'\":\n\t\tprint '"
-				+ errorMessage
-				+ "'\n\telse:\n\t\tprint e.message";
-		JythonServerFacade.getInstance().runCommand(jythonCommand);
+		System.out.println("Edit the queued item here");
+		return null;
+	}
+
+	@Override
+	public boolean isEnabled() {
 		return true;
 	}
+
+	@Override
+	public boolean isHandled() {
+		return true;
+	}
+
+	@Override
+	public void removeHandlerListener(IHandlerListener handlerListener) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
