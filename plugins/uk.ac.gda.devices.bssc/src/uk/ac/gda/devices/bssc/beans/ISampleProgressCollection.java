@@ -16,14 +16,21 @@
 // * with GDA. If not, see <http://www.gnu.org/licenses/>.
 // */
 //
-package uk.ac.gda.devices.bssc;
+package uk.ac.gda.devices.bssc.beans;
 
 import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 
-public interface ISampleProgressCollection extends List<ISampleProgress>{
-	//To allow the list to be updated outside of the UI we need to return an ObservableList whose getElementType returns MvcExampleItem
-	//rather than a List
+public interface ISampleProgressCollection extends List<ISampleProgress> {
+	// To allow the list to be updated outside of the UI we need to return an ObservableList whose getElementType
+	// returns MvcExampleItem
+	// rather than a List
 	IObservableList getItems();
+
+	void clearItems();
+
+	void addItems(List<ISampleProgress> bioSAXSSamples);
+
+	void pollISpyB();
 }

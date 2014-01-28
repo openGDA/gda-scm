@@ -4,13 +4,10 @@ import static org.junit.Assert.fail;
 import gda.rcp.util.OSGIServiceRegister;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Display;
@@ -26,9 +23,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.BioSaxsProgress;
-import uk.ac.gda.devices.bssc.ISampleProgress;
-import uk.ac.gda.devices.bssc.ISampleProgressCollection;
+import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISampleProgressCollection;
 
 public class BioSaxsProgressViewTest {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
@@ -40,13 +37,15 @@ public class BioSaxsProgressViewTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		model = new MyISampleProgressCollection();
-		populateModel();
-		
+
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
 		modelReg.setClass(ISampleProgressCollection.class);
 		modelReg.setService(model);
 		modelReg.afterPropertiesSet();
 
+		// populate model with sample values
+		populateModel();
+		
 		final IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		view = (BioSAXSProgressView) window.getActivePage().showView(
@@ -61,7 +60,9 @@ public class BioSaxsProgressViewTest {
 
 	private static void populateModel() {
 		for (int i = 0; i < 20; i++) {
-			model.add(new BioSaxsProgress());
+			BioSaxsSampleProgress progress = new BioSaxsSampleProgress();
+			progress.setExperimentId(String.valueOf(i));
+			model.add(new BioSaxsSampleProgress());
 		}
 	}
 
@@ -72,20 +73,22 @@ public class BioSaxsProgressViewTest {
 			items.add(model.get(i));
 		}
 
-		for (int i = 0; i < model.size(); i++) {
+		for (int i = 0; i < items.size(); i++) {
 			for (int j = 0; j < 100; j++) {
-				((BioSaxsProgress) items.get(i)).setCollectionProgress(i + j);
-				((BioSaxsProgress) items.get(i)).setReductionProgress(i + j);
-				((BioSaxsProgress) items.get(i)).setAnalysisProgress(i + j);
+				((BioSaxsSampleProgress) items.get(i)).setCollectionProgress(i
+						+ j);
+				((BioSaxsSampleProgress) items.get(i)).setReductionProgress(i
+						+ j);
+				((BioSaxsSampleProgress) items.get(i)).setAnalysisProgress(i
+						+ j);
 			}
 			delay(50);
 		}
-		// Assert.assertEquals("149.0",view.viewer.getTable().getItem(50).getText(0));
 	}
 
 	@Test
 	public void testMeasurementSelection() {
-		// Add test here to assert that when a measurement is selectecd then the
+		// Add test here to assert that when a measurement is selected then the
 		// correct editor part is opened
 		fail("Not yet implemented");
 	}
@@ -93,10 +96,10 @@ public class BioSaxsProgressViewTest {
 	@Test
 	public void testAddMeasurementToModel() {
 		ObservableList items = (ObservableList) model.getItems();
-		items.add(new BioSaxsProgress());
-		view.getViewer().refresh();
-		Assert.assertEquals(21, ((TableViewer) view.getViewer()).getTable()
-				.getItemCount());
+		
+		BioSaxsSampleProgress newProgress = new BioSaxsSampleProgress();
+		newProgress.setExperimentId(String.valueOf(21));
+		items.add(new BioSaxsSampleProgress());
 	}
 
 	@AfterClass
@@ -135,6 +138,7 @@ public class BioSaxsProgressViewTest {
 			}
 			display.update();
 		}
+		
 		// Otherwise, perform a simple sleep.
 
 		else {
@@ -170,6 +174,22 @@ class MyISampleProgressCollection extends ArrayList<ISampleProgress> implements
 	@Override
 	public WritableList getItems() {
 		return items;
+	}
+
+	@Override
+	public void clearItems() {
+		items.clear();
+	}
+
+	@Override
+	public void addItems(List<ISampleProgress> bioSAXSSamples) {
+		items.add(bioSAXSSamples);
+	}
+
+	@Override
+	public void pollISpyB() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

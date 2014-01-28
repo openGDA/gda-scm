@@ -16,7 +16,7 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.devices.bssc;
+package uk.ac.gda.devices.bssc.beans;
 
 import java.beans.PropertyChangeListener;
 
@@ -28,7 +28,17 @@ public interface ISampleProgress {
 	public double getCollectionProgress();
 	public double getReductionProgress();
 	public double getAnalysisProgress();
+	public long getBlSessionId();
+	public void setBlSessionId(long blSessionId);
+	public String getExperimentId();
+	public void setExperimentId(String experimentId);
+	public void setSampleName(String sampleName);
+	public String getSampleName();
+	public String getCollectionStatus();
+	public String getReductionStatus();
+	public String getAnalysisStatus();
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener);
 	public void removePropertyChangeListener(PropertyChangeListener listener);
+	public long getCollectionStartTime();
 }
