@@ -659,7 +659,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
-		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
+//		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
+		String selectSql = "SELECT ispyb4a_db.measurement.measurementId, ispyb4a_db.measurement.specimenId FROM ispyb4a_db.Measurement INNER JOIN ispyb4a_db.Specimen on ispyb4a_db.measurement.specimenId = ispyb4a_db.specimen.specimenId WHERE blsessionId = ? ORDER BY ispyb4a_db.measurement.measurementId ASC";
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, blSessionId);
 		boolean success = stmt.execute();
@@ -668,7 +669,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			while (rs.next()) {
 				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
 				bioSaxsProgress.setExperimentId(rs.getString(1));
-				bioSaxsProgress.setSampleName(rs.getString(3));
+				bioSaxsProgress.setSampleName(rs.getString(2));
 				bioSaxsProgress.setBlSessionId(blSessionId);
 				samples.add(bioSaxsProgress);
 			}
