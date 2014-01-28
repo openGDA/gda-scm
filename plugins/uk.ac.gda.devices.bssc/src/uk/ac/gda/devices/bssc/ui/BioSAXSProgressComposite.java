@@ -75,13 +75,13 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		TableColumn column1 = viewerColumn1.getColumn();
 		column1.setWidth(120);
 		column1.setResizable(true);
-		column1.setText("Experiment ID");
+		column1.setText("Sample");
 
 		final TableViewerColumn viewerColumn2 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
 		TableColumn column2 = viewerColumn2.getColumn();
 		column2.setWidth(120);
 		column2.setResizable(true);
-		column2.setText("Measurement");
+		column2.setText("Start Time");
 
 		final TableViewerColumn viewerColumn3 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
 		TableColumn column3 = viewerColumn3.getColumn();
@@ -131,29 +131,26 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
-		// final IObservableMap collectionProgress = BeanProperties.value(ISampleProgress.class,
-		// ISampleProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
-
 		viewerColumn1.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
-				return progress.getExperimentId();
+				ISampleProgress progress = (ISampleProgress) element;
+				return progress.getSampleName();
 			}
 		});
 
 		viewerColumn2.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
-				return progress.getSampleName();
+				ISampleProgress progress = (ISampleProgress) element;
+				return String.valueOf(progress.getCollectionStartTime());
 			}
 		});
 
 		viewerColumn3.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
+				ISampleProgress progress = (ISampleProgress) element;
 				return progress.getCollectionStatus();
 			}
 		});
@@ -161,18 +158,21 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		viewerColumn4.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
+				ISampleProgress progress = (ISampleProgress) element;
 				return progress.getReductionStatus();
 			}
 		});
-		//
+		
 		viewerColumn5.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
-				BioSaxsSampleProgress progress = (BioSaxsSampleProgress) element;
+				ISampleProgress progress = (ISampleProgress) element;
 				return progress.getAnalysisStatus();
 			}
 		});
+
+		// final IObservableMap collectionProgress = BeanProperties.value(ISampleProgress.class,
+		// ISampleProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
 		//
 		// ControlFactoryAndUpdater factory = new ObservableMapCellControlProvider.ControlFactoryAndUpdater() {
 		//
@@ -227,43 +227,43 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		// event.gc.fillRectangle(event.getBounds());
 		// }
 		// });
-
-		final IObservableMap analysisProgressValues = BeanProperties.value(ISampleProgress.class,
-				ISampleProgress.ANALYSIS_PROGRESS).observeDetail(knownElements);
-
-		viewerColumn5.setLabelProvider(new ObservableMapOwnerDrawProvider(analysisProgressValues) {
-			org.eclipse.swt.graphics.Color green = null;
-			org.eclipse.swt.graphics.Color original = null;
-
-			@Override
-			protected void measure(Event event, Object element) {
-				event.setBounds(new Rectangle(event.x, event.y, 20, 10));
-			}
-
-			@Override
-			protected void erase(Event event, Object element) {
-				if (original != null) {
-					event.gc.setBackground(original);
-					event.gc.fillRectangle(event.getBounds());
-				}
-				super.erase(event, element);
-			}
-
-			@Override
-			protected void paint(Event event, Object element) {
-				green = event.display.getSystemColor(SWT.COLOR_GREEN);
-				event.gc.setBackground(green);
-
-				Object value = attributeMaps[0].get(element);
-
-				int columnWidth = viewerColumn4.getColumn().getWidth();
-				int percentage = ((Double) value).intValue();
-				int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
-				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-
-				event.gc.fillRectangle(event.getBounds());
-			}
-		});
+		//
+		// final IObservableMap analysisProgressValues = BeanProperties.value(ISampleProgress.class,
+		// ISampleProgress.ANALYSIS_PROGRESS).observeDetail(knownElements);
+		//
+		// viewerColumn5.setLabelProvider(new ObservableMapOwnerDrawProvider(analysisProgressValues) {
+		// org.eclipse.swt.graphics.Color green = null;
+		// org.eclipse.swt.graphics.Color original = null;
+		//
+		// @Override
+		// protected void measure(Event event, Object element) {
+		// event.setBounds(new Rectangle(event.x, event.y, 20, 10));
+		// }
+		//
+		// @Override
+		// protected void erase(Event event, Object element) {
+		// if (original != null) {
+		// event.gc.setBackground(original);
+		// event.gc.fillRectangle(event.getBounds());
+		// }
+		// super.erase(event, element);
+		// }
+		//
+		// @Override
+		// protected void paint(Event event, Object element) {
+		// green = event.display.getSystemColor(SWT.COLOR_GREEN);
+		// event.gc.setBackground(green);
+		//
+		// Object value = attributeMaps[0].get(element);
+		//
+		// int columnWidth = viewerColumn4.getColumn().getWidth();
+		// int percentage = ((Double) value).intValue();
+		// int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
+		// event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
+		//
+		// event.gc.fillRectangle(event.getBounds());
+		// }
+		// });
 
 		bioSaxsProgressViewer.setInput(input);
 	}
