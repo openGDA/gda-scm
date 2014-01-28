@@ -22,25 +22,41 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.core.resources.IStorage;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IStorageEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
 import uk.ac.gda.devices.bssc.beans.ISampleProgress;
 import uk.ac.gda.richbeans.components.FieldComposite;
+import uk.ac.gda.richbeans.xml.string.StringInput;
+import uk.ac.gda.richbeans.xml.string.StringStorage;
 
 public class BioSAXSProgressComposite extends FieldComposite {
+	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
+
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
 
@@ -91,6 +107,29 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		// Create the label provider including monitoring of the changes of the
 		// labels
 		IObservableSet knownElements = contentProvider.getKnownElements();
+
+		Table table = bioSaxsProgressViewer.getTable();
+
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem tableItem = (TableItem) e.item;
+				ISampleProgress sampleProgress = (ISampleProgress) tableItem.getData();
+
+				final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+				IStorage storage = new StringStorage("", sampleProgress.getSampleName());
+
+				IStorageEditorInput input = new StringInput(storage);
+				if (page != null) {
+					try {
+						page.openEditor(input, "org.eclipse.ui.DefaultTextEditor");
+					} catch (PartInitException ex) {
+						logger.error("Error opening editor", ex);
+					}
+				}
+			}
+		});
 
 		// final IObservableMap collectionProgress = BeanProperties.value(ISampleProgress.class,
 		// ISampleProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
@@ -225,7 +264,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
-		
+
 		bioSaxsProgressViewer.setInput(input);
 	}
 
