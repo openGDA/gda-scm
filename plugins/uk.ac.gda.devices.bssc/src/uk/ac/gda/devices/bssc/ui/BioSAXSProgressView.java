@@ -29,8 +29,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.beans.BioSAXSSampleProgressCollection;
-import uk.ac.gda.devices.bssc.beans.ISampleProgressCollection;
+import uk.ac.gda.devices.bssc.beans.BioSAXSProgressModel;
+import uk.ac.gda.devices.bssc.beans.IProgressModel;
 
 public class BioSAXSProgressView extends ViewPart {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
@@ -44,10 +44,10 @@ public class BioSAXSProgressView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		ISampleProgressCollection model = new BioSAXSSampleProgressCollection();
+		IProgressModel model = new BioSAXSProgressModel();
 
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
-		modelReg.setClass(ISampleProgressCollection.class);
+		modelReg.setClass(IProgressModel.class);
 		modelReg.setService(model);
 		try {
 			modelReg.afterPropertiesSet();
@@ -55,7 +55,7 @@ public class BioSAXSProgressView extends ViewPart {
 			logger.error(e.getMessage());
 		}
 
-		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
+		model = (IProgressModel) GDAClientActivator.getNamedService(IProgressModel.class, null);
 		input = model.getItems();
 		bioSAXSComposite = new BioSAXSProgressComposite(parent, input, SWT.NONE);
 	}
