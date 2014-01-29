@@ -34,7 +34,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 	private long collectionStartTime;
 
 	public BioSaxsSampleProgress() {
-		
+
 	}
 
 	@Override
@@ -82,9 +82,20 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 
 	@Override
 	public void setSampleName(String sampleName) {
-		this.sampleName = sampleName;
+		firePropertyChange(ISampleProgress.SAMPLE_NAME, this.sampleName, this.sampleName = sampleName);
 	}
 
+	@Override
+	public long getCollectionStartTime() {
+		return collectionStartTime;
+	}
+
+	@Override
+	public void setCollectionStartTime(long collectionStartTime) {
+		firePropertyChange(ISampleProgress.COLLECTION_START_TIME, this.collectionStartTime,
+				this.collectionProgress = collectionStartTime);
+	}
+	
 	@Override
 	public String getCollectionStatus() {
 		return collectionStatus;
@@ -130,10 +141,6 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		this.blSessionId = blSessionId;
 	}
 
-	@Override
-	public long getCollectionStartTime() {
-		// TODO Auto-generated method stub
-		return collectionStartTime;
-	}
+
 
 }
