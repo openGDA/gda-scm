@@ -24,7 +24,7 @@ public class BioSAXSDBUtilsTest {
 	@Test
 	public void testcreateMeasurementsAndRegisterBufferForSample()
 			throws SQLException {
-		// These steps are done prior to the experiment being run
+		// These steps are done prior to the experiment being run (in the init module of the BSSC.py)
 		String visit = "nt20-12";
 
 		long proposalId = bioSAXSISPyB.getProposalForVisit(visit);
@@ -74,7 +74,7 @@ public class BioSAXSDBUtilsTest {
 				saxsDataCollectionId, bufferAfterMeasurementId);
 		assertTrue(someid >= 0);
 
-		// These steps would be run when the experiment is run
+		// These steps are done prior to the experiment being run (in the run module of the BSSC.py)
 		long bufferBeforeRunId = bioSAXSISPyB.measurementStarted(
 				bufferBeforeMeasurementId, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0,
 				1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
