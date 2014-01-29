@@ -12,15 +12,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
+import uk.ac.gda.devices.bssc.beans.IProgressModel;
 import uk.ac.gda.devices.bssc.beans.ISampleProgress;
-import uk.ac.gda.devices.bssc.beans.ISampleProgressCollection;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
 
-public class BioSAXSSampleProgressCollectionTest {
+public class BioSAXSProgressModelTest {
 
 	private static BioSAXSISPyB bioSAXSISPyB;
-	private static ISampleProgressCollection model;
+	private static IProgressModel model;
 
 	@BeforeClass
 	public static void testSetup() {
@@ -28,7 +28,7 @@ public class BioSAXSSampleProgressCollectionTest {
 				.setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 		// populate model with sample values
-		model = new MyISampleProgressCollection();
+		model = new MyProgressModel();
 		populateModel();
 	}
 
@@ -81,8 +81,8 @@ public class BioSAXSSampleProgressCollectionTest {
 
 }
 
-class MyISampleProgressCollection extends ArrayList<ISampleProgress> implements
-		ISampleProgressCollection {
+class MyProgressModel extends ArrayList<ISampleProgress> implements
+		IProgressModel {
 
 	/**
 * 
@@ -105,11 +105,5 @@ class MyISampleProgressCollection extends ArrayList<ISampleProgress> implements
 	@Override
 	public void addItems(List<ISampleProgress> bioSAXSSamples) {
 		items.add(bioSAXSSamples);
-	}
-
-	@Override
-	public void pollISpyB() {
-		// TODO Auto-generated method stub
-
 	}
 }

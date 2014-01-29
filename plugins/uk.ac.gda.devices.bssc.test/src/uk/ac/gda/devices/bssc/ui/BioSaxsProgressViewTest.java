@@ -25,21 +25,21 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
 import uk.ac.gda.devices.bssc.beans.ISampleProgress;
-import uk.ac.gda.devices.bssc.beans.ISampleProgressCollection;
+import uk.ac.gda.devices.bssc.beans.IProgressModel;
 
 public class BioSaxsProgressViewTest {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 	private static final Logger logger = LoggerFactory
 			.getLogger(BioSaxsProgressViewTest.class);
 	private static BioSAXSProgressView view;
-	private static ISampleProgressCollection model;
+	private static IProgressModel model;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		model = new MyISampleProgressCollection();
+		model = new MyProgressModel();
 
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
-		modelReg.setClass(ISampleProgressCollection.class);
+		modelReg.setClass(IProgressModel.class);
 		modelReg.setService(model);
 		modelReg.afterPropertiesSet();
 
@@ -161,8 +161,8 @@ public class BioSaxsProgressViewTest {
 
 }
 
-class MyISampleProgressCollection extends ArrayList<ISampleProgress> implements
-		ISampleProgressCollection {
+class MyProgressModel extends ArrayList<ISampleProgress> implements
+		IProgressModel {
 
 	/**
 	 * 
@@ -186,11 +186,4 @@ class MyISampleProgressCollection extends ArrayList<ISampleProgress> implements
 	public void addItems(List<ISampleProgress> bioSAXSSamples) {
 		items.add(bioSAXSSamples);
 	}
-
-	@Override
-	public void pollISpyB() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
