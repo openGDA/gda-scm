@@ -47,6 +47,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.common.rcp.jface.viewers.ObservableMapColumnLabelProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
 import uk.ac.gda.devices.bssc.beans.ISampleProgress;
@@ -131,46 +132,31 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
-		viewerColumn1.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				ISampleProgress progress = (ISampleProgress) element;
-				return progress.getSampleName();
-			}
-		});
+		final IObservableMap sampleName = BeanProperties.value(ISampleProgress.class, ISampleProgress.SAMPLE_NAME)
+				.observeDetail(knownElements);
 
-		viewerColumn2.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				ISampleProgress progress = (ISampleProgress) element;
-				return String.valueOf(progress.getCollectionStartTime());
-			}
-		});
+		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName));
 
-		viewerColumn3.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				ISampleProgress progress = (ISampleProgress) element;
-				return progress.getCollectionStatus();
-			}
-		});
+		final IObservableMap collectionStartTime = BeanProperties.value(ISampleProgress.class,
+				ISampleProgress.COLLECTION_START_TIME).observeDetail(knownElements);
 
-		viewerColumn4.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				ISampleProgress progress = (ISampleProgress) element;
-				return progress.getReductionStatus();
-			}
-		});
+		viewerColumn2.setLabelProvider(new ObservableMapColumnLabelProvider(collectionStartTime));
+
+		final IObservableMap collectionStatus = BeanProperties.value(ISampleProgress.class,
+				ISampleProgress.COLLECTION_STATUS).observeDetail(knownElements);
+
+		viewerColumn3.setLabelProvider(new ObservableMapColumnLabelProvider(collectionStatus));
+
+		final IObservableMap reductionStatus = BeanProperties.value(ISampleProgress.class,
+				ISampleProgress.REDUCTION_STATUS).observeDetail(knownElements);
+
+		viewerColumn4.setLabelProvider(new ObservableMapColumnLabelProvider(reductionStatus));
 		
-		viewerColumn5.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(Object element) {
-				ISampleProgress progress = (ISampleProgress) element;
-				return progress.getAnalysisStatus();
-			}
-		});
+		final IObservableMap analysisStatus = BeanProperties.value(ISampleProgress.class,
+				ISampleProgress.ANALYSIS_STATUS).observeDetail(knownElements);
 
+		viewerColumn5.setLabelProvider(new ObservableMapColumnLabelProvider(analysisStatus));
+		
 		// final IObservableMap collectionProgress = BeanProperties.value(ISampleProgress.class,
 		// ISampleProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
 		//
