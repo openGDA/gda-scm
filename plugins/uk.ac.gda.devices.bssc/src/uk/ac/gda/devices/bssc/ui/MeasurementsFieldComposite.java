@@ -728,6 +728,13 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				TitrationBean tb = (TitrationBean) element;
 				return String.format("%4.1f \u00B0C", tb.getExposureTemperature());
 			}
+			@Override
+			public Color getBackground(Object element) {
+				TitrationBean tb = (TitrationBean) element;
+				if (tb.getExposureTemperature() < -10.0 || tb.getExposureTemperature() > 60.0)
+					return warning;
+				return okay;
+			}
 		}, new OurEditingSupport() {
 			@Override
 			protected CellEditor getOurCellEditor(Object element) {
