@@ -8,18 +8,23 @@ import java.sql.SQLException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.gda.devices.bssc.ui.MeasurementsFieldComposite;
+
 public class BioSAXSDBUtilsTest {
 
 	static BioSAXSISPyB bioSAXSISPyB = null;
-	
+
 	@BeforeClass
 	public static void setup() {
-		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe");
+		new BioSAXSDBFactory()
+				.setJdbcURL("jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe");
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 	}
-	
+
 	@Test
-	public void testcreateMeasurementsAndRegisterBufferForSample() throws SQLException {
+	public void testcreateMeasurementsAndRegisterBufferForSample()
+			throws SQLException {
+		// These steps are done prior to the experiment being run
 		String visit = "nt20-12";
 
 		long proposalId = bioSAXSISPyB.getProposalForVisit(visit);
@@ -28,31 +33,92 @@ public class BioSAXSDBUtilsTest {
 		long blsessionId = bioSAXSISPyB.getSessionForVisit(visit);
 		assertEquals(blsessionId, 434L);
 
-		long experimentId = bioSAXSISPyB.createExperiment(proposalId, "test", "TEMPLATE", "test");
+		long experimentId = bioSAXSISPyB.createExperiment(proposalId, "test",
+				"TEMPLATE", "test");
 
-		long sdc = bioSAXSISPyB.createSaxsDataCollection(blsessionId, experimentId);
-		
-		long bufferId1 = bioSAXSISPyB.createBufferMeasurement(blsessionId, experimentId, (short)0, (short)1, (short)1, 20.0f, 21.0f, 10, 1.0, 2.0, 5.0, 10.0, 
-				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9990.nxs", "/entry1/detector/data");
-		assertTrue(bufferId1 >= 0);
+		long saxsDataCollectionId = bioSAXSISPyB.createSaxsDataCollection(
+				blsessionId, experimentId);
 
-		long someid = bioSAXSISPyB.createMeasurementToDataCollection(sdc, bufferId1);
+		long specimenId = bioSAXSISPyB.createSpecimenForMeasurement();
+
+		long bufferBeforeMeasurementId = bioSAXSISPyB.createBufferMeasurement(
+				blsessionId, saxsDataCollectionId, specimenId, true, (short) 0,
+				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
+				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9990.nxs",
+				"/entry1/detector/data");
+		assertTrue(bufferBeforeMeasurementId >= 0);
+
+		long someid = bioSAXSISPyB.createMeasurementToDataCollection(
+				saxsDataCollectionId, bufferBeforeMeasurementId);
 		assertTrue(someid >= 0);
 
-		long sampleId = bioSAXSISPyB.createSampleMeasurement(blsessionId, experimentId, (short)1, (short)1, (short)2, "The blue one",
-				19.0, 20.0f, 21.0f, 10, 1.0, 2.0, 3.0, 11.0, 
-				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9991.nxs", "/entry1/detector/data");
-		assertTrue(sampleId >= 0);
-		
-		someid = bioSAXSISPyB.createMeasurementToDataCollection(sdc, sampleId);
+		long sampleMeasurementId = bioSAXSISPyB.createSampleMeasurement(
+				blsessionId, saxsDataCollectionId, specimenId, (short) 1,
+				(short) 1, (short) 2, 20.0f, 10, 1.0, 2.0, 3.0, 11.0,
+				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9991.nxs",
+				"/entry1/detector/data");
+		assertTrue(sampleMeasurementId >= 0);
+
+		someid = bioSAXSISPyB.createMeasurementToDataCollection(
+				saxsDataCollectionId, sampleMeasurementId);
 		assertTrue(someid >= 0);
-		
-		long bufferId2 = bioSAXSISPyB.createBufferMeasurement(blsessionId, experimentId, (short)0, (short)1, (short)1, 20.0f, 21.0f, 10, 1.0, 2.0, 5.0, 10.0, 
-				"viscosity", "/dls/i22/data/2013/sm999-9/i22-9992.nxs", "/entry1/detector/data");
-		assertTrue(bufferId2 >= 0);
-		
-		someid = bioSAXSISPyB.createMeasurementToDataCollection(sdc, bufferId2);
+
+		long bufferAfterMeasurementId = bioSAXSISPyB.createBufferMeasurement(
+				blsessionId, saxsDataCollectionId, specimenId, false,
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity", "/dls/i22/data/2013/sm999-9/i22-9992.nxs",
+				"/entry1/detector/data");
+		assertTrue(bufferAfterMeasurementId >= 0);
+
+		someid = bioSAXSISPyB.createMeasurementToDataCollection(
+				saxsDataCollectionId, bufferAfterMeasurementId);
 		assertTrue(someid >= 0);
+
+		// These steps would be run when the experiment is run
+		long bufferBeforeRunId = bioSAXSISPyB.measurementStarted(
+				bufferBeforeMeasurementId, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0,
+				1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+		assertTrue(bufferBeforeRunId >= 0);
+		
+		long sampleRunId = bioSAXSISPyB.measurementStarted(sampleMeasurementId,
+				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				1.0);
+		assertTrue(sampleRunId >= 0);
+		
+		long bufferAfterRunId = bioSAXSISPyB.measurementStarted(
+				bufferAfterMeasurementId, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0,
+				1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+		assertTrue(bufferAfterRunId >= 0);
+		
+		bioSAXSISPyB.measurementDone(bufferBeforeMeasurementId);
+
+		bioSAXSISPyB.measurementDone(sampleMeasurementId);
+
+		bioSAXSISPyB.measurementDone(bufferAfterMeasurementId);
+
+		bioSAXSISPyB.measurementFailed(bufferBeforeMeasurementId);
+
+		bioSAXSISPyB.measurementFailed(sampleMeasurementId);
+
+		bioSAXSISPyB.measurementFailed(bufferAfterMeasurementId);
+
+		bioSAXSISPyB.isMeasurementDone(bufferBeforeMeasurementId);
+
+		bioSAXSISPyB.isMeasurementDone(sampleMeasurementId);
+
+		bioSAXSISPyB.isMeasurementDone(bufferAfterMeasurementId);
+
+		bioSAXSISPyB.isMeasurementSuccessful(bufferBeforeMeasurementId);
+
+		bioSAXSISPyB.isMeasurementSuccessful(sampleMeasurementId);
+
+		bioSAXSISPyB.isMeasurementSuccessful(bufferAfterMeasurementId);
+
+		bioSAXSISPyB.isMeasurementFailed(bufferBeforeMeasurementId);
+
+		bioSAXSISPyB.isMeasurementFailed(sampleMeasurementId);
+
+		bioSAXSISPyB.isMeasurementFailed(bufferAfterMeasurementId);
 
 		bioSAXSISPyB.disconnect();
 	}
