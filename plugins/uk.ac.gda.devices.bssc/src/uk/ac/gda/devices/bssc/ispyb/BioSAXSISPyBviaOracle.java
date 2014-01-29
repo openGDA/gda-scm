@@ -366,7 +366,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
 		return measurementId;
 	}
-	
+
 	@Override
 	public long createSampleMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
 			String name, double concentration, float storageTemperature, float exposureTemperature, int numFrames,
@@ -653,13 +653,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	public boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
 		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
 	}
-	
+
 	@Override
 	public List<ISampleProgress> getBioSAXSMeasurements(long blSessionId) throws SQLException {
 		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
-//		String selectSql = "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
+		// String selectSql =
+		// "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
 		String selectSql = "SELECT ispyb4a_db.measurement.measurementId, ispyb4a_db.measurement.specimenId FROM ispyb4a_db.Measurement INNER JOIN ispyb4a_db.Specimen on ispyb4a_db.measurement.specimenId = ispyb4a_db.specimen.specimenId WHERE blsessionId = ? ORDER BY ispyb4a_db.measurement.measurementId ASC";
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, blSessionId);
@@ -683,24 +684,23 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setMeasurementCollectionStatus(long measurementId, String collectionStatus) throws SQLException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setMeasurementReductionStatus(long measurementId, String reductionStatus) throws SQLException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setMeasurementAnalysisStatus(long measurementId, String analysisStatus) throws SQLException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setMeasurementStartTime(long startTime) throws SQLException {
-		// TODO Auto-generated method stub
-		
+		System.out.println(System.currentTimeMillis());
 	}
 }
