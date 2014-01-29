@@ -9,28 +9,22 @@ import java.util.List;
 import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
-import uk.ac.gda.devices.bssc.beans.ISampleProgress;
 import uk.ac.gda.devices.bssc.beans.IProgressModel;
+import uk.ac.gda.devices.bssc.beans.ISampleProgress;
 
 public class BioSaxsProgressViewTest {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
-	private static final Logger logger = LoggerFactory
-			.getLogger(BioSaxsProgressViewTest.class);
 	private static BioSAXSProgressView view;
 	private static IProgressModel model;
 
