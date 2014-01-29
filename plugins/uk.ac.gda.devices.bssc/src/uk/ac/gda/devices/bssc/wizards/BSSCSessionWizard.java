@@ -36,7 +36,6 @@ import uk.ac.gda.devices.bssc.beans.TitrationBean;
 public class BSSCSessionWizard extends Wizard implements INewWizard {
 	private BSSCSessionWizardPage page;
 	private ISelection selection;
-	private float sampleStorageTemperature = 15;
 	private double concentration = 0.1;
 	private float exposureTemperature = 20;
 	private int frames = 10;
@@ -134,7 +133,6 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 	 */
 	private InputStream getContentStream() {
 		BSSCSessionBean sessionBean = new BSSCSessionBean();
-		sessionBean.setSampleStorageTemperature(sampleStorageTemperature);
 		List<TitrationBean> measurements = new ArrayList<TitrationBean>();
 		int i = 0;
 		LocationBean bufferLocation = null;

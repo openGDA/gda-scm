@@ -31,14 +31,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.client.CommandQueueViewFactory;
 import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.components.scalebox.NumberBox;
-import uk.ac.gda.richbeans.components.scalebox.ScaleBox;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 
 public final class BSSCSessionBeanComposite extends Composite {
@@ -121,18 +119,6 @@ public final class BSSCSessionBeanComposite extends Composite {
 		layoutData = new GridData(GridData.FILL_BOTH);
 		layoutData.horizontalSpan=2;
 		measurements.setLayoutData(layoutData);
-		
-		sampleStorageTemperature = new ScaleBox(this, SWT.NONE);
-		layoutData = new GridData(SWT.LEFT, SWT.CENTER, false, false, 4, 1);
-		layoutData.horizontalSpan=5;
-		sampleStorageTemperature.setLayoutData(layoutData);
-		sampleStorageTemperature.setUnit("\u00B0C");
-		sampleStorageTemperature.setLabel("Sample Storage Temperature");
-		sampleStorageTemperature.setLabelWidth(230);
-		sampleStorageTemperature.setMinimum(-100);
-		sampleStorageTemperature.setMaximum(100);
-		sampleStorageTemperature.setDecimalPlaces(1);
-		new Label(sampleStorageTemperature, SWT.NONE);
 	}
 
 	public FieldComposite getSampleStorageTemperature() {
