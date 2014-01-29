@@ -60,9 +60,10 @@ public class BioSaxsProgressViewTest {
 
 	private static void populateModel() {
 		for (int i = 0; i < 20; i++) {
-			BioSaxsSampleProgress progress = new BioSaxsSampleProgress();
-			progress.setExperimentId(String.valueOf(i));
-			model.add(new BioSaxsSampleProgress());
+			ISampleProgress progress = new BioSaxsSampleProgress();
+			progress.setSampleName("Sample : " + String.valueOf(i));
+			progress.setCollectionStartTime(i);
+			model.add(progress);
 		}
 	}
 
