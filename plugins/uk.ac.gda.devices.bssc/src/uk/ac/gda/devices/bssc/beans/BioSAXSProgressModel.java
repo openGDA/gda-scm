@@ -18,36 +18,20 @@
 
 package uk.ac.gda.devices.bssc.beans;
 
-import gda.data.metadata.GDAMetadataProvider;
-import gda.device.DeviceException;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.WritableList;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
 
 public class BioSAXSProgressModel extends ArrayList<ISampleProgress> implements IProgressModel {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressModel.class);
 	WritableList items = new WritableList(new ArrayList<ISampleProgress>(), ISampleProgress.class);
 
 	public BioSAXSProgressModel() {
-		//Set up connection to ISpyB
-		BioSAXSProgressController controller = new BioSAXSProgressController(this);
-		controller.pollISpyB();
+		new BioSAXSProgressController(this);
 	}
 
 	@Override
