@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB.SampleInfo;
-
 public class BioSAXSISPyBUtils {
 
 	public static void dumpCollectionReport(long collectionid) throws SQLException, IOException {
@@ -43,7 +41,7 @@ public class BioSAXSISPyBUtils {
 		try {
 			bw.write("#location, sample name, sample file, before buffer file, after buffer file\n");
 			for(SampleInfo si: collectionInfo) {
-				bw.write(si.location.toString()+","+si.name+","+si.sampleFileName+","+si.bufferBeforeFileName+","+si.bufferAfterFileName+"\n");
+				bw.write(si.getLocation().toString()+","+si.getName()+","+si.getSampleFileName()+","+si.getBufferBeforeFileName()+","+si.getBufferAfterFileName()+"\n");
 			}
 		} finally {
 			bw.close();
