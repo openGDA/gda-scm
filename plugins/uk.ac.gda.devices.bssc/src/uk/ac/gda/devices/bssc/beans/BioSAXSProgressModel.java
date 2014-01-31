@@ -23,12 +23,12 @@ import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.WritableList;
 
-public class BioSAXSProgressModel extends ArrayList<ISampleProgress> implements IProgressModel {
+public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> implements IProgressModel {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	WritableList items = new WritableList(new ArrayList<ISampleProgress>(), ISampleProgress.class);
+	WritableList items = new WritableList(new ArrayList<ISAXSDataCollection>(), ISAXSDataCollection.class);
 
 	public BioSAXSProgressModel() {
 		new BioSAXSProgressController(this);
@@ -50,7 +50,7 @@ public class BioSAXSProgressModel extends ArrayList<ISampleProgress> implements 
 	}
 
 	@Override
-	public void addItems(final List<ISampleProgress> bioSAXSSamples) {
+	public void addItems(final List<ISAXSDataCollection> bioSAXSSamples) {
 		items.getRealm().asyncExec(new Runnable() {
 
 			@Override

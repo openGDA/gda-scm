@@ -20,7 +20,7 @@ package uk.ac.gda.devices.bssc.beans;
 
 import uk.ac.gda.beans.ObservableModel;
 
-public class BioSaxsSampleProgress extends ObservableModel implements ISampleProgress {
+public class BioSaxsDataCollection extends ObservableModel implements ISAXSDataCollection {
 	private double collectionProgress;
 	private double reductionProgress;
 	private double analysisProgress;
@@ -32,8 +32,11 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 	private String visit;
 	private long blSessionId;
 	private long collectionStartTime;
+	private long id;
+	private long bufferBeforeMeasurementId;
+	private long bufferAfterMeasurementId;
 
-	public BioSaxsSampleProgress() {
+	public BioSaxsDataCollection() {
 
 	}
 
@@ -52,17 +55,20 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		return analysisProgress;
 	}
 
+	@Override
 	public void setCollectionProgress(double newVal) {
-		firePropertyChange(ISampleProgress.COLLECTION_PROGRESS, this.collectionProgress,
+		firePropertyChange(ISAXSDataCollection.COLLECTION_PROGRESS, this.collectionProgress,
 				this.collectionProgress = newVal);
 	}
 
+	@Override
 	public void setReductionProgress(double newVal) {
-		firePropertyChange(ISampleProgress.REDUCTION_PROGRESS, this.reductionProgress, this.reductionProgress = newVal);
+		firePropertyChange(ISAXSDataCollection.REDUCTION_PROGRESS, this.reductionProgress, this.reductionProgress = newVal);
 	}
 
+	@Override
 	public void setAnalysisProgress(double newVal) {
-		firePropertyChange(ISampleProgress.ANALYSIS_PROGRESS, this.analysisProgress, this.analysisProgress = newVal);
+		firePropertyChange(ISAXSDataCollection.ANALYSIS_PROGRESS, this.analysisProgress, this.analysisProgress = newVal);
 	}
 
 	@Override
@@ -82,7 +88,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 
 	@Override
 	public void setSampleName(String sampleName) {
-		firePropertyChange(ISampleProgress.SAMPLE_NAME, this.sampleName, this.sampleName = sampleName);
+		firePropertyChange(ISAXSDataCollection.SAMPLE_NAME, this.sampleName, this.sampleName = sampleName);
 	}
 
 	@Override
@@ -92,7 +98,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 
 	@Override
 	public void setCollectionStartTime(long collectionStartTime) {
-		firePropertyChange(ISampleProgress.COLLECTION_START_TIME, this.collectionStartTime,
+		firePropertyChange(ISAXSDataCollection.COLLECTION_START_TIME, this.collectionStartTime,
 				this.collectionProgress = collectionStartTime);
 	}
 	
@@ -101,6 +107,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		return collectionStatus;
 	}
 
+	@Override
 	public void setCollectionStatus(String collectionStatus) {
 		this.collectionStatus = collectionStatus;
 	}
@@ -110,6 +117,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		return reductionStatus;
 	}
 
+	@Override
 	public void setReductionStatus(String reductionStatus) {
 		this.reductionStatus = reductionStatus;
 	}
@@ -119,6 +127,7 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		return analysisStatus;
 	}
 
+	@Override
 	public void setAnalysisStatus(String analysisStatus) {
 		this.analysisStatus = analysisStatus;
 	}
@@ -141,6 +150,18 @@ public class BioSaxsSampleProgress extends ObservableModel implements ISamplePro
 		this.blSessionId = blSessionId;
 	}
 
+	@Override
+	public void setId(long saxsDataCollectionId) {
+		this.id = saxsDataCollectionId;
+	}
 
+	@Override
+	public void setBufferBeforeMeasurementId(long bufferBeforeMeasurementId) {
+		this.bufferBeforeMeasurementId = bufferBeforeMeasurementId;
+	}
 
+	@Override
+	public void setBufferAfterMeasurementId(long bufferAfterMeasurementId) {
+		this.bufferAfterMeasurementId = bufferAfterMeasurementId;
+	}
 }

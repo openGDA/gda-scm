@@ -24,21 +24,17 @@ import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -48,9 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapColumnLabelProvider;
-import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
-import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
-import uk.ac.gda.devices.bssc.beans.ISampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
 import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.xml.string.StringInput;
 import uk.ac.gda.richbeans.xml.string.StringStorage;
@@ -115,7 +109,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				TableItem tableItem = (TableItem) e.item;
-				ISampleProgress sampleProgress = (ISampleProgress) tableItem.getData();
+				ISAXSDataCollection sampleProgress = (ISAXSDataCollection) tableItem.getData();
 
 				final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
@@ -132,28 +126,28 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
-		final IObservableMap sampleName = BeanProperties.value(ISampleProgress.class, ISampleProgress.SAMPLE_NAME)
+		final IObservableMap sampleName = BeanProperties.value(ISAXSDataCollection.class, ISAXSDataCollection.SAMPLE_NAME)
 				.observeDetail(knownElements);
 
 		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName));
 
-		final IObservableMap collectionStartTime = BeanProperties.value(ISampleProgress.class,
-				ISampleProgress.COLLECTION_START_TIME).observeDetail(knownElements);
+		final IObservableMap collectionStartTime = BeanProperties.value(ISAXSDataCollection.class,
+				ISAXSDataCollection.COLLECTION_START_TIME).observeDetail(knownElements);
 
 		viewerColumn2.setLabelProvider(new ObservableMapColumnLabelProvider(collectionStartTime));
 
-		final IObservableMap collectionStatus = BeanProperties.value(ISampleProgress.class,
-				ISampleProgress.COLLECTION_STATUS).observeDetail(knownElements);
+		final IObservableMap collectionStatus = BeanProperties.value(ISAXSDataCollection.class,
+				ISAXSDataCollection.COLLECTION_STATUS).observeDetail(knownElements);
 
 		viewerColumn3.setLabelProvider(new ObservableMapColumnLabelProvider(collectionStatus));
 
-		final IObservableMap reductionStatus = BeanProperties.value(ISampleProgress.class,
-				ISampleProgress.REDUCTION_STATUS).observeDetail(knownElements);
+		final IObservableMap reductionStatus = BeanProperties.value(ISAXSDataCollection.class,
+				ISAXSDataCollection.REDUCTION_STATUS).observeDetail(knownElements);
 
 		viewerColumn4.setLabelProvider(new ObservableMapColumnLabelProvider(reductionStatus));
 		
-		final IObservableMap analysisStatus = BeanProperties.value(ISampleProgress.class,
-				ISampleProgress.ANALYSIS_STATUS).observeDetail(knownElements);
+		final IObservableMap analysisStatus = BeanProperties.value(ISAXSDataCollection.class,
+				ISAXSDataCollection.ANALYSIS_STATUS).observeDetail(knownElements);
 
 		viewerColumn5.setLabelProvider(new ObservableMapColumnLabelProvider(analysisStatus));
 		

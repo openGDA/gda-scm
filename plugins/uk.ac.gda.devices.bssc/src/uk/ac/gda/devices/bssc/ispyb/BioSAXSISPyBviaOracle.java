@@ -34,8 +34,6 @@ import oracle.jdbc.OracleConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
-import uk.ac.gda.devices.bssc.beans.ISampleProgress;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 
 /*
@@ -217,7 +215,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return samplePlatePositionId;
 	}
 
-	protected long createSpecimen(long blsessionId, long experimentId, Long bufferId, Long macromoleculeId,
+	public long createSpecimen(long blsessionId, long experimentId, Long bufferId, Long macromoleculeId,
 			Long samplePlatePositionId, Long stockSolutionId, Double concentration, Double volume) throws SQLException {
 		long specimenId = -1;
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen ("

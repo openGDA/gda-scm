@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 
-public interface IProgressModel extends List<ISampleProgress> {
+public interface IProgressModel extends List<ISAXSDataCollection> {
 	// To allow the list to be updated outside of the UI we need to return an ObservableList whose getElementType
 	// returns MvcExampleItem
 	// rather than a List
@@ -30,5 +30,5 @@ public interface IProgressModel extends List<ISampleProgress> {
 
 	void clearItems();
 
-	void addItems(List<ISampleProgress> bioSAXSSamples);
+	void addItems(List<ISAXSDataCollection> bioSAXSSamples);
 }

@@ -9,7 +9,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.beans.ISampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
 
 public class BioSAXSISPyBviaOracleTest {
 
@@ -42,11 +42,11 @@ public class BioSAXSISPyBviaOracleTest {
 			visit = "cm4977-1";
 			blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
 			
-			List<ISampleProgress> progressList = bioSAXSISPyB
+			List<ISAXSDataCollection> progressList = bioSAXSISPyB
 					.getBioSAXSMeasurements(blSessionId);
 
 			// check blSessionId for each ISampleProgress object is correct
-			for (ISampleProgress progress : progressList) {
+			for (ISAXSDataCollection progress : progressList) {
 				assertEquals(blSessionId, progress.getBlSessionId());
 			}
 		} catch (SQLException e) {

@@ -19,9 +19,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.beans.BioSaxsSampleProgress;
+import uk.ac.gda.devices.bssc.beans.BioSaxsDataCollection;
 import uk.ac.gda.devices.bssc.beans.IProgressModel;
-import uk.ac.gda.devices.bssc.beans.ISampleProgress;
+import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
 
 public class BioSaxsProgressViewTest {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
@@ -54,7 +54,7 @@ public class BioSaxsProgressViewTest {
 
 	private static void populateModel() {
 		for (int i = 0; i < 20; i++) {
-			ISampleProgress progress = new BioSaxsSampleProgress();
+			ISAXSDataCollection progress = new BioSaxsDataCollection();
 			progress.setSampleName("Sample : " + String.valueOf(i));
 			progress.setCollectionStartTime(i);
 			model.add(progress);
@@ -70,11 +70,11 @@ public class BioSaxsProgressViewTest {
 
 		for (int i = 0; i < items.size(); i++) {
 			for (int j = 0; j < 100; j++) {
-				((BioSaxsSampleProgress) items.get(i)).setCollectionProgress(i
+				((ISAXSDataCollection) items.get(i)).setCollectionProgress(i
 						+ j);
-				((BioSaxsSampleProgress) items.get(i)).setReductionProgress(i
+				((ISAXSDataCollection) items.get(i)).setReductionProgress(i
 						+ j);
-				((BioSaxsSampleProgress) items.get(i)).setAnalysisProgress(i
+				((ISAXSDataCollection) items.get(i)).setAnalysisProgress(i
 						+ j);
 			}
 			delay(50);
@@ -92,9 +92,9 @@ public class BioSaxsProgressViewTest {
 	public void testAddMeasurementToModel() {
 		ObservableList items = (ObservableList) model.getItems();
 		
-		BioSaxsSampleProgress newProgress = new BioSaxsSampleProgress();
+		BioSaxsDataCollection newProgress = new BioSaxsDataCollection();
 		newProgress.setExperimentId(String.valueOf(21));
-		items.add(new BioSaxsSampleProgress());
+		items.add(new BioSaxsDataCollection());
 	}
 
 	@AfterClass
@@ -155,7 +155,7 @@ public class BioSaxsProgressViewTest {
 
 }
 
-class MyProgressModel extends ArrayList<ISampleProgress> implements
+class MyProgressModel extends ArrayList<ISAXSDataCollection> implements
 		IProgressModel {
 
 	/**
@@ -163,8 +163,8 @@ class MyProgressModel extends ArrayList<ISampleProgress> implements
 	 */
 	private static final long serialVersionUID = 1L;
 
-	WritableList items = new WritableList(new ArrayList<ISampleProgress>(),
-			ISampleProgress.class);
+	WritableList items = new WritableList(new ArrayList<ISAXSDataCollection>(),
+			ISAXSDataCollection.class);
 
 	@Override
 	public WritableList getItems() {
@@ -177,7 +177,7 @@ class MyProgressModel extends ArrayList<ISampleProgress> implements
 	}
 
 	@Override
-	public void addItems(List<ISampleProgress> bioSAXSSamples) {
+	public void addItems(List<ISAXSDataCollection> bioSAXSSamples) {
 		items.add(bioSAXSSamples);
 	}
 }
