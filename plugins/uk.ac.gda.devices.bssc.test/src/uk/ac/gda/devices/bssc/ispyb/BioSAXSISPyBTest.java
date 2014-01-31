@@ -43,125 +43,168 @@ public class BioSAXSISPyBTest {
 				"TEMPLATE", "test");
 
 		ISpyBStatus collectionStatus;
-		long saxsDataCollectionId = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample",
+		long collection1 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 				10.0, "viscosity");
 		collectionStatus = bioSAXSISPyB
-				.getDataCollectionStatus(saxsDataCollectionId);
+				.getDataCollectionStatus(collection1);
 		assertEquals(collectionStatus, ISpyBStatus.NOT_STARTED);
 		
-		// pass in collection id of previous and current collection so that
-		// current data collection and previous data collection share the same
-		// buffer (previous buffer after == current buffer before)
-		long bufferBeforeRunId = bioSAXSISPyB.createBufferRun(
-				-1, saxsDataCollectionId, 1.0, 20.0f, 20.0f,
+		long bufferBefore1 = bioSAXSISPyB.createBufferRun(
+				-1, collection1, 1.0, 20.0f, 20.0f,
 				10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				"/dls/b21/data/2013/sm999-9/b21-9990.nxs",
 				"/entry1/detector/data");
-		assertTrue(bufferBeforeRunId >= 0);
+		assertTrue(bufferBefore1 >= 0);
 		collectionStatus = bioSAXSISPyB
-				.getDataCollectionStatus(saxsDataCollectionId);
+				.getDataCollectionStatus(collection1);
 		assertEquals(collectionStatus.getProgress(), 0.33);
 		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
 		// TODO get progress as well
 
-		long sampleRunId = bioSAXSISPyB.createSampleRun(saxsDataCollectionId,
+		long sample1 = bioSAXSISPyB.createSampleRun(collection1,
 				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				1.0, "/dls/b21/data/2013/sm999-9/b21-9991.nxs",
 				"/entry1/detector/data");
-		assertTrue(sampleRunId >= 0);
+		assertTrue(sample1 >= 0);
 		collectionStatus = bioSAXSISPyB
-				.getDataCollectionStatus(saxsDataCollectionId);
+				.getDataCollectionStatus(collection1);
 		assertEquals(collectionStatus.getProgress(), 0.66);
 		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
 
 		// Create a buffer after run (pass in -1 for the previous collection id
 		// which indicates not to share the buffer of the previous collection
-		long bufferAfterRunId = bioSAXSISPyB.createBufferRun(-1,
-				saxsDataCollectionId, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0,
+		long bufferAfter1 = bioSAXSISPyB.createBufferRun(-1,
+				collection1, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0,
 				1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				"/dls/b21/data/2013/sm999-9/b21-9992.nxs",
 				"/entry1/detector/data");
-		assertTrue(bufferAfterRunId >= 0);
+		assertTrue(bufferAfter1 >= 0);
 		collectionStatus = bioSAXSISPyB
-				.getDataCollectionStatus(saxsDataCollectionId);
+				.getDataCollectionStatus(collection1);
 		assertEquals(collectionStatus.getProgress(), 1);
 		assertEquals(collectionStatus, ISpyBStatus.COMPLETE);
 
+		// create a 2nd data collection and assign it share the buffer from the previous data collection
+		long collection2 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample2",
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
+		
+		long bufferBefore2 = bioSAXSISPyB.createBufferRun(
+				collection1, collection2, 1.0, 20.0f, 20.0f,
+				10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-9990.nxs",
+				"/entry1/detector/data");
+		assertTrue(bufferBefore2 >= 0);
+		collectionStatus = bioSAXSISPyB
+				.getDataCollectionStatus(collection2);
+		assertEquals(collectionStatus.getProgress(), 0.33);
+		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
+		// TODO get progress as well
+
+		long sample2 = bioSAXSISPyB.createSampleRun(collection2,
+				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				1.0, "/dls/b21/data/2013/sm999-9/b21-9991.nxs",
+				"/entry1/detector/data");
+		assertTrue(sample2 >= 0);
+		collectionStatus = bioSAXSISPyB
+				.getDataCollectionStatus(collection2);
+		assertEquals(collectionStatus.getProgress(), 0.66);
+		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
+
+		// Create a buffer after run (pass in -1 for the previous collection id
+		// which indicates not to share the buffer of the previous collection
+		long bufferAfter2 = bioSAXSISPyB.createBufferRun(-1,
+				collection2, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0,
+				1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-9992.nxs",
+				"/entry1/detector/data");
+		assertTrue(bufferAfter2 >= 0);
+		collectionStatus = bioSAXSISPyB
+				.getDataCollectionStatus(collection2);
+		assertEquals(collectionStatus.getProgress(), 1);
+		assertEquals(collectionStatus, ISpyBStatus.COMPLETE);
+		
+		
+		
 		// create a data collection gets updated with a FAILED status if any of
 		// the measurements for that data collection fail
-		saxsDataCollectionId = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample",
+		long collection3 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample3",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 				10.0, "viscosity");
 
 		assertEquals(
-				bioSAXSISPyB.getDataCollectionStatus(saxsDataCollectionId),
+				bioSAXSISPyB.getDataCollectionStatus(collection3),
 				ISpyBStatus.NOT_STARTED);
 
 		ISpyBStatus status = ISpyBStatus.FAILED;
 		status.setProgress(0.33);
 		String bufferBeforeFailureMessage = "Data Collection failed at after running buffer before meaurement";
-		bioSAXSISPyB.setCollectionStatus(saxsDataCollectionId,
+		bioSAXSISPyB.setCollectionStatus(collection3,
 				status);
 		collectionStatus = bioSAXSISPyB
-				.getDataCollectionStatus(saxsDataCollectionId);
+				.getDataCollectionStatus(collection3);
 		assertEquals(collectionStatus, ISpyBStatus.FAILED);
 		assertEquals(collectionStatus.getMessage(), bufferBeforeFailureMessage);
 		assertEquals(collectionStatus.getProgress(), 0.33);
 
+		
+		
+		
 		// start data reduction and assert it is in the running state
 		ISpyBStatus reductionStatus;
 		long subtractionId = bioSAXSISPyB
-				.createDataReduction(saxsDataCollectionId);
+				.createDataReduction(collection1);
 
-		assertEquals(bioSAXSISPyB.getDataReductionStatus(saxsDataCollectionId),
+		assertEquals(bioSAXSISPyB.getDataReductionStatus(collection1),
 				ISpyBStatus.RUNNING);
 
 		// test data reduction completed
 		bioSAXSISPyB
-				.setDataReductionStatus(saxsDataCollectionId,
+				.setDataReductionStatus(collection3,
 						ISpyBStatus.COMPLETE,
 						"/dls/b21/data/2013/sm999-9/b21-9993.nxs");
 		reductionStatus = bioSAXSISPyB
-				.getDataReductionStatus(saxsDataCollectionId);
+				.getDataReductionStatus(collection1);
 		assertEquals(reductionStatus.getProgress(), 1);
 		assertEquals(reductionStatus, ISpyBStatus.COMPLETE);
 
 		// test data reduction failed
 		// create new data collection here
-		bioSAXSISPyB.setDataReductionStatus(saxsDataCollectionId,
+		bioSAXSISPyB.setDataReductionStatus(collection1,
 				ISpyBStatus.FAILED, "");
 		reductionStatus = bioSAXSISPyB
-				.getDataReductionStatus(saxsDataCollectionId);
+				.getDataReductionStatus(collection1);
 		assertEquals(reductionStatus, ISpyBStatus.FAILED);
 
 		// start data analysis and assert it is in the running state
 		ISpyBStatus analysisStatus;
-		long analysisId = bioSAXSISPyB.createDataAnalysis(saxsDataCollectionId);
+		long analysisId = bioSAXSISPyB.createDataAnalysis(collection1);
 		analysisStatus = bioSAXSISPyB
-				.getDataAnalysisStatus(saxsDataCollectionId);
+				.getDataAnalysisStatus(collection1);
 		assertEquals(analysisStatus, ISpyBStatus.RUNNING);
 
 		// if reduction has failed then analysis has not being started
 		// test data analysis completed
 
 		bioSAXSISPyB
-				.setDataAnalysisStatus(saxsDataCollectionId,
+				.setDataAnalysisStatus(collection1,
 						ISpyBStatus.COMPLETE,
 						"/dls/b21/data/2013/sm999-9/b21-9994.nxs");
 		analysisStatus = bioSAXSISPyB
-				.getDataAnalysisStatus(saxsDataCollectionId);
+				.getDataAnalysisStatus(collection1);
 		assertEquals(analysisStatus.getProgress(), 1);
 		assertEquals(analysisStatus, ISpyBStatus.COMPLETE);
 
 		// test data analysis failed
 		// create a new data collection here
-		bioSAXSISPyB.setDataAnalysisStatus(saxsDataCollectionId,
+		bioSAXSISPyB.setDataAnalysisStatus(collection1,
 				ISpyBStatus.FAILED, "");
 		analysisStatus = bioSAXSISPyB
-				.getDataAnalysisStatus(saxsDataCollectionId);
+				.getDataAnalysisStatus(collection1);
 		assertEquals(analysisStatus, ISpyBStatus.FAILED);
 
 		bioSAXSISPyB.disconnect();
