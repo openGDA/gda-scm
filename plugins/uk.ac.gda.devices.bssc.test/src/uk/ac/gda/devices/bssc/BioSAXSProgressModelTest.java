@@ -11,7 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.beans.BioSaxsDataCollection;
+import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollection;
 import uk.ac.gda.devices.bssc.beans.IProgressModel;
 import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
@@ -43,9 +43,9 @@ public class BioSAXSProgressModelTest {
 
 	private static void populateModel() {
 		for (int i = 0; i < 20; i++) {
-			BioSaxsDataCollection progress = new BioSaxsDataCollection();
+			ISAXSDataCollection progress = new BioSAXSDataCollection();
 			progress.setExperimentId(String.valueOf(i));
-			model.add(new BioSaxsDataCollection());
+			model.add(new BioSAXSDataCollection());
 		}
 	}
 
@@ -54,7 +54,7 @@ public class BioSAXSProgressModelTest {
 		List<ISAXSDataCollection> progressItems = new ArrayList<ISAXSDataCollection>();
 
 		for (int i = 0; i < 7; i++) {
-			progressItems.add(new BioSaxsDataCollection());
+			progressItems.add(new BioSAXSDataCollection());
 		}
 		model.addItems(progressItems);
 
@@ -72,7 +72,7 @@ public class BioSAXSProgressModelTest {
 		List<ISAXSDataCollection> progressItems = new ArrayList<ISAXSDataCollection>();
 
 		for (int i = 0; i < 7; i++) {
-			progressItems.add(new BioSaxsDataCollection());
+			progressItems.add(new BioSAXSDataCollection());
 		}
 		model.addItems(progressItems);
 
