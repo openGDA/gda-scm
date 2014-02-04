@@ -52,7 +52,7 @@ public class BioSAXSISPyBTest {
 		assertEquals(collectionStatus, ISpyBStatus.NOT_STARTED);
 		
 		long bufferBefore1 = bioSAXSISPyB.createBufferRun(
-				-1, collection1, 1.0, 20.0f, 20.0f,
+				collection1, 1.0, 20.0f, 20.0f,
 				10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				"/dls/b21/data/2013/sm999-9/b21-9990.nxs",
 				"/entry1/detector/data");
@@ -75,7 +75,7 @@ public class BioSAXSISPyBTest {
 
 		// Create a buffer after run (pass in -1 for the previous collection id
 		// which indicates not to share the buffer of the previous collection
-		long bufferAfter1 = bioSAXSISPyB.createBufferRun(-1,
+		long bufferAfter1 = bioSAXSISPyB.createBufferRun(
 				collection1, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0,
 				1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				"/dls/b21/data/2013/sm999-9/b21-9992.nxs",
@@ -87,17 +87,11 @@ public class BioSAXSISPyBTest {
 		assertEquals(collectionStatus, ISpyBStatus.COMPLETE);
 
 		// create a 2nd data collection and assign it share the buffer from the previous data collection
-		long collection2 = bioSAXSISPyB.createSaxsDataCollection(
+		long collection2 = bioSAXSISPyB.createSaxsDataCollectionUsingPreviousBuffer(
 				experimentId, (short) 0, (short) 1, (short) 1, "Sample2",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
+				10.0, "viscosity", collection1); //or could replace this last argument with bufferAfter1 - use the measurementId explicitly instead of searching through the data collection
 		
-		long bufferBefore2 = bioSAXSISPyB.createBufferRun(
-				collection1, collection2, 1.0, 20.0f, 20.0f,
-				10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-9990.nxs",
-				"/entry1/detector/data");
-		assertTrue(bufferBefore2 >= 0);
 		collectionStatus = bioSAXSISPyB
 				.getDataCollectionStatus(collection2);
 		assertEquals(collectionStatus.getProgress(), 0.33);
@@ -116,7 +110,7 @@ public class BioSAXSISPyBTest {
 
 		// Create a buffer after run (pass in -1 for the previous collection id
 		// which indicates not to share the buffer of the previous collection
-		long bufferAfter2 = bioSAXSISPyB.createBufferRun(-1,
+		long bufferAfter2 = bioSAXSISPyB.createBufferRun(
 				collection2, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0,
 				1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				"/dls/b21/data/2013/sm999-9/b21-9992.nxs",
