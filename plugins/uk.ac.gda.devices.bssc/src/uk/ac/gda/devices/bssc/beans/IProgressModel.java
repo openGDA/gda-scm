@@ -30,5 +30,7 @@ public interface IProgressModel extends List<ISAXSDataCollection> {
 
 	void clearItems();
 
-	void addItems(List<ISAXSDataCollection> bioSAXSSamples);
+	void addItems(List<ISAXSDataCollection> dataCollections);
+	
+	void addItem(ISAXSDataCollection dataCollection);
 }

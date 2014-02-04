@@ -91,17 +91,6 @@ public class BioSAXSDataCollection extends ObservableModel implements ISAXSDataC
 	}
 
 	@Override
-	public long getCollectionStartTime() {
-		return collectionStartTime;
-	}
-
-	@Override
-	public void setCollectionStartTime(long collectionStartTime) {
-		firePropertyChange(ISAXSDataCollection.COLLECTION_START_TIME, this.collectionStartTime,
-				this.collectionProgress = collectionStartTime);
-	}
-
-	@Override
 	public ISpyBStatus getCollectionStatus() {
 		return collectionStatus;
 	}

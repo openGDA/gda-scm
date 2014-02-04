@@ -106,4 +106,10 @@ class MyProgressModel extends ArrayList<ISAXSDataCollection> implements
 	public void addItems(List<ISAXSDataCollection> bioSAXSSamples) {
 		items.add(bioSAXSSamples);
 	}
+
+	@Override
+	public void addItem(ISAXSDataCollection dataCollection) {
+		// TODO Auto-generated method stub
+		
+	}
 }

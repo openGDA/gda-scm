@@ -85,7 +85,6 @@ public class BioSaxsProgressViewTest {
 				ISAXSDataCollection dataCollection = new BioSAXSDataCollection();
 				dataCollection.setId(collection1);
 				dataCollection.setSampleName("Sample : " + String.valueOf(i));
-				dataCollection.setCollectionStartTime(i);
 				dataCollection.setCollectionProgress(0);
 				model.add(dataCollection);
 
@@ -258,30 +257,17 @@ class MyProgressModel extends ArrayList<ISAXSDataCollection> implements
 	public void addItems(List<ISAXSDataCollection> bioSAXSSamples) {
 		items.add(bioSAXSSamples);
 	}
+
+	@Override
+	public void addItem(ISAXSDataCollection dataCollection) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class MyBioSAXSISPy implements BioSAXSISPyB {
 
 	private int dataCollectionId;
-
-	@Override
-	public void addObserver(Observer<Object> observer) throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void addObserver(Observer<Object> observer,
-			Predicate<Object> predicate) throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeObserver(Observer<Object> observer) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public long getSessionForVisit(String visitname) throws SQLException {

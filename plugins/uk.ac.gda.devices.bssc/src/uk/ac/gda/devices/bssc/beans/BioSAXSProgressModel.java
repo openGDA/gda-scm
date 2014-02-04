@@ -18,13 +18,13 @@
 
 package uk.ac.gda.devices.bssc.beans;
 
-import gda.observable.Observable;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.WritableList;
-import org.eclipse.core.runtime.IStatus;
+
+import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
+import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
 
 public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> implements IProgressModel {
 	/**
@@ -32,10 +32,9 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 	 */
 	private static final long serialVersionUID = 1L;
 	WritableList items = new WritableList(new ArrayList<ISAXSDataCollection>(), ISAXSDataCollection.class);
-	private BioSAXSProgressController controller;
 
 	public BioSAXSProgressModel() {
-		controller = new BioSAXSProgressController(this);
+
 	}
 
 	@Override
@@ -64,17 +63,8 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 
 	}
 
-	public void updateItem(final Observable<Object> source, final Object arg) {
-		items.getRealm().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				// this will be done from the script
-//				((ISAXSDataCollection) items.get(((Long) arg).intValue())).setCollectionStatus(ISpyBStatus.FAILED);
-				
-				// get the updated item from ISPyB
-				long dataCollectionId = (long)arg + 2559;
-				controller.updateModelFromISpyB(dataCollectionId);
-			}
-		});
+	@Override
+	public void addItem(ISAXSDataCollection dataCollection) {
+		items.add(dataCollection);
 	}
 }
