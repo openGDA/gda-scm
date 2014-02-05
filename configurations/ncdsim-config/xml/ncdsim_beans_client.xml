@@ -49,4 +49,28 @@ http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
 		<property name="class" value="uk.ac.diamond.scisoft.analysis.PlotServer" />
 		<property name="service" ref="plot_server" />
 	</bean>
+	
+
+	<bean id="ispyb" class="uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyBviaOracle">
+	<constructor-arg value="jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb"/>
+	</bean>
+	
+	<bean id="controller" class="uk.ac.gda.devices.bssc.beans.BioSAXSProgressController">
+	<property name="ISpyBAPI" ref="ispyb"/>
+	</bean>
+
+	
+	<bean id="bioSaxModel" class="uk.ac.gda.devices.bssc.beans.BioSAXSProgressModel">
+	<constructor-arg ref="controller"></constructor-arg>
+	</bean>
+
+	<bean class="gda.rcp.util.OSGIServiceRegister">
+		<property name="class" value="uk.ac.gda.devices.bssc.beans.IProgressModel" />
+		<property name="service" ref="bioSaxModel" />
+	</bean>
+
+	
+	
+	
+	
 </beans>

@@ -18,6 +18,9 @@
 
 package uk.ac.gda.devices.bssc.beans;
 
+import gda.observable.IObserver;
+import gda.observable.ObservableComponent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,33 +34,35 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	WritableList items = new WritableList(new ArrayList<ISAXSDataCollection>(), ISAXSDataCollection.class);
+	WritableList items;
 
-	public BioSAXSProgressModel() {
 
+
+	public BioSAXSProgressModel(BioSAXSProgressController controller) {
+		super();
+		this.controller = controller;
+		controller.setModel(this);
 	}
 
 	@Override
 	public WritableList getItems() {
+		if( items == null){
+			items = new WritableList(new ArrayList<ISAXSDataCollection>(), ISAXSDataCollection.class);
+		}
 		return items;
 	}
 
 	@Override
 	public void clearItems() {
-		items.getRealm().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				items.clear();
-			}
-		});
+		getItems().clear();
 	}
 
 	@Override
 	public void addItems(final List<ISAXSDataCollection> bioSAXSSamples) {
-		items.getRealm().asyncExec(new Runnable() {
+		getItems().getRealm().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				items.addAll(bioSAXSSamples);
+				getItems().addAll(bioSAXSSamples);
 			}
 		});
 
@@ -65,6 +70,27 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 
 	@Override
 	public void addItem(ISAXSDataCollection dataCollection) {
-		items.add(dataCollection);
+		getItems().add(dataCollection);
 	}
+	
+	ObservableComponent obsComp = new ObservableComponent();
+
+	@Override
+	public void addIObserver(IObserver anIObserver) {
+		controller.addIObserver(anIObserver);
+	}
+
+	@Override
+	public void deleteIObserver(IObserver anIObserver) {
+		controller.deleteIObserver(anIObserver);
+	}
+
+	@Override
+	public void deleteIObservers() {
+		obsComp.deleteIObservers();
+	}
+	
+	BioSAXSProgressController controller;
+	
+	
 }

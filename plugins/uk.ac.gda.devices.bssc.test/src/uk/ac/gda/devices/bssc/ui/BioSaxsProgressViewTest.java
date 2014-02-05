@@ -57,7 +57,8 @@ public class BioSaxsProgressViewTest {
 		window.getActivePage().activate(view);
 		ActionFactory.IWorkbenchAction maximizeAction = ActionFactory.MAXIMIZE
 				.create(window);
-		maximizeAction.run(); // Will maximize the active part
+		// Will maximize the active part
+		maximizeAction.run(); 
 
 		window.getActivePage().activate(view);
 	}
@@ -422,7 +423,7 @@ class MyBioSAXSISPy implements BioSAXSISPyB {
 	}
 
 	@Override
-	public List<ISAXSDataCollection> getBioSAXSMeasurements(long blSessionId)
+	public List<ISAXSDataCollection> getSAXSDataCollections(long blSessionId)
 			throws SQLException {
 		// TODO Auto-generated method stub
 		return null;

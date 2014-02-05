@@ -18,6 +18,7 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import gda.observable.IObserver;
 import gda.rcp.GDAClientActivator;
 import gda.rcp.util.OSGIServiceRegister;
 
@@ -29,35 +30,52 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.beans.BioSAXSProgressController;
 import uk.ac.gda.devices.bssc.beans.BioSAXSProgressModel;
 import uk.ac.gda.devices.bssc.beans.IProgressModel;
+import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
+import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
 
 public class BioSAXSProgressView extends ViewPart {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsprogressview";
 	private BioSAXSProgressComposite bioSAXSComposite;
-	private IObservableList input;
-
-	public BioSAXSProgressView() {
-		// TODO Auto-generated constructor stub
-	}
+	private IObserver modelObserver;
+	private IProgressModel model;
 
 	@Override
 	public void createPartControl(Composite parent) {
-		IProgressModel model = new BioSAXSProgressModel();
-
+/*		IProgressModel model = new BioSAXSProgressModel();
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
 		modelReg.setClass(IProgressModel.class);
 		modelReg.setService(model);
+		
 		try {
 			modelReg.afterPropertiesSet();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-
+		{BioSAXSProgressController controller = new BioSAXSProgressController(model);
+		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
+		BioSAXSISPyB bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
+		controller.setISpyBAPI(bioSAXSISPyB);
+		controller.pollISpyB();
+		}
+*/
+		
 		model = (IProgressModel) GDAClientActivator.getNamedService(IProgressModel.class, null);
-		input = model.getItems();
+		
+		IObservableList input = model.getItems();
 		bioSAXSComposite = new BioSAXSProgressComposite(parent, input, SWT.NONE);
+		modelObserver = new IObserver() {
+			
+			@Override
+			public void update(Object source, Object arg) {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		model.addIObserver(modelObserver);
 	}
 
 	@Override
@@ -69,4 +87,16 @@ public class BioSAXSProgressView extends ViewPart {
 	public Viewer getViewer() {
 		return bioSAXSComposite.getViewer();
 	}
+
+	@Override
+	public void dispose() {
+		if( model != null && modelObserver != null){
+			model.deleteIObserver(modelObserver);
+			modelObserver=null;
+			model = null;
+		}
+		super.dispose();
+	}
+	
+	
 }
