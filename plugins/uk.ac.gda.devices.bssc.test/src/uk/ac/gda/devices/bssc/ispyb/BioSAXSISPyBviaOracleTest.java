@@ -43,7 +43,7 @@ public class BioSAXSISPyBviaOracleTest {
 			blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
 			
 			List<ISAXSDataCollection> progressList = bioSAXSISPyB
-					.getBioSAXSMeasurements(blSessionId);
+					.getSAXSDataCollections(blSessionId);
 
 			// check blSessionId for each ISampleProgress object is correct
 			for (ISAXSDataCollection progress : progressList) {
