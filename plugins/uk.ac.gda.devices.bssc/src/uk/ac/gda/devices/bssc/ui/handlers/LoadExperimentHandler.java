@@ -49,9 +49,6 @@ public class LoadExperimentHandler implements IHandler {
 		String[] filterExt = { "*.xls" };
 		fd.setFilterExtensions(filterExt);
 		String selected = fd.open();
-		
-		IEditorInput input - new Editor
-		System.out.println(selected);
 
 		return null;
 	}
