@@ -20,23 +20,21 @@ package uk.ac.gda.devices.bssc.beans;
 
 import uk.ac.gda.beans.ObservableModel;
 
-public class BioSaxsDataCollection extends ObservableModel implements ISAXSDataCollection {
+public class BioSAXSDataCollection extends ObservableModel implements ISAXSDataCollection {
 	private double collectionProgress;
 	private double reductionProgress;
 	private double analysisProgress;
 	private String experimentId;
 	private String sampleName;
-	private String collectionStatus;
-	private String reductionStatus;
-	private String analysisStatus;
+	private ISpyBStatus collectionStatus;
+	private ISpyBStatus reductionStatus;
+	private ISpyBStatus analysisStatus;
 	private String visit;
 	private long blSessionId;
 	private long collectionStartTime;
 	private long id;
-	private long bufferBeforeMeasurementId;
-	private long bufferAfterMeasurementId;
 
-	public BioSaxsDataCollection() {
+	public BioSAXSDataCollection() {
 
 	}
 
@@ -63,7 +61,8 @@ public class BioSaxsDataCollection extends ObservableModel implements ISAXSDataC
 
 	@Override
 	public void setReductionProgress(double newVal) {
-		firePropertyChange(ISAXSDataCollection.REDUCTION_PROGRESS, this.reductionProgress, this.reductionProgress = newVal);
+		firePropertyChange(ISAXSDataCollection.REDUCTION_PROGRESS, this.reductionProgress,
+				this.reductionProgress = newVal);
 	}
 
 	@Override
@@ -101,35 +100,38 @@ public class BioSaxsDataCollection extends ObservableModel implements ISAXSDataC
 		firePropertyChange(ISAXSDataCollection.COLLECTION_START_TIME, this.collectionStartTime,
 				this.collectionProgress = collectionStartTime);
 	}
-	
+
 	@Override
-	public String getCollectionStatus() {
+	public ISpyBStatus getCollectionStatus() {
 		return collectionStatus;
 	}
 
 	@Override
-	public void setCollectionStatus(String collectionStatus) {
-		this.collectionStatus = collectionStatus;
+	public void setCollectionStatus(ISpyBStatus collectionStatus) {
+		firePropertyChange(ISAXSDataCollection.COLLECTION_STATUS, this.collectionStatus,
+				this.collectionStatus = collectionStatus);
 	}
 
 	@Override
-	public String getReductionStatus() {
+	public ISpyBStatus getReductionStatus() {
 		return reductionStatus;
 	}
 
 	@Override
-	public void setReductionStatus(String reductionStatus) {
-		this.reductionStatus = reductionStatus;
+	public void setReductionStatus(ISpyBStatus reductionStatus) {
+		firePropertyChange(ISAXSDataCollection.REDUCTION_STATUS, this.reductionStatus,
+				this.reductionStatus = reductionStatus);
 	}
 
 	@Override
-	public String getAnalysisStatus() {
+	public ISpyBStatus getAnalysisStatus() {
 		return analysisStatus;
 	}
 
 	@Override
-	public void setAnalysisStatus(String analysisStatus) {
-		this.analysisStatus = analysisStatus;
+	public void setAnalysisStatus(ISpyBStatus analysisStatus) {
+		firePropertyChange(ISAXSDataCollection.ANALYSIS_STATUS, this.analysisStatus,
+				this.analysisStatus = analysisStatus);
 	}
 
 	public String getVisit() {
@@ -156,12 +158,19 @@ public class BioSaxsDataCollection extends ObservableModel implements ISAXSDataC
 	}
 
 	@Override
+	public long getId() {
+		return id;
+	}
+	
+	@Override
 	public void setBufferBeforeMeasurementId(long bufferBeforeMeasurementId) {
-		this.bufferBeforeMeasurementId = bufferBeforeMeasurementId;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setBufferAfterMeasurementId(long bufferAfterMeasurementId) {
-		this.bufferAfterMeasurementId = bufferAfterMeasurementId;
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -3,19 +3,11 @@ package uk.ac.gda.devices.bssc.ispyb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import gda.rcp.GDAClientActivator;
-import gda.rcp.util.OSGIServiceRegister;
-
 import java.sql.SQLException;
-import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.beans.BioSAXSProgressModel;
-import uk.ac.gda.devices.bssc.beans.BioSaxsDataCollection;
-import uk.ac.gda.devices.bssc.beans.IProgressModel;
-import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
 import uk.ac.gda.devices.bssc.beans.ISpyBStatus;
 
 public class BioSAXSISPyBTest {
@@ -121,8 +113,6 @@ public class BioSAXSISPyBTest {
 		assertEquals(collectionStatus.getProgress(), 1);
 		assertEquals(collectionStatus, ISpyBStatus.COMPLETE);
 		
-		
-		
 		// create a data collection gets updated with a FAILED status if any of
 		// the measurements for that data collection fail
 		long collection3 = bioSAXSISPyB.createSaxsDataCollection(
@@ -145,9 +135,6 @@ public class BioSAXSISPyBTest {
 		assertEquals(collectionStatus.getMessage(), bufferBeforeFailureMessage);
 		assertEquals(collectionStatus.getProgress(), 0.33);
 
-		
-		
-		
 		// start data reduction and assert it is in the running state
 		ISpyBStatus reductionStatus;
 		long subtractionId = bioSAXSISPyB

@@ -1,8 +1,13 @@
 package uk.ac.gda.devices.bssc.ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import gda.observable.Observer;
+import gda.observable.Predicate;
+import gda.rcp.GDAClientActivator;
 import gda.rcp.util.OSGIServiceRegister;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,17 +24,22 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.beans.BioSaxsDataCollection;
+import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollection;
 import uk.ac.gda.devices.bssc.beans.IProgressModel;
 import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
+import uk.ac.gda.devices.bssc.beans.ISpyBStatus;
+import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
+import uk.ac.gda.devices.bssc.ispyb.SampleInfo;
 
 public class BioSaxsProgressViewTest {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 	private static BioSAXSProgressView view;
 	private static IProgressModel model;
+	private static MyBioSAXSISPy bioSAXSISPyB;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		bioSAXSISPyB = new MyBioSAXSISPy();
 		model = new MyProgressModel();
 
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
@@ -39,7 +49,7 @@ public class BioSaxsProgressViewTest {
 
 		// populate model with sample values
 		populateModel();
-		
+
 		final IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
 		view = (BioSAXSProgressView) window.getActivePage().showView(
@@ -53,11 +63,52 @@ public class BioSaxsProgressViewTest {
 	}
 
 	private static void populateModel() {
+		String visit = "nt20-12";
+		long blsessionId;
+		long experimentId = 0;
+
+		try {
+			blsessionId = bioSAXSISPyB.getSessionForVisit(visit);
+			experimentId = bioSAXSISPyB.createExperiment(blsessionId, "test",
+					"TEMPLATE", "test");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		for (int i = 0; i < 20; i++) {
-			ISAXSDataCollection progress = new BioSaxsDataCollection();
-			progress.setSampleName("Sample : " + String.valueOf(i));
-			progress.setCollectionStartTime(i);
-			model.add(progress);
+			try {
+				long collection1 = bioSAXSISPyB.createSaxsDataCollection(
+						experimentId, (short) 0, (short) 1, (short) 1,
+						"Sample1", (short) 0, (short) 1, (short) 1, 20.0f, 10,
+						1.0, 2.0, 5.0, 10.0, "viscosity");
+				ISAXSDataCollection dataCollection = new BioSAXSDataCollection();
+				dataCollection.setId(collection1);
+				dataCollection.setSampleName("Sample : " + String.valueOf(i));
+				dataCollection.setCollectionStartTime(i);
+				dataCollection.setCollectionProgress(0);
+				model.add(dataCollection);
+
+				dataCollection.setCollectionStatus(ISpyBStatus.NOT_STARTED);
+				dataCollection.getCollectionStatus().setProgress(0);
+
+				dataCollection.setReductionStatus(ISpyBStatus.NOT_STARTED);
+				dataCollection.getReductionStatus().setProgress(0);
+
+				dataCollection.setAnalysisStatus(ISpyBStatus.NOT_STARTED);
+				dataCollection.getAnalysisStatus().setProgress(0);
+
+				bioSAXSISPyB.setDataCollectionStatus(collection1,
+						dataCollection.getCollectionStatus());
+				bioSAXSISPyB.setDataReductionStatus(collection1,
+						dataCollection.getReductionStatus(), "");
+				bioSAXSISPyB.setDataAnalysisStatus(collection1,
+						dataCollection.getAnalysisStatus(), "");
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -69,15 +120,43 @@ public class BioSaxsProgressViewTest {
 		}
 
 		for (int i = 0; i < items.size(); i++) {
+
+			ISAXSDataCollection dataCollection = (ISAXSDataCollection) items
+					.get(i);
+
+			bioSAXSISPyB.setDataCollectionStatus(i, ISpyBStatus.RUNNING);
+			long bufferBeforeRun = bioSAXSISPyB.createBufferRun(-1, i, 1.0,
+					20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+					1.0, "/dls/b21/data/2013/sm999-9/b21-9990.nxs",
+					"/entry1/detector/data");
+			dataCollection.setCollectionProgress(33);
+			delay(1000);
+
+			long sampleRun = bioSAXSISPyB.createSampleRun(i, 1.0, 20.0f, 20.0f,
+					10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+					"/dls/b21/data/2013/sm999-9/b21-9991.nxs",
+					"/entry1/detector/data");
+			dataCollection.setCollectionProgress(66);
+			delay(1000);
+
+			long bufferAfter1 = bioSAXSISPyB.createBufferRun(-1, i, 1.0, 20.0f,
+					20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+					"/dls/b21/data/2013/sm999-9/b21-9992.nxs",
+					"/entry1/detector/data");
+			dataCollection.setCollectionProgress(100);
+			delay(1000);
+
+			bioSAXSISPyB.setDataReductionStatus(i, ISpyBStatus.RUNNING, "");
+			delay(1000);
+
+			bioSAXSISPyB.setDataAnalysisStatus(i, ISpyBStatus.RUNNING, "");
+			delay(1000);
+
 			for (int j = 0; j < 100; j++) {
-				((ISAXSDataCollection) items.get(i)).setCollectionProgress(i
-						+ j);
-				((ISAXSDataCollection) items.get(i)).setReductionProgress(i
-						+ j);
-				((ISAXSDataCollection) items.get(i)).setAnalysisProgress(i
-						+ j);
+				dataCollection.setReductionProgress(i + j);
+				dataCollection.setAnalysisProgress(i + j);
 			}
-			delay(50);
+			delay(1000);
 		}
 	}
 
@@ -91,10 +170,10 @@ public class BioSaxsProgressViewTest {
 	@Test
 	public void testAddMeasurementToModel() {
 		ObservableList items = (ObservableList) model.getItems();
-		
-		BioSaxsDataCollection newProgress = new BioSaxsDataCollection();
+
+		ISAXSDataCollection newProgress = new BioSAXSDataCollection();
 		newProgress.setExperimentId(String.valueOf(21));
-		items.add(new BioSaxsDataCollection());
+		items.add(newProgress);
 	}
 
 	@AfterClass
@@ -133,7 +212,7 @@ public class BioSaxsProgressViewTest {
 			}
 			display.update();
 		}
-		
+
 		// Otherwise, perform a simple sleep.
 
 		else {
@@ -157,7 +236,6 @@ public class BioSaxsProgressViewTest {
 
 class MyProgressModel extends ArrayList<ISAXSDataCollection> implements
 		IProgressModel {
-
 	/**
 	 * 
 	 */
@@ -180,4 +258,217 @@ class MyProgressModel extends ArrayList<ISAXSDataCollection> implements
 	public void addItems(List<ISAXSDataCollection> bioSAXSSamples) {
 		items.add(bioSAXSSamples);
 	}
+}
+
+class MyBioSAXSISPy implements BioSAXSISPyB {
+
+	private int dataCollectionId;
+
+	@Override
+	public void addObserver(Observer<Object> observer) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addObserver(Observer<Object> observer,
+			Predicate<Object> predicate) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removeObserver(Observer<Object> observer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public long getSessionForVisit(String visitname) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long createSaxsDataCollection(long experimentID, short plate,
+			short row, short column, String sampleName, short bufferPlate,
+			short bufferRow, short bufferColumn, float exposureTemperature,
+			int numFrames, double timePerFrame, double flow, double volume,
+			double energyInkeV, String viscosity) throws SQLException {
+		return dataCollectionId++;
+	}
+
+	@Override
+	public long createBufferMeasurement(long dataCollectionId, short plate,
+			short row, short column, float exposureTemperature, int numFrames,
+			double timePerFrame, double flow, double volume,
+			double energyInkeV, String viscosity) throws SQLException {
+		return 0;
+	}
+
+	@Override
+	public long createSampleMeasurement(long dataCollectionId, short plate,
+			short row, short column, float exposureTemperature, int numFrames,
+			double timePerFrame, double flow, double volume,
+			double energyInkeV, String viscosity) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long createMeasurementToDataCollection(long saxsDataCollectionId,
+			long measurementId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long createBufferRun(long previousDataCollectionId,
+			long currentDataCollectionId, double timePerFrame,
+			float storageTemperature, float exposureTemperature, double energy,
+			int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY,
+			double radiationRelative, double radiationAbsolute,
+			double normalization, String filename, String internalPath) {
+		return currentDataCollectionId;
+	}
+
+	@Override
+	public long createSampleRun(long dataCollectionId, double timePerFrame,
+			float storageTemperature, float exposureTemperature, double energy,
+			int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY,
+			double radiationRelative, double radiationAbsolute,
+			double normalization, String filename, String internalPath) {
+		return dataCollectionId;
+	}
+
+	@Override
+	public void setMeasurementStatus(long saxsDataCollectionId,
+			long measurementId, ISpyBStatus status) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public ISpyBStatus getMeasurementStatus(long measurementId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void disconnect() throws SQLException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<SampleInfo> getSaxsDataCollectionInfo(long saxsDataCollectionId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SampleInfo> getExperimentInfo(long experimentId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Long> getExperimentsForSession(long blsessionId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Long> getDataCollectionsForExperiments(long experiment)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long createExperiment(long sessionId, String name,
+			String experimentType, String comments) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDataCollectionStatus(long saxsDataCollectionId,
+			ISpyBStatus status) {
+		IProgressModel model = (IProgressModel) GDAClientActivator
+				.getNamedService(IProgressModel.class, null);
+		model.get(((Long) saxsDataCollectionId).intValue())
+				.setCollectionStatus(status);
+	}
+
+	@Override
+	public ISpyBStatus getDataCollectionStatus(long dataCollectionId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long createDataReduction(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDataReductionStatus(long saxsDataCollectionId,
+			ISpyBStatus status, String resultsFilename) throws SQLException {
+		IProgressModel model = (IProgressModel) GDAClientActivator
+				.getNamedService(IProgressModel.class, null);
+		model.get(((Long) saxsDataCollectionId).intValue()).setReductionStatus(
+				status);
+	}
+
+	@Override
+	public ISpyBStatus getDataReductionStatus(long dataCollectionId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ISAXSDataCollection> getBioSAXSMeasurements(long blSessionId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISAXSDataCollection getDataCollection(long blSessionId,
+			long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long createDataAnalysis(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDataAnalysisStatus(long saxsDataCollectionId,
+			ISpyBStatus status, String resultsFilename) throws SQLException {
+		IProgressModel model = (IProgressModel) GDAClientActivator
+				.getNamedService(IProgressModel.class, null);
+		model.get(((Long) saxsDataCollectionId).intValue()).setAnalysisStatus(
+				status);
+	}
+
+	@Override
+	public ISpyBStatus getDataAnalysisStatus(long dataCollectionId)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
