@@ -137,7 +137,7 @@ public class BioSAXSISPyBTest {
 		ISpyBStatus status = ISpyBStatus.FAILED;
 		status.setProgress(0.33);
 		String bufferBeforeFailureMessage = "Data Collection failed at after running buffer before meaurement";
-		bioSAXSISPyB.setCollectionStatus(collection3,
+		bioSAXSISPyB.setDataCollectionStatus(collection3,
 				status);
 		collectionStatus = bioSAXSISPyB
 				.getDataCollectionStatus(collection3);
