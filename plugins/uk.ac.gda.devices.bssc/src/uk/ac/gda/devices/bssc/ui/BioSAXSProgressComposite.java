@@ -115,16 +115,6 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 				final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
-				IStorage storage = new StringStorage("", sampleProgress.getSampleName());
-
-				IStorageEditorInput input = new StringInput(storage);
-				if (page != null) {
-					try {
-						page.openEditor(input, "org.eclipse.ui.DefaultTextEditor");
-					} catch (PartInitException ex) {
-						logger.error("Error opening editor", ex);
-					}
-				}
 			}
 		});
 
