@@ -50,7 +50,7 @@ public class LpdConfigureView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		
 		lpdDetector = (Detector) Finder.getInstance().find("lpdDetector");
-
+		final String voltageName = "DACVoltage";
 		GridLayout gridLayout = new GridLayout(2, false);
 		GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		parent.setLayoutData(gridData);
@@ -91,16 +91,16 @@ public class LpdConfigureView extends ViewPart {
 			{
 				setButton = new Button(parent, SWT.PUSH | SWT.CENTER);
 				setButton.setText("set voltage");
-				setButton.setToolTipText("set DAC voltage");
+				setButton.setToolTipText("set " +voltageName );
 				setButton.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent evt) {
 						try {
-							lpdDetector.setAttribute("DACvoltage", Double.parseDouble(voltageText.getText()));
+							lpdDetector.setAttribute(voltageName , Double.parseDouble(voltageText.getText()));
 						} catch (NumberFormatException e) {
-							logger.error("TODO put description of error here", e);
+							logger.error("Error while setting voltage: cannot parse value for voltage from string to double", e);
 						} catch (DeviceException e) {
-							logger.error("TODO put description of error here", e);
+							logger.error("Detector Error: Cannot not set " +voltageName+ " for LPD Detector", e);
 						}
 						// set voltage's attribute here
 					}
@@ -109,7 +109,7 @@ public class LpdConfigureView extends ViewPart {
 				voltageText = new Text(group, SWT.NONE);
 				double voltage = 0;
 				try {
-					voltage = (Double) lpdDetector.getAttribute("DACVoltage");
+					voltage = (Double) lpdDetector.getAttribute(voltageName);
 				} catch (DeviceException e) {
 					logger.error("Error getting voltage", e);
 				}
