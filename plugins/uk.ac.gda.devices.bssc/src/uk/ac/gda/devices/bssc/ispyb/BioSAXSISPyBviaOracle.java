@@ -267,7 +267,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	protected long createRun(double timePerFrame, float storageTemperature,
 			float exposureTemperature, double energyInkeV, int numFrames, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
-			double radiationAbsolute, double normalization, String filename, String internalPath)
+			double radiationAbsolute, double normalization)
 			throws SQLException {
 		long runId = -1;
 		connectIfNotConnected();
@@ -276,8 +276,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,"
 				+ "normalization, filename, internalPath) "
 				+ "VALUES (ispyb4a_db.s_Run.nextval, ?, ?, ?, ?, ?, "
-				+ "?, ?, ?, ?, ?, ?, ?"
-				+ "?, ?, ?) RETURNING runId INTO ?; END;";
+				+ "?, ?, ?, ?, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setFloat(index++, storageTemperature);
@@ -293,10 +292,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.setDouble(index++, pixelSizeY);
 		stmt.setDouble(index++, radiationRelative);
 		stmt.setDouble(index++, radiationAbsolute);
-
 		stmt.setDouble(index++, normalization);
-		stmt.setString(index++, filename);
-		stmt.setString(index++, internalPath);
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
@@ -773,8 +769,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long runId = 0;
 		try {
 			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
-					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization,
-					filename, internalPath);
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization);
+			createFrameSet(runId, filename, internalPath);
 		} catch (SQLException e) {
 			logger.error("problem while creating Run", e);
 		}
@@ -810,8 +806,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long runId = 0;
 		try {
 			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
-					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization,
-					filename, internalPath);
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization);
+			createFrameSet(runId, filename, internalPath);
 		} catch (SQLException e) {
 			logger.error("problem while creating Run", e);
 		}
