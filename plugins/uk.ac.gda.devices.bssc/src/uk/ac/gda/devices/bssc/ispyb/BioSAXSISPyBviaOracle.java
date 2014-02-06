@@ -366,37 +366,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementToDataCollectionId;
 	}
 
-	/**
-	 * Creates Measurement, Buffer, SamplePlate, and Specimen-related items
-	 * @param blsessionId
-	 * @param experimentId
-	 * @param plate
-	 * @param row
-	 * @param column
-	 * @param sampleName
-	 * @param exposureTemperature
-	 * @param flow
-	 * @param volume
-	 * @param viscosity
-	 * @return measurementId
-	 * @throws SQLException
-	 */
-	private long createMeasurementAndAssociatedItems(long blsessionId, long experimentId, short plate, short row, short column,
-			String sampleName, float exposureTemperature, double flow, double volume, String viscosity) throws SQLException {
-		Long macromoleculeId = null;
-		
-		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
-		if (sampleName != null && sampleName.isEmpty() == false) { //if this is a sample, name and concentration are defined
-			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
-		}
-		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
-		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-					null, volume);
-		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
-		return measurementId;
-	}
-
 	@Override
 	public List<SampleInfo> getSaxsDataCollectionInfo(long saxsDataCollectionId) throws SQLException {
 		List<SampleInfo> sinfos = new ArrayList<SampleInfo>();
@@ -728,8 +697,39 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	/* above here are the methods that interact directly with the database.
-	 * the interface methods are below here.
+	 * other methods, including the interface methods are below here.
 	 */
+
+	/**
+	 * Creates Measurement, Buffer, SamplePlate, and Specimen-related items
+	 * @param blsessionId
+	 * @param experimentId
+	 * @param plate
+	 * @param row
+	 * @param column
+	 * @param sampleName
+	 * @param exposureTemperature
+	 * @param flow
+	 * @param volume
+	 * @param viscosity
+	 * @return measurementId
+	 * @throws SQLException
+	 */
+	private long createMeasurementAndAssociatedItems(long blsessionId, long experimentId, short plate, short row, short column,
+			String sampleName, float exposureTemperature, double flow, double volume, String viscosity) throws SQLException {
+		Long macromoleculeId = null;
+		
+		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
+		if (sampleName != null && sampleName.isEmpty() == false) { //if this is a sample, name and concentration are defined
+			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
+		}
+		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
+		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
+		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
+					null, volume);
+		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
+		return measurementId;
+	}
 
 	@Override
 	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
