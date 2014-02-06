@@ -375,9 +375,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity, String fileName,
 			String internalPath) throws SQLException {
 
-		long bufferId = createBuffer(blsessionId, name + "Buffer", name + "Buffer", name + "Composition");
-		long macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), name + "Macromolecule", name
-				+ "Macromolecule");
+		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
+		long macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), name, name);
 		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
