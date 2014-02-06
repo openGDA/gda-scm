@@ -42,6 +42,7 @@ public class BioSAXSProgressView extends ViewPart {
 	private BioSAXSProgressComposite bioSAXSComposite;
 	private IObserver modelObserver;
 	private IProgressModel model;
+	private BioSAXSProgressController controller;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -64,6 +65,8 @@ public class BioSAXSProgressView extends ViewPart {
 */
 		
 		model = (IProgressModel) GDAClientActivator.getNamedService(IProgressModel.class, null);
+		
+		controller = (BioSAXSProgressController) GDAClientActivator.getNamedService(BioSAXSProgressController.class, null);
 		
 		IObservableList input = model.getItems();
 		bioSAXSComposite = new BioSAXSProgressComposite(parent, input, SWT.NONE);
@@ -94,6 +97,7 @@ public class BioSAXSProgressView extends ViewPart {
 			model.deleteIObserver(modelObserver);
 			modelObserver=null;
 			model = null;
+			controller.disconnectFromISpyB();
 		}
 		super.dispose();
 	}

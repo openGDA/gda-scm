@@ -59,11 +59,15 @@ http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
 	<property name="ISpyBAPI" ref="ispyb"/>
 	</bean>
 
-	
 	<bean id="bioSaxModel" class="uk.ac.gda.devices.bssc.beans.BioSAXSProgressModel">
 	<constructor-arg ref="controller"></constructor-arg>
 	</bean>
 
+	<bean class="gda.rcp.util.OSGIServiceRegister">
+		<property name="class" value="uk.ac.gda.devices.bssc.beans.BioSAXSProgressController" />
+		<property name="service" ref="controller" />
+	</bean>
+	
 	<bean class="gda.rcp.util.OSGIServiceRegister">
 		<property name="class" value="uk.ac.gda.devices.bssc.beans.IProgressModel" />
 		<property name="service" ref="bioSaxModel" />
