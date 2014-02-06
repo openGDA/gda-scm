@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 
+import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
+
 public interface IProgressModel extends List<ISAXSDataCollection> , IObservable{
 	// To allow the list to be updated outside of the UI we need to return an ObservableList whose getElementType
 	// returns MvcExampleItem

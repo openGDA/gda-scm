@@ -27,9 +27,9 @@ import org.junit.Test;
 
 import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollection;
 import uk.ac.gda.devices.bssc.beans.IProgressModel;
-import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
-import uk.ac.gda.devices.bssc.beans.ISpyBStatus;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
+import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
+import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
 import uk.ac.gda.devices.bssc.ispyb.SampleInfo;
 
 public class BioSaxsProgressViewTest {

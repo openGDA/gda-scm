@@ -28,6 +28,7 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
+import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
 
 public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> implements IProgressModel {
 	/**

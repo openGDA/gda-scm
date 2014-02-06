@@ -1,7 +1,6 @@
 package uk.ac.gda.devices.bssc;
 
 import static org.junit.Assert.assertEquals;
-
 import gda.observable.IObserver;
 
 import java.sql.SQLException;
@@ -15,9 +14,9 @@ import org.junit.Test;
 
 import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollection;
 import uk.ac.gda.devices.bssc.beans.IProgressModel;
-import uk.ac.gda.devices.bssc.beans.ISAXSDataCollection;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
 import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
+import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
 
 public class BioSAXSProgressModelTest {
 
