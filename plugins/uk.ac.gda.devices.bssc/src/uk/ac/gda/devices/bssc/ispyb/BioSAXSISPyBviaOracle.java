@@ -650,34 +650,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return samples;
 	}
 
-	@Override
-	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
-			short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature, int numFrames,
-			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
-		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, bufferPlate, bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity, INVALID_VALUE);
-	}
-
-	@Override
-	public long createSaxsDataCollectionUsingPreviousBuffer(long experimentID, short plate, short row, short column,
-			String sampleName, short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature,
-			int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity,
-			long previousDataCollectionId) throws SQLException {
-		long bufferBeforeMeasurementId;
-		long blsessionId = getBlSessionIdFromExperiment(experimentID);
-		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
-		if (previousDataCollectionId == INVALID_VALUE) {
-			bufferBeforeMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
-		}
-		else {
-			bufferBeforeMeasurementId = retrievePreviousBufferMeasurement(previousDataCollectionId);
-		}
-		long sampleMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, sampleName, exposureTemperature, flow, volume, viscosity);
-		long bufferAfterMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
-		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
-		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
-		createMeasurementToDataCollection(saxsDataCollectionId, bufferAfterMeasurementId);
-		return 0;
-	}
 
 	private long retrievePreviousBufferMeasurement(long previousDataCollectionId) throws SQLException {
 		long measurementId = -1;
@@ -721,6 +693,39 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.close();
 
 		return blsessionId;
+	}
+
+	/* above here are the methods that interact directly with the database.
+	 * the interface methods are below here.
+	 */
+
+	@Override
+	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
+			short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature, int numFrames,
+			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
+		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, bufferPlate, bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity, INVALID_VALUE);
+	}
+
+	@Override
+	public long createSaxsDataCollectionUsingPreviousBuffer(long experimentID, short plate, short row, short column,
+			String sampleName, short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature,
+			int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity,
+			long previousDataCollectionId) throws SQLException {
+		long bufferBeforeMeasurementId;
+		long blsessionId = getBlSessionIdFromExperiment(experimentID);
+		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
+		if (previousDataCollectionId == INVALID_VALUE) {
+			bufferBeforeMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
+		}
+		else {
+			bufferBeforeMeasurementId = retrievePreviousBufferMeasurement(previousDataCollectionId);
+		}
+		long sampleMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, sampleName, exposureTemperature, flow, volume, viscosity);
+		long bufferAfterMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
+		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
+		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
+		createMeasurementToDataCollection(saxsDataCollectionId, bufferAfterMeasurementId);
+		return 0;
 	}
 
 	@Override
