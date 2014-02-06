@@ -2,6 +2,8 @@ package uk.ac.gda.devices.bssc;
 
 import static org.junit.Assert.assertEquals;
 
+import gda.observable.IObserver;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +112,24 @@ class MyProgressModel extends ArrayList<ISAXSDataCollection> implements
 	@Override
 	public void addItem(ISAXSDataCollection dataCollection) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void addIObserver(IObserver observer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteIObserver(IObserver observer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteIObservers() {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -2,6 +2,7 @@ package uk.ac.gda.devices.bssc.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import gda.observable.IObserver;
 import gda.observable.Observer;
 import gda.observable.Predicate;
 import gda.rcp.GDAClientActivator;
@@ -58,7 +59,7 @@ public class BioSaxsProgressViewTest {
 		ActionFactory.IWorkbenchAction maximizeAction = ActionFactory.MAXIMIZE
 				.create(window);
 		// Will maximize the active part
-		maximizeAction.run(); 
+		maximizeAction.run();
 
 		window.getActivePage().activate(view);
 	}
@@ -125,7 +126,7 @@ public class BioSaxsProgressViewTest {
 					.get(i);
 
 			bioSAXSISPyB.setDataCollectionStatus(i, ISpyBStatus.RUNNING);
-			long bufferBeforeRun = bioSAXSISPyB.createBufferRun(-1, i, 1.0,
+			long bufferBeforeRun = bioSAXSISPyB.createBufferRun(i, 1.0,
 					20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 					1.0, "/dls/b21/data/2013/sm999-9/b21-9990.nxs",
 					"/entry1/detector/data");
@@ -139,7 +140,7 @@ public class BioSaxsProgressViewTest {
 			dataCollection.setCollectionProgress(66);
 			delay(1000);
 
-			long bufferAfter1 = bioSAXSISPyB.createBufferRun(-1, i, 1.0, 20.0f,
+			long bufferAfter1 = bioSAXSISPyB.createBufferRun(i, 1.0, 20.0f,
 					20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 					"/dls/b21/data/2013/sm999-9/b21-9992.nxs",
 					"/entry1/detector/data");
@@ -262,7 +263,25 @@ class MyProgressModel extends ArrayList<ISAXSDataCollection> implements
 	@Override
 	public void addItem(ISAXSDataCollection dataCollection) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public void addIObserver(IObserver observer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteIObserver(IObserver observer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteIObservers() {
+		// TODO Auto-generated method stub
+
 	}
 }
 
@@ -286,37 +305,13 @@ class MyBioSAXSISPy implements BioSAXSISPyB {
 	}
 
 	@Override
-	public long createBufferMeasurement(long dataCollectionId, short plate,
-			short row, short column, float exposureTemperature, int numFrames,
-			double timePerFrame, double flow, double volume,
-			double energyInkeV, String viscosity) throws SQLException {
-		return 0;
-	}
-
-	@Override
-	public long createSampleMeasurement(long dataCollectionId, short plate,
-			short row, short column, float exposureTemperature, int numFrames,
-			double timePerFrame, double flow, double volume,
-			double energyInkeV, String viscosity) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long createMeasurementToDataCollection(long saxsDataCollectionId,
-			long measurementId) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long createBufferRun(long previousDataCollectionId,
-			long currentDataCollectionId, double timePerFrame,
-			float storageTemperature, float exposureTemperature, double energy,
-			int frameCount, double transmission, double beamCenterX,
-			double beamCenterY, double pixelSizeX, double pixelSizeY,
-			double radiationRelative, double radiationAbsolute,
-			double normalization, String filename, String internalPath) {
+	public long createBufferRun(long currentDataCollectionId,
+			double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energy, int frameCount,
+			double transmission, double beamCenterX, double beamCenterY,
+			double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename,
+			String internalPath) {
 		return currentDataCollectionId;
 	}
 
@@ -328,19 +323,6 @@ class MyBioSAXSISPy implements BioSAXSISPyB {
 			double radiationRelative, double radiationAbsolute,
 			double normalization, String filename, String internalPath) {
 		return dataCollectionId;
-	}
-
-	@Override
-	public void setMeasurementStatus(long saxsDataCollectionId,
-			long measurementId, ISpyBStatus status) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public ISpyBStatus getMeasurementStatus(long measurementId) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -430,13 +412,6 @@ class MyBioSAXSISPy implements BioSAXSISPyB {
 	}
 
 	@Override
-	public ISAXSDataCollection getDataCollection(long blSessionId,
-			long dataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public long createDataAnalysis(long dataCollectionId) throws SQLException {
 		// TODO Auto-generated method stub
 		return 0;
@@ -456,6 +431,30 @@ class MyBioSAXSISPy implements BioSAXSISPyB {
 			throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public long createSaxsDataCollectionUsingPreviousBuffer(long experimentID,
+			short plate, short row, short column, String sampleName,
+			short bufferPlate, short bufferRow, short bufferColumn,
+			float exposureTemperature, int numFrames, double timePerFrame,
+			double flow, double volume, double energyInkeV, String viscosity,
+			long previousDataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setAnalysisStatus(long dataCollectionId,
+			ISpyBStatus analysisStatus) throws SQLException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getPreviousCollectionId(long dataCollectionId) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
