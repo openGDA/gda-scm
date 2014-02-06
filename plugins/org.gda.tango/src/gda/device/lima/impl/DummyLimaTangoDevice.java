@@ -101,10 +101,10 @@ public class DummyLimaTangoDevice extends DummyTangoDeviceImpl{
 						try {
 							dev.write_attribute(new DeviceAttribute(LimaCCDImpl.ATTRIBUTE_ACQ_STATUS, LimaCCDImpl.ACQ_STATUS_VAL_FAULT));
 						} catch (DevFailed e1) {
-							// TODO Auto-generated catch block
-							logger.error("TODO put description of error here", e1);
+							
+							logger.error(e1.getMessage(), e1);
 						}
-						logger.error("TODO put description of error here", e);
+						logger.error(e.getMessage(), e);
 					}
 				}
 				
@@ -119,13 +119,11 @@ public class DummyLimaTangoDevice extends DummyTangoDeviceImpl{
 
 	@Override
 	public void write_attribute(DeviceAttribute attr) throws DevFailed {
-		// TODO Auto-generated method stub
 		super.write_attribute(attr);
 	}
 
 	@Override
 	public DeviceAttribute read_attribute(String attributeName) {
-		// TODO Auto-generated method stub
 		return super.read_attribute(attributeName);
 	}
 
