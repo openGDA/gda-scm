@@ -18,14 +18,22 @@
 
 package uk.ac.gda.devices.bssc.ui.handlers;
 
+import java.io.File;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 
 public class LoadExperimentHandler implements IHandler {
 
@@ -49,6 +57,21 @@ public class LoadExperimentHandler implements IHandler {
 		String[] filterExt = { "*.xls" };
 		fd.setFilterExtensions(filterExt);
 		String selected = fd.open();
+
+		File fileToOpen = new File(selected);
+
+		if (fileToOpen.exists() && fileToOpen.isFile()) {
+			IFileStore fileStore = EFS.getLocalFileSystem().getStore(fileToOpen.toURI());
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+
+			try {
+				IDE.openEditorOnFileStore(page, fileStore);
+			} catch (PartInitException e) {
+				// Put your exception handler here if you wish to
+			}
+		} else {
+			// Do something if the file does not exist
+		}
 
 		return null;
 	}
