@@ -19,24 +19,19 @@
 package uk.ac.gda.devices.bssc.beans;
 
 import gda.observable.IObserver;
-import gda.observable.ObservableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.WritableList;
 
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory;
-import uk.ac.gda.devices.bssc.ispyb.BioSAXSISPyB;
+import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
 
 public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> implements IProgressModel {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	WritableList items;
-
-
+	BioSAXSProgressController controller;
 
 	public BioSAXSProgressModel(BioSAXSProgressController controller) {
 		super();
@@ -65,7 +60,6 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 				getItems().addAll(bioSAXSSamples);
 			}
 		});
-
 	}
 
 	@Override
@@ -73,8 +67,6 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 		getItems().add(dataCollection);
 	}
 	
-	ObservableComponent obsComp = new ObservableComponent();
-
 	@Override
 	public void addIObserver(IObserver anIObserver) {
 		controller.addIObserver(anIObserver);
@@ -87,10 +79,6 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 
 	@Override
 	public void deleteIObservers() {
-		obsComp.deleteIObservers();
+		controller.deleteIObservers();
 	}
-	
-	BioSAXSProgressController controller;
-	
-	
 }

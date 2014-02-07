@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.gda.devices.bssc.beans.ISpyBStatus;
-
 public class BioSAXSISPyBTest {
 
 	static BioSAXSISPyB bioSAXSISPyB = null;
