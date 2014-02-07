@@ -42,7 +42,7 @@
 	<bean id="subdirectory" class="gda.data.metadata.SubdirectoryMetadataEntry" />
 	
 	<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
-		<property name="value" value="undefined" />
+		<property name="value" value="" />
 	</bean>
 	
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSubdirectory">
