@@ -173,7 +173,7 @@ public class BioSaxsProgressViewTest {
 		ObservableList items = (ObservableList) model.getItems();
 
 		ISAXSDataCollection newProgress = new BioSAXSDataCollection();
-		newProgress.setExperimentId(String.valueOf(21));
+		newProgress.setExperimentId(21l);
 		items.add(newProgress);
 	}
 
