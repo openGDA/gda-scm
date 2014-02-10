@@ -24,9 +24,7 @@ import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 
-import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
-
-public interface IProgressModel extends List<ISAXSDataCollection> , IObservable{
+public interface IProgressModel extends IObservable{
 	// To allow the list to be updated outside of the UI we need to return an ObservableList whose getElementType
 	// returns MvcExampleItem
 	// rather than a List
@@ -34,10 +32,7 @@ public interface IProgressModel extends List<ISAXSDataCollection> , IObservable{
 
 	void clearItems();
 
-	void addItems(List<ISAXSDataCollection> dataCollections);
+	void addItems(List<ISAXSProgress> progressList);
 	
-	void addItem(ISAXSDataCollection dataCollection);
-	
-	
-	
+	void addItem(ISAXSProgress progress);
 }

@@ -51,7 +51,7 @@ import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapCellControlProvider.ControlFactoryAndUpdater;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapColumnLabelProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
-import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
+import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
 import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.xml.string.StringInput;
@@ -111,15 +111,15 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				TableItem tableItem = (TableItem) e.item;
-				ISAXSDataCollection sampleProgress = (ISAXSDataCollection) tableItem.getData();
+				ISAXSProgress sampleProgress = (ISAXSProgress) tableItem.getData();
 
 				final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 			}
 		});
 
-		final IObservableMap sampleName = BeanProperties.value(ISAXSDataCollection.class,
-				ISAXSDataCollection.SAMPLE_NAME).observeDetail(knownElements);
+		final IObservableMap sampleName = BeanProperties.value(ISAXSProgress.class,
+				ISAXSProgress.SAMPLE_NAME).observeDetail(knownElements);
 
 		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName));
 
@@ -160,8 +160,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		// };
 		// viewerColumn3.setLabelProvider(new ObservableMapCellControlProvider(collectionProgress, factory, "Column3"));
 
-		final IObservableMap collectionProgressValues = BeanProperties.value(ISAXSDataCollection.class,
-				ISAXSDataCollection.COLLECTION_PROGRESS).observeDetail(knownElements);
+		final IObservableMap collectionProgressValues = BeanProperties.value(ISAXSProgress.class,
+				ISAXSProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
 
 		viewerColumn2.setLabelProvider(new ObservableMapOwnerDrawProvider(collectionProgressValues) {
 			org.eclipse.swt.graphics.Color original = null;
@@ -201,8 +201,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
-		final IObservableMap reductionProgressValues = BeanProperties.value(ISAXSDataCollection.class,
-				ISAXSDataCollection.REDUCTION_PROGRESS).observeDetail(knownElements);
+		final IObservableMap reductionProgressValues = BeanProperties.value(ISAXSProgress.class,
+				ISAXSProgress.REDUCTION_PROGRESS).observeDetail(knownElements);
 
 		viewerColumn3.setLabelProvider(new ObservableMapOwnerDrawProvider(reductionProgressValues) {
 			org.eclipse.swt.graphics.Color original = null;
@@ -242,8 +242,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			}
 		});
 
-		final IObservableMap analysisProgressValues = BeanProperties.value(ISAXSDataCollection.class,
-				ISAXSDataCollection.ANALYSIS_PROGRESS).observeDetail(knownElements);
+		final IObservableMap analysisProgressValues = BeanProperties.value(ISAXSProgress.class,
+				ISAXSProgress.ANALYSIS_PROGRESS).observeDetail(knownElements);
 
 		viewerColumn4.setLabelProvider(new ObservableMapOwnerDrawProvider(analysisProgressValues) {
 			org.eclipse.swt.graphics.Color original = null;

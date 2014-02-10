@@ -46,36 +46,19 @@ public class BioSAXSProgressView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-/*		IProgressModel model = new BioSAXSProgressModel();
-		OSGIServiceRegister modelReg = new OSGIServiceRegister();
-		modelReg.setClass(IProgressModel.class);
-		modelReg.setService(model);
-		
-		try {
-			modelReg.afterPropertiesSet();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-		{BioSAXSProgressController controller = new BioSAXSProgressController(model);
-		new BioSAXSDBFactory().setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
-		BioSAXSISPyB bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
-		controller.setISpyBAPI(bioSAXSISPyB);
-		controller.pollISpyB();
-		}
-*/
-		
 		model = (IProgressModel) GDAClientActivator.getNamedService(IProgressModel.class, null);
-		
-		controller = (BioSAXSProgressController) GDAClientActivator.getNamedService(BioSAXSProgressController.class, null);
-		
+
+		controller = (BioSAXSProgressController) GDAClientActivator.getNamedService(BioSAXSProgressController.class,
+				null);
+
 		IObservableList input = model.getItems();
 		bioSAXSComposite = new BioSAXSProgressComposite(parent, input, SWT.NONE);
 		modelObserver = new IObserver() {
-			
+
 			@Override
 			public void update(Object source, Object arg) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		};
 		model.addIObserver(modelObserver);
@@ -93,14 +76,17 @@ public class BioSAXSProgressView extends ViewPart {
 
 	@Override
 	public void dispose() {
-		if( model != null && modelObserver != null){
+		if (model != null && modelObserver != null) {
 			model.deleteIObserver(modelObserver);
-			modelObserver=null;
+			modelObserver = null;
 			model = null;
+		}
+
+		if (controller != null) {
 			controller.disconnectFromISpyB();
 		}
+
 		super.dispose();
 	}
-	
-	
+
 }

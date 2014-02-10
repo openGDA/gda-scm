@@ -23,13 +23,13 @@ import gda.observable.IObserver;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 
 import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
 
-public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> implements IProgressModel {
+public class BioSAXSProgressModel implements IProgressModel {
 
-	private static final long serialVersionUID = 1L;
 	WritableList items;
 	BioSAXSProgressController controller;
 
@@ -40,9 +40,9 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 	}
 
 	@Override
-	public WritableList getItems() {
+	public IObservableList getItems() {
 		if( items == null){
-			items = new WritableList(new ArrayList<ISAXSDataCollection>(), ISAXSDataCollection.class);
+			items = new WritableList(new ArrayList<ISAXSProgress>(), ISAXSDataCollection.class);
 		}
 		return items;
 	}
@@ -53,18 +53,18 @@ public class BioSAXSProgressModel extends ArrayList<ISAXSDataCollection> impleme
 	}
 
 	@Override
-	public void addItems(final List<ISAXSDataCollection> bioSAXSSamples) {
+	public void addItems(final List<ISAXSProgress> progressList) {
 		getItems().getRealm().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				getItems().addAll(bioSAXSSamples);
+				getItems().addAll(progressList);
 			}
 		});
 	}
 
 	@Override
-	public void addItem(ISAXSDataCollection dataCollection) {
-		getItems().add(dataCollection);
+	public void addItem(ISAXSProgress progressItem) {
+		getItems().add(progressItem);
 	}
 	
 	@Override
