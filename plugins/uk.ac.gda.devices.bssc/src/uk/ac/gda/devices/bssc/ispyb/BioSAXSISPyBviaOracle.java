@@ -220,13 +220,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return samplePlatePositionId;
 	}
 
-	public long createSpecimen(long blsessionId, long experimentId, Long bufferId, Long macromoleculeId,
-			Long samplePlatePositionId, Long stockSolutionId, Double concentration, Double volume) throws SQLException {
+	private long createSpecimen(long blsessionId, long experimentId, Long bufferId, Long macromoleculeId,
+			Long samplePlatePositionId, Long stockSolutionId, Double volume) throws SQLException {
 		long specimenId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen ("
-				+ "specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, concentration, volumen) "
-				+ "VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
+				+ "specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, volumen) "
+				+ "VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 
@@ -252,19 +252,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		else
 			stmt.setLong(6, stockSolutionId);
 
-		if (concentration == null)
+		if (volume == null)
 			stmt.setNull(7, java.sql.Types.DOUBLE);
 		else
-			stmt.setDouble(7, concentration);
+			stmt.setDouble(7, volume);
 
-		if (volume == null)
-			stmt.setNull(8, java.sql.Types.DOUBLE);
-		else
-			stmt.setDouble(8, volume);
-
-		stmt.registerOutParameter(9, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(8, java.sql.Types.VARCHAR);
 		stmt.execute();
-		specimenId = stmt.getLong(9);
+		specimenId = stmt.getLong(8);
 		stmt.close();
 		return specimenId;
 	}
@@ -355,19 +350,18 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private long createMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
-			String sampleName, double sampleConcentration, float storageTemperature, float exposureTemperature, int numFrames,
-			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity, String fileName,
-			String internalPath) throws SQLException {
+			String sampleName, float exposureTemperature, int numFrames,
+			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
 		Long macromoleculeId = null;
 		
 		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
-		if (sampleName != null && sampleName.isEmpty() == false && sampleConcentration != 0.) { //if this is a sample, name and concentration are defined
+		if (sampleName != null && sampleName.isEmpty() == false) { //if this is a sample, name and concentration are defined
 			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
 		}
 		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-					null, sampleConcentration, volume);
+					null, volume);
 		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
 		return measurementId;
 	}
@@ -669,8 +663,65 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			String sampleName, short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature,
 			int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity,
 			long previousDataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
+		long bufferBeforeMeasurementId;
+		long blsessionId = getBlSessionIdFromExperiment(experimentID);
+		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
+		if (previousDataCollectionId == INVALID_VALUE) {
+			bufferBeforeMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity);
+		}
+		else {
+			bufferBeforeMeasurementId = retrievePreviousBufferMeasurement(previousDataCollectionId);
+		}
+		long sampleMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, sampleName, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity);
+		long bufferAfterMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity);
+		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
+		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
+		createMeasurementToDataCollection(saxsDataCollectionId, bufferAfterMeasurementId);
 		return 0;
+	}
+
+	private long retrievePreviousBufferMeasurement(long previousDataCollectionId) throws SQLException {
+		long measurementId = -1;
+		connectIfNotConnected();
+
+		String selectSql = "SELECT m.measurementId FROM ispyb4a_db.MeasurementToDataCollection m WHERE m.dataCollectionId = ? and m.dataCollectionOrder=3";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, previousDataCollectionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				measurementId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt.close();
+
+		return measurementId;
+	}
+
+	private long getBlSessionIdFromExperiment(long experimentId) throws SQLException {
+		long blsessionId = -1;
+		connectIfNotConnected();
+
+		String selectSql = "SELECT e.sessionId FROM ispyb4a_db.Experiment e WHERE e.experimentId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, experimentId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				blsessionId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt.close();
+
+		return blsessionId;
 	}
 
 	@Override
