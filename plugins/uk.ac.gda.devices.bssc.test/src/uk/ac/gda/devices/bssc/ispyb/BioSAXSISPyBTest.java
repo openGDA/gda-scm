@@ -38,7 +38,7 @@ public class BioSAXSISPyBTest {
 				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
 				"viscosity");
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection1);
-		assertEquals(collectionStatus, ISpyBStatus.NOT_STARTED);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.NOT_STARTED);
 
 		long bufferBefore1 = bioSAXSISPyB.createBufferRun(collection1, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -47,7 +47,7 @@ public class BioSAXSISPyBTest {
 		assertTrue(bufferBefore1 >= 0);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection1);
 		assertEquals(collectionStatus.getProgress(), 33);
-		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.RUNNING);
 		// TODO get progress as well
 
 		long sample1 = bioSAXSISPyB.createSampleRun(collection1, 1.0, 20.0f,
@@ -57,7 +57,7 @@ public class BioSAXSISPyBTest {
 		assertTrue(sample1 >= 0);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection1);
 		assertEquals(collectionStatus.getProgress(), 66);
-		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.RUNNING);
 
 		// Create a buffer after run (pass in -1 for the previous collection id
 		// which indicates not to share the buffer of the previous collection
@@ -68,7 +68,7 @@ public class BioSAXSISPyBTest {
 		assertTrue(bufferAfter1 >= 0);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection1);
 		assertEquals(collectionStatus.getProgress(), 100);
-		assertEquals(collectionStatus, ISpyBStatus.COMPLETE);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.COMPLETE);
 
 		// create a 2nd data collection and assign it share the buffer from the
 		// previous data collection
@@ -86,7 +86,7 @@ public class BioSAXSISPyBTest {
 
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
 		assertEquals(collectionStatus.getProgress(), 33);
-		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.RUNNING);
 		// TODO get progress as well
 
 		long sample2 = bioSAXSISPyB.createSampleRun(collection2, 1.0, 20.0f,
@@ -96,7 +96,7 @@ public class BioSAXSISPyBTest {
 		assertTrue(sample2 >= 0);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
 		assertEquals(collectionStatus.getProgress(), 66);
-		assertEquals(collectionStatus, ISpyBStatus.RUNNING);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.RUNNING);
 
 		// Create a buffer after run (pass in -1 for the previous collection id
 		// which indicates not to share the buffer of the previous collection
@@ -107,7 +107,7 @@ public class BioSAXSISPyBTest {
 		assertTrue(bufferAfter2 >= 0);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
 		assertEquals(collectionStatus.getProgress(), 100);
-		assertEquals(collectionStatus, ISpyBStatus.COMPLETE);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.COMPLETE);
 
 		// create a data collection gets updated with a FAILED status if any of
 		// the measurements for that data collection fail
@@ -116,7 +116,7 @@ public class BioSAXSISPyBTest {
 				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
 				"viscosity");
 
-		assertEquals(bioSAXSISPyB.getDataCollectionStatus(collection3),
+		assertEquals(bioSAXSISPyB.getDataCollectionStatus(collection3).getStatus(),
 				ISpyBStatus.NOT_STARTED);
 
 		ISpyBStatusInfo collectionStatusFailed = new ISpyBStatusInfo();
@@ -126,7 +126,7 @@ public class BioSAXSISPyBTest {
 		bioSAXSISPyB.setDataCollectionStatus(collection3,
 				collectionStatusFailed);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection3);
-		assertEquals(collectionStatus, ISpyBStatus.FAILED);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.FAILED);
 		assertEquals(collectionStatus.getMessage(), bufferBeforeFailureMessage);
 		assertEquals(collectionStatus.getProgress(), 33);
 
@@ -136,8 +136,8 @@ public class BioSAXSISPyBTest {
 		reductionStatusComplete.setProgress(100);
 		long subtractionId = bioSAXSISPyB.createDataReduction(collection1);
 
-		assertEquals(bioSAXSISPyB.getDataReductionStatus(collection1),
-				ISpyBStatus.RUNNING);
+		assertEquals(bioSAXSISPyB.getDataReductionStatus(collection1)
+				.getStatus(), ISpyBStatus.RUNNING);
 
 		// test data reduction completed
 		bioSAXSISPyB.setDataReductionStatus(collection3,
@@ -148,7 +148,7 @@ public class BioSAXSISPyBTest {
 				.getDataReductionStatus(collection1);
 		assertEquals(reductionStatusComplete.getProgress(),
 				iSpyBReductionDetails.getProgress(), 0.0);
-		assertEquals(reductionStatusComplete, iSpyBReductionDetails.getStatus());
+		assertEquals(reductionStatusComplete.getStatus(), iSpyBReductionDetails.getStatus());
 
 		// test data reduction failed
 		// create new data collection here
