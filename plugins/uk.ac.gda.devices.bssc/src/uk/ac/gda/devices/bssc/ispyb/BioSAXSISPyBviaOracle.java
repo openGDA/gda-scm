@@ -42,6 +42,7 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
  * create_ro_role.sql, create_rw_role.sql and users.sql on live database
  */
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
+	private static final long INVALID_VALUE = -1l;
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
 	private static final String DATA_REDUCTION_STARTED = "DataReductionStarted";
 	private static final String DATA_REDUCTION_ERROR = "DataReductionError";
@@ -139,23 +140,23 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return saxsDataCollectionId;
 	}
 
-	protected long createMeasurement(long sampleId, long runId, float exposureTemperature, double flow, String viscosity)
+	protected long createMeasurement(long sampleId, float exposureTemperature, double flow, String viscosity)
 			throws SQLException {
 		long measurementId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Measurement ("
-				+ "measurementId, specimenId, runId, exposureTemperature, flow, viscosity) "
-				+ "VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?, ?) RETURNING measurementId INTO ?; END;";
+				+ "measurementId, specimenId, exposureTemperature, flow, viscosity) "
+				+ "VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?) RETURNING measurementId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
-		stmt.setLong(1, sampleId);
-		stmt.setLong(2, runId);
-		stmt.setFloat(3, exposureTemperature);
-		stmt.setDouble(4, flow);
-		stmt.setString(5, viscosity);
+		int index = 1;
+		stmt.setLong(index++, sampleId);
+		stmt.setFloat(index++, exposureTemperature);
+		stmt.setDouble(index++, flow);
+		stmt.setString(index++, viscosity);
 
-		stmt.registerOutParameter(6, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
-		measurementId = stmt.getLong(6);
+		measurementId = stmt.getLong(index);
 		stmt.close();
 
 		return measurementId;
@@ -353,38 +354,21 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementToDataCollectionId;
 	}
 
-	private long createBufferMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
-			float storageTemperature, float exposureTemperature, int numFrames, double timePerFrame, double flow,
-			double volume, double energyInkeV, String viscosity, String fileName, String internalPath)
-			throws SQLException {
-
-		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
-		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
-		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, null, samplePlatePositionId, null, 0.,
-				volume);
-		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);
-		@SuppressWarnings("unused")
-		long frameSetId = createFrameSet(runId, fileName, internalPath);
-		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
-		return measurementId;
-	}
-
-	private long createSampleMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
-			String name, double concentration, float storageTemperature, float exposureTemperature, int numFrames,
+	private long createMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
+			String sampleName, double sampleConcentration, float storageTemperature, float exposureTemperature, int numFrames,
 			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity, String fileName,
 			String internalPath) throws SQLException {
-
+		Long macromoleculeId = null;
+		
 		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
-		long macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), name, name);
+		if (sampleName != null && sampleName.isEmpty() == false && sampleConcentration != 0.) { //if this is a sample, name and concentration are defined
+			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
+		}
 		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-				null, concentration, volume);
-		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);
-		@SuppressWarnings("unused")
-		long frameSetId = createFrameSet(runId, fileName, internalPath);
-		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
+					null, sampleConcentration, volume);
+		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
 		return measurementId;
 	}
 
@@ -677,8 +661,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
 			short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature, int numFrames,
 			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, bufferPlate, bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity, INVALID_VALUE);
 	}
 
 	@Override
