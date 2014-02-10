@@ -638,8 +638,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
 	}
 
-	private List<ISampleProgress> getBioSAXSMeasurements(long blSessionId) throws SQLException {
-		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
+	@Override
+	public List<ISAXSDataCollection> getSAXSDataCollections(long blSessionId) throws SQLException {
+		List<ISAXSDataCollection> samples = new ArrayList<ISAXSDataCollection>();
 		connectIfNotConnected();
 
 		// String selectSql =
@@ -744,12 +745,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public ISpyBStatusInfo getDataReductionStatus(long dataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ISAXSDataCollection> getSAXSDataCollections(long blSessionId) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
