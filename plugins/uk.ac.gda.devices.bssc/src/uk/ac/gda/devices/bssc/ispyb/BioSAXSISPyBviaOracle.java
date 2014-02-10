@@ -264,22 +264,43 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return specimenId;
 	}
 
-	protected long createRun(float storageTemperature, double energyInkeV, int numFrames, double timePerFrame)
+	protected long createRun(double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energyInkeV, int numFrames, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename, String internalPath)
 			throws SQLException {
 		long runId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Run ("
-				+ "runId, storageTemperature, energy, frameCount, timePerFrame) "
-				+ "VALUES (ispyb4a_db.s_Run.nextval, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
+				+ "runId, storageTemperature, exposureTemperature, energy, frameCount, timePerFrame"
+				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,"
+				+ "normalization, filename, internalPath) "
+				+ "VALUES (ispyb4a_db.s_Run.nextval, ?, ?, ?, ?, ?, "
+				+ "?, ?, ?, ?, ?, ?, ?"
+				+ "?, ?, ?) RETURNING runId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
-		stmt.setFloat(1, storageTemperature);
-		stmt.setDouble(2, energyInkeV);
-		stmt.setInt(3, numFrames);
-		stmt.setDouble(4, timePerFrame);
+		int index = 1;
+		stmt.setFloat(index++, storageTemperature);
+		stmt.setDouble(index++, exposureTemperature);
+		stmt.setDouble(index++, energyInkeV);
+		stmt.setInt(index++, numFrames);
+		stmt.setDouble(index++, timePerFrame);
 
-		stmt.registerOutParameter(5, java.sql.Types.VARCHAR);
+		stmt.setDouble(index++, transmission);
+		stmt.setDouble(index++, beamCenterX);
+		stmt.setDouble(index++, beamCenterY);
+		stmt.setDouble(index++, pixelSizeX);
+		stmt.setDouble(index++, pixelSizeY);
+		stmt.setDouble(index++, radiationRelative);
+		stmt.setDouble(index++, radiationAbsolute);
+
+		stmt.setDouble(index++, normalization);
+		stmt.setString(index++, filename);
+		stmt.setString(index++, internalPath);
+
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
-		runId = stmt.getLong(5);
+		runId = stmt.getLong(index);
 		stmt.close();
 
 		return runId;
@@ -749,8 +770,36 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
-		// TODO Auto-generated method stub
-		return 0;
+		long runId = 0;
+		try {
+			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization,
+					filename, internalPath);
+		} catch (SQLException e) {
+			logger.error("problem while creating Run", e);
+		}
+		try {
+			ISpyBStatusInfo currentStatus = getDataCollectionStatus(currentDataCollectionId);
+			if (currentStatus.getStatus() == ISpyBStatus.NOT_STARTED && currentStatus.getProgress() == 0) { //must be buffer before
+				ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
+				newStatus.setStatus(ISpyBStatus.RUNNING);
+				newStatus.setProgress(33);
+				setDataCollectionStatus(currentDataCollectionId, newStatus);
+			}
+			else if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 66) { //must be buffer after
+				ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
+				newStatus.setStatus(ISpyBStatus.COMPLETE);
+				newStatus.setProgress(100);
+				setDataCollectionStatus(currentDataCollectionId, newStatus);
+			}
+		} catch (SQLException e) {
+			ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
+			newStatus.setStatus(ISpyBStatus.FAILED);
+			setDataCollectionStatus(currentDataCollectionId, newStatus);
+			logger.error("Exception while getting data collection status", e);
+		}
+		//update Measurement with runId
+		return runId;
 	}
 
 	@Override
@@ -758,8 +807,20 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
-		// TODO Auto-generated method stub
-		return 0;
+		long runId = 0;
+		try {
+			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization,
+					filename, internalPath);
+		} catch (SQLException e) {
+			logger.error("problem while creating Run", e);
+		}
+		ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
+		newStatus.setStatus(ISpyBStatus.RUNNING);
+		newStatus.setProgress(66);
+		setDataCollectionStatus(dataCollectionId, newStatus);
+		//update Measurement with runId
+		return runId;
 	}
 
 	@Override
