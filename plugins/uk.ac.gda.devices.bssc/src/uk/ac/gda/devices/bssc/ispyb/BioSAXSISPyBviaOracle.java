@@ -34,6 +34,7 @@ import oracle.jdbc.OracleConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollectionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 
 /*
@@ -41,6 +42,7 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
  * create_ro_role.sql, create_rw_role.sql and users.sql on live database
  */
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
+	private static final long INVALID_VALUE = -1l;
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
 	private static final String DATA_REDUCTION_STARTED = "DataReductionStarted";
 	private static final String DATA_REDUCTION_ERROR = "DataReductionError";
@@ -77,8 +79,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 	}
 
-	@Override
-	public long getProposalForVisit(String visitname) throws SQLException {
+	private long getProposalForVisit(String visitname) throws SQLException {
 		long proposalId = -1;
 		connectIfNotConnected();
 
@@ -123,9 +124,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return sessionId;
 	}
 
-	@Override
-	public long createSaxsDataCollection(long blsessionId, long experimentId) throws SQLException {
+	private long createSaxsDataCollection(long blsessionId, long experimentId) throws SQLException {
 		long saxsDataCollectionId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SaxsDataCollection (datacollectionId, blsessionId, experimentId) "
 				+ "VALUES (ispyb4a_db.s_SaxsDataCollection.nextval, ?, ?) RETURNING datacollectionId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
@@ -139,22 +140,23 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return saxsDataCollectionId;
 	}
 
-	protected long createMeasurement(long sampleId, long runId, float exposureTemperature, double flow, String viscosity)
+	protected long createMeasurement(long sampleId, float exposureTemperature, double flow, String viscosity)
 			throws SQLException {
 		long measurementId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Measurement ("
-				+ "measurementId, specimenId, runId, exposureTemperature, flow, viscosity) "
-				+ "VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?, ?) RETURNING measurementId INTO ?; END;";
+				+ "measurementId, specimenId, exposureTemperature, flow, viscosity) "
+				+ "VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?) RETURNING measurementId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
-		stmt.setLong(1, sampleId);
-		stmt.setLong(2, runId);
-		stmt.setFloat(3, exposureTemperature);
-		stmt.setDouble(4, flow);
-		stmt.setString(5, viscosity);
+		int index = 1;
+		stmt.setLong(index++, sampleId);
+		stmt.setFloat(index++, exposureTemperature);
+		stmt.setDouble(index++, flow);
+		stmt.setString(index++, viscosity);
 
-		stmt.registerOutParameter(6, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
-		measurementId = stmt.getLong(6);
+		measurementId = stmt.getLong(index);
 		stmt.close();
 
 		return measurementId;
@@ -162,6 +164,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	protected long createBuffer(long blsessionId, String name, String acronym, String composition) throws SQLException {
 		long bufferId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Buffer (bufferId, blsessionId, proposalId, name, acronym, composition) "
 				+ "VALUES (ispyb4a_db.s_Buffer.nextval, ?, ?, ?, ?, ?) RETURNING bufferId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
@@ -182,6 +185,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	protected long createSamplePlate(long blsessionId, long experimentId, String name) throws SQLException {
 		long samplePlateId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name) "
 				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?) RETURNING samplePlateId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
@@ -199,6 +203,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	protected long createSamplePlatePosition(long samplePlateId, short row, short column) throws SQLException {
 		long samplePlatePositionId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlatePosition ("
 				+ "samplePlatePositionId, samplePlateId, rowNumber, columnNumber) "
 				+ "VALUES (ispyb4a_db.s_SamplePlatePosition.nextval, ?, ?, ?) RETURNING samplePlatePositionId INTO ?; END;";
@@ -215,12 +220,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return samplePlatePositionId;
 	}
 
-	public long createSpecimen(long blsessionId, long experimentId, Long bufferId, Long macromoleculeId,
-			Long samplePlatePositionId, Long stockSolutionId, Double concentration, Double volume) throws SQLException {
+	private long createSpecimen(long blsessionId, long experimentId, Long bufferId, Long macromoleculeId,
+			Long samplePlatePositionId, Long stockSolutionId, Double volume) throws SQLException {
 		long specimenId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen ("
-				+ "specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, concentration, volumen) "
-				+ "VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
+				+ "specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, volumen) "
+				+ "VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 
@@ -246,19 +252,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		else
 			stmt.setLong(6, stockSolutionId);
 
-		if (concentration == null)
+		if (volume == null)
 			stmt.setNull(7, java.sql.Types.DOUBLE);
 		else
-			stmt.setDouble(7, concentration);
+			stmt.setDouble(7, volume);
 
-		if (volume == null)
-			stmt.setNull(8, java.sql.Types.DOUBLE);
-		else
-			stmt.setDouble(8, volume);
-
-		stmt.registerOutParameter(9, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(8, java.sql.Types.VARCHAR);
 		stmt.execute();
-		specimenId = stmt.getLong(9);
+		specimenId = stmt.getLong(8);
 		stmt.close();
 		return specimenId;
 	}
@@ -266,6 +267,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	protected long createRun(float storageTemperature, double energyInkeV, int numFrames, double timePerFrame)
 			throws SQLException {
 		long runId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Run ("
 				+ "runId, storageTemperature, energy, frameCount, timePerFrame) "
 				+ "VALUES (ispyb4a_db.s_Run.nextval, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
@@ -285,6 +287,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	protected long createFrameSet(long runId, String fileName, String internalPath) throws SQLException {
 		long frameSetId = -1;
+		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.FrameSet (" + "frameSetId, runId, filePath, internalPath) "
 				+ "VALUES (ispyb4a_db.s_FrameSet.nextval, ?, ?, ?) RETURNING frameSetId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
@@ -302,6 +305,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	protected long createMacromolecule(long proposalId, String name, String acronym) throws SQLException {
 		long macromoleculeId = -1;
+		connectIfNotConnected();
 
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Macromolecule ("
 				+ "macromoleculeId, proposalId, name, acronym) "
@@ -323,9 +327,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	 * Add row to the MeasurementToDataCollection table with a dataCollectionOrder which is 1 greater than the max for
 	 * existing entries for this dataCollectionId.
 	 */
-	@Override
-	public long createMeasurementToDataCollection(long saxsDataCollectionId, long measurementId) throws SQLException {
+	private long createMeasurementToDataCollection(long saxsDataCollectionId, long measurementId) throws SQLException {
 		long measurementToDataCollectionId = -1;
+		connectIfNotConnected();
 
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.MeasurementToDataCollection ("
 				+ "measurementToDataCollectionId, dataCollectionId, measurementId, dataCollectionOrder) "
@@ -345,45 +349,20 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementToDataCollectionId;
 	}
 
-	@Override
-	public long createBufferMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
-			float storageTemperature, float exposureTemperature, int numFrames, double timePerFrame, double flow,
-			double volume, double energyInkeV, String viscosity, String fileName, String internalPath)
-			throws SQLException {
-
-		connectIfNotConnected();
-
+	private long createMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
+			String sampleName, float exposureTemperature, int numFrames,
+			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
+		Long macromoleculeId = null;
+		
 		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
-		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
-		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, null, samplePlatePositionId, null, 0.,
-				volume);
-		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);
-		@SuppressWarnings("unused")
-		long frameSetId = createFrameSet(runId, fileName, internalPath);
-		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
-		return measurementId;
-	}
-
-	@Override
-	public long createSampleMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
-			String name, double concentration, float storageTemperature, float exposureTemperature, int numFrames,
-			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity, String fileName,
-			String internalPath) throws SQLException {
-
-		connectIfNotConnected();
-
-		long bufferId = createBuffer(blsessionId, name + "Buffer", name + "Buffer", name + "Composition");
-		long macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), name + "Macromolecule", name
-				+ "Macromolecule");
+		if (sampleName != null && sampleName.isEmpty() == false) { //if this is a sample, name and concentration are defined
+			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
+		}
 		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-				null, concentration, volume);
-		long runId = createRun(storageTemperature, energyInkeV, numFrames, timePerFrame);
-		@SuppressWarnings("unused")
-		long frameSetId = createFrameSet(runId, fileName, internalPath);
-		long measurementId = createMeasurement(sampleId, runId, exposureTemperature, flow, viscosity);
+					null, volume);
+		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
 		return measurementId;
 	}
 
@@ -430,8 +409,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return sinfos;
 	}
 
-	@Override
-	public List<Long> getSaxsDataCollectionsForSession(long blsessionId) throws SQLException {
+	private List<Long> getSaxsDataCollectionsForSession(long blsessionId) throws SQLException {
 		List<Long> collections = new ArrayList<Long>();
 
 		connectIfNotConnected();
@@ -519,8 +497,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return proposalId;
 	}
 
-	@Override
-	public long getDataCollectionForExperiment(long experimentId) throws SQLException {
+	private long getDataCollectionForExperiment(long experimentId) throws SQLException {
 		long dataCollectionId = -1;
 
 		connectIfNotConnected();
@@ -541,8 +518,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return dataCollectionId;
 	}
 
-	@Override
-	public long createDataReductionStarted(long dataCollectionId) throws SQLException {
+	private long createDataReductionStarted(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
 
 		connectIfNotConnected();
@@ -562,16 +538,15 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	@Override
-	public boolean isDataReductionRunning(long subtractionId) throws SQLException {
+	private boolean isDataReductionRunning(long subtractionId) throws SQLException {
 		String gnomFilePath = getGnomFilePathFromSubtraction(subtractionId);
 
 		return (gnomFilePath != null) && (gnomFilePath.equals(DATA_REDUCTION_STARTED));
 	}
 
-	@Override
-	public boolean clearDataReductionStarted(long subtractionId) {
+	private boolean clearDataReductionStarted(long subtractionId) {
 		try {
+			connectIfNotConnected();
 			// now remove the current dataCollectionId so that it's effectively been deleted
 			String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET dataCollectionId=-1 WHERE su.subtractionId = ?";
 			PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
@@ -600,14 +575,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return gnomFilePath;
 	}
 
-	@Override
-	public boolean isDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+	private boolean isDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
 		String gnomFilePath = getGnomFilePathFromSubtraction(dataCollectionId);
 		return (gnomFilePath != null && gnomFilePath.equals(DATA_REDUCTION_ERROR));
 	}
 
-	@Override
-	public void setDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+	private void setDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+		connectIfNotConnected();
 		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
 		int index = 1;
@@ -619,8 +593,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return;
 	}
 
-	@Override
-	public boolean isDataReductionFailed(long dataCollectionId) throws SQLException {
+	private boolean isDataReductionFailed(long dataCollectionId) throws SQLException {
 		String rg = null;
 		String rgGnom = null;
 		String gnomFilePath = null;
@@ -647,14 +620,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return (gnomFilePath == null || rg == null || rgGnom == null);
 	}
 
-	@Override
-	public boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
+	private boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
 		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
 	}
 
 	@Override
-	public List<ISampleProgress> getBioSAXSMeasurements(long blSessionId) throws SQLException {
-		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
+	public List<ISAXSDataCollection> getSAXSDataCollections(long blSessionId) throws SQLException {
+		List<ISAXSDataCollection> samples = new ArrayList<ISAXSDataCollection>();
 		connectIfNotConnected();
 
 		// String selectSql =
@@ -666,11 +638,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
 			while (rs.next()) {
-				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
-				bioSaxsProgress.setExperimentId(rs.getString(1));
-				bioSaxsProgress.setSampleName(rs.getString(2));
-				bioSaxsProgress.setBlSessionId(blSessionId);
-				samples.add(bioSaxsProgress);
+				BioSAXSDataCollectionBean bioSaxsDataCollection = new BioSAXSDataCollectionBean();
+				bioSaxsDataCollection.setExperimentId(rs.getLong(1));
+				bioSaxsDataCollection.setSampleName(rs.getString(2));
+				bioSaxsDataCollection.setBlSessionId(blSessionId);
+				samples.add(bioSaxsDataCollection);
 			}
 			rs.close();
 			stmt.close();
@@ -680,25 +652,167 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public void setMeasurementCollectionStatus(long measurementId, String collectionStatus) throws SQLException {
-		// TODO Auto-generated method stub
-
+	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
+			short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature, int numFrames,
+			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
+		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, bufferPlate, bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity, INVALID_VALUE);
 	}
 
 	@Override
-	public void setMeasurementReductionStatus(long measurementId, String reductionStatus) throws SQLException {
-		// TODO Auto-generated method stub
+	public long createSaxsDataCollectionUsingPreviousBuffer(long experimentID, short plate, short row, short column,
+			String sampleName, short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature,
+			int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity,
+			long previousDataCollectionId) throws SQLException {
+		long bufferBeforeMeasurementId;
+		long blsessionId = getBlSessionIdFromExperiment(experimentID);
+		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
+		if (previousDataCollectionId == INVALID_VALUE) {
+			bufferBeforeMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity);
+		}
+		else {
+			bufferBeforeMeasurementId = retrievePreviousBufferMeasurement(previousDataCollectionId);
+		}
+		long sampleMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, sampleName, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity);
+		long bufferAfterMeasurementId = createMeasurement(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity);
+		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
+		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
+		createMeasurementToDataCollection(saxsDataCollectionId, bufferAfterMeasurementId);
+		return 0;
+	}
 
+	private long retrievePreviousBufferMeasurement(long previousDataCollectionId) throws SQLException {
+		long measurementId = -1;
+		connectIfNotConnected();
+
+		String selectSql = "SELECT m.measurementId FROM ispyb4a_db.MeasurementToDataCollection m WHERE m.dataCollectionId = ? and m.dataCollectionOrder=3";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, previousDataCollectionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				measurementId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt.close();
+
+		return measurementId;
+	}
+
+	private long getBlSessionIdFromExperiment(long experimentId) throws SQLException {
+		long blsessionId = -1;
+		connectIfNotConnected();
+
+		String selectSql = "SELECT e.sessionId FROM ispyb4a_db.Experiment e WHERE e.experimentId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, experimentId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				blsessionId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt.close();
+
+		return blsessionId;
 	}
 
 	@Override
-	public void setMeasurementAnalysisStatus(long measurementId, String analysisStatus) throws SQLException {
+	public long createBufferRun(long currentDataCollectionId, double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename, String internalPath) {
 		// TODO Auto-generated method stub
-
+		return 0;
 	}
 
 	@Override
-	public void setMeasurementStartTime(long startTime) throws SQLException {
-		System.out.println(System.currentTimeMillis());
+	public long createSampleRun(long dataCollectionId, double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename, String internalPath) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<SampleInfo> getExperimentInfo(long experimentId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Long> getExperimentsForSession(long blsessionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Long> getDataCollectionsForExperiments(long experiment) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long createDataReduction(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISpyBStatusInfo getDataReductionStatus(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long createDataAnalysis(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISpyBStatusInfo getDataAnalysisStatus(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getPreviousCollectionId(long dataCollectionId) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
