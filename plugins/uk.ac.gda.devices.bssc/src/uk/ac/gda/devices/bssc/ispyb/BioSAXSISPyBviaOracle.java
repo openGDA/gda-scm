@@ -77,8 +77,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 	}
 
-	@Override
-	public long getProposalForVisit(String visitname) throws SQLException {
+	private long getProposalForVisit(String visitname) throws SQLException {
 		long proposalId = -1;
 		connectIfNotConnected();
 
@@ -123,8 +122,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return sessionId;
 	}
 
-	@Override
-	public long createSaxsDataCollection(long blsessionId, long experimentId) throws SQLException {
+	private long createSaxsDataCollection(long blsessionId, long experimentId) throws SQLException {
 		long saxsDataCollectionId = -1;
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SaxsDataCollection (datacollectionId, blsessionId, experimentId) "
 				+ "VALUES (ispyb4a_db.s_SaxsDataCollection.nextval, ?, ?) RETURNING datacollectionId INTO ?; END;";
@@ -323,8 +321,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	 * Add row to the MeasurementToDataCollection table with a dataCollectionOrder which is 1 greater than the max for
 	 * existing entries for this dataCollectionId.
 	 */
-	@Override
-	public long createMeasurementToDataCollection(long saxsDataCollectionId, long measurementId) throws SQLException {
+	private long createMeasurementToDataCollection(long saxsDataCollectionId, long measurementId) throws SQLException {
 		long measurementToDataCollectionId = -1;
 
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.MeasurementToDataCollection ("
@@ -345,8 +342,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementToDataCollectionId;
 	}
 
-	@Override
-	public long createBufferMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
+	private long createBufferMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
 			float storageTemperature, float exposureTemperature, int numFrames, double timePerFrame, double flow,
 			double volume, double energyInkeV, String viscosity, String fileName, String internalPath)
 			throws SQLException {
@@ -365,8 +361,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementId;
 	}
 
-	@Override
-	public long createSampleMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
+	private long createSampleMeasurement(long blsessionId, long experimentId, short plate, short row, short column,
 			String name, double concentration, float storageTemperature, float exposureTemperature, int numFrames,
 			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity, String fileName,
 			String internalPath) throws SQLException {
@@ -430,8 +425,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return sinfos;
 	}
 
-	@Override
-	public List<Long> getSaxsDataCollectionsForSession(long blsessionId) throws SQLException {
+	private List<Long> getSaxsDataCollectionsForSession(long blsessionId) throws SQLException {
 		List<Long> collections = new ArrayList<Long>();
 
 		connectIfNotConnected();
@@ -519,8 +513,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return proposalId;
 	}
 
-	@Override
-	public long getDataCollectionForExperiment(long experimentId) throws SQLException {
+	private long getDataCollectionForExperiment(long experimentId) throws SQLException {
 		long dataCollectionId = -1;
 
 		connectIfNotConnected();
@@ -541,8 +534,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return dataCollectionId;
 	}
 
-	@Override
-	public long createDataReductionStarted(long dataCollectionId) throws SQLException {
+	private long createDataReductionStarted(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
 
 		connectIfNotConnected();
@@ -562,15 +554,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	@Override
-	public boolean isDataReductionRunning(long subtractionId) throws SQLException {
+	private boolean isDataReductionRunning(long subtractionId) throws SQLException {
 		String gnomFilePath = getGnomFilePathFromSubtraction(subtractionId);
 
 		return (gnomFilePath != null) && (gnomFilePath.equals(DATA_REDUCTION_STARTED));
 	}
 
-	@Override
-	public boolean clearDataReductionStarted(long subtractionId) {
+	private boolean clearDataReductionStarted(long subtractionId) {
 		try {
 			// now remove the current dataCollectionId so that it's effectively been deleted
 			String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET dataCollectionId=-1 WHERE su.subtractionId = ?";
@@ -600,14 +590,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return gnomFilePath;
 	}
 
-	@Override
-	public boolean isDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+	private boolean isDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
 		String gnomFilePath = getGnomFilePathFromSubtraction(dataCollectionId);
 		return (gnomFilePath != null && gnomFilePath.equals(DATA_REDUCTION_ERROR));
 	}
 
-	@Override
-	public void setDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+	private void setDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
 		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
 		int index = 1;
@@ -619,8 +607,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return;
 	}
 
-	@Override
-	public boolean isDataReductionFailed(long dataCollectionId) throws SQLException {
+	private boolean isDataReductionFailed(long dataCollectionId) throws SQLException {
 		String rg = null;
 		String rgGnom = null;
 		String gnomFilePath = null;
@@ -647,13 +634,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return (gnomFilePath == null || rg == null || rgGnom == null);
 	}
 
-	@Override
-	public boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
+	private boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
 		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
 	}
 
-	@Override
-	public List<ISampleProgress> getBioSAXSMeasurements(long blSessionId) throws SQLException {
+	private List<ISampleProgress> getBioSAXSMeasurements(long blSessionId) throws SQLException {
 		List<ISampleProgress> samples = new ArrayList<ISampleProgress>();
 		connectIfNotConnected();
 
@@ -680,25 +665,117 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public void setMeasurementCollectionStatus(long measurementId, String collectionStatus) throws SQLException {
+	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
+			short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature, int numFrames,
+			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
 		// TODO Auto-generated method stub
-
+		return 0;
 	}
 
 	@Override
-	public void setMeasurementReductionStatus(long measurementId, String reductionStatus) throws SQLException {
+	public long createSaxsDataCollectionUsingPreviousBuffer(long experimentID, short plate, short row, short column,
+			String sampleName, short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature,
+			int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity,
+			long previousDataCollectionId) throws SQLException {
 		// TODO Auto-generated method stub
-
+		return 0;
 	}
 
 	@Override
-	public void setMeasurementAnalysisStatus(long measurementId, String analysisStatus) throws SQLException {
+	public long createBufferRun(long currentDataCollectionId, double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename, String internalPath) {
 		// TODO Auto-generated method stub
-
+		return 0;
 	}
 
 	@Override
-	public void setMeasurementStartTime(long startTime) throws SQLException {
-		System.out.println(System.currentTimeMillis());
+	public long createSampleRun(long dataCollectionId, double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename, String internalPath) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<SampleInfo> getExperimentInfo(long experimentId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Long> getExperimentsForSession(long blsessionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Long> getDataCollectionsForExperiments(long experiment) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long createDataReduction(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISpyBStatusInfo getDataReductionStatus(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ISAXSDataCollection> getSAXSDataCollections(long blSessionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long createDataAnalysis(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISpyBStatusInfo getDataAnalysisStatus(long dataCollectionId) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getPreviousCollectionId(long dataCollectionId) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
