@@ -217,7 +217,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			Long stockSolutionId, Double concentration, Double volume) throws SQLException {
 		long specimenId = -1;
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen (" +
-				"specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, concentration, volumen) " +
+				"specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, concentration, volume) " +
 				"VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
