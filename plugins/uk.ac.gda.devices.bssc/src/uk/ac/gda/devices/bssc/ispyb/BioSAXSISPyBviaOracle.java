@@ -766,14 +766,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
-		long runId = 0;
-		try {
-			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
-					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization);
-			createFrameSet(runId, filename, internalPath);
-		} catch (SQLException e) {
-			logger.error("problem while creating Run", e);
-		}
+		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
+				beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, filename, internalPath);
 		try {
 			ISpyBStatusInfo currentStatus = getDataCollectionStatus(currentDataCollectionId);
 			if (currentStatus.getStatus() == ISpyBStatus.NOT_STARTED && currentStatus.getProgress() == 0) { //must be buffer before
@@ -803,19 +797,28 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
+		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, filename, internalPath);
+		ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
+		newStatus.setStatus(ISpyBStatus.RUNNING);
+		newStatus.setProgress(66);
+		setDataCollectionStatus(dataCollectionId, newStatus);
+		return runId;
+	}
+
+	private long createRunAndFrameSet(double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename, String internalPath) {
 		long runId = 0;
 		try {
 			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
 					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization);
 			createFrameSet(runId, filename, internalPath);
+			//TODO need to update Measurement with runId!
 		} catch (SQLException e) {
 			logger.error("problem while creating Run", e);
 		}
-		ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
-		newStatus.setStatus(ISpyBStatus.RUNNING);
-		newStatus.setProgress(66);
-		setDataCollectionStatus(dataCollectionId, newStatus);
-		//update Measurement with runId
 		return runId;
 	}
 
