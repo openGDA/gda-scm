@@ -26,7 +26,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import oracle.jdbc.OracleConnection;
@@ -49,6 +51,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	Connection conn = null;
 	String URL = null;
+	Map<Long, BioSAXSDataCollectionBean> collectionsMap = new HashMap<Long, BioSAXSDataCollectionBean>();
 
 	public BioSAXSISPyBviaOracle(String mode) {
 		URL = mode;
@@ -638,11 +641,18 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
 			while (rs.next()) {
-				BioSAXSDataCollectionBean bioSaxsDataCollection = new BioSAXSDataCollectionBean();
-				bioSaxsDataCollection.setExperimentId(rs.getLong(1));
-				bioSaxsDataCollection.setSampleName(rs.getString(2));
-				bioSaxsDataCollection.setBlSessionId(blSessionId);
-				samples.add(bioSaxsDataCollection);
+				long experimentId = rs.getLong(1);
+				if (collectionsMap.containsKey(experimentId)) {
+					samples.add(collectionsMap.get(experimentId));
+				}
+				else {
+					BioSAXSDataCollectionBean bioSaxsDataCollection = new BioSAXSDataCollectionBean();
+					bioSaxsDataCollection.setExperimentId(experimentId);
+					bioSaxsDataCollection.setSampleName(rs.getString(2));
+					bioSaxsDataCollection.setBlSessionId(blSessionId);
+					samples.add(bioSaxsDataCollection);
+				}
+
 			}
 			rs.close();
 			stmt.close();
