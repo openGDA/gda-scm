@@ -1,11 +1,7 @@
 package uk.ac.gda.devices.bssc.ui;
 
 import static org.junit.Assert.fail;
-import gda.observable.IObserver;
 import gda.rcp.util.OSGIServiceRegister;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ObservableList;
@@ -22,24 +18,26 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.gda.devices.bssc.beans.BioSAXSProgress;
-import uk.ac.gda.devices.bssc.beans.IProgressModel;
+import uk.ac.gda.devices.bssc.beans.BioSAXSProgressController;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
-import uk.ac.gda.devices.bssc.ispyb.ISAXSDataCollection;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatusInfo;
 
 public class BioSaxsProgressViewTest {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 	private static BioSAXSProgressView view;
-	private static IProgressModel model;
+	private static IObservableList model;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		model = new MySAXSProgressModel();
+		model = new WritableList();
 
+		BioSAXSProgressController controller = new BioSAXSProgressController();
+		controller.setModel(model);
+		
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
-		modelReg.setClass(IProgressModel.class);
-		modelReg.setService(model);
+		modelReg.setClass(BioSAXSProgressController.class);
+		modelReg.setService(controller);
 		modelReg.afterPropertiesSet();
 
 		// populate model with sample values
@@ -76,13 +74,13 @@ public class BioSaxsProgressViewTest {
 					collectionStatusDetails, reductionStatusDetails,
 					analysisStatusDetails);;
 
-			model.addItem(progress);
+			model.add(progress);
 		}
 	}
 
 	@Test
 	public void testProgress() throws Exception {
-		ObservableList items = (ObservableList) model.getItems();
+		ObservableList items = (ObservableList) model;
 
 		for (int i = 0; i < items.size(); i++) {
 
@@ -126,7 +124,7 @@ public class BioSaxsProgressViewTest {
 
 	@Test
 	public void testAddProgressModel() {
-		ObservableList items = (ObservableList) model.getItems();
+		ObservableList items = (ObservableList) model;
 
 		ISpyBStatusInfo collectionStatusInfo = new ISpyBStatusInfo();
 		collectionStatusInfo.setProgress(0);
@@ -136,8 +134,8 @@ public class BioSaxsProgressViewTest {
 		collectionStatusInfo.setProgress(0);
 
 		ISAXSProgress newProgress = new BioSAXSProgress(
-				model.getItems().size() + 1, "New Sample "
-						+ model.getItems().size() + 1, collectionStatusInfo,
+				model.size() + 1, "New Sample "
+						+ model.size() + 1, collectionStatusInfo,
 				reductionStatusInfo, analysisStatusInfo);
 		;
 
@@ -206,51 +204,4 @@ public class BioSaxsProgressViewTest {
 
 }
 
-class MySAXSProgressModel extends ArrayList<ISAXSProgress> implements
-		IProgressModel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	WritableList items = new WritableList(new ArrayList<ISAXSProgress>(),
-			ISAXSDataCollection.class);
-
-	@Override
-	public IObservableList getItems() {
-		return items;
-	}
-
-	@Override
-	public void clearItems() {
-		items.clear();
-	}
-
-	@Override
-	public void addItems(List<ISAXSProgress> progressList) {
-		items.add(progressList);
-	}
-
-	@Override
-	public void addItem(ISAXSProgress progress) {
-		items.add(progress);
-	}
-
-	@Override
-	public void addIObserver(IObserver observer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteIObserver(IObserver observer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteIObservers() {
-		// TODO Auto-generated method stub
-
-	}
-}

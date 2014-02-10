@@ -123,43 +123,6 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName));
 
-		// final IObservableMap collectionStatus = BeanProperties.value(ISAXSDataCollection.class,
-		// ISAXSDataCollection.COLLECTION_STATUS).observeDetail(knownElements);
-		//
-		// viewerColumn3.setLabelProvider(new ObservableMapColumnLabelProvider(collectionStatus));
-		//
-		// final IObservableMap reductionStatus = BeanProperties.value(ISAXSDataCollection.class,
-		// ISAXSDataCollection.REDUCTION_STATUS).observeDetail(knownElements);
-		//
-		// viewerColumn4.setLabelProvider(new ObservableMapColumnLabelProvider(reductionStatus));
-		//
-		// final IObservableMap analysisStatus = BeanProperties.value(ISAXSDataCollection.class,
-		// ISAXSDataCollection.ANALYSIS_STATUS).observeDetail(knownElements);
-		//
-		// viewerColumn5.setLabelProvider(new ObservableMapColumnLabelProvider(analysisStatus));
-
-		// final IObservableMap collectionProgress = BeanProperties.value(ISAXSDataCollection.class,
-		// ISAXSDataCollection.COLLECTION_PROGRESS).observeDetail(knownElements);
-
-		// ControlFactoryAndUpdater factory = new ObservableMapCellControlProvider.ControlFactoryAndUpdater() {
-		//
-		// @Override
-		// public Control createControl(Composite parent) {
-		// ProgressBar progressBar = new ProgressBar(parent, SWT.NONE);
-		// progressBar.setMaximum(100);
-		// return progressBar;
-		// }
-		//
-		// @Override
-		// public void updateControl(Control control, Object value) {
-		// int progress = ((Double) value).intValue();
-		// ProgressBar progressBar = ((ProgressBar) control);
-		//
-		// progressBar.setSelection(progress);
-		// }
-		// };
-		// viewerColumn3.setLabelProvider(new ObservableMapCellControlProvider(collectionProgress, factory, "Column3"));
-
 		final IObservableMap collectionProgressValues = BeanProperties.value(ISAXSProgress.class,
 				ISAXSProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
 
