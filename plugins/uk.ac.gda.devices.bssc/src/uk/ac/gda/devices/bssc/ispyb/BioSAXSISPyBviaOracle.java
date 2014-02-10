@@ -34,6 +34,7 @@ import oracle.jdbc.OracleConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollectionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 
 /*
@@ -652,11 +653,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
 			while (rs.next()) {
-				BioSaxsSampleProgress bioSaxsProgress = new BioSaxsSampleProgress();
-				bioSaxsProgress.setExperimentId(rs.getString(1));
-				bioSaxsProgress.setSampleName(rs.getString(2));
-				bioSaxsProgress.setBlSessionId(blSessionId);
-				samples.add(bioSaxsProgress);
+				BioSAXSDataCollectionBean bioSaxsDataCollection = new BioSAXSDataCollectionBean();
+				bioSaxsDataCollection.setExperimentId(rs.getLong(1));
+				bioSaxsDataCollection.setSampleName(rs.getString(2));
+				bioSaxsDataCollection.setBlSessionId(blSessionId);
+				samples.add(bioSaxsDataCollection);
 			}
 			rs.close();
 			stmt.close();
