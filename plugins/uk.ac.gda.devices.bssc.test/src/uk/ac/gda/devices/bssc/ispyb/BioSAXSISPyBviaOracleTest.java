@@ -17,7 +17,7 @@ public class BioSAXSISPyBviaOracleTest {
 	@BeforeClass
 	public static void setup() {
 		new BioSAXSDBFactory()
-				.setJdbcURL("jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb");
+				.setJdbcURL("jdbc:oracle:thin:@ws096.diamond.ac.uk:1521:ispyb");
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 
 	}
@@ -37,7 +37,7 @@ public class BioSAXSISPyBviaOracleTest {
 		long blSessionId;
 		
 		try {
-			visit = "cm4977-1";
+			visit = "mx9426-2";
 			blSessionId = bioSAXSISPyB.getSessionForVisit(visit);
 			
 			List<ISAXSDataCollection> progressList = bioSAXSISPyB

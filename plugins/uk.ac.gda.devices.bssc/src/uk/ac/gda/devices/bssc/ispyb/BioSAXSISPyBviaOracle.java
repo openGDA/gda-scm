@@ -52,6 +52,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	Connection conn = null;
 	String URL = null;
 	Map<Long, BioSAXSDataCollectionBean> collectionsMap = new HashMap<Long, BioSAXSDataCollectionBean>();
+	private int previousCollectionId;
 
 	public BioSAXSISPyBviaOracle(String mode) {
 		URL = mode;
@@ -642,16 +643,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			ResultSet rs = stmt.getResultSet();
 			while (rs.next()) {
 				long experimentId = rs.getLong(1);
-				if (collectionsMap.containsKey(experimentId)) {
-					samples.add(collectionsMap.get(experimentId));
-				}
-				else {
-					BioSAXSDataCollectionBean bioSaxsDataCollection = new BioSAXSDataCollectionBean();
-					bioSaxsDataCollection.setExperimentId(experimentId);
-					bioSaxsDataCollection.setSampleName(rs.getString(2));
-					bioSaxsDataCollection.setBlSessionId(blSessionId);
-					samples.add(bioSaxsDataCollection);
-				}
+				retrieveCollectionInfoIfNecessary(dataCollectionId);
+				samples.add(collectionsMap.get(experimentId));
 
 			}
 			rs.close();
@@ -768,6 +761,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
 		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
 		createMeasurementToDataCollection(saxsDataCollectionId, bufferAfterMeasurementId);
+		BioSAXSDataCollectionBean bean = new BioSAXSDataCollectionBean();
+		bean.setBlSessionId(blsessionId);
+		bean.setExperimentId(experimentID);
+		bean.setId(saxsDataCollectionId);
+		bean.setBufferBeforeMeasurementId(bufferBeforeMeasurementId);
+		bean.setBufferAfterMeasurementId(bufferAfterMeasurementId);
+		collectionsMap.put(saxsDataCollectionId, bean);
 		return saxsDataCollectionId;
 	}
 
@@ -852,14 +852,15 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
-		// TODO Auto-generated method stub
-		
+		retrieveCollectionInfoIfNecessary(dataCollectionId);
+		collectionsMap.get(dataCollectionId).setCollectionStatus(status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		retrieveCollectionInfoIfNecessary(dataCollectionId);
+		return collectionsMap.get(dataCollectionId).getCollectionStatus();
+
 	}
 
 	@Override
@@ -871,14 +872,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		
+		retrieveCollectionInfoIfNecessary(dataCollectionId);
+		collectionsMap.get(dataCollectionId).setReductionStatus(status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataReductionStatus(long dataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		retrieveCollectionInfoIfNecessary(dataCollectionId);
+		return collectionsMap.get(dataCollectionId).getReductionStatus();
 	}
 
 	@Override
@@ -890,19 +891,45 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
 			throws SQLException {
-		// TODO Auto-generated method stub
-		
+		retrieveCollectionInfoIfNecessary(dataCollectionId);
+		collectionsMap.get(dataCollectionId).setAnalysisStatus(status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataAnalysisStatus(long dataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		retrieveCollectionInfoIfNecessary(dataCollectionId);
+		return collectionsMap.get(dataCollectionId).getAnalysisStatus();
 	}
 
 	@Override
 	public int getPreviousCollectionId(long dataCollectionId) {
-		// TODO Auto-generated method stub
-		return 0;
+		return previousCollectionId;
+	}
+	
+	private boolean collectionsMapHasDataCollection(long dataCollectionId) {
+		return collectionsMap.containsKey(dataCollectionId);
+	}
+	
+	/**
+	 * Retrieve data collection status and place in collectionsMap
+	 * @param dataCollectionId
+	 */
+	private void retrieveCollectionInfoIfNecessary(long dataCollectionId) {
+		if (collectionsMapHasDataCollection(dataCollectionId)) {
+			BioSAXSDataCollectionBean bioSaxsDataCollection = new BioSAXSDataCollectionBean();
+			//first set up the basic information in the bean
+			bioSaxsDataCollection.setExperimentId(experimentId);
+			bioSaxsDataCollection.setSampleName(rs.getString(2));
+			bioSaxsDataCollection.setBlSessionId(blSessionId);
+			bioSaxsDataCollection.setVisit();
+			bioSaxsDataCollection.setId(dataCollectionId);
+			bioSaxsDataCollection.setBufferBeforeMeasurementId(bufferBeforeMeasurementId);
+			bioSaxsDataCollection.setBufferAfterMeasurementId(bufferAfterMeasurementId);
+			//then get status information
+			bioSaxsDataCollection.setCollectionStatus(collectionStatus);
+			bioSaxsDataCollection.setReductionStatus(reductionStatus);
+			bioSaxsDataCollection.setAnalysisStatus(analysisStatus);
+			collectionsMap.put(dataCollectionId, bioSaxsDataCollection);
+		}
 	}
 }
