@@ -47,7 +47,7 @@ public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 		folderLayout.addView("uk.ac.gda.client.CommandQueueViewFactory");
 		// TODO Auto-generated method stub
 
-		layout.addView("uk.ac.gda.video.views.cameraview", IPageLayout.LEFT, 0.25f, IPageLayout.ID_EDITOR_AREA);
+		layout.addView("uk.ac.gda.devices.bssc.views.CapillaryView", IPageLayout.LEFT, 0.25f, IPageLayout.ID_EDITOR_AREA);
 		// layout.addView("uk.ac.gda.devices.bssc.3DPlotView", IPageLayout.TOP, 0.45f, IPageLayout.ID_EDITOR_AREA);
 		layout.addView("uk.ac.gda.client.ncd.saxsview", IPageLayout.BOTTOM, 0.25f, "uk.ac.gda.video.views.cameraview");
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
