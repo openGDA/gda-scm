@@ -123,7 +123,7 @@ public class BioSAXSScriptTest {
 			assertEquals(failedSampleRunStatusInfo.getMessage(),
 					ispyBStatusInfo.getMessage());
 
-			// create a buffer after entry ISpyB
+			// create a buffer after entry in ISpyB
 			long bufferAfter1 = bioSAXSISPyB.createBufferRun(dataCollectionId1,
 					1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 					1.0, 1.0, "/dls/b21/data/2013/sm999-9/b21-9992.nxs",
@@ -185,7 +185,10 @@ public class BioSAXSScriptTest {
 					ispyBStatusInfo.getMessage());
 
 			// create a data collection that uses the same buffer before as the
-			// buffer after from the previous collection
+			// buffer after from the previous collection, not sure how we can assert here
+			// perhaps this needs to be tested within BioSAXSISpyBviaOracleTest 
+			// to assert that the buffer after measurement used in the previous data collection 
+			// matches the buffer before measurement of the current data collection
 			bioSAXSISPyB.createSaxsDataCollectionUsingPreviousBuffer(
 					experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
 					(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
