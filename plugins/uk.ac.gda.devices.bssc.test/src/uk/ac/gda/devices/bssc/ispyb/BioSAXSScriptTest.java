@@ -18,7 +18,7 @@ public class BioSAXSScriptTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		bioSAXSISPyB = new MyBioSAXSISPyB();
+		bioSAXSISPyB = new MockBioSAXSISPyB();
 	}
 
 	@Test
