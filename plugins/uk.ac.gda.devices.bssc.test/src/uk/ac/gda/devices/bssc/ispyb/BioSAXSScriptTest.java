@@ -22,11 +22,11 @@ public class BioSAXSScriptTest {
 	}
 
 	@Test
-	public void testBBSCScript() {
+	public void testBBSCScript() throws SQLException {
 		String visit = "nt20-12";
 
 		long blsessionId;
-		try {
+		
 			blsessionId = bioSAXSISPyB.getSessionForVisit(visit);
 
 			// create an EXPERIMENT in ISpyB
@@ -45,6 +45,7 @@ public class BioSAXSScriptTest {
 			expectedStatusInfo.setProgress(0);
 			expectedStatusInfo.setFileName("");
 			expectedStatusInfo.setMessage("");
+			
 			ISpyBStatusInfo ispyBStatusInfo = bioSAXSISPyB
 					.getDataCollectionStatus(dataCollectionId1);
 			assertEquals(expectedStatusInfo.getStatus(),
@@ -62,6 +63,7 @@ public class BioSAXSScriptTest {
 					1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 					"/dls/b21/data/2013/sm999-9/b21-9990.nxs",
 					"/entry1/detector/data");
+			
 			// Assert status values are as expected
 			ISpyBStatusInfo expectedBufferBeforeRunStatusInfo = new ISpyBStatusInfo();
 			expectedBufferBeforeRunStatusInfo.setStatus(ISpyBStatus.RUNNING);
@@ -130,7 +132,7 @@ public class BioSAXSScriptTest {
 					"/entry1/detector/data");
 			// Assert status values are as expected
 			ISpyBStatusInfo expectedBufferAfterRunStatusInfo = new ISpyBStatusInfo();
-			expectedBufferAfterRunStatusInfo.setStatus(ISpyBStatus.RUNNING);
+			expectedBufferAfterRunStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 			expectedBufferAfterRunStatusInfo.setProgress(100);
 			expectedBufferAfterRunStatusInfo.setFileName("/dls/b21/data/2013/sm999-9/b21-9992.nxs");
 			expectedBufferAfterRunStatusInfo.setMessage("");
@@ -149,6 +151,8 @@ public class BioSAXSScriptTest {
 			// create a data reduction entry in ISpyB
 			long reductionId = bioSAXSISPyB
 					.createDataReduction(dataCollectionId1);
+			// FIXME: check reduction status before as well
+			// FIXME: how does ISPyB know about the reduction file name?
 			ISpyBStatusInfo expectedReductionStatusInfo = new ISpyBStatusInfo();
 			expectedReductionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 			expectedReductionStatusInfo.setProgress(100);
@@ -168,6 +172,7 @@ public class BioSAXSScriptTest {
 			// create an analysis entry in ISpyB
 			long analysisId = bioSAXSISPyB
 					.createDataAnalysis(dataCollectionId1);
+			// FIXME: how is the file set?
 			ispyBStatusInfo = bioSAXSISPyB
 					.getDataAnalysisStatus(dataCollectionId1);
 			ISpyBStatusInfo expectedAnalysisStatusInfo = new ISpyBStatusInfo();
@@ -193,9 +198,5 @@ public class BioSAXSScriptTest {
 					experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
 					(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 					10.0, "viscosity", dataCollectionId1);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 }
