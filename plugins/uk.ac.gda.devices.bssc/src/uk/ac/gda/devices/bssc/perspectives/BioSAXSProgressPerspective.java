@@ -27,8 +27,8 @@ public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
 		layout.setEditorAreaVisible(false);
-		layout.addView("uk.ac.gda.devices.bssc.biosaxscapillaryview", IPageLayout.LEFT, 0.25f, IPageLayout.ID_EDITOR_AREA);
-		layout.addView("uk.ac.gda.client.ncd.saxsview", IPageLayout.BOTTOM, 0.25f, "uk.ac.gda.devices.bssc.biosaxscapillaryview");
+		layout.addView("uk.ac.gda.video.views.cameraview", IPageLayout.LEFT, 0.25f, IPageLayout.ID_EDITOR_AREA);
+		layout.addView("uk.ac.gda.client.ncd.saxsview", IPageLayout.BOTTOM, 0.25f, "uk.ac.gda.video.views.cameraview");
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
 	}
