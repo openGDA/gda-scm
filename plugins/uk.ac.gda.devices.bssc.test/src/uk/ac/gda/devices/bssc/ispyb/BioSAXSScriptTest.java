@@ -24,179 +24,407 @@ public class BioSAXSScriptTest {
 	@Test
 	public void testBBSCScript() throws SQLException {
 		String visit = "nt20-12";
+		int experimentCount = 0;
+		int dataCollectionCount = 0;
 
 		long blsessionId;
+
+		blsessionId = bioSAXSISPyB.getSessionForVisit(visit);
+
+		// create an EXPERIMENT in ISpyB
+		long experimentId = bioSAXSISPyB.createExperiment(blsessionId, "test",
+				"TEMPLATE", "test");
+		experimentCount++;
+
+		// ********* Test data collection successful ************************
+		// create a SAXSDATACOLLECTION in ISpyB
+		long dataCollectionId1 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
+		dataCollectionCount++;
+
+		// Check status values are correct on data collection creation
+		ISpyBStatusInfo expectedCollectionStatusInfo = new ISpyBStatusInfo();
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
+		expectedCollectionStatusInfo.setProgress(0);
+		expectedCollectionStatusInfo.setMessage("");
+
+		ISpyBStatusInfo ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId1);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Create buffer before run
+		long bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId1,
+				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				1.0, "/dls/b21/data/2013/sm999-9/b21-1.nxs",
+				"/entry1/detector/data");
+
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
+		expectedCollectionStatusInfo.setProgress(33);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-1.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId1);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().size(),
+				ispyBStatusInfo.getFileNames().size());
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Create sample run
+		long sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId1, 1.0,
+				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-9991.nxs",
+				"/entry1/detector/data");
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
+		expectedCollectionStatusInfo.setProgress(66);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-2.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId1);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().size(),
+				ispyBStatusInfo.getFileNames().size());
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(1),
+				ispyBStatusInfo.getFileNames().get(1));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// create a buffer after entry in ISpyB
+		long bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId1,
+				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				1.0, "/dls/b21/data/2013/sm999-9/b21-3.nxs",
+				"/entry1/detector/data");
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
+		expectedCollectionStatusInfo.setProgress(100);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-3.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId1);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(2),
+				ispyBStatusInfo.getFileNames().get(2));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Reduction
+		ISpyBStatusInfo expectedReductionStatusInfo = new ISpyBStatusInfo();
+		expectedReductionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
+		expectedReductionStatusInfo.setProgress(0);
+		expectedReductionStatusInfo.setMessage("");
+		ispyBStatusInfo = bioSAXSISPyB.getDataReductionStatus(dataCollectionId1);
+		assertEquals(expectedReductionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedReductionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedReductionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+		// create a data reduction entry in ISpyB
+		long reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId1);
+		// FIXME: check reduction status before as well
+		// FIXME: how does ISPyB know about the reduction file name?
+		expectedReductionStatusInfo = new ISpyBStatusInfo();
+		expectedReductionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
+		expectedReductionStatusInfo.setProgress(100);
+		expectedReductionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-4.nxs");
+		expectedReductionStatusInfo.setMessage("");
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataReductionStatus(dataCollectionId1);
+		assertEquals(expectedReductionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedReductionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedReductionStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedReductionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Analysis
+		ISpyBStatusInfo expectedAnalysisStatusInfo = new ISpyBStatusInfo();
+		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
+		expectedAnalysisStatusInfo.setProgress(0);
+		expectedAnalysisStatusInfo.setMessage("");
+		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId1);
+		assertEquals(expectedAnalysisStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedAnalysisStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedAnalysisStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+		// create an analysis entry in ISpyB
+		long analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId1);
+		// FIXME: how is the file set?
+		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
+		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
+		expectedAnalysisStatusInfo.setProgress(100);
+		expectedAnalysisStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-5.nxs");
+		expectedAnalysisStatusInfo.setMessage("");
+		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId1);
+		assertEquals(expectedAnalysisStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedAnalysisStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedAnalysisStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedAnalysisStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Test data collection failed
+		// create a 2nd SAXSDATACOLLECTION in ISpyB
+		long dataCollectionId2 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
+		dataCollectionCount++;
+
+		expectedCollectionStatusInfo = new ISpyBStatusInfo();
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
+		expectedCollectionStatusInfo.setProgress(0);
+		expectedCollectionStatusInfo.setMessage("");
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId2);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Create buffer before run
+		bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId2, 1.0,
+				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-6.nxs",
+				"/entry1/detector/data");
+
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
+		expectedCollectionStatusInfo.setProgress(33);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-6.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId2);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId1, 1.0, 20.0f,
+				20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-7.nxs",
+				"/entry1/detector/data");
+
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.FAILED);
+		expectedCollectionStatusInfo.setProgress(0);
+		expectedCollectionStatusInfo.addFileName("");
+		expectedCollectionStatusInfo.setMessage("");
+		bioSAXSISPyB.setDataCollectionStatus(dataCollectionId2,
+				expectedCollectionStatusInfo);
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId1);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Test data reduction failed
+		long dataCollectionId3 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
+		dataCollectionCount++;
+
+		// Check status values are correct on data collection creation
+		expectedCollectionStatusInfo = new ISpyBStatusInfo();
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
+		expectedCollectionStatusInfo.setProgress(0);
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId1);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Create buffer before run
+		bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId3,
+				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				1.0, "/dls/b21/data/2013/sm999-9/b21-8.nxs",
+				"/entry1/detector/data");
+
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
+		expectedCollectionStatusInfo.setProgress(33);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-8.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId1);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().size(),
+				ispyBStatusInfo.getFileNames().size());
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Create sample run
+		sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId3, 1.0,
+				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-9.nxs",
+				"/entry1/detector/data");
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
+		expectedCollectionStatusInfo.setProgress(66);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-9.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId3);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().size(),
+				ispyBStatusInfo.getFileNames().size());
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(1),
+				ispyBStatusInfo.getFileNames().get(1));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// create a buffer after entry in ISpyB
+		bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId3,
+				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				1.0, "/dls/b21/data/2013/sm999-9/b21-10.nxs",
+				"/entry1/detector/data");
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
+		expectedCollectionStatusInfo.setProgress(100);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-10.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId3);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(2),
+				ispyBStatusInfo.getFileNames().get(2));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Reduction
+		expectedReductionStatusInfo = new ISpyBStatusInfo();
+		expectedReductionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
+		expectedReductionStatusInfo.setProgress(0);
+		expectedReductionStatusInfo.setMessage("");
+		ispyBStatusInfo = bioSAXSISPyB.getDataReductionStatus(dataCollectionId3);
+		assertEquals(expectedReductionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedReductionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedReductionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+		// create a data reduction entry in ISpyB
+		reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId3);
+		// FIXME: check reduction status before as well
+		// FIXME: how does ISPyB know about the reduction file name?
+		expectedReductionStatusInfo = new ISpyBStatusInfo();
+		expectedReductionStatusInfo.setStatus(ISpyBStatus.FAILED);
+		expectedReductionStatusInfo.setProgress(0);
+		expectedReductionStatusInfo
+				.addFileName("");
+		expectedReductionStatusInfo.setMessage("");
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataReductionStatus(dataCollectionId1);
+		assertEquals(expectedReductionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedReductionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedReductionStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedReductionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
 		
-			blsessionId = bioSAXSISPyB.getSessionForVisit(visit);
+		// Test data collections have been added to the database
+		List<ISAXSDataCollection> iSAXSDataCollections = bioSAXSISPyB
+				.getSAXSDataCollections(blsessionId);
+		assertEquals(dataCollectionCount, iSAXSDataCollections.size());
+		assertEquals(dataCollectionId1, iSAXSDataCollections.get(0).getId());
+		assertEquals(dataCollectionId2, iSAXSDataCollections.get(1).getId());
 
-			// create an EXPERIMENT in ISpyB
-			long experimentId = bioSAXSISPyB.createExperiment(blsessionId,
-					"test", "TEMPLATE", "test");
+		// Test correct experiment ids are returned for a session
+		List<Long> experimentIds = bioSAXSISPyB
+				.getExperimentsForSession(blsessionId);
+		assertEquals(experimentCount, experimentIds.size());
+		assertEquals(experimentId, experimentIds.get(0), 0.0);
 
-			// create a SAXSDATACOLLECTION in ISpyB
-			long dataCollectionId1 = bioSAXSISPyB.createSaxsDataCollection(
-					experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
-					(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
-					10.0, "viscosity");
+		// Text correct data collectionIds are returned for an experiment
+		List<Long> dataCollectionIds = bioSAXSISPyB
+				.getDataCollectionsForExperiments(experimentId);
+		assertEquals(dataCollectionCount, dataCollectionIds.size());
+		assertEquals(dataCollectionId1, dataCollectionIds.get(0).longValue());
+		assertEquals(dataCollectionId2, dataCollectionIds.get(1).longValue());
 
-			// Test status values are correct on data collection creation
-			ISpyBStatusInfo expectedStatusInfo = new ISpyBStatusInfo();
-			expectedStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
-			expectedStatusInfo.setProgress(0);
-			expectedStatusInfo.setFileName("");
-			expectedStatusInfo.setMessage("");
-			
-			ISpyBStatusInfo ispyBStatusInfo = bioSAXSISPyB
-					.getDataCollectionStatus(dataCollectionId1);
-			assertEquals(expectedStatusInfo.getStatus(),
-					ispyBStatusInfo.getStatus());
-			assertEquals(expectedStatusInfo.getProgress(),
-					ispyBStatusInfo.getProgress(), 0.0);
-			assertEquals(expectedStatusInfo.getFileName(),
-					ispyBStatusInfo.getFileName());
-			assertEquals(expectedStatusInfo.getMessage(),
-					ispyBStatusInfo.getMessage());
-
-			// Test create buffer before run
-			long bufferBeforeId = bioSAXSISPyB.createBufferRun(
-					dataCollectionId1, 1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0,
-					1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-					"/dls/b21/data/2013/sm999-9/b21-9990.nxs",
-					"/entry1/detector/data");
-			
-			// Assert status values are as expected
-			ISpyBStatusInfo expectedBufferBeforeRunStatusInfo = new ISpyBStatusInfo();
-			expectedBufferBeforeRunStatusInfo.setStatus(ISpyBStatus.RUNNING);
-			expectedBufferBeforeRunStatusInfo.setProgress(33);
-			expectedBufferBeforeRunStatusInfo.setFileName("/dls/b21/data/2013/sm999-9/b21-9990.nxs");
-			expectedBufferBeforeRunStatusInfo.setMessage("");
-			
-			ispyBStatusInfo = bioSAXSISPyB
-					.getDataCollectionStatus(dataCollectionId1);
-			assertEquals(expectedBufferBeforeRunStatusInfo.getStatus(),
-					ispyBStatusInfo.getStatus());
-			assertEquals(expectedBufferBeforeRunStatusInfo.getProgress(),
-					ispyBStatusInfo.getProgress(), 0.0);
-			assertEquals(expectedBufferBeforeRunStatusInfo.getFileName(),
-					ispyBStatusInfo.getFileName());
-			assertEquals(expectedBufferBeforeRunStatusInfo.getMessage(),
-					ispyBStatusInfo.getMessage());
-
-			// Test create sample run
-			long sample1 = bioSAXSISPyB.createSampleRun(dataCollectionId1, 1.0,
-					20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-					1.0, "/dls/b21/data/2013/sm999-9/b21-9991.nxs",
-					"/entry1/detector/data");
-			// Assert status values are as expected
-			ISpyBStatusInfo expectedSampleRunStatusInfo = new ISpyBStatusInfo();
-			expectedSampleRunStatusInfo.setStatus(ISpyBStatus.RUNNING);
-			expectedSampleRunStatusInfo.setProgress(66);
-			expectedSampleRunStatusInfo.setFileName("/dls/b21/data/2013/sm999-9/b21-9991.nxs");
-			expectedSampleRunStatusInfo.setMessage("");
-			
-			ispyBStatusInfo = bioSAXSISPyB
-					.getDataCollectionStatus(dataCollectionId1);
-			assertEquals(expectedSampleRunStatusInfo.getStatus(),
-					ispyBStatusInfo.getStatus());
-			assertEquals(expectedSampleRunStatusInfo.getProgress(),
-					ispyBStatusInfo.getProgress(), 0.0);
-			assertEquals(expectedSampleRunStatusInfo.getFileName(),
-					ispyBStatusInfo.getFileName());
-			assertEquals(expectedSampleRunStatusInfo.getMessage(),
-					ispyBStatusInfo.getMessage());
-
-			// Test if sample run failed
-			ISpyBStatusInfo failedSampleRunStatusInfo = new ISpyBStatusInfo();
-			failedSampleRunStatusInfo.setStatus(ISpyBStatus.FAILED);
-			failedSampleRunStatusInfo.setProgress(0);
-			failedSampleRunStatusInfo.setMessage("Sample " + dataCollectionId1
-					+ "run failed");
-			failedSampleRunStatusInfo.setFileName("");
-			bioSAXSISPyB.setDataCollectionStatus(dataCollectionId1,
-					failedSampleRunStatusInfo);
-			ispyBStatusInfo = bioSAXSISPyB
-					.getDataCollectionStatus(dataCollectionId1);
-			assertEquals(failedSampleRunStatusInfo.getStatus(),
-					ispyBStatusInfo.getStatus());
-			assertEquals(failedSampleRunStatusInfo.getProgress(),
-					ispyBStatusInfo.getProgress(), 0.0);
-			assertEquals(failedSampleRunStatusInfo.getFileName(),
-					ispyBStatusInfo.getFileName());
-			assertEquals(failedSampleRunStatusInfo.getMessage(),
-					ispyBStatusInfo.getMessage());
-
-			// create a buffer after entry in ISpyB
-			long bufferAfter1 = bioSAXSISPyB.createBufferRun(dataCollectionId1,
-					1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-					1.0, 1.0, "/dls/b21/data/2013/sm999-9/b21-9992.nxs",
-					"/entry1/detector/data");
-			// Assert status values are as expected
-			ISpyBStatusInfo expectedBufferAfterRunStatusInfo = new ISpyBStatusInfo();
-			expectedBufferAfterRunStatusInfo.setStatus(ISpyBStatus.COMPLETE);
-			expectedBufferAfterRunStatusInfo.setProgress(100);
-			expectedBufferAfterRunStatusInfo.setFileName("/dls/b21/data/2013/sm999-9/b21-9992.nxs");
-			expectedBufferAfterRunStatusInfo.setMessage("");
-			
-			ispyBStatusInfo = bioSAXSISPyB
-					.getDataCollectionStatus(dataCollectionId1);
-			assertEquals(expectedBufferAfterRunStatusInfo.getStatus(),
-					ispyBStatusInfo.getStatus());
-			assertEquals(expectedBufferAfterRunStatusInfo.getProgress(),
-					ispyBStatusInfo.getProgress(), 0.0);
-			assertEquals(expectedBufferAfterRunStatusInfo.getFileName(),
-					ispyBStatusInfo.getFileName());
-			assertEquals(expectedBufferAfterRunStatusInfo.getMessage(),
-					ispyBStatusInfo.getMessage());
-
-			// create a data reduction entry in ISpyB
-			long reductionId = bioSAXSISPyB
-					.createDataReduction(dataCollectionId1);
-			// FIXME: check reduction status before as well
-			// FIXME: how does ISPyB know about the reduction file name?
-			ISpyBStatusInfo expectedReductionStatusInfo = new ISpyBStatusInfo();
-			expectedReductionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
-			expectedReductionStatusInfo.setProgress(100);
-			expectedReductionStatusInfo.setFileName("/dls/b21/data/2013/sm999-9/b21-9993.nxs");
-			expectedReductionStatusInfo.setMessage("");
-			ispyBStatusInfo = bioSAXSISPyB
-					.getDataReductionStatus(dataCollectionId1);
-			assertEquals(expectedReductionStatusInfo.getStatus(),
-					ispyBStatusInfo.getStatus());
-			assertEquals(expectedReductionStatusInfo.getProgress(),
-					ispyBStatusInfo.getProgress(), 0.0);
-			assertEquals(expectedReductionStatusInfo.getFileName(),
-					ispyBStatusInfo.getFileName());
-			assertEquals(expectedReductionStatusInfo.getMessage(),
-					ispyBStatusInfo.getMessage());
-
-			// create an analysis entry in ISpyB
-			long analysisId = bioSAXSISPyB
-					.createDataAnalysis(dataCollectionId1);
-			// FIXME: how is the file set?
-			ispyBStatusInfo = bioSAXSISPyB
-					.getDataAnalysisStatus(dataCollectionId1);
-			ISpyBStatusInfo expectedAnalysisStatusInfo = new ISpyBStatusInfo();
-			expectedAnalysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
-			expectedAnalysisStatusInfo.setProgress(100);
-			expectedAnalysisStatusInfo.setFileName("/dls/b21/data/2013/sm999-9/b21-9994.nxs");
-			expectedAnalysisStatusInfo.setMessage("");
-			assertEquals(expectedAnalysisStatusInfo.getStatus(),
-					ispyBStatusInfo.getStatus());
-			assertEquals(expectedAnalysisStatusInfo.getProgress(),
-					ispyBStatusInfo.getProgress(), 0.0);
-			assertEquals(expectedAnalysisStatusInfo.getFileName(),
-					ispyBStatusInfo.getFileName());
-			assertEquals(expectedAnalysisStatusInfo.getMessage(),
-					ispyBStatusInfo.getMessage());
-
-			// create a data collection that uses the same buffer before as the
-			// buffer after from the previous collection, not sure how we can assert here
-			// perhaps this needs to be tested within BioSAXSISpyBviaOracleTest 
-			// to assert that the buffer after measurement used in the previous data collection 
-			// matches the buffer before measurement of the current data collection
-			bioSAXSISPyB.createSaxsDataCollectionUsingPreviousBuffer(
-					experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
-					(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
-					10.0, "viscosity", dataCollectionId1);
+		// create a data collection that uses the same buffer before as the
+		// buffer after from the previous collection, not sure how we can assert
+		// here
+		// perhaps this needs to be tested within BioSAXSISpyBviaOracleTest
+		// to assert that the buffer after measurement used in the previous data
+		// collection
+		// matches the buffer before measurement of the current data collection
+		bioSAXSISPyB.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
+				(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
+				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
+				"viscosity", dataCollectionId1);
 	}
 }
