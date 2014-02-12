@@ -134,15 +134,14 @@ public class BioSAXSISPyBTest {
 		ISpyBStatusInfo reductionStatusComplete = new ISpyBStatusInfo();
 		reductionStatusComplete.setStatus(ISpyBStatus.COMPLETE);
 		reductionStatusComplete.setProgress(100);
-		long subtractionId = bioSAXSISPyB.createDataReduction(collection1);
-
+		String reductionFileName = "/dls/b21/data/2013/sm999-9/b21-9993.nxs";
+		long subtractionId = bioSAXSISPyB.createDataReduction(collection1, reductionFileName);
 		assertEquals(bioSAXSISPyB.getDataReductionStatus(collection1)
 				.getStatus(), ISpyBStatus.RUNNING);
 
 		// test data reduction completed
 		bioSAXSISPyB.setDataReductionStatus(collection3,
-				reductionStatusComplete,
-				"/dls/b21/data/2013/sm999-9/b21-9993.nxs");
+				reductionStatusComplete);
 
 		ISpyBStatusInfo iSpyBReductionDetails = bioSAXSISPyB
 				.getDataReductionStatus(collection1);
@@ -155,8 +154,7 @@ public class BioSAXSISPyBTest {
 		ISpyBStatusInfo reductionStatusFailed = new ISpyBStatusInfo();
 		reductionStatusFailed.setStatus(ISpyBStatus.FAILED);
 		reductionStatusFailed.setProgress(0);
-		bioSAXSISPyB.setDataReductionStatus(collection1, reductionStatusFailed,
-				"");
+		bioSAXSISPyB.setDataReductionStatus(collection1, reductionStatusFailed);
 
 		ISpyBStatusInfo iSpyBReductionDetails2 = bioSAXSISPyB
 				.getDataReductionStatus(collection1);
@@ -166,7 +164,8 @@ public class BioSAXSISPyBTest {
 		// start data analysis and assert it is in the running state
 		ISpyBStatusInfo analysisStatusInfo = new ISpyBStatusInfo();
 		analysisStatusInfo.setStatus(ISpyBStatus.RUNNING);
-		long analysisId = bioSAXSISPyB.createDataAnalysis(collection1);
+		String analysisFileName = "/dls/b21/data/2013/sm999-9/b21-9994.nxs";
+		long analysisId = bioSAXSISPyB.createDataAnalysis(collection1, analysisFileName);
 		ISpyBStatusInfo iSpyBAnalysisStatusInfo = bioSAXSISPyB
 				.getDataAnalysisStatus(collection1);
 		assertEquals(analysisStatusInfo.getStatus(),
@@ -175,8 +174,7 @@ public class BioSAXSISPyBTest {
 		// test data analysis completed
 		ISpyBStatusInfo analysisStatusInfo1 = new ISpyBStatusInfo();
 		analysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
-		bioSAXSISPyB.setDataAnalysisStatus(collection1, analysisStatusInfo1,
-				"/dls/b21/data/2013/sm999-9/b21-9994.nxs");
+		bioSAXSISPyB.setDataAnalysisStatus(collection1, analysisStatusInfo1);
 
 		ISpyBStatusInfo iSpyBAnalysisInfo1 = bioSAXSISPyB
 				.getDataAnalysisStatus(collection1);
@@ -190,7 +188,7 @@ public class BioSAXSISPyBTest {
 		ISpyBStatusInfo analysisStatusInfo2 = new ISpyBStatusInfo();
 		analysisStatusInfo2.setStatus(ISpyBStatus.FAILED);
 		bioSAXSISPyB
-				.setDataAnalysisStatus(collection1, analysisStatusInfo2, "");
+				.setDataAnalysisStatus(collection1, analysisStatusInfo2);
 
 		ISpyBStatusInfo iSpyBAnalysisInfo2 = bioSAXSISPyB
 				.getDataAnalysisStatus(collection1);
