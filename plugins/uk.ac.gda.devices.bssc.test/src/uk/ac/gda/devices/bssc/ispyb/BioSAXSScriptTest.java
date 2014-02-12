@@ -148,8 +148,14 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getMessage());
 		// create a data reduction entry in ISpyB
 		long reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId1);
-		// FIXME: check reduction status before as well
-		// FIXME: how does ISPyB know about the reduction file name?
+
+		// Set the reduction status upon successful completion
+		ISpyBStatusInfo reductionStatus = new ISpyBStatusInfo();
+		reductionStatus.setStatus(ISpyBStatus.COMPLETE);
+		reductionStatus.setProgress(100);
+		reductionStatus.addFileName("/dls/b21/data/2013/sm999-9/b21-4.nxs");
+		reductionStatus.setMessage("");
+		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, reductionStatus);
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
 		expectedReductionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedReductionStatusInfo.setProgress(100);
@@ -181,7 +187,14 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getMessage());
 		// create an analysis entry in ISpyB
 		long analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId1);
-		// FIXME: how is the file set?
+		// Set the analysis status upon successful completion
+		ISpyBStatusInfo analysisStatus = new ISpyBStatusInfo();
+		analysisStatus.setStatus(ISpyBStatus.COMPLETE);
+		analysisStatus.setProgress(100);
+		analysisStatus.addFileName("/dls/b21/data/2013/sm999-9/b21-5.nxs");
+		analysisStatus.setMessage("");
+		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, analysisStatus);
+
 		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
 		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedAnalysisStatusInfo.setProgress(100);
@@ -380,10 +393,16 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getProgress(), 0.0);
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
+
 		// create a data reduction entry in ISpyB
 		reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId3);
-		// FIXME: check reduction status before as well
-		// FIXME: how does ISPyB know about the reduction file name?
+		// if reduction fails set the status in ISpyB
+		reductionStatus = new ISpyBStatusInfo();
+		reductionStatus.setStatus(ISpyBStatus.FAILED);
+		reductionStatus.setProgress(0);
+		reductionStatus.setMessage("Data Reduction Failed for data collection "
+				+ dataCollectionId3);
+		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, reductionStatus);
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
 		expectedReductionStatusInfo.setStatus(ISpyBStatus.FAILED);
 		expectedReductionStatusInfo.setProgress(0);
@@ -512,8 +531,13 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getMessage());
 		// create a data reduction entry in ISpyB
 		reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId4);
-		// FIXME: check reduction status before as well
-		// FIXME: how does ISPyB know about the reduction file name?
+		// Set the reduction status upon successful completion
+		reductionStatus = new ISpyBStatusInfo();
+		reductionStatus.setStatus(ISpyBStatus.COMPLETE);
+		reductionStatus.setProgress(100);
+		reductionStatus.addFileName("/dls/b21/data/2013/sm999-9/b21-14.nxs");
+		reductionStatus.setMessage("");
+		bioSAXSISPyB.setDataReductionStatus(dataCollectionId4, reductionStatus);
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
 		expectedReductionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedReductionStatusInfo.setProgress(100);
@@ -545,12 +569,18 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getMessage());
 		// create an analysis entry in ISpyB
 		analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId4);
-		// FIXME: how is the file set?
+		// Set the analysis status FAILED
+		analysisStatus = new ISpyBStatusInfo();
+		analysisStatus.setStatus(ISpyBStatus.FAILED);
+		analysisStatus.setProgress(0);
+		analysisStatus.setMessage("Data Analysis Failed for data collection "
+				+ dataCollectionId4);
+		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, analysisStatus);
 		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
 		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.FAILED);
 		expectedAnalysisStatusInfo.setProgress(0);
 		expectedAnalysisStatusInfo
-				.setMessage("Data Analysis Failed for data collection "
+				.setMessage("Data Reduction Failed for data collection "
 						+ dataCollectionId4);
 		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId4);
 		assertEquals(expectedAnalysisStatusInfo.getStatus(),
@@ -576,7 +606,7 @@ public class BioSAXSScriptTest {
 		assertEquals(experimentCount, experimentIds.size());
 		assertEquals(experimentId, experimentIds.get(0), 0.0);
 
-		// Text correct data collectionIds are returned for an experiment
+		// Test correct data collectionIds are returned for an experiment
 		List<Long> dataCollectionIds = bioSAXSISPyB
 				.getDataCollectionsForExperiments(experimentId);
 		assertEquals(dataCollectionCount, dataCollectionIds.size());
@@ -585,6 +615,15 @@ public class BioSAXSScriptTest {
 		assertEquals(dataCollectionId3, dataCollectionIds.get(2).longValue());
 		assertEquals(dataCollectionId4, dataCollectionIds.get(3).longValue());
 
+		// Test getPreviousId
+		long previousCollectionId = bioSAXSISPyB.getPreviousCollectionId(dataCollectionId2);
+		assertEquals(dataCollectionId1, previousCollectionId);
+		
+		// Test the correct number of measurement files are returned for a SAXSDATACOLLECTION
+		List<SampleInfo> sampleInfoList = bioSAXSISPyB.getSaxsDataCollectionInfo(dataCollectionId1);
+		// data collection 1 ran successfully so it should contain 3 nexus files in the sampleInfo list
+		assertEquals(3, sampleInfoList.size());
+		
 		// create a data collection that uses the same buffer before as the
 		// buffer after from the previous collection, not sure how we can assert
 		// here
