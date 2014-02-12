@@ -550,7 +550,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		return experimentIds;	}
 
-	private long createDataReductionStarted(long dataCollectionId) throws SQLException {
+	@Override
+	public long createDataReduction(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
 
 		connectIfNotConnected();
@@ -939,12 +940,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		retrieveCollectionInfoIfNecessary(dataCollectionId);
 		return collectionsMap.get(dataCollectionId).getCollectionStatus();
 
-	}
-
-	@Override
-	public long createDataReduction(long dataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override
