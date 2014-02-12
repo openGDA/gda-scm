@@ -58,6 +58,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	String URL = null;
 	Map<Long, ISAXSDataCollection> collectionsMap = new HashMap<Long, ISAXSDataCollection>();
 	private int previousCollectionId;
+	long blsessionId;
 
 	public BioSAXSISPyBviaOracle(String mode) {
 		URL = mode;
@@ -441,12 +442,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public long createExperiment(long proposalId, String name, String experimentType, String comments)
+	public long createExperiment(long blsessionId, String name, String experimentType, String comments)
 			throws SQLException {
 		long experimentId = -1;
 
 		connectIfNotConnected();
 
+		this.blsessionId = blsessionId; //hold onto this information
+		long proposalId = getProposalFromSession(blsessionId);
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Experiment ("
 				+ "experimentId, proposalId, name, experimentType, comments) "
 				+ "VALUES (ispyb4a_db.s_Experiment.nextval, ?, ?, ?, ?) RETURNING experimentId INTO ?; END;";
