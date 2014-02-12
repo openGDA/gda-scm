@@ -594,6 +594,9 @@ public class BioSAXSScriptTest {
 		// Test data collections have been added to the database
 		List<ISAXSDataCollection> iSAXSDataCollections = bioSAXSISPyB
 				.getSAXSDataCollections(blsessionId);
+		//FIXME there will be more than the lasted collections on the visit
+		// so checking the size does not work. You can just check that the IDs are 
+		// in what is returned.
 		assertEquals(dataCollectionCount, iSAXSDataCollections.size());
 		assertEquals(dataCollectionId1, iSAXSDataCollections.get(0).getId());
 		assertEquals(dataCollectionId2, iSAXSDataCollections.get(1).getId());
@@ -601,12 +604,14 @@ public class BioSAXSScriptTest {
 		assertEquals(dataCollectionId4, iSAXSDataCollections.get(3).getId());
 
 		// Test correct experiment ids are returned for a session
+		// FIXME same here
 		List<Long> experimentIds = bioSAXSISPyB
 				.getExperimentsForSession(blsessionId);
 		assertEquals(experimentCount, experimentIds.size());
 		assertEquals(experimentId, experimentIds.get(0), 0.0);
 
 		// Test correct data collectionIds are returned for an experiment
+		//TODO check that Jun can preserve the ordering
 		List<Long> dataCollectionIds = bioSAXSISPyB
 				.getDataCollectionsForExperiments(experimentId);
 		assertEquals(dataCollectionCount, dataCollectionIds.size());
@@ -616,6 +621,8 @@ public class BioSAXSScriptTest {
 		assertEquals(dataCollectionId4, dataCollectionIds.get(3).longValue());
 
 		// Test getPreviousId
+		// TODO why do we need that call? What does "previous" mean?
+		// Previous added to the database or the last one that had data collected to it?
 		long previousCollectionId = bioSAXSISPyB.getPreviousCollectionId(dataCollectionId2);
 		assertEquals(dataCollectionId1, previousCollectionId);
 		
@@ -631,6 +638,7 @@ public class BioSAXSScriptTest {
 		// to assert that the buffer after measurement used in the previous data
 		// collection
 		// matches the buffer before measurement of the current data collection
+		// FIXME I would like that to be part of the complete checks
 		bioSAXSISPyB.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
 				(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
 				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
