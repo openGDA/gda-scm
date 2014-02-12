@@ -591,27 +591,122 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedAnalysisStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 
+		// ***************** Test a data collection which uses the same buffer
+		// as the previous collection
+		// create a data collection that uses the same buffer before as the
+		// buffer after from the previous collection, not sure how we can assert
+		long dataCollectionId5 = bioSAXSISPyB
+				.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
+						(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
+						(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
+						"viscosity", dataCollectionId4);
+
+		// Check status values are correct on data collection creation
+		expectedCollectionStatusInfo = new ISpyBStatusInfo();
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
+		expectedCollectionStatusInfo.setProgress(0);
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId3);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Create buffer before run
+		bufferBeforeId = bioSAXSISPyB
+				.createBufferRun(dataCollectionId4, 1.0, 20.0f, 20.0f, 10.0,
+						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+						"/dls/b21/data/2013/sm999-14/b21-8.nxs",
+						"/entry1/detector/data");
+
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
+		expectedCollectionStatusInfo.setProgress(33);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-15/b21-14.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId5);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().size(),
+				ispyBStatusInfo.getFileNames().size());
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(0),
+				ispyBStatusInfo.getFileNames().get(0));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// Create sample run
+		sampleId = bioSAXSISPyB
+				.createSampleRun(dataCollectionId5, 1.0, 20.0f, 20.0f, 10.0,
+						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+						"/dls/b21/data/2013/sm999-9/b21-15.nxs",
+						"/entry1/detector/data");
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
+		expectedCollectionStatusInfo.setProgress(66);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-15.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId5);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().size(),
+				ispyBStatusInfo.getFileNames().size());
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(1),
+				ispyBStatusInfo.getFileNames().get(1));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
+		// create a buffer after entry in ISpyB
+		bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId5, 1.0,
+				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-16.nxs",
+				"/entry1/detector/data");
+		// Assert status values are as expected
+		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
+		expectedCollectionStatusInfo.setProgress(100);
+		expectedCollectionStatusInfo
+				.addFileName("/dls/b21/data/2013/sm999-9/b21-16.nxs");
+		expectedCollectionStatusInfo.setMessage("");
+
+		ispyBStatusInfo = bioSAXSISPyB
+				.getDataCollectionStatus(dataCollectionId5);
+		assertEquals(expectedCollectionStatusInfo.getStatus(),
+				ispyBStatusInfo.getStatus());
+		assertEquals(expectedCollectionStatusInfo.getProgress(),
+				ispyBStatusInfo.getProgress(), 0.0);
+		assertEquals(expectedCollectionStatusInfo.getFileNames().get(2),
+				ispyBStatusInfo.getFileNames().get(2));
+		assertEquals(expectedCollectionStatusInfo.getMessage(),
+				ispyBStatusInfo.getMessage());
+
 		// Test data collections have been added to the database
 		List<ISAXSDataCollection> iSAXSDataCollections = bioSAXSISPyB
 				.getSAXSDataCollections(blsessionId);
-		//FIXME there will be more than the lasted collections on the visit
-		// so checking the size does not work. You can just check that the IDs are 
-		// in what is returned.
-		assertEquals(dataCollectionCount, iSAXSDataCollections.size());
 		assertEquals(dataCollectionId1, iSAXSDataCollections.get(0).getId());
 		assertEquals(dataCollectionId2, iSAXSDataCollections.get(1).getId());
 		assertEquals(dataCollectionId3, iSAXSDataCollections.get(2).getId());
 		assertEquals(dataCollectionId4, iSAXSDataCollections.get(3).getId());
 
 		// Test correct experiment ids are returned for a session
-		// FIXME same here
 		List<Long> experimentIds = bioSAXSISPyB
 				.getExperimentsForSession(blsessionId);
-		assertEquals(experimentCount, experimentIds.size());
 		assertEquals(experimentId, experimentIds.get(0), 0.0);
 
 		// Test correct data collectionIds are returned for an experiment
-		//TODO check that Jun can preserve the ordering
+		// TODO check that Jun can preserve the ordering
 		List<Long> dataCollectionIds = bioSAXSISPyB
 				.getDataCollectionsForExperiments(experimentId);
 		assertEquals(dataCollectionCount, dataCollectionIds.size());
@@ -622,26 +717,18 @@ public class BioSAXSScriptTest {
 
 		// Test getPreviousId
 		// TODO why do we need that call? What does "previous" mean?
-		// Previous added to the database or the last one that had data collected to it?
-		long previousCollectionId = bioSAXSISPyB.getPreviousCollectionId(dataCollectionId2);
+		// Previous added to the database or the last one that had data
+		// collected to it?
+		long previousCollectionId = bioSAXSISPyB
+				.getPreviousCollectionId(dataCollectionId2);
 		assertEquals(dataCollectionId1, previousCollectionId);
-		
-		// Test the correct number of measurement files are returned for a SAXSDATACOLLECTION
-		List<SampleInfo> sampleInfoList = bioSAXSISPyB.getSaxsDataCollectionInfo(dataCollectionId1);
-		// data collection 1 ran successfully so it should contain 3 nexus files in the sampleInfo list
+
+		// Test the correct number of measurement files are returned for a
+		// SAXSDATACOLLECTION
+		List<SampleInfo> sampleInfoList = bioSAXSISPyB
+				.getSaxsDataCollectionInfo(dataCollectionId1);
+		// data collection 1 ran successfully so it should contain 3 nexus files
+		// in the sampleInfo list
 		assertEquals(3, sampleInfoList.size());
-		
-		// create a data collection that uses the same buffer before as the
-		// buffer after from the previous collection, not sure how we can assert
-		// here
-		// perhaps this needs to be tested within BioSAXSISpyBviaOracleTest
-		// to assert that the buffer after measurement used in the previous data
-		// collection
-		// matches the buffer before measurement of the current data collection
-		// FIXME I would like that to be part of the complete checks
-		bioSAXSISPyB.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
-				(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
-				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
-				"viscosity", dataCollectionId1);
 	}
 }
