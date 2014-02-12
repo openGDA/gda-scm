@@ -134,8 +134,7 @@ public class BioSAXSISPyBTest {
 		ISpyBStatusInfo reductionStatusComplete = new ISpyBStatusInfo();
 		reductionStatusComplete.setStatus(ISpyBStatus.COMPLETE);
 		reductionStatusComplete.setProgress(100);
-		String reductionFileName = "/dls/b21/data/2013/sm999-9/b21-9993.nxs";
-		long subtractionId = bioSAXSISPyB.createDataReduction(collection1, reductionFileName);
+		long subtractionId = bioSAXSISPyB.createDataReduction(collection1);
 		assertEquals(bioSAXSISPyB.getDataReductionStatus(collection1)
 				.getStatus(), ISpyBStatus.RUNNING);
 
@@ -164,8 +163,7 @@ public class BioSAXSISPyBTest {
 		// start data analysis and assert it is in the running state
 		ISpyBStatusInfo analysisStatusInfo = new ISpyBStatusInfo();
 		analysisStatusInfo.setStatus(ISpyBStatus.RUNNING);
-		String analysisFileName = "/dls/b21/data/2013/sm999-9/b21-9994.nxs";
-		long analysisId = bioSAXSISPyB.createDataAnalysis(collection1, analysisFileName);
+		long analysisId = bioSAXSISPyB.createDataAnalysis(collection1);
 		ISpyBStatusInfo iSpyBAnalysisStatusInfo = bioSAXSISPyB
 				.getDataAnalysisStatus(collection1);
 		assertEquals(analysisStatusInfo.getStatus(),

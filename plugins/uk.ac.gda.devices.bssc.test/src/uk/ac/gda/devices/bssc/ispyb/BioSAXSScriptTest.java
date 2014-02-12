@@ -147,8 +147,7 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 		// create a data reduction entry in ISpyB
-		long reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId1,
-				"/dls/b21/data/2013/sm999-9/b21-4.nxs");
+		long reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId1);
 		// FIXME: check reduction status before as well
 		// FIXME: how does ISPyB know about the reduction file name?
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
@@ -181,8 +180,7 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedAnalysisStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 		// create an analysis entry in ISpyB
-		long analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId1,
-				"/dls/b21/data/2013/sm999-9/b21-5.nxs");
+		long analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId1);
 		// FIXME: how is the file set?
 		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
 		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
@@ -383,8 +381,7 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 		// create a data reduction entry in ISpyB
-		reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId3,
-				"/dls/b21/data/2013/sm999-9/b21-11.nxs");
+		reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId3);
 		// FIXME: check reduction status before as well
 		// FIXME: how does ISPyB know about the reduction file name?
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
@@ -514,8 +511,7 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 		// create a data reduction entry in ISpyB
-		reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId4,
-				"/dls/b21/data/2013/sm999-9/b21-14.nxs");
+		reductionId = bioSAXSISPyB.createDataReduction(dataCollectionId4);
 		// FIXME: check reduction status before as well
 		// FIXME: how does ISPyB know about the reduction file name?
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
@@ -548,8 +544,7 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedAnalysisStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 		// create an analysis entry in ISpyB
-		analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId4,
-				"/dls/b21/data/2013/sm999-9/b21-15.nxs");
+		analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId4);
 		// FIXME: how is the file set?
 		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
 		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.FAILED);
