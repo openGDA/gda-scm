@@ -833,7 +833,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity,
 			long previousDataCollectionId) throws SQLException {
 		long bufferBeforeMeasurementId;
-		long blsessionId = getBlSessionIdFromExperiment(experimentID);
 		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
 		if (previousDataCollectionId == INVALID_VALUE) {
 			bufferBeforeMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
