@@ -51,7 +51,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	Connection conn = null;
 	String URL = null;
-	Map<Long, BioSAXSDataCollectionBean> collectionsMap = new HashMap<Long, BioSAXSDataCollectionBean>();
+	Map<Long, ISAXSDataCollection> collectionsMap = new HashMap<Long, ISAXSDataCollection>();
 	private int previousCollectionId;
 
 	public BioSAXSISPyBviaOracle(String mode) {
@@ -501,8 +501,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return proposalId;
 	}
 
-	private long getDataCollectionForExperiment(long experimentId) throws SQLException {
-		long dataCollectionId = -1;
+	@Override
+	public List<Long> getDataCollectionsForExperiments(long experimentId) throws SQLException {
+		List<Long> dataCollectionIds = new ArrayList<Long>();
 
 		connectIfNotConnected();
 
@@ -513,14 +514,36 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		boolean success = stmt.execute();
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
-			if (rs.next())
-				dataCollectionId = rs.getLong(1);
+			while (rs.next())
+				dataCollectionIds.add(rs.getLong(1));
 			rs.close();
 		}
 		stmt.close();
 
-		return dataCollectionId;
+		return dataCollectionIds;
 	}
+
+	@Override
+	public List<Long> getExperimentsForSession(long blsessionId) throws SQLException {
+		List<Long> experimentIds = new ArrayList<Long>();
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT experimentId FROM SaxsDataCollection sd "
+				+ "INNER JOIN Experiment ex ON sd.experimentId = ex.experimentId WHERE sd.blsessionId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, blsessionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			while (rs.next())
+				experimentIds.add(rs.getLong(1));
+			rs.close();
+		}
+		stmt.close();
+
+		return experimentIds;	}
 
 	private long createDataReductionStarted(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
@@ -628,32 +651,74 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
 	}
 
-	@Override
-	public List<ISAXSDataCollection> getSAXSDataCollections(long blSessionId) throws SQLException {
-		List<ISAXSDataCollection> samples = new ArrayList<ISAXSDataCollection>();
+	private ISAXSDataCollection getSAXSDataCollectionFromDataCollection(long dataCollectionId) throws SQLException {
+		BioSAXSDataCollectionBean bean = null;
+
 		connectIfNotConnected();
 
-		// String selectSql =
-		// "SELECT ispyb4a_db.specimen.experimentId, ispyb4a_db.specimen.specimenId, ispyb4a_db.macromolecule.name FROM ispyb4a_db.Specimen INNER JOIN ispyb4a_db.Macromolecule on ispyb4a_db.specimen.macromoleculeid = ispyb4a_db.macromolecule.macromoleculeid WHERE blsessionId = ? ORDER BY ispyb4a_db.specimen.experimentId ASC";
-		String selectSql = "SELECT ispyb4a_db.measurement.measurementId, ispyb4a_db.measurement.specimenId FROM ispyb4a_db.Measurement INNER JOIN ispyb4a_db.Specimen on ispyb4a_db.measurement.specimenId = ispyb4a_db.specimen.specimenId WHERE blsessionId = ? ORDER BY ispyb4a_db.measurement.measurementId ASC";
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, blSessionId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			while (rs.next()) {
-				long experimentId = rs.getLong(1);
-				retrieveCollectionInfoIfNecessary(dataCollectionId);
-				samples.add(collectionsMap.get(experimentId));
-
+		String selectSql = "SELECT "
+				+ "  dc.experimentid,"
+				+ "  pr.proposalcode,"
+				+ "  bls.visit_number,"
+				+ "  mtd1.measurementid as bufferbeforemeasurementid,"
+				+ "  mtd3.measurementid as bufferaftermeasurementid,"
+				+ "  mac.name as samplename,"
+				+ "  dc.blsessionId"
+				+ "FROM SaxsDataCollection dc"
+				+ "  INNER JOIN Blsession bls ON bls.sessionid=dc.blsessionid"
+				+ "  INNER JOIN Proposal pr ON pr.proposalid=bls.proposalid"
+				+ "  INNER JOIN MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = ? AND mtd1.datacollectionorder = 1"
+				+ "  INNER JOIN MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = ? AND mtd3.datacollectionorder = 3"
+				+ "  INNER JOIN MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = ? AND mtd2.datacollectionorder = 2"
+				+ "  INNER JOIN Measurement m2 ON mtd2.measurementid = m2.measurementid"
+				+ "  INNER JOIN Specimen sp ON m2.specimenid = sp.specimenid"
+				+ "  INNER JOIN Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ;";
+		if (!collectionsMapHasDataCollection(dataCollectionId)) {
+			PreparedStatement stmt = conn.prepareStatement(selectSql);
+			stmt.setLong(1, dataCollectionId);
+			boolean success = stmt.execute();
+			if (success) {
+				int index = 1;
+				ResultSet rs = stmt.getResultSet();
+				if (rs.next()) {
+					long experimentId = rs.getLong(index++);
+					String proposalCode = rs.getString(index++);
+					short visitNumber = rs.getShort(index++);
+					long bufferBeforeId = rs.getLong(index++);
+					long bufferAfterId = rs.getLong(index++);
+					String sampleName = rs.getString(index++);
+					long blSessionId = rs.getLong(index++);
+					bean = new BioSAXSDataCollectionBean();
+					bean.setBlSessionId(blSessionId);
+					bean.setBufferAfterMeasurementId(bufferAfterId);
+					bean.setBufferBeforeMeasurementId(bufferBeforeId);
+					bean.setExperimentId(experimentId);
+					bean.setId(dataCollectionId);
+					bean.setSampleName(sampleName);
+					String visit = proposalCode + "-" + visitNumber;
+					bean.setVisit(visit);
+				}
+				rs.close();
+				stmt.close();
 			}
-			rs.close();
-			stmt.close();
+
 		}
 
-		return samples;
+		return bean;
 	}
 
+	@Override
+	public List<ISAXSDataCollection> getSAXSDataCollections(long blSessionId) throws SQLException {
+		List<ISAXSDataCollection> saxsDataCollections = new ArrayList<ISAXSDataCollection>();
+
+		List<Long> allCollectionIds = getSaxsDataCollectionsForSession(blSessionId);
+		for (Long collectionId : allCollectionIds) {
+			retrieveCollectionInfoIfNecessary(collectionId);
+			ISAXSDataCollection collection = collectionsMap.get(collectionId);
+			saxsDataCollections.add(collection);
+		}
+		return saxsDataCollections;
+	}
 
 	private long retrievePreviousBufferMeasurement(long previousDataCollectionId) throws SQLException {
 		long measurementId = -1;
@@ -839,18 +904,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public List<Long> getExperimentsForSession(long blsessionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Long> getDataCollectionsForExperiments(long experiment) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
 		retrieveCollectionInfoIfNecessary(dataCollectionId);
 		collectionsMap.get(dataCollectionId).setCollectionStatus(status);
@@ -916,20 +969,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	 */
 	private void retrieveCollectionInfoIfNecessary(long dataCollectionId) {
 		if (collectionsMapHasDataCollection(dataCollectionId)) {
-			BioSAXSDataCollectionBean bioSaxsDataCollection = new BioSAXSDataCollectionBean();
-			//first set up the basic information in the bean
-			bioSaxsDataCollection.setExperimentId(experimentId);
-			bioSaxsDataCollection.setSampleName(rs.getString(2));
-			bioSaxsDataCollection.setBlSessionId(blSessionId);
-			bioSaxsDataCollection.setVisit();
-			bioSaxsDataCollection.setId(dataCollectionId);
-			bioSaxsDataCollection.setBufferBeforeMeasurementId(bufferBeforeMeasurementId);
-			bioSaxsDataCollection.setBufferAfterMeasurementId(bufferAfterMeasurementId);
-			//then get status information
-			bioSaxsDataCollection.setCollectionStatus(collectionStatus);
-			bioSaxsDataCollection.setReductionStatus(reductionStatus);
-			bioSaxsDataCollection.setAnalysisStatus(analysisStatus);
-			collectionsMap.put(dataCollectionId, bioSaxsDataCollection);
+			try {
+				ISAXSDataCollection bioSaxsDataCollection;
+				bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
+				collectionsMap.put(dataCollectionId, bioSaxsDataCollection);
+			} catch (SQLException e) {
+				logger.error("Could not create SAXS data collection object", e);
+			}
 		}
 	}
 }
