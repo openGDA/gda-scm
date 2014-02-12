@@ -753,7 +753,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long blsessionId = -1;
 		connectIfNotConnected();
 
-		String selectSql = "SELECT e.sessionId FROM ispyb4a_db.Experiment e WHERE e.experimentId = ?";
+		String selectSql = "SELECT s.blsessionId FROM ispyb4a_db.Experiment e "
+				+ "INNER JOIN ispyb4a_db.SaxsDataCollection s on s.experimentid = e.experimentid "
+				+ "WHERE e.experimentId = ?";
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, experimentId);
