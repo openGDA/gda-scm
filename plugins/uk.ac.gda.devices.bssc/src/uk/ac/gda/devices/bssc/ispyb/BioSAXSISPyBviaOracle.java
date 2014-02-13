@@ -992,7 +992,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	 * @param dataCollectionId
 	 */
 	private void retrieveCollectionInfoIfNecessary(long dataCollectionId) {
-		if (collectionsMapHasDataCollection(dataCollectionId)) {
+		if (!collectionsMapHasDataCollection(dataCollectionId)) {
 			try {
 				ISAXSDataCollection bioSaxsDataCollection;
 				bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
