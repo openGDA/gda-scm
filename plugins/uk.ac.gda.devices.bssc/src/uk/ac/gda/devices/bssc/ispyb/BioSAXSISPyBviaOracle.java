@@ -851,6 +851,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		bean.setId(saxsDataCollectionId);
 		bean.setBufferBeforeMeasurementId(bufferBeforeMeasurementId);
 		bean.setBufferAfterMeasurementId(bufferAfterMeasurementId);
+		if (previousDataCollectionId != INVALID_VALUE) {
+			bean.getCollectionStatus().setProgress(33); //the previous data collection was done, so set initial progress
+		}
 		collectionsMap.put(saxsDataCollectionId, bean);
 		return saxsDataCollectionId;
 	}
