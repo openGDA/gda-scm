@@ -140,7 +140,7 @@ public class BioSAXSISPyBTest {
 				.getStatus(), ISpyBStatus.RUNNING);
 
 		// test data reduction completed
-		bioSAXSISPyB.setDataReductionStatus(collection3,
+		bioSAXSISPyB.setDataReductionStatus(collection1,
 				reductionStatusComplete);
 
 		ISpyBStatusInfo iSpyBReductionDetails = bioSAXSISPyB

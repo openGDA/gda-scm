@@ -153,7 +153,7 @@ public class BioSAXSISPyBviaOracleTest {
 				bioSAXSISPyB.getDataReductionStatus(collection1).getStatus());
 
 		// test data reduction completed
-		bioSAXSISPyB.setDataReductionStatus(collection3,
+		bioSAXSISPyB.setDataReductionStatus(collection1,
 				reductionStatusComplete);
 
 		ISpyBStatusInfo iSpyBReductionDetails = bioSAXSISPyB
