@@ -603,8 +603,11 @@ public class BioSAXSScriptTest {
 
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
+		// Because we are using the previous buffer then set STATUS to RUNNING
+		// and progress to 33 (because the buffer before has already been run in
+		// the previous collection)
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
-		expectedCollectionStatusInfo.setProgress(0);
+		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -616,39 +619,11 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 
-		// Create buffer before run
-		bufferBeforeId = bioSAXSISPyB
-				.createBufferRun(dataCollectionId4, 1.0, 20.0f, 20.0f, 10.0,
-						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-						"/dls/b21/data/2013/sm999-14/b21-8.nxs",
-						"/entry1/detector/data");
-
-		// Assert status values are as expected
-		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
-		expectedCollectionStatusInfo.setProgress(33);
-		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-15/b21-14.nxs");
-		expectedCollectionStatusInfo.setMessage("");
-
-		ispyBStatusInfo = bioSAXSISPyB
-				.getDataCollectionStatus(dataCollectionId5);
-		assertEquals(expectedCollectionStatusInfo.getStatus(),
-				ispyBStatusInfo.getStatus());
-		assertEquals(expectedCollectionStatusInfo.getProgress(),
-				ispyBStatusInfo.getProgress(), 0.0);
-		assertEquals(expectedCollectionStatusInfo.getFileNames().size(),
-				ispyBStatusInfo.getFileNames().size());
-		assertEquals(expectedCollectionStatusInfo.getFileNames().get(0),
-				ispyBStatusInfo.getFileNames().get(0));
-		assertEquals(expectedCollectionStatusInfo.getMessage(),
-				ispyBStatusInfo.getMessage());
-
 		// Create sample run
-		sampleId = bioSAXSISPyB
-				.createSampleRun(dataCollectionId5, 1.0, 20.0f, 20.0f, 10.0,
-						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-						"/dls/b21/data/2013/sm999-9/b21-15.nxs",
-						"/entry1/detector/data");
+		sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId5, 1.0, 20.0f,
+				20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+				"/dls/b21/data/2013/sm999-9/b21-15.nxs",
+				"/entry1/detector/data");
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(66);
