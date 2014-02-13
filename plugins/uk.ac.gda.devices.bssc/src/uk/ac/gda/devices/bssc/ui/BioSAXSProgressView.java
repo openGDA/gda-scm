@@ -45,11 +45,10 @@ public class BioSAXSProgressView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-
 		controller = (BioSAXSProgressController) GDAClientActivator.getNamedService(BioSAXSProgressController.class,
 				null);
-		model = new WritableList();
-		controller.setModel(model);
+//		controller.setModel(new WritableList());
+		model = controller.getModel();
 
 		bioSAXSComposite = new BioSAXSProgressComposite(parent, model, SWT.NONE);
 		listChangedListener = new IListChangeListener() {
@@ -68,7 +67,7 @@ public class BioSAXSProgressView extends ViewPart {
 
 			}
 		};
-		model.addListChangeListener(listChangedListener);
+//		model.addListChangeListener(listChangedListener);
 		controller.addIObserver(controllerObserver);
 	}
 
