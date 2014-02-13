@@ -86,7 +86,7 @@ public class BioSAXSISPyBTest {
 
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
 		assertEquals(collectionStatus.getProgress(), 33);
-		assertEquals(collectionStatus.getStatus(), ISpyBStatus.RUNNING);
+		assertEquals(collectionStatus.getStatus(), ISpyBStatus.NOT_STARTED);
 		// TODO get progress as well
 
 		long sample2 = bioSAXSISPyB.createSampleRun(collection2, 1.0, 20.0f,

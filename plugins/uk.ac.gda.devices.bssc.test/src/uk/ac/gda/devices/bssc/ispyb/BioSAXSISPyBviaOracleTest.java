@@ -99,7 +99,7 @@ public class BioSAXSISPyBviaOracleTest {
 
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
 		assertEquals(33, collectionStatus.getProgress(), 0.01);
-		assertEquals(ISpyBStatus.RUNNING, collectionStatus.getStatus());
+		assertEquals(ISpyBStatus.NOT_STARTED, collectionStatus.getStatus());
 		// TODO get progress as well
 
 		long sample2 = bioSAXSISPyB.createSampleRun(collection2, 1.0, 20.0f,
