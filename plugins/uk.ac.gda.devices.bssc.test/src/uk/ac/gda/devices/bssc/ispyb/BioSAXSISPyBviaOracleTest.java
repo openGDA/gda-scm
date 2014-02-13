@@ -98,8 +98,8 @@ public class BioSAXSISPyBviaOracleTest {
 													// collection
 
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
-		assertEquals(collectionStatus.getProgress(), 33, 0.01);
-		assertEquals(collectionStatus.getStatus(), ISpyBStatus.RUNNING);
+		assertEquals(33, collectionStatus.getProgress(), 0.01);
+		assertEquals(ISpyBStatus.RUNNING, collectionStatus.getStatus());
 		// TODO get progress as well
 
 		long sample2 = bioSAXSISPyB.createSampleRun(collection2, 1.0, 20.0f,
@@ -108,8 +108,8 @@ public class BioSAXSISPyBviaOracleTest {
 				"/entry1/detector/data");
 		assertTrue(sample2 >= 0);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
-		assertEquals(collectionStatus.getProgress(), 66, 0.01);
-		assertEquals(collectionStatus.getStatus(), ISpyBStatus.RUNNING);
+		assertEquals(66, collectionStatus.getProgress(), 0.01);
+		assertEquals(ISpyBStatus.RUNNING, collectionStatus.getStatus());
 
 		// Create a buffer after run (pass in -1 for the previous collection id
 		// which indicates not to share the buffer of the previous collection
@@ -119,8 +119,8 @@ public class BioSAXSISPyBviaOracleTest {
 				"/entry1/detector/data");
 		assertTrue(bufferAfter2 >= 0);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
-		assertEquals(collectionStatus.getProgress(), 100, 0.01);
-		assertEquals(collectionStatus.getStatus(), ISpyBStatus.COMPLETE);
+		assertEquals(100, collectionStatus.getProgress(), 0.01);
+		assertEquals(ISpyBStatus.COMPLETE, collectionStatus.getStatus());
 
 		// create a data collection gets updated with a FAILED status if any of
 		// the measurements for that data collection fail
@@ -129,8 +129,8 @@ public class BioSAXSISPyBviaOracleTest {
 				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
 				"viscosity");
 
-		assertEquals(bioSAXSISPyB.getDataCollectionStatus(collection3).getStatus(),
-				ISpyBStatus.NOT_STARTED);
+		assertEquals(ISpyBStatus.NOT_STARTED,
+				bioSAXSISPyB.getDataCollectionStatus(collection3).getStatus());
 
 		ISpyBStatusInfo collectionStatusFailed = new ISpyBStatusInfo();
 		collectionStatusFailed.setStatus(ISpyBStatus.FAILED);
@@ -139,17 +139,17 @@ public class BioSAXSISPyBviaOracleTest {
 		bioSAXSISPyB.setDataCollectionStatus(collection3,
 				collectionStatusFailed);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection3);
-		assertEquals(collectionStatus.getStatus(), ISpyBStatus.FAILED);
-		assertEquals(collectionStatus.getMessage(), bufferBeforeFailureMessage);
-		assertEquals(collectionStatus.getProgress(), 33, 0.01);
+		assertEquals(ISpyBStatus.FAILED, collectionStatus.getStatus());
+		assertEquals(bufferBeforeFailureMessage, collectionStatus.getMessage());
+		assertEquals(33, collectionStatus.getProgress(), 0.01);
 
 		// start data reduction and assert it is in the running state
 		ISpyBStatusInfo reductionStatusComplete = new ISpyBStatusInfo();
 		reductionStatusComplete.setStatus(ISpyBStatus.COMPLETE);
 		reductionStatusComplete.setProgress(100);
 		long subtractionId = bioSAXSISPyB.createDataReduction(collection1);
-		assertEquals(bioSAXSISPyB.getDataReductionStatus(collection1)
-				.getStatus(), ISpyBStatus.RUNNING);
+		assertEquals(ISpyBStatus.RUNNING,
+				bioSAXSISPyB.getDataReductionStatus(collection1).getStatus());
 
 		// test data reduction completed
 		bioSAXSISPyB.setDataReductionStatus(collection3,
