@@ -136,6 +136,7 @@ public class BioSAXSISPyBviaOracleTest {
 		collectionStatusFailed.setStatus(ISpyBStatus.FAILED);
 		collectionStatusFailed.setProgress(33);
 		String bufferBeforeFailureMessage = "Data Collection failed at after running buffer before meaurement";
+		collectionStatusFailed.setMessage(bufferBeforeFailureMessage);
 		bioSAXSISPyB.setDataCollectionStatus(collection3,
 				collectionStatusFailed);
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection3);
