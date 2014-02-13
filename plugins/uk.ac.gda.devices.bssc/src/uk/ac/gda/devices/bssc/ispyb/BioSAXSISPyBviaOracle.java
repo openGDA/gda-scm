@@ -871,6 +871,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
 				newStatus.setStatus(ISpyBStatus.RUNNING);
 				newStatus.setProgress(33);
+				newStatus.addFileName(filename);
 				setDataCollectionStatus(currentDataCollectionId, newStatus);
 				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT); //TODO replace with ISAXSDataCollection object query?
 			}
@@ -878,10 +879,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
 				newStatus.setStatus(ISpyBStatus.COMPLETE);
 				newStatus.setProgress(100);
+				newStatus.addFileName(filename);
 				setDataCollectionStatus(currentDataCollectionId, newStatus);
 				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_AFTER_MEASUREMENT);
 			}
-			
+
 			updateMeasurementWithRunId(bufferMeasurementId, runId);
 		} catch (SQLException e) {
 			ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
@@ -902,6 +904,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
 		newStatus.setStatus(ISpyBStatus.RUNNING);
 		newStatus.setProgress(66);
+		newStatus.addFileName(filename);
 		setDataCollectionStatus(dataCollectionId, newStatus);
 		long sampleMeasurementId = 0;
 		try {
@@ -910,6 +913,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		} catch (SQLException e) {
 			logger.error("Exception while getting sample measurement or updating Measurement.runId", e);
 		}
+
 		return runId;
 	}
 
