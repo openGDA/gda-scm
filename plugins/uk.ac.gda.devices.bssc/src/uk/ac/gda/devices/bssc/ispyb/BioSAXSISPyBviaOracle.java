@@ -560,7 +560,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Subtraction ("
 				+ "subtractionId, dataCollectionId, gnomFilePath) "
-				+ "VALUES (ispyb4a_db.s_Subtraction.nextval, ?, ?) RETURNING experimentId INTO ?; END;";
+				+ "VALUES (ispyb4a_db.s_Subtraction.nextval, ?, ?) RETURNING subtractionId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setLong(index++, dataCollectionId);
