@@ -2,6 +2,7 @@ package uk.ac.gda.devices.bssc.ispyb;
 
 import static org.junit.Assert.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import gda.rcp.util.OSGIServiceRegister;
@@ -9,6 +10,9 @@ import gda.rcp.util.OSGIServiceRegister;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -31,24 +35,21 @@ public class BioSAXSISpyBIntegrationTest {
 	private static IObservableList model;
 	private static BioSAXSISPyB bioSAXSISPyB;
 	private static BioSAXSProgressController controller;
-	private List<ISAXSDataCollection> iSpyBSAXSDataCollections;
-	
+	private static List<ISAXSDataCollection> iSpyBSAXSDataCollections;
+	private static List<ISAXSProgress> progressList;
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		model = new WritableList();
 		bioSAXSISPyB = new MockBioSAXSISPyB();
-		
+
 		controller = new BioSAXSProgressController();
 		controller.setModel(model);
 		controller.setISpyBAPI(bioSAXSISPyB);
-		
 		OSGIServiceRegister modelReg = new OSGIServiceRegister();
 		modelReg.setClass(BioSAXSProgressController.class);
 		modelReg.setService(controller);
 		modelReg.afterPropertiesSet();
-
-		// populate model with sample values
-//		populateModel();
 
 		final IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -63,136 +64,60 @@ public class BioSAXSISpyBIntegrationTest {
 		window.getActivePage().activate(view);
 	}
 
-//	private static void populateModel() {
-//		for (int i = 0; i < 7; i++) {
-//			ISpyBStatusInfo collectionStatusDetails = new ISpyBStatusInfo();
-//			collectionStatusDetails.setStatus(ISpyBStatus.NOT_STARTED);
-//			collectionStatusDetails.setProgress(0);
-//
-//			ISpyBStatusInfo reductionStatusDetails = new ISpyBStatusInfo();
-//			reductionStatusDetails.setStatus(ISpyBStatus.NOT_STARTED);
-//			reductionStatusDetails.setProgress(0);
-//
-//			ISpyBStatusInfo analysisStatusDetails = new ISpyBStatusInfo();
-//			analysisStatusDetails.setStatus(ISpyBStatus.NOT_STARTED);
-//			analysisStatusDetails.setProgress(0);
-//
-//			ISAXSProgress progress = new BioSAXSProgress(i, "Sample " + i,
-//					collectionStatusDetails, reductionStatusDetails,
-//					analysisStatusDetails);;
-//
-//			model.add(progress);
-//		}
-//	}
-
-	@Before
-	public void loadMockISpyBItems() {
-		model.clear();
+	@Test
+	public void testUpdateProgressFromISpyB() throws SQLException {
 		iSpyBSAXSDataCollections = controller.getDataCollectionsFromISPyB();
-		List<ISAXSProgress> progressList = controller
-				.loadModel(iSpyBSAXSDataCollections);
+		progressList = controller.loadModel(iSpyBSAXSDataCollections);
 		model.addAll(progressList);
-	}
 
-	@Test
-	public void testAddItemsToModelFromISpyB() {
-		assertEquals(7, model.size());
+		Job updateJob = new Job("") {
 
-		for (int i = 0; i < iSpyBSAXSDataCollections.size(); i++) {
-			ISAXSProgress modelProgressItem = (ISAXSProgress) model.get(i);
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					for (ISAXSDataCollection saxsDataCollection : bioSAXSISPyB
+							.getSAXSDataCollections(0)) {
+						long saxsDataCollectionId = saxsDataCollection.getId();
 
-			// Check model sample name is same as sample name in IsPyB
-			String expectedSampleName = iSpyBSAXSDataCollections.get(i)
-					.getSampleName();
-			String modelSampleName = modelProgressItem.getSampleName();
-			assertEquals(expectedSampleName, modelSampleName);
+						bioSAXSISPyB.createBufferRun(saxsDataCollectionId, 0,
+								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "");
+					}
 
-			// Check collection status of model object is the same as the status
-			// in ISpyB
-			ISpyBStatus expectedCollectionStatus = (ISpyBStatus) iSpyBSAXSDataCollections
-					.get(i).getCollectionStatus().getStatus();
-			ISpyBStatus modelCollectionStatus = ((ISpyBStatus) modelProgressItem
-					.getCollectionStatus());
-			assertEquals(expectedCollectionStatus, modelCollectionStatus);
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 
-			// Check reduction status of model object is the same as the status
-			// in ISpyB
-			ISpyBStatus expectedReductionStatus = (ISpyBStatus) iSpyBSAXSDataCollections
-					.get(i).getReductionStatus().getStatus();
-			ISpyBStatus modelReductionStatus = ((ISpyBStatus) modelProgressItem
-					.getReductionStatus());
-			assertEquals(expectedReductionStatus, modelReductionStatus);
+					for (ISAXSDataCollection saxsDataCollection : bioSAXSISPyB
+							.getSAXSDataCollections(0)) {
+						long saxsDataCollectionId = saxsDataCollection.getId();
 
-			// Check analysis status of model object is the same as the status
-			// in ISpyB
-			ISpyBStatus expectedAnalysisStatus = (ISpyBStatus) iSpyBSAXSDataCollections
-					.get(i).getAnalysisStatus().getStatus();
-			ISpyBStatus modelAnalysisStatus = ((ISpyBStatus) modelProgressItem
-					.getAnalysisStatus());
-			assertEquals(expectedAnalysisStatus, modelAnalysisStatus);
+						bioSAXSISPyB.createSampleRun(saxsDataCollectionId, 0,
+								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "");
+					}
+					
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					for (ISAXSDataCollection saxsDataCollection : bioSAXSISPyB
+							.getSAXSDataCollections(0)) {
+						long saxsDataCollectionId = saxsDataCollection.getId();
 
-			// Check collection progress in model is same as collection progress
-			// in ISpyB
-			double expectedCollectionProgress = iSpyBSAXSDataCollections.get(i)
-					.getCollectionStatus().getProgress();
-			double modelCollectionProgress = modelProgressItem
-					.getCollectionProgress();
-			assertEquals(expectedCollectionProgress, modelCollectionProgress,
-					0.0);
+						bioSAXSISPyB.createBufferRun(saxsDataCollectionId, 0,
+								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "");
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 
-			// Check reduction progress in model is same as reduction progress
-			// in ISpyB
-			double expectedReductionProgress = iSpyBSAXSDataCollections.get(i)
-					.getReductionStatus().getProgress();
-			double modelReductionProgress = modelProgressItem
-					.getReductionProgress();
-			assertEquals(expectedReductionProgress, modelReductionProgress, 0.0);
-
-			// Check analysis progress in model is same as analysis progress in
-			// ISpyB
-			double expectedAnalysisProgress = iSpyBSAXSDataCollections.get(i)
-					.getAnalysisStatus().getProgress();
-			double modelAnalysisProgress = modelProgressItem
-					.getAnalysisProgress();
-			assertEquals(expectedAnalysisProgress, modelAnalysisProgress, 0.0);
-		}
-	}
-	
-	@Test
-	public void testProgress() throws Exception {
-		ObservableList items = (ObservableList) model;
-
-		for (int i = 0; i < items.size(); i++) {
-
-			ISAXSProgress progress = (ISAXSProgress) items.get(i);
-
-			ISpyBStatusInfo collectionStatusDetails = new ISpyBStatusInfo();
-			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
-			collectionStatusDetails.setProgress(33);
-			progress.setCollectionProgress(collectionStatusDetails);
-			delay(1000);
-
-			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
-			collectionStatusDetails.setProgress(66);
-			progress.setCollectionProgress(collectionStatusDetails);
-			delay(1000);
-
-			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
-			collectionStatusDetails.setProgress(100);
-			progress.setCollectionProgress(collectionStatusDetails);
-			delay(1000);
-
-			ISpyBStatusInfo reductionStatusDetails = new ISpyBStatusInfo();
-			reductionStatusDetails.setStatus(ISpyBStatus.RUNNING);
-			reductionStatusDetails.setProgress(100);
-			progress.setReductionProgress(reductionStatusDetails);
-
-			ISpyBStatusInfo analysisStatusDetails = new ISpyBStatusInfo();
-			analysisStatusDetails.setStatus(ISpyBStatus.COMPLETE);
-			analysisStatusDetails.setProgress(100);
-			progress.setAnalysisProgress(analysisStatusDetails);
-		}
-		delay(1000);
+				return Status.OK_STATUS;
+			}
+		};
+		updateJob.schedule();
 	}
 
 	@Test
@@ -202,34 +127,10 @@ public class BioSAXSISpyBIntegrationTest {
 		fail("Not yet implemented");
 	}
 
-//	@Test
-//	public void testAddProgressModel() {
-//		ObservableList items = (ObservableList) model;
-//
-//		ISpyBStatusInfo collectionStatusInfo = new ISpyBStatusInfo();
-//		collectionStatusInfo.setProgress(0);
-//		ISpyBStatusInfo reductionStatusInfo = new ISpyBStatusInfo();
-//		collectionStatusInfo.setProgress(0);
-//		ISpyBStatusInfo analysisStatusInfo = new ISpyBStatusInfo();
-//		collectionStatusInfo.setProgress(0);
-//
-//		ISAXSProgress newProgress = new BioSAXSProgress(
-//				model.size() + 1, "New Sample "
-//						+ model.size() + 1, collectionStatusInfo,
-//				reductionStatusInfo, analysisStatusInfo);
-//		;
-//
-//		newProgress.setCollectionProgress(collectionStatusInfo);
-//		newProgress.setReductionProgress(reductionStatusInfo);
-//		newProgress.setAnalysisProgress(analysisStatusInfo);
-//
-//		items.add(newProgress);
-//	}
-
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		waitForJobs();
-		delay(20000);
+		delay(60000);
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
 				.hideView(view);
 	}
