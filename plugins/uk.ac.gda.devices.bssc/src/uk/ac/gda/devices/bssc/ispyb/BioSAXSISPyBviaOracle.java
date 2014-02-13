@@ -552,8 +552,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		return experimentIds;	}
 
-	@Override
-	public long createDataReduction(long dataCollectionId) throws SQLException {
+	private long createSubtractionForDataReduction(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
 
 		connectIfNotConnected();
@@ -1003,5 +1002,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				logger.error("Could not create SAXS data collection object", e);
 			}
 		}
+	}
+
+	@Override
+	public long createDataReduction(long dataCollectionId) throws SQLException {
+		long subtractionId = createSubtractionForDataReduction(dataCollectionId);
+		ISpyBStatusInfo status = new ISpyBStatusInfo();
+		status.setStatus(ISpyBStatus.RUNNING);
+		setDataReductionStatus(dataCollectionId, status);
+		return subtractionId;
 	}
 }
