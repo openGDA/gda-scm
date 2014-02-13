@@ -962,8 +962,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public long createDataAnalysis(long dataCollectionId) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+		long subtractionId = createSubtractionForDataReduction(dataCollectionId);
+		ISpyBStatusInfo status = new ISpyBStatusInfo();
+		status.setStatus(ISpyBStatus.RUNNING);
+		setDataAnalysisStatus(dataCollectionId, status);
+		return subtractionId;
 	}
 
 	@Override
@@ -1006,10 +1009,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public long createDataReduction(long dataCollectionId) throws SQLException {
-		long subtractionId = createSubtractionForDataReduction(dataCollectionId);
+		//TODO this should be modifying a data reduction-related table to store status and other fields
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		status.setStatus(ISpyBStatus.RUNNING);
 		setDataReductionStatus(dataCollectionId, status);
-		return subtractionId;
+		return 0;
 	}
 }
