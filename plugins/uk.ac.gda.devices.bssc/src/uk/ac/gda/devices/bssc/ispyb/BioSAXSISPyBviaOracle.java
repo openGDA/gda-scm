@@ -282,9 +282,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long runId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Run ("
-				+ "runId, storageTemperature, exposureTemperature, energy, frameCount, timePerFrame"
-				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,"
-				+ "normalization, filename, internalPath) "
+				+ "runId, storageTemperature, exposureTemperature, energy, frameCount, timePerFrame, "
+				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization) "
 				+ "VALUES (ispyb4a_db.s_Run.nextval, ?, ?, ?, ?, ?, "
 				+ "?, ?, ?, ?, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
