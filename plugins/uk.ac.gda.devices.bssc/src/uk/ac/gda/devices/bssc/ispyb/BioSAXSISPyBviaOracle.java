@@ -943,7 +943,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
+	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
 		retrieveCollectionInfoIfNecessary(dataCollectionId);
 		collectionsMap.get(dataCollectionId).setReductionStatus(status);
@@ -962,7 +962,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status, String resultsFilename)
+	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
 		retrieveCollectionInfoIfNecessary(dataCollectionId);
 		collectionsMap.get(dataCollectionId).setAnalysisStatus(status);
