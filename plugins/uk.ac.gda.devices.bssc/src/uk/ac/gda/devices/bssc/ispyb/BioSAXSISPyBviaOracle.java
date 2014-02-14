@@ -671,7 +671,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				+ "  mtd1.measurementid as bufferbeforemeasurementid,"
 				+ "  mtd3.measurementid as bufferaftermeasurementid,"
 				+ "  mac.name as samplename,"
-				+ "  dc.blsessionId"
+				+ "  dc.blsessionId "
 				+ "FROM SaxsDataCollection dc"
 				+ "  INNER JOIN Blsession bls ON bls.sessionid=dc.blsessionid"
 				+ "  INNER JOIN Proposal pr ON pr.proposalid=bls.proposalid"
@@ -680,10 +680,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				+ "  INNER JOIN MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = ? AND mtd2.datacollectionorder = 2"
 				+ "  INNER JOIN Measurement m2 ON mtd2.measurementid = m2.measurementid"
 				+ "  INNER JOIN Specimen sp ON m2.specimenid = sp.specimenid"
-				+ "  INNER JOIN Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ;";
+				+ "  INNER JOIN Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ";
 		if (!collectionsMapHasDataCollection(dataCollectionId)) {
 			PreparedStatement stmt = conn.prepareStatement(selectSql);
 			stmt.setLong(1, dataCollectionId);
+			stmt.setLong(2, dataCollectionId);
+			stmt.setLong(3, dataCollectionId);
+			stmt.setLong(4, dataCollectionId);
 			boolean success = stmt.execute();
 			if (success) {
 				int index = 1;
