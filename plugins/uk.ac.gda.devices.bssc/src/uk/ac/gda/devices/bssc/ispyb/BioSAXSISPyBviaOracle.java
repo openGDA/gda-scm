@@ -672,21 +672,18 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				+ "  mtd3.measurementid as bufferaftermeasurementid,"
 				+ "  mac.name as samplename,"
 				+ "  dc.blsessionId "
-				+ "FROM SaxsDataCollection dc"
-				+ "  INNER JOIN Blsession bls ON bls.sessionid=dc.blsessionid"
-				+ "  INNER JOIN Proposal pr ON pr.proposalid=bls.proposalid"
-				+ "  INNER JOIN MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = ? AND mtd1.datacollectionorder = 1"
-				+ "  INNER JOIN MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = ? AND mtd3.datacollectionorder = 3"
-				+ "  INNER JOIN MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = ? AND mtd2.datacollectionorder = 2"
-				+ "  INNER JOIN Measurement m2 ON mtd2.measurementid = m2.measurementid"
-				+ "  INNER JOIN Specimen sp ON m2.specimenid = sp.specimenid"
-				+ "  INNER JOIN Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ";
+				+ "FROM ispyb4a_db.SaxsDataCollection dc"
+				+ "  INNER JOIN ispyb4a_db.Blsession bls ON bls.sessionid=dc.blsessionid"
+				+ "  INNER JOIN ispyb4a_db.Proposal pr ON pr.proposalid=bls.proposalid"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = dc.datacollectionid AND mtd1.datacollectionorder = 1"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = dc.datacollectionid AND mtd3.datacollectionorder = 3"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = dc.datacollectionid AND mtd2.datacollectionorder = 2"
+				+ "  INNER JOIN ispyb4a_db.Measurement m2 ON mtd2.measurementid = m2.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Specimen sp ON m2.specimenid = sp.specimenid"
+				+ "  INNER JOIN ispyb4a_db.Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ";
 		if (!collectionsMapHasDataCollection(dataCollectionId)) {
 			PreparedStatement stmt = conn.prepareStatement(selectSql);
 			stmt.setLong(1, dataCollectionId);
-			stmt.setLong(2, dataCollectionId);
-			stmt.setLong(3, dataCollectionId);
-			stmt.setLong(4, dataCollectionId);
 			boolean success = stmt.execute();
 			if (success) {
 				int index = 1;
@@ -793,21 +790,21 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		String selectSql = "SELECT "
 				+ "  m1.runid,"
 				+ "  m2.runid,"
-				+ "  m3.runid, "
-				+ "FROM SaxsDataCollection dc"
-				+ "  INNER JOIN MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = ? AND mtd1.datacollectionorder = 1"
-				+ "  INNER JOIN MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = ? AND mtd2.datacollectionorder = 2"
-				+ "  INNER JOIN MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = ? AND mtd3.datacollectionorder = 3"
-				+ "  INNER JOIN Measurement m1 ON mtd1.measurementid = m1.measurementid"
-				+ "  INNER JOIN Measurement m2 ON mtd2.measurementid = m2.measurementid"
-				+ "  INNER JOIN Measurement m3 ON mtd3.measurementid = m3.measurementid "
-				+ "WHERE dc.datacollectionid= ? ;";
+				+ "  m3.runid "
+				+ "FROM ispyb4a_db.SaxsDataCollection dc"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = dc.datacollectionid AND mtd1.datacollectionorder = 1"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = dc.datacollectionid AND mtd2.datacollectionorder = 2"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = dc.datacollectionid AND mtd3.datacollectionorder = 3"
+				+ "  INNER JOIN ispyb4a_db.Measurement m1 ON mtd1.measurementid = m1.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Measurement m2 ON mtd2.measurementid = m2.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Measurement m3 ON mtd3.measurementid = m3.measurementid "
+				+ "WHERE dc.datacollectionid= ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql);
 		stmt1.setLong(1, dataCollectionId);
 		boolean success = stmt1.execute();
 		if (success) {
 			ResultSet rs = stmt1.getResultSet();
-			if (rs.next()) {
+			while (rs.next()) {
 				runs.add(rs.getLong(1));
 			}
 
