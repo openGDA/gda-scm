@@ -872,7 +872,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				currentStatus.setStatus(ISpyBStatus.RUNNING);
 				currentStatus.setProgress(33);
 				currentStatus.addFileName(filename);
-				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT); //TODO replace with ISAXSDataCollection object query?
+				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT);
 			}
 			else if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 66) { //must be buffer after
 				currentStatus.setStatus(ISpyBStatus.COMPLETE);
