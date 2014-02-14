@@ -806,6 +806,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			ResultSet rs = stmt1.getResultSet();
 			while (rs.next()) {
 				runs.add(rs.getLong(1));
+				runs.add(rs.getLong(2));
+				runs.add(rs.getLong(3));
 			}
 
 			rs.close();
@@ -1083,40 +1085,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private ISpyBStatusInfo getDataCollectionStatusFromDatabase(long dataCollectionId) throws Exception {
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		List<Long> runs = getRunsForDataCollection(dataCollectionId);
-		if (runs.get(0) != null && runs.get(1) != null && runs.get(2) != null) {
-			if (isDataCollectionFailed(dataCollectionId)) {
-				status.setProgress(66);
-				status.setStatus(ISpyBStatus.FAILED);
-			}
-			else {
-				status.setProgress(100);
-				status.setStatus(ISpyBStatus.COMPLETE);
-			}
-
-		}
-		else if (runs.get(0) != null && runs.get(1) != null && runs.get(2) == null) {
-			if (isDataCollectionFailed(dataCollectionId)) {
-				status.setProgress(33);
-				status.setStatus(ISpyBStatus.FAILED);
-			}
-			else {
-				status.setProgress(66);
-				status.setStatus(ISpyBStatus.RUNNING);
-			}
-		}
-
-		else if (runs.get(0) != null && runs.get(1) == null && runs.get(2) == null) {
-			if (isDataCollectionFailed(dataCollectionId)) {
-				status.setProgress(0);
-				status.setStatus(ISpyBStatus.FAILED);
-			}
-			else {
-				status.setProgress(33);
-				status.setStatus(ISpyBStatus.RUNNING);
-			}
-		}
-
-		else if (runs.get(0) == null && runs.get(1) == null && runs.get(2) == null) {
+		if (runs.size() >= 1) {
 			if (isDataCollectionFailed(dataCollectionId)) {
 				status.setStatus(ISpyBStatus.FAILED);
 			}
@@ -1126,8 +1095,30 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			}
 		}
 
+		else if (runs.size() >= 2) {
+			if (isDataCollectionFailed(dataCollectionId)) {
+				status.setProgress(33);
+				status.setStatus(ISpyBStatus.FAILED);
+			}
+			else {
+				status.setProgress(66);
+				status.setStatus(ISpyBStatus.RUNNING);
+			}
+		}
+
+		else if (runs.size() == 3) {
+			if (isDataCollectionFailed(dataCollectionId)) {
+				status.setProgress(66);
+				status.setStatus(ISpyBStatus.FAILED);
+			}
+			else {
+				status.setProgress(100);
+				status.setStatus(ISpyBStatus.COMPLETE);
+			}
+		}
+
 		else {
-			throw new Exception("Invalid combination of Runs");
+			throw new Exception("Invalid number of Runs");
 		}
 		
 		return status;
@@ -1146,7 +1137,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		try {
 			List<Long> runList = getRunsForDataCollection(dataCollectionId);
 			for (long runId: runList) {
-				if (getStatusFromRun(runId).equals(DATA_COLLECTION_FAILED)) {
+				String statusFromRun = getStatusFromRun(runId);
+				if (statusFromRun != null && statusFromRun.equals(DATA_COLLECTION_FAILED)) {
 					return true;
 				}
 			}
