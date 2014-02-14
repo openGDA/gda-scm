@@ -868,21 +868,19 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			long bufferMeasurementId = 0;
 			ISpyBStatusInfo currentStatus = getDataCollectionStatus(currentDataCollectionId);
 			if (currentStatus.getStatus() == ISpyBStatus.NOT_STARTED && currentStatus.getProgress() == 0) { //must be buffer before
-				ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
-				newStatus.setStatus(ISpyBStatus.RUNNING);
-				newStatus.setProgress(33);
-				newStatus.addFileName(filename);
-				setDataCollectionStatus(currentDataCollectionId, newStatus);
+				currentStatus.setStatus(ISpyBStatus.RUNNING);
+				currentStatus.setProgress(33);
+				currentStatus.addFileName(filename);
 				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT); //TODO replace with ISAXSDataCollection object query?
 			}
 			else if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 66) { //must be buffer after
-				ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
-				newStatus.setStatus(ISpyBStatus.COMPLETE);
-				newStatus.setProgress(100);
-				newStatus.addFileName(filename);
-				setDataCollectionStatus(currentDataCollectionId, newStatus);
+				currentStatus.setStatus(ISpyBStatus.COMPLETE);
+				currentStatus.setProgress(100);
+				currentStatus.addFileName(filename);
 				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_AFTER_MEASUREMENT);
 			}
+
+			//TODO store status information in database
 
 			updateMeasurementWithRunId(bufferMeasurementId, runId);
 		} catch (SQLException e) {
@@ -901,11 +899,15 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
 		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
 					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, filename, internalPath);
-		ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
-		newStatus.setStatus(ISpyBStatus.RUNNING);
-		newStatus.setProgress(66);
-		newStatus.addFileName(filename);
-		setDataCollectionStatus(dataCollectionId, newStatus);
+		ISpyBStatusInfo currentStatus;
+		try {
+			currentStatus = getDataCollectionStatus(dataCollectionId);
+			currentStatus.setStatus(ISpyBStatus.RUNNING);
+			currentStatus.setProgress(66);
+			currentStatus.addFileName(filename);
+		} catch (SQLException e1) {
+			logger.error("Exception while trying to update collection status during sample run", e1);
+		}
 		long sampleMeasurementId = 0;
 		try {
 			sampleMeasurementId = retrievePreviousMeasurement(dataCollectionId, SAMPLE_MEASUREMENT);
