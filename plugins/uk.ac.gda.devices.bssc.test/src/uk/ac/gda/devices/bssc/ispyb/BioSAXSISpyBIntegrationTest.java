@@ -29,7 +29,7 @@ import uk.ac.gda.devices.bssc.beans.BioSAXSProgressController;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 import uk.ac.gda.devices.bssc.ui.BioSAXSProgressView;
 
-public class BioSAXSISpyBIntegrationTest {
+public class BioSAXSISpyBIntegrationTest extends BioSAXSScriptTest {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 	private static BioSAXSProgressView view;
 	private static IObservableList model;
@@ -37,6 +37,8 @@ public class BioSAXSISpyBIntegrationTest {
 	private static BioSAXSProgressController controller;
 	private static List<ISAXSDataCollection> iSpyBSAXSDataCollections;
 	private static List<ISAXSProgress> progressList;
+	private static long blsessionId;
+	private static long experimentId;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -50,6 +52,12 @@ public class BioSAXSISpyBIntegrationTest {
 		modelReg.setClass(BioSAXSProgressController.class);
 		modelReg.setService(controller);
 		modelReg.afterPropertiesSet();
+
+		String visit = "nt20-12";
+		blsessionId = bioSAXSISPyB.getSessionForVisit(visit);
+		// create an EXPERIMENT in ISpyB
+		experimentId = bioSAXSISPyB.createExperiment(blsessionId, "test",
+				"TEMPLATE", "test");
 
 		final IWorkbenchWindow window = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow();
@@ -79,39 +87,47 @@ public class BioSAXSISpyBIntegrationTest {
 							.getSAXSDataCollections(0)) {
 						long saxsDataCollectionId = saxsDataCollection.getId();
 
-						bioSAXSISPyB.createBufferRun(saxsDataCollectionId, 0,
-								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "");
-					}
+						long bufferBeforeId = bioSAXSISPyB.createBufferRun(
+								saxsDataCollectionId, 1.0, 20.0f, 20.0f, 10.0,
+								10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+								getFilename(1), defaultDataPath);
 
-					try {
 						Thread.sleep(3000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
 
-					for (ISAXSDataCollection saxsDataCollection : bioSAXSISPyB
-							.getSAXSDataCollections(0)) {
-						long saxsDataCollectionId = saxsDataCollection.getId();
+						long dataCollectionId1 = bioSAXSISPyB
+								.createSaxsDataCollection(experimentId,
+										(short) 0, (short) 1, (short) 1,
+										"Sample1", (short) 0, (short) 1,
+										(short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+										10.0, "viscosity");
 
-						bioSAXSISPyB.createSampleRun(saxsDataCollectionId, 0,
-								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "");
-					}
-					
-					try {
 						Thread.sleep(3000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					for (ISAXSDataCollection saxsDataCollection : bioSAXSISPyB
-							.getSAXSDataCollections(0)) {
-						long saxsDataCollectionId = saxsDataCollection.getId();
 
-						bioSAXSISPyB.createBufferRun(saxsDataCollectionId, 0,
-								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "");
+						// create a buffer after entry in ISpyB
+						// long bufferAfterId =
+						// bioSAXSISPyB.createBufferRun(dataCollectionId1,
+						// 1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0,
+						// 1.0, 1.0,
+						// 1.0, getFilename(3),
+						// defaultDataPath);
+						ISpyBStatusInfo statusInfo = new ISpyBStatusInfo();
+						statusInfo.setStatus(ISpyBStatus.COMPLETE);
+						statusInfo.setProgress(100);
+						bioSAXSISPyB.setDataCollectionStatus(
+								saxsDataCollectionId, statusInfo);
+
+						Thread.sleep(3000);
+
+						bioSAXSISPyB.createDataReduction(saxsDataCollectionId);
+
+						Thread.sleep(3000);
+
+						bioSAXSISPyB.createDataAnalysis(saxsDataCollectionId);
 					}
 				} catch (SQLException e1) {
 					e1.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 
 				return Status.OK_STATUS;

@@ -11,12 +11,11 @@ import org.junit.Test;
 public class BioSAXSScriptTest {
 
 	protected static BioSAXSISPyB bioSAXSISPyB;
+	protected static String defaultDataPath = "/entry1/detector/data";
 	private static long blSessionId;
 	private static long experimentId;
 	private static String visit;
 	private List<ISAXSDataCollection> iSpyBSAXSDataCollections;
-
-	private static String defaultDataPath = "/entry1/detector/data";
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -711,7 +710,7 @@ public class BioSAXSScriptTest {
 		assertEquals(3, sampleInfoList.size());
 	}
 
-	private static String getFilename(int fileNumber) {
+	protected static String getFilename(int fileNumber) {
 		return "/dls/b21/data/2013/sm999-9/b21-" + fileNumber + ".nxs";
 	}
 }
