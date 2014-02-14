@@ -195,7 +195,7 @@ public class BioSAXSScriptTest {
 		analysisStatus.setProgress(100);
 		analysisStatus.addFileName(getFilename(5));
 		analysisStatus.setMessage("");
-		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, analysisStatus);
+		bioSAXSISPyB.setDataAnalysisStatus(dataCollectionId1, analysisStatus);
 
 		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
 		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
@@ -404,7 +404,7 @@ public class BioSAXSScriptTest {
 		reductionStatus.setProgress(0);
 		reductionStatus.setMessage("Data Reduction Failed for data collection "
 				+ dataCollectionId3);
-		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, reductionStatus);
+		bioSAXSISPyB.setDataReductionStatus(dataCollectionId3, reductionStatus);
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
 		expectedReductionStatusInfo.setStatus(ISpyBStatus.FAILED);
 		expectedReductionStatusInfo.setProgress(0);
@@ -577,12 +577,12 @@ public class BioSAXSScriptTest {
 		analysisStatus.setProgress(0);
 		analysisStatus.setMessage("Data Analysis Failed for data collection "
 				+ dataCollectionId4);
-		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, analysisStatus);
+		bioSAXSISPyB.setDataAnalysisStatus(dataCollectionId4, analysisStatus);
 		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
 		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.FAILED);
 		expectedAnalysisStatusInfo.setProgress(0);
 		expectedAnalysisStatusInfo
-				.setMessage("Data Reduction Failed for data collection "
+				.setMessage("Data Analysis Failed for data collection "
 						+ dataCollectionId4);
 		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId4);
 		assertEquals(expectedAnalysisStatusInfo.getStatus(),
@@ -613,7 +613,7 @@ public class BioSAXSScriptTest {
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
-				.getDataCollectionStatus(dataCollectionId3);
+				.getDataCollectionStatus(dataCollectionId5);
 		assertEquals(expectedCollectionStatusInfo.getStatus(),
 				ispyBStatusInfo.getStatus());
 		assertEquals(expectedCollectionStatusInfo.getProgress(),
@@ -629,6 +629,8 @@ public class BioSAXSScriptTest {
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(66);
+		expectedCollectionStatusInfo
+				.addFileName(getFilename(14));
 		expectedCollectionStatusInfo
 				.addFileName(getFilename(15));
 		expectedCollectionStatusInfo.setMessage("");
