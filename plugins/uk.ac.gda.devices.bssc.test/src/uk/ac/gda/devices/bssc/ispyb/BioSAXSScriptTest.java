@@ -16,6 +16,8 @@ public class BioSAXSScriptTest {
 	private static String visit;
 	private List<ISAXSDataCollection> iSpyBSAXSDataCollections;
 
+	private static String defaultDataPath = "/entry1/detector/data";
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		bioSAXSISPyB = new MockBioSAXSISPyB();
@@ -62,14 +64,14 @@ public class BioSAXSScriptTest {
 		// Create buffer before run
 		long bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId1,
 				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				1.0, "/dls/b21/data/2013/sm999-9/b21-1.nxs",
-				"/entry1/detector/data");
+				1.0, getFilename(1),
+				defaultDataPath);
 
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-1.nxs");
+				.addFileName(getFilename(1));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -88,13 +90,13 @@ public class BioSAXSScriptTest {
 		// Create sample run
 		long sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId1, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-9991.nxs",
-				"/entry1/detector/data");
+				getFilename(2),
+				defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(66);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-2.nxs");
+				.addFileName(getFilename(2));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -113,13 +115,13 @@ public class BioSAXSScriptTest {
 		// create a buffer after entry in ISpyB
 		long bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId1,
 				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				1.0, "/dls/b21/data/2013/sm999-9/b21-3.nxs",
-				"/entry1/detector/data");
+				1.0, getFilename(3),
+				defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedCollectionStatusInfo.setProgress(100);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-3.nxs");
+				.addFileName(getFilename(3));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -153,14 +155,14 @@ public class BioSAXSScriptTest {
 		ISpyBStatusInfo reductionStatus = new ISpyBStatusInfo();
 		reductionStatus.setStatus(ISpyBStatus.COMPLETE);
 		reductionStatus.setProgress(100);
-		reductionStatus.addFileName("/dls/b21/data/2013/sm999-9/b21-4.nxs");
+		reductionStatus.addFileName(getFilename(4));
 		reductionStatus.setMessage("");
 		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, reductionStatus);
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
 		expectedReductionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedReductionStatusInfo.setProgress(100);
 		expectedReductionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-4.nxs");
+				.addFileName(getFilename(4));
 		expectedReductionStatusInfo.setMessage("");
 		ispyBStatusInfo = bioSAXSISPyB
 				.getDataReductionStatus(dataCollectionId1);
@@ -191,7 +193,7 @@ public class BioSAXSScriptTest {
 		ISpyBStatusInfo analysisStatus = new ISpyBStatusInfo();
 		analysisStatus.setStatus(ISpyBStatus.COMPLETE);
 		analysisStatus.setProgress(100);
-		analysisStatus.addFileName("/dls/b21/data/2013/sm999-9/b21-5.nxs");
+		analysisStatus.addFileName(getFilename(5));
 		analysisStatus.setMessage("");
 		bioSAXSISPyB.setDataReductionStatus(dataCollectionId1, analysisStatus);
 
@@ -199,7 +201,7 @@ public class BioSAXSScriptTest {
 		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedAnalysisStatusInfo.setProgress(100);
 		expectedAnalysisStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-5.nxs");
+				.addFileName(getFilename(5));
 		expectedAnalysisStatusInfo.setMessage("");
 		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId1);
 		assertEquals(expectedAnalysisStatusInfo.getStatus(),
@@ -236,14 +238,14 @@ public class BioSAXSScriptTest {
 		bufferBeforeId = bioSAXSISPyB
 				.createBufferRun(dataCollectionId2, 1.0, 20.0f, 20.0f, 10.0,
 						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-						"/dls/b21/data/2013/sm999-9/b21-6.nxs",
-						"/entry1/detector/data");
+						getFilename(6),
+						defaultDataPath);
 
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-6.nxs");
+				.addFileName(getFilename(6));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -260,8 +262,8 @@ public class BioSAXSScriptTest {
 		sampleId = bioSAXSISPyB
 				.createSampleRun(dataCollectionId2, 1.0, 20.0f, 20.0f, 10.0,
 						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-						"/dls/b21/data/2013/sm999-9/b21-7.nxs",
-						"/entry1/detector/data");
+						getFilename(7),
+						defaultDataPath);
 
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.FAILED);
@@ -308,14 +310,14 @@ public class BioSAXSScriptTest {
 		bufferBeforeId = bioSAXSISPyB
 				.createBufferRun(dataCollectionId3, 1.0, 20.0f, 20.0f, 10.0,
 						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-						"/dls/b21/data/2013/sm999-9/b21-8.nxs",
-						"/entry1/detector/data");
+						getFilename(8),
+						defaultDataPath);
 
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-8.nxs");
+				.addFileName(getFilename(8));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -335,13 +337,13 @@ public class BioSAXSScriptTest {
 		sampleId = bioSAXSISPyB
 				.createSampleRun(dataCollectionId3, 1.0, 20.0f, 20.0f, 10.0,
 						10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-						"/dls/b21/data/2013/sm999-9/b21-9.nxs",
-						"/entry1/detector/data");
+						getFilename(10),
+						defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(66);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-9.nxs");
+				.addFileName(getFilename(10));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -360,13 +362,13 @@ public class BioSAXSScriptTest {
 		// create a buffer after entry in ISpyB
 		bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId3, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-10.nxs",
-				"/entry1/detector/data");
+				getFilename(10),
+				defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedCollectionStatusInfo.setProgress(100);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-10.nxs");
+				.addFileName(getFilename(10));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -445,14 +447,14 @@ public class BioSAXSScriptTest {
 		// Create buffer before run
 		bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId4, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-12.nxs",
-				"/entry1/detector/data");
+				getFilename(12),
+				defaultDataPath);
 
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-12.nxs");
+				.addFileName(getFilename(12));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -471,13 +473,13 @@ public class BioSAXSScriptTest {
 		// Create sample run
 		sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId4, 1.0, 20.0f,
 				20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-13.nxs",
-				"/entry1/detector/data");
+				getFilename(13),
+				defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(66);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-13.nxs");
+				.addFileName(getFilename(13));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -496,13 +498,13 @@ public class BioSAXSScriptTest {
 		// create a buffer after entry in ISpyB
 		bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId4, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-14.nxs",
-				"/entry1/detector/data");
+				getFilename(14),
+				defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedCollectionStatusInfo.setProgress(100);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-14.nxs");
+				.addFileName(getFilename(14));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -535,14 +537,14 @@ public class BioSAXSScriptTest {
 		reductionStatus = new ISpyBStatusInfo();
 		reductionStatus.setStatus(ISpyBStatus.COMPLETE);
 		reductionStatus.setProgress(100);
-		reductionStatus.addFileName("/dls/b21/data/2013/sm999-9/b21-14.nxs");
+		reductionStatus.addFileName(getFilename(14));
 		reductionStatus.setMessage("");
 		bioSAXSISPyB.setDataReductionStatus(dataCollectionId4, reductionStatus);
 		expectedReductionStatusInfo = new ISpyBStatusInfo();
 		expectedReductionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedReductionStatusInfo.setProgress(100);
 		expectedReductionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-14.nxs");
+				.addFileName(getFilename(14));
 		expectedReductionStatusInfo.setMessage("");
 		ispyBStatusInfo = bioSAXSISPyB
 				.getDataReductionStatus(dataCollectionId4);
@@ -622,13 +624,13 @@ public class BioSAXSScriptTest {
 		// Create sample run
 		sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId5, 1.0, 20.0f,
 				20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-15.nxs",
-				"/entry1/detector/data");
+				getFilename(15),
+				defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(66);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-15.nxs");
+				.addFileName(getFilename(15));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -647,13 +649,13 @@ public class BioSAXSScriptTest {
 		// create a buffer after entry in ISpyB
 		bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId5, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-				"/dls/b21/data/2013/sm999-9/b21-16.nxs",
-				"/entry1/detector/data");
+				getFilename(16),
+				defaultDataPath);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedCollectionStatusInfo.setProgress(100);
 		expectedCollectionStatusInfo
-				.addFileName("/dls/b21/data/2013/sm999-9/b21-16.nxs");
+				.addFileName(getFilename(16));
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
@@ -705,5 +707,9 @@ public class BioSAXSScriptTest {
 		// data collection 1 ran successfully so it should contain 3 nexus files
 		// in the sampleInfo list
 		assertEquals(3, sampleInfoList.size());
+	}
+
+	private static String getFilename(int fileNumber) {
+		return "/dls/b21/data/2013/sm999-9/b21-" + fileNumber + ".nxs";
 	}
 }
