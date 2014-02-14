@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class BioSAXSScriptTest {
 
-	private static BioSAXSISPyB bioSAXSISPyB;
+	protected static BioSAXSISPyB bioSAXSISPyB;
 	private static long blSessionId;
 	private static long experimentId;
 	private static String visit;
