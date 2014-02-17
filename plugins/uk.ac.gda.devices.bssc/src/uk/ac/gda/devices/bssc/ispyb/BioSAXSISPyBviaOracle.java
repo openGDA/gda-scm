@@ -1180,6 +1180,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
 			bioSaxsDataCollection.setCollectionStatus(getDataCollectionStatusFromDatabase(dataCollectionId));
 			bioSaxsDataCollection.setReductionStatus(getDataReductionStatusFromDatabase(dataCollectionId));
+			if (bioSaxsDataCollection.getReductionStatus().getStatus() == null) {
+				bioSaxsDataCollection.getReductionStatus().setStatus(ISpyBStatus.NOT_STARTED);
+			}
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
 			logger.error("Could not create SAXS data collection object", e);
