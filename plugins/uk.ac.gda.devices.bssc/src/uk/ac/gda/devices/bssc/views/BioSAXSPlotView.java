@@ -28,6 +28,8 @@ import org.dawnsci.plotting.api.PlotType;
 import org.dawnsci.plotting.api.PlottingFactory;
 import org.dawnsci.plotting.api.tool.IToolPageSystem;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -40,8 +42,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
 
 import uk.ac.diamond.scisoft.analysis.dataset.ILazyDataset;
+import uk.ac.diamond.scisoft.analysis.dataset.Slice;
 import uk.ac.diamond.scisoft.analysis.io.DataHolder;
 import uk.ac.diamond.scisoft.analysis.io.HDF5Loader;
+import uk.ac.diamond.scisoft.analysis.rcp.inspector.LabelledSlider;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
 public class BioSAXSPlotView extends ViewPart {
@@ -52,7 +56,7 @@ public class BioSAXSPlotView extends ViewPart {
 	private Composite plotComposite;
 	private Composite plotComposite2;
 	private ISAXSProgress sampleProgress;
-	private Slider slider;
+	private LabelledSlider slider;
 
 	public BioSAXSPlotView() {
 		try {
@@ -80,13 +84,33 @@ public class BioSAXSPlotView extends ViewPart {
 		sliderCompositeGL.marginHeight = 10;
 		sliderCompositeGL.horizontalSpacing = 10;
 		sliderCompositeGL.numColumns = 2;
-		
+
 		Label lblFrames = new Label(sliderComposite, SWT.NONE);
 		sliderComposite.setLayout(sliderCompositeGL);
 		lblFrames.setText("Frames ");
 		lblFrames.setLayoutData(new GridData(SWT.NONE));
-		
-		slider = new Slider(sliderComposite, SWT.NONE);
+
+		slider = new LabelledSlider(sliderComposite, SWT.HORIZONTAL);
+		slider.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// if (slice == null)
+				// return;
+				// final int start = slider.getValue();
+				// final Slice s = slice.getValue();
+				// if (s.setPosition(start)) {
+				// if (size != null)
+				// size.setSelection(s.getNumSteps());
+				// }
+				// slice.setStart(start);
+				// if (value != null)
+				// value.setText(adata.getString(start));
+				// reset.setEnabled(true);
+			}
+		});
+		slider.setIncrements(1, 5);
+		slider.setToolTipText("Starting position");
+
 		GridData gd_slider = new GridData(SWT.NONE);
 		gd_slider.widthHint = 222;
 		slider.setLayoutData(gd_slider);
@@ -113,22 +137,21 @@ public class BioSAXSPlotView extends ViewPart {
 
 	public void setPlot(ISAXSProgress sampleProgress) {
 		this.sampleProgress = sampleProgress;
-		
-		//get the frames from the nexus file and set the slider
+
+		// get the frames from the nexus file and set the slider
 		String filePath = this.sampleProgress.getCollectionFileNames().get(0);
-		
+
 		HDF5Loader hdf5Loader = new HDF5Loader(filePath);
 		System.out.println(hdf5Loader);
 		try {
 			DataHolder dataHolder = hdf5Loader.loadFile();
 			List<ILazyDataset> dataSetList = dataHolder.getList();
-//			for (ILazyDataset dataSet : dataSetList)
-//			{
-//				System.out.println("dataSet.getName() : " + dataSet.getName());
-//				System.out.println("dataSet size is : " + dataSet.getSize());
-//			}
-			slider.setMinimum(0);
-			slider.setMaximum(dataSetList.size());
+			// for (ILazyDataset dataSet : dataSetList) {
+			// System.out.println("dataSet.getName() : " + dataSet.getName());
+			// System.out.println("dataSet size is : " + dataSet.getSize());
+			// }
+			ILazyDataset dataSet = (ILazyDataset) dataSetList.get(0);
+			slider.setMinMax(0, dataSet.getSize(), "0", String.valueOf(dataSet.getSize()));
 		} catch (ScanFileHolderException e) {
 			// TODO Auto-generated catch block
 			logger.error("TODO put description of error here", e);
