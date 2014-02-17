@@ -683,7 +683,7 @@ public class BioSAXSScriptTest {
 		// Test correct experiment ids are returned for a session
 		List<Long> experimentIds = bioSAXSISPyB
 				.getExperimentsForSession(blsessionId);
-		assertEquals(experimentId, experimentIds.get(0), 0.0);
+		assert(experimentIds.contains(experimentId));
 
 		// Test correct data collectionIds are returned for an experiment
 		// TODO check that Jun can preserve the ordering
