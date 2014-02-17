@@ -3,8 +3,8 @@ package uk.ac.gda.devices.bssc.ispyb;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -601,6 +601,7 @@ public class BioSAXSScriptTest {
 						(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
 						(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
 						"viscosity", dataCollectionId4);
+		dataCollectionCount++;
 
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
@@ -673,15 +674,17 @@ public class BioSAXSScriptTest {
 		// Test data collections have been added to the database
 		List<ISAXSDataCollection> iSAXSDataCollections = bioSAXSISPyB
 				.getSAXSDataCollections(blsessionId);
-		assertEquals(dataCollectionId1, iSAXSDataCollections.get(0).getId());
-		assertEquals(dataCollectionId2, iSAXSDataCollections.get(1).getId());
-		assertEquals(dataCollectionId3, iSAXSDataCollections.get(2).getId());
-		assertEquals(dataCollectionId4, iSAXSDataCollections.get(3).getId());
+
+		Iterator<ISAXSDataCollection> iSDCIterator = iSAXSDataCollections.iterator();
+		findFirstDesiredId(iSDCIterator, dataCollectionId1);
+		assertEquals(dataCollectionId2, iSDCIterator.next().getId());
+		assertEquals(dataCollectionId3, iSDCIterator.next().getId());
+		assertEquals(dataCollectionId4, iSDCIterator.next().getId());
 
 		// Test correct experiment ids are returned for a session
 		List<Long> experimentIds = bioSAXSISPyB
 				.getExperimentsForSession(blsessionId);
-		assertEquals(experimentId, experimentIds.get(0), 0.0);
+		assert(experimentIds.contains(experimentId));
 
 		// Test correct data collectionIds are returned for an experiment
 		// TODO check that Jun can preserve the ordering
@@ -712,5 +715,16 @@ public class BioSAXSScriptTest {
 
 	protected static String getFilename(int fileNumber) {
 		return "/dls/b21/data/2013/sm999-9/b21-" + fileNumber + ".nxs";
+	}
+
+	private void findFirstDesiredId(Iterator<ISAXSDataCollection> iSDCIterator, long dataCollectionId1) {
+		long iteratorCollectionId = 0;
+		while (iSDCIterator.hasNext() && iteratorCollectionId != dataCollectionId1) {
+			ISAXSDataCollection collection = iSDCIterator.next();
+			if (collection == null) {
+				continue;
+			}
+			iteratorCollectionId = collection.getId();
+		}
 	}
 }
