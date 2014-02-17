@@ -197,6 +197,20 @@ public class BSSCStatus extends ViewPart implements IObserver {
 		{
 			Button btnScanPark = new Button(container, SWT.NONE);
 			btnScanPark.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
+			btnScanPark.setText("Clean");
+			btnScanPark.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					JythonServerFacade.getInstance().runCommand(bsscscannablename+".clean()");
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+		}
+		{
+			Button btnScanPark = new Button(container, SWT.NONE);
+			btnScanPark.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 			btnScanPark.setText("Scan + Park");
 			btnScanPark.addSelectionListener(new SelectionListener() {
 				@Override
@@ -208,7 +222,6 @@ public class BSSCStatus extends ViewPart implements IObserver {
 				}
 			});
 		}
-		new Label(container, SWT.NONE);
 		{
 			Button btnLoad = new Button(container, SWT.NONE);
 			btnLoad.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
