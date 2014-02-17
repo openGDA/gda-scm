@@ -1076,6 +1076,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		List<Long> runs = getRunsForDataCollection(dataCollectionId);
 
+		List<String> filenames = getFilesForFrameSet(runs);
+		for (String filename : filenames) {
+			status.addFileName(filename);
+		}
+
 		if (runs.size() == 0) {
 			status.setProgress(0);
 			status.setStatus(ISpyBStatus.NOT_STARTED);
@@ -1118,6 +1123,30 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 		
 		return status;
+	}
+
+	private List<String> getFilesForFrameSet(List<Long> runs) throws SQLException {
+		List<String> files= new ArrayList<String>();
+		connectIfNotConnected();
+		for (long runId : runs) {
+			String selectSql = "SELECT "
+					+ "  fs.filepath "
+					+ "FROM ispyb4a_db.FrameSet fs "
+					+ "WHERE fs.runId= ?";
+			PreparedStatement stmt1 = conn.prepareStatement(selectSql);
+			stmt1.setLong(1, runId);
+			boolean success = stmt1.execute();
+			if (success) {
+				ResultSet rs = stmt1.getResultSet();
+				if (rs.next()) {
+					files.add(rs.getString(1));
+				}
+
+				rs.close();
+			}
+			stmt1.close();
+		}
+		return files;
 	}
 
 	@Override
