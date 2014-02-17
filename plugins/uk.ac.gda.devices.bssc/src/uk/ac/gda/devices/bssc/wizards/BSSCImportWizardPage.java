@@ -52,7 +52,6 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 	private static final int EXPOSURE_TEMP_COL_NO = 15;
 
 	protected FileFieldEditor editor;
-	private float sampleStorageTemperature = 15;
 
 	public BSSCImportWizardPage(String pageName, IStructuredSelection selection) {
 		super(pageName, selection);
@@ -78,7 +77,7 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				IPath path = new Path(BSSCImportWizardPage.this.editor.getStringValue());
-				String newFileName = path.removeFileExtension().addFileExtension("xml").lastSegment();
+				String newFileName = path.removeFileExtension().addFileExtension("biosaxs").lastSegment();
 				setFileName(newFileName);
 			}
 		});
@@ -119,7 +118,6 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 			Sheet sheet = wb.getSheetAt(0);
 
 			BSSCSessionBean sessionBean = new BSSCSessionBean();
-			sessionBean.setSampleStorageTemperature(sampleStorageTemperature);
 			List<TitrationBean> measurements = new ArrayList<TitrationBean>();
 
 			for (Row row : sheet) {

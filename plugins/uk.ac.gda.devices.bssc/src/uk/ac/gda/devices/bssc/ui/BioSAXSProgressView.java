@@ -18,10 +18,12 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import gda.observable.IObserver;
 import gda.rcp.GDAClientActivator;
-import gda.rcp.util.OSGIServiceRegister;
 
+import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -29,35 +31,43 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.beans.BioSAXSSampleProgressCollection;
-import uk.ac.gda.devices.bssc.beans.ISampleProgressCollection;
+import uk.ac.gda.devices.bssc.beans.BioSAXSProgressController;
 
 public class BioSAXSProgressView extends ViewPart {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsprogressview";
 	private BioSAXSProgressComposite bioSAXSComposite;
-	private IObservableList input;
-
-	public BioSAXSProgressView() {
-		// TODO Auto-generated constructor stub
-	}
+	private IListChangeListener listChangedListener;
+	private IObservableList model;
+	private BioSAXSProgressController controller;
+	private IObserver controllerObserver;
 
 	@Override
 	public void createPartControl(Composite parent) {
-		ISampleProgressCollection model = new BioSAXSSampleProgressCollection();
+		controller = (BioSAXSProgressController) GDAClientActivator.getNamedService(BioSAXSProgressController.class,
+				null);
 
-		OSGIServiceRegister modelReg = new OSGIServiceRegister();
-		modelReg.setClass(ISampleProgressCollection.class);
-		modelReg.setService(model);
-		try {
-			modelReg.afterPropertiesSet();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
+		model = (IObservableList)controller.getModel();
 
-		model = (ISampleProgressCollection) GDAClientActivator.getNamedService(ISampleProgressCollection.class, null);
-		input = model.getItems();
-		bioSAXSComposite = new BioSAXSProgressComposite(parent, input, SWT.NONE);
+		bioSAXSComposite = new BioSAXSProgressComposite(parent, model, SWT.NONE);
+		listChangedListener = new IListChangeListener() {
+
+			@Override
+			public void handleListChange(ListChangeEvent event) {
+				// TODO Auto-generated method stub
+
+			}
+		};
+		controllerObserver = new IObserver() {
+
+			@Override
+			public void update(Object source, Object arg) {
+				// TODO Auto-generated method stub
+
+			}
+		};
+		// model.addListChangeListener(listChangedListener);
+		controller.addIObserver(controllerObserver);
 	}
 
 	@Override
@@ -69,4 +79,21 @@ public class BioSAXSProgressView extends ViewPart {
 	public Viewer getViewer() {
 		return bioSAXSComposite.getViewer();
 	}
+
+	@Override
+	public void dispose() {
+		if (model != null && controllerObserver != null) {
+			model.removeListChangeListener(listChangedListener);
+			controller.deleteIObserver(controllerObserver);
+			controllerObserver = null;
+			model = null;
+		}
+
+		if (controller != null) {
+			controller.disconnectFromISpyB();
+		}
+
+		super.dispose();
+	}
+
 }
