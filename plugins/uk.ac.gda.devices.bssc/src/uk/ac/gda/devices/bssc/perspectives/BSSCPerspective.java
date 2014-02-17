@@ -35,7 +35,7 @@ public class BSSCPerspective implements IPerspectiveFactory {
 		// TODO Auto-generated method stub
 		
 		layout.addView("org.eclipse.ui.navigator.ProjectExplorer", IPageLayout.LEFT, 0.31f, IPageLayout.ID_EDITOR_AREA);
-		layout.addView("uk.ac.gda.video.views.cameraview", IPageLayout.TOP, 0.45f, IPageLayout.ID_EDITOR_AREA);
+		layout.addView("uk.ac.gda.devices.bssc.views.CapillaryView", IPageLayout.TOP, 0.45f, IPageLayout.ID_EDITOR_AREA);
 		layout.addView("uk.ac.gda.client.CommandQueueViewFactory", IPageLayout.TOP, 0.22f, "gda.rcp.ncd.views.NCDStatus");
 		layout.addView("uk.ac.gda.devices.bssc.ui.BSSCStatus", IPageLayout.BOTTOM, 0.46f, "gda.rcp.ncd.views.NCDStatus");
 	}
