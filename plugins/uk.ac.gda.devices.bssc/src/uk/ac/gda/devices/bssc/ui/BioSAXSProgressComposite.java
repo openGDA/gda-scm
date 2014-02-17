@@ -151,15 +151,21 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
-				event.gc.setBackground(green);
-
 				Object value = attributeMaps[0].get(element);
-
-				int columnWidth = viewerColumn2.getColumn().getWidth();
 				int percentage = ((Double) value).intValue();
-				int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
-				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-
+				int columnWidth = viewerColumn2.getColumn().getWidth();
+				
+				if (percentage >= 0) {
+					event.gc.setBackground(green);
+					int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
+					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
+				}
+				else
+				{
+					event.gc.setBackground(red);
+					int columnPercentage = (int) ((columnWidth * 0.01) * 100);
+					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
+				}
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
