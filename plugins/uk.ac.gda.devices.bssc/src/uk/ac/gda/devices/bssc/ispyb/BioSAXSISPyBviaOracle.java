@@ -852,6 +852,22 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return status;
 	}
 
+	private void setDataCollectionStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) {
+		if (status.getStatus() == ISpyBStatus.FAILED) {
+			try {
+				List<Long> runList = getRunsForDataCollection(dataCollectionId);
+				for (long runId: runList) {
+					updateRunWithStatus(runId, DATA_COLLECTION_FAILED);
+				}
+			} catch (SQLException e) {
+				logger.error("Exception while retrieving data collection status", e);
+			}
+		}
+		else {
+			logger.error("Not expecting to be able to set data collection status");
+		}
+	}
+
 	private void setOrUpdateDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
 		ISpyBStatusInfo newInfo = getDataReductionStatusFromDatabase(dataCollectionId);
 		if (newInfo.getStatus() != null || newInfo.getProgress() > 0) {
@@ -1125,7 +1141,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
-		retrieveCollection(dataCollectionId).setCollectionStatus(status);
+		setDataCollectionStatusInDatabase(dataCollectionId, status);
 	}
 
 	@Override
