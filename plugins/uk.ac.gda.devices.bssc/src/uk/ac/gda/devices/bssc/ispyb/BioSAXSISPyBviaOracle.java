@@ -1075,17 +1075,23 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private ISpyBStatusInfo getDataCollectionStatusFromDatabase(long dataCollectionId) throws Exception {
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		List<Long> runs = getRunsForDataCollection(dataCollectionId);
-		if (runs.size() >= 1) {
+
+		if (runs.size() == 0) {
+			status.setProgress(0);
+			status.setStatus(ISpyBStatus.NOT_STARTED);
+		}
+
+		else if (runs.size() == 1) {
 			if (isDataCollectionFailed(dataCollectionId)) {
 				status.setStatus(ISpyBStatus.FAILED);
 			}
 			else {
-				status.setProgress(0);
-				status.setStatus(ISpyBStatus.NOT_STARTED);
+				status.setProgress(33);
+				status.setStatus(ISpyBStatus.RUNNING);
 			}
 		}
 
-		else if (runs.size() >= 2) {
+		else if (runs.size() == 2) {
 			if (isDataCollectionFailed(dataCollectionId)) {
 				status.setProgress(33);
 				status.setStatus(ISpyBStatus.FAILED);
