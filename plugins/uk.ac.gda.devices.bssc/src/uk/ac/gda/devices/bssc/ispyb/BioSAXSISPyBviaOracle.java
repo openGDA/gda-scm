@@ -801,9 +801,15 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success) {
 			ResultSet rs = stmt1.getResultSet();
 			while (rs.next()) {
-				runs.add(rs.getLong(1));
-				runs.add(rs.getLong(2));
-				runs.add(rs.getLong(3));
+				if (rs.getLong(1) != 0) {
+					runs.add(rs.getLong(1));
+				}
+				if (rs.getLong(2) != 0) {
+					runs.add(rs.getLong(2));
+				}
+				if (rs.getLong(3) != 0) {
+					runs.add(rs.getLong(3));
+				}
 			}
 
 			rs.close();
