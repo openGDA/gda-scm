@@ -46,8 +46,8 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final long INVALID_VALUE = -1l;
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
-	private static final String DATA_REDUCTION_STARTED = "DataReductionStarted";
-	private static final String DATA_REDUCTION_ERROR = "DataReductionError";
+	private static final String DATA_ANALYSIS_STARTED = "DataAnalysisStarted";
+	private static final String DATA_ANALYSIS_ERROR = "DataAnalysisError";
 	private static final String DATA_COLLECTION_FAILED = "DataReductionFailed";
 
 	//the following are values of MeasurementToDataCollection datacollectionorder for the named measurements
@@ -552,7 +552,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		return experimentIds;	}
 
-	private long createSubtractionForDataReduction(long dataCollectionId) throws SQLException {
+	private long createSubtractionForDataAnalysis(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
 
 		connectIfNotConnected();
@@ -563,7 +563,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setLong(index++, dataCollectionId);
-		stmt.setString(index++, DATA_REDUCTION_STARTED);
+		stmt.setString(index++, DATA_ANALYSIS_STARTED);
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
@@ -572,13 +572,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	private boolean isDataReductionRunning(long subtractionId) throws SQLException {
+	private boolean isDataAnalysisRunning(long subtractionId) throws SQLException {
 		String gnomFilePath = getGnomFilePathFromSubtraction(subtractionId);
 
-		return (gnomFilePath != null) && (gnomFilePath.equals(DATA_REDUCTION_STARTED));
+		return (gnomFilePath != null) && (gnomFilePath.equals(DATA_ANALYSIS_STARTED));
 	}
 
-	private boolean clearDataReductionStarted(long subtractionId) {
+	private boolean clearDataAnalysisStarted(long subtractionId) {
 		try {
 			connectIfNotConnected();
 			// now remove the current dataCollectionId so that it's effectively been deleted
@@ -609,17 +609,17 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return gnomFilePath;
 	}
 
-	private boolean isDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+	private boolean isDataAnalysisFailedToComplete(long dataCollectionId) throws SQLException {
 		String gnomFilePath = getGnomFilePathFromSubtraction(dataCollectionId);
-		return (gnomFilePath != null && gnomFilePath.equals(DATA_REDUCTION_ERROR));
+		return (gnomFilePath != null && gnomFilePath.equals(DATA_ANALYSIS_ERROR));
 	}
 
-	private void setDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
+	private void setDataAnalysisFailedToComplete(long dataCollectionId) throws SQLException {
 		connectIfNotConnected();
 		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
 		int index = 1;
-		stmt1.setString(index++, DATA_REDUCTION_ERROR);
+		stmt1.setString(index++, DATA_ANALYSIS_ERROR);
 		stmt1.setLong(index++, dataCollectionId);
 
 		@SuppressWarnings("unused")
@@ -627,7 +627,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return;
 	}
 
-	private boolean isDataReductionFailed(long dataCollectionId) throws SQLException {
+	private boolean isDataAnalysisFailed(long dataCollectionId) throws SQLException {
 		String rg = null;
 		String rgGnom = null;
 		String gnomFilePath = null;
@@ -654,8 +654,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return (gnomFilePath == null || rg == null || rgGnom == null);
 	}
 
-	private boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
-		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
+	private boolean isDataAnalysisSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
+		return (!isDataAnalysisFailed(dataCollectionId) && !isDataAnalysisFailedToComplete(dataCollectionId) && !isDataAnalysisRunning(subtractionId));
 	}
 
 	private ISAXSDataCollection getSAXSDataCollectionFromDataCollection(long dataCollectionId) throws SQLException {
@@ -1027,7 +1027,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public long createDataAnalysis(long dataCollectionId) throws SQLException {
-		long subtractionId = createSubtractionForDataReduction(dataCollectionId);
+		long subtractionId = createSubtractionForDataAnalysis(dataCollectionId);
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		status.setStatus(ISpyBStatus.RUNNING);
 		setDataAnalysisStatus(dataCollectionId, status);
