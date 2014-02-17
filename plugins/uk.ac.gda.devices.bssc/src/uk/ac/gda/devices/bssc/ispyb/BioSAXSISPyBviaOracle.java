@@ -48,6 +48,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
 	private static final String DATA_REDUCTION_STARTED = "DataReductionStarted";
 	private static final String DATA_REDUCTION_ERROR = "DataReductionError";
+	private static final String DATA_COLLECTION_FAILED = "DataReductionFailed";
 
 	//the following are values of MeasurementToDataCollection datacollectionorder for the named measurements
 	private static final int BUFFER_BEFORE_MEASUREMENT = 1;
@@ -536,8 +537,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		connectIfNotConnected();
 
-		String selectSql = "SELECT experimentId FROM SaxsDataCollection sd "
-				+ "INNER JOIN Experiment ex ON sd.experimentId = ex.experimentId WHERE sd.blsessionId = ?";
+		String selectSql = "SELECT DISTINCT sd.experimentId FROM ispyb4a_db.SaxsDataCollection sd "
+				+ "INNER JOIN ispyb4a_db.Experiment ex ON sd.experimentId = ex.experimentId WHERE sd.blsessionId = ?";
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, blsessionId);
@@ -670,16 +671,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				+ "  mtd1.measurementid as bufferbeforemeasurementid,"
 				+ "  mtd3.measurementid as bufferaftermeasurementid,"
 				+ "  mac.name as samplename,"
-				+ "  dc.blsessionId"
-				+ "FROM SaxsDataCollection dc"
-				+ "  INNER JOIN Blsession bls ON bls.sessionid=dc.blsessionid"
-				+ "  INNER JOIN Proposal pr ON pr.proposalid=bls.proposalid"
-				+ "  INNER JOIN MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = ? AND mtd1.datacollectionorder = 1"
-				+ "  INNER JOIN MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = ? AND mtd3.datacollectionorder = 3"
-				+ "  INNER JOIN MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = ? AND mtd2.datacollectionorder = 2"
-				+ "  INNER JOIN Measurement m2 ON mtd2.measurementid = m2.measurementid"
-				+ "  INNER JOIN Specimen sp ON m2.specimenid = sp.specimenid"
-				+ "  INNER JOIN Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ;";
+				+ "  dc.blsessionId "
+				+ "FROM ispyb4a_db.SaxsDataCollection dc"
+				+ "  INNER JOIN ispyb4a_db.Blsession bls ON bls.sessionid=dc.blsessionid"
+				+ "  INNER JOIN ispyb4a_db.Proposal pr ON pr.proposalid=bls.proposalid"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = dc.datacollectionid AND mtd1.datacollectionorder = 1"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = dc.datacollectionid AND mtd3.datacollectionorder = 3"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = dc.datacollectionid AND mtd2.datacollectionorder = 2"
+				+ "  INNER JOIN ispyb4a_db.Measurement m2 ON mtd2.measurementid = m2.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Specimen sp ON m2.specimenid = sp.specimenid"
+				+ "  INNER JOIN ispyb4a_db.Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ";
 		if (!collectionsMapHasDataCollection(dataCollectionId)) {
 			PreparedStatement stmt = conn.prepareStatement(selectSql);
 			stmt.setLong(1, dataCollectionId);
@@ -783,6 +784,66 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt1.execute();
 	}
 
+	private List<Long> getRunsForDataCollection(long dataCollectionId) throws SQLException {
+		List<Long> runs= new ArrayList<Long>();
+		connectIfNotConnected();
+		String selectSql = "SELECT "
+				+ "  m1.runid,"
+				+ "  m2.runid,"
+				+ "  m3.runid "
+				+ "FROM ispyb4a_db.SaxsDataCollection dc"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = dc.datacollectionid AND mtd1.datacollectionorder = 1"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = dc.datacollectionid AND mtd2.datacollectionorder = 2"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = dc.datacollectionid AND mtd3.datacollectionorder = 3"
+				+ "  INNER JOIN ispyb4a_db.Measurement m1 ON mtd1.measurementid = m1.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Measurement m2 ON mtd2.measurementid = m2.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Measurement m3 ON mtd3.measurementid = m3.measurementid "
+				+ "WHERE dc.datacollectionid= ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql);
+		stmt1.setLong(1, dataCollectionId);
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			while (rs.next()) {
+				runs.add(rs.getLong(1));
+				runs.add(rs.getLong(2));
+				runs.add(rs.getLong(3));
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return runs;
+	}
+
+	private void updateRunWithStatus(long runId, String status) throws SQLException {
+		connectIfNotConnected();
+		String selectSql1 = "UPDATE ispyb4a_db.Run r SET r.timeend= ? WHERE r.runId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		stmt1.setString(1, status);
+		stmt1.setLong(2, runId);
+		stmt1.execute();
+	}
+
+	private String getStatusFromRun(long runId) throws SQLException {
+		String status = null;
+		connectIfNotConnected();
+		String selectSql1 = "SELECT r.timeend FROM ispyb4a_db.Run r WHERE r.runId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		stmt1.setLong(1, runId);
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			if (rs.next()) {
+				status = rs.getString(1);
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return status;
+	}
+
 	/* above here are the methods that interact directly with the database.
 	 * other methods, including the interface methods are below here.
 	 */
@@ -872,7 +933,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				currentStatus.setStatus(ISpyBStatus.RUNNING);
 				currentStatus.setProgress(33);
 				currentStatus.addFileName(filename);
-				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT); //TODO replace with ISAXSDataCollection object query?
+				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT);
 			}
 			else if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 66) { //must be buffer after
 				currentStatus.setStatus(ISpyBStatus.COMPLETE);
@@ -1007,11 +1068,60 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			try {
 				ISAXSDataCollection bioSaxsDataCollection;
 				bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
+				bioSaxsDataCollection.setCollectionStatus(getDataCollectionStatusFromDatabase(dataCollectionId));
 				collectionsMap.put(dataCollectionId, bioSaxsDataCollection);
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				logger.error("Could not create SAXS data collection object", e);
 			}
 		}
+	}
+
+	/**
+	 * Get the status of a data collection. If Runs were created, some measurements must have been made. Check for failure flags.
+	 * @param dataCollectionId
+	 * @return status, including progress and state
+	 * @throws Exception 
+	 */
+	private ISpyBStatusInfo getDataCollectionStatusFromDatabase(long dataCollectionId) throws Exception {
+		ISpyBStatusInfo status = new ISpyBStatusInfo();
+		List<Long> runs = getRunsForDataCollection(dataCollectionId);
+		if (runs.size() >= 1) {
+			if (isDataCollectionFailed(dataCollectionId)) {
+				status.setStatus(ISpyBStatus.FAILED);
+			}
+			else {
+				status.setProgress(0);
+				status.setStatus(ISpyBStatus.NOT_STARTED);
+			}
+		}
+
+		else if (runs.size() >= 2) {
+			if (isDataCollectionFailed(dataCollectionId)) {
+				status.setProgress(33);
+				status.setStatus(ISpyBStatus.FAILED);
+			}
+			else {
+				status.setProgress(66);
+				status.setStatus(ISpyBStatus.RUNNING);
+			}
+		}
+
+		else if (runs.size() == 3) {
+			if (isDataCollectionFailed(dataCollectionId)) {
+				status.setProgress(66);
+				status.setStatus(ISpyBStatus.FAILED);
+			}
+			else {
+				status.setProgress(100);
+				status.setStatus(ISpyBStatus.COMPLETE);
+			}
+		}
+
+		else {
+			throw new Exception("Invalid number of Runs");
+		}
+		
+		return status;
 	}
 
 	@Override
@@ -1021,5 +1131,20 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		status.setStatus(ISpyBStatus.RUNNING);
 		setDataReductionStatus(dataCollectionId, status);
 		return 0;
+	}
+
+	private boolean isDataCollectionFailed(long dataCollectionId) {
+		try {
+			List<Long> runList = getRunsForDataCollection(dataCollectionId);
+			for (long runId: runList) {
+				String statusFromRun = getStatusFromRun(runId);
+				if (statusFromRun != null && statusFromRun.equals(DATA_COLLECTION_FAILED)) {
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Exception while retrieving data collection status", e);
+		}
+		return false;
 	}
 }
