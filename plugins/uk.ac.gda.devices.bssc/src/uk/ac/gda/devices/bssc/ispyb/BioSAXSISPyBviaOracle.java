@@ -852,6 +852,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return status;
 	}
 
+	private void setOrUpdateDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
+		ISpyBStatusInfo newInfo = getDataReductionStatusFromDatabase(dataCollectionId);
+		if (newInfo.getStatus() != null || newInfo.getProgress() > 0) {
+			updateDataReductionStatusInDatabase(dataCollectionId, status);
+		}
+		else {
+			setDataReductionStatusInDatabase(dataCollectionId, status);
+		}
+	}
+
 	private void setDataReductionStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
 		String statusToSet = getReductionStatusString(status);
 		@SuppressWarnings("unused")
@@ -886,6 +896,38 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	}
 
+	private void updateDataReductionStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
+		String statusToSet = getReductionStatusString(status);
+		@SuppressWarnings("unused")
+		long dataReductionStatusId = -1;
+
+		connectIfNotConnected();
+
+		String insertSql = "UPDATE ispyb4a_db.DataReductionStatus dr "
+				+ "SET dr.status = ?, dr.filename = ?, dr.message = ? "
+				+ "WHERE dr.datacollectionid = ?";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		int index = 1;
+		stmt.setString(index++, statusToSet);
+		if (status.getFileNames().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getFileNames().get(0));
+		}
+		if (status.getMessage().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getMessage());
+		}
+		stmt.setLong(index++, dataCollectionId);
+
+		stmt.execute();
+		stmt.close();
+
+	}
+
 	private ISpyBStatusInfo getDataReductionStatusFromDatabase(long dataCollectionId) throws SQLException {
 		ISpyBStatusInfo info = new ISpyBStatusInfo();
 
@@ -899,7 +941,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
 			if (rs.next()) {
-				info.setStatus(getStatusFromString(rs.getString(1)));
+				ISpyBStatus drStatus = getStatusFromString(rs.getString(1));
+				if (drStatus == ISpyBStatus.COMPLETE) {
+					info.setProgress(100);
+				}
+				else {
+					info.setProgress(0);
+				}
+				info.setStatus(drStatus);
 				String filename = rs.getString(2);
 				if (filename != null) {
 					info.addFileName(filename);
@@ -1088,7 +1137,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
-		retrieveCollection(dataCollectionId).setReductionStatus(status);
+		setOrUpdateDataReductionStatus(dataCollectionId, status);
 	}
 
 	@Override
@@ -1225,7 +1274,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	public long createDataReduction(long dataCollectionId) throws SQLException {
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		status.setStatus(ISpyBStatus.RUNNING);
-		setDataReductionStatusInDatabase(dataCollectionId, status);
+		setOrUpdateDataReductionStatus(dataCollectionId, status);
 		return 0;
 	}
 
