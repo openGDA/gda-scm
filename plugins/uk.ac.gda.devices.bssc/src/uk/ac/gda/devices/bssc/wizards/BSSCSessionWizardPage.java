@@ -90,7 +90,7 @@ public class BSSCSessionWizardPage extends WizardPage {
 	 */
 	private void initialize() {
 		populateContainer();
-		fileText.setText("biosaxs.xml");
+		fileText.setText("experiment.biosaxs");
 	}
 
 	private void populateContainer() {
@@ -110,14 +110,14 @@ public class BSSCSessionWizardPage extends WizardPage {
 				containerText.setText(container.getFullPath().toString());
 				return;
 			}
-		} 
+		}
 
 		IProject dataProject = DataProject.getDataProjectIfExists();
 		if (dataProject != null) {
 			containerText.setText(dataProject.getFolder("data/xml").getFullPath().toString());
 		}
 	}
-	
+
 	/**
 	 * Uses the standard container selection dialog to choose the new value for the container field.
 	 */
@@ -162,8 +162,8 @@ public class BSSCSessionWizardPage extends WizardPage {
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("xml") == false) {
-				updateStatus("File extension must be \"xml\"");
+			if ((ext.equalsIgnoreCase("biosaxs") == false) && (ext.equalsIgnoreCase("xml") == false)) {
+				updateStatus("File extension must be \"biosaxs\" or \"xml\"");
 				return;
 			}
 		}
