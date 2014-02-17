@@ -886,6 +886,37 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	}
 
+	private ISpyBStatusInfo getDataReductionStatusFromDatabase(long dataCollectionId) throws SQLException {
+		ISpyBStatusInfo info = new ISpyBStatusInfo();
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT dr.status, dr.filename, dr.message FROM ispyb4a_db.DataReductionStatus dr WHERE dr.dataCollectionId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, dataCollectionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				info.setStatus(getStatusFromString(rs.getString(1)));
+				String filename = rs.getString(2);
+				if (filename != null) {
+					info.addFileName(filename);
+				}
+				String message = rs.getString(3);
+				if (message != null) {
+					info.setMessage(message);
+				}
+			}
+
+			rs.close();
+		}
+		stmt.close();
+
+		return info;
+	}
+
 	/* above here are the methods that interact directly with the database.
 	 * other methods, including the interface methods are below here.
 	 */
@@ -1099,6 +1130,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			ISAXSDataCollection bioSaxsDataCollection;
 			bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
 			bioSaxsDataCollection.setCollectionStatus(getDataCollectionStatusFromDatabase(dataCollectionId));
+			bioSaxsDataCollection.setReductionStatus(getDataReductionStatusFromDatabase(dataCollectionId));
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
 			logger.error("Could not create SAXS data collection object", e);
@@ -1214,6 +1246,24 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			break;
 		}
 		return statusToSet;
+	}
+
+	private ISpyBStatus getStatusFromString(String statusString) {
+		if (statusString.equals(DATA_REDUCTION_COMPLETE)) {
+			return ISpyBStatus.COMPLETE;
+		}
+		else if (statusString.equals(DATA_REDUCTION_FAILED)) {
+			return ISpyBStatus.FAILED;
+		}
+		else if (statusString.equals(DATA_REDUCTION_RUNNING)) {
+			return ISpyBStatus.RUNNING;
+		}
+		else if (statusString.equals(DATA_REDUCTION_NOT_STARTED)) {
+			return ISpyBStatus.NOT_STARTED;
+		}
+		else {
+			return ISpyBStatus.NOT_STARTED;
+		}
 	}
 
 	private boolean isDataCollectionFailed(long dataCollectionId) {
