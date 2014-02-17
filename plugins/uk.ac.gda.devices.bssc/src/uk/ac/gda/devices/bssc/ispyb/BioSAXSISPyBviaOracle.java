@@ -57,7 +57,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	
 	Connection conn = null;
 	String URL = null;
-	Map<Long, ISAXSDataCollection> collectionsMap = new HashMap<Long, ISAXSDataCollection>();
 	private int previousCollectionId;
 	long blsessionId;
 
@@ -681,35 +680,32 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				+ "  INNER JOIN ispyb4a_db.Measurement m2 ON mtd2.measurementid = m2.measurementid"
 				+ "  INNER JOIN ispyb4a_db.Specimen sp ON m2.specimenid = sp.specimenid"
 				+ "  INNER JOIN ispyb4a_db.Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ";
-		if (!collectionsMapHasDataCollection(dataCollectionId)) {
-			PreparedStatement stmt = conn.prepareStatement(selectSql);
-			stmt.setLong(1, dataCollectionId);
-			boolean success = stmt.execute();
-			if (success) {
-				int index = 1;
-				ResultSet rs = stmt.getResultSet();
-				if (rs.next()) {
-					long experimentId = rs.getLong(index++);
-					String proposalCode = rs.getString(index++);
-					short visitNumber = rs.getShort(index++);
-					long bufferBeforeId = rs.getLong(index++);
-					long bufferAfterId = rs.getLong(index++);
-					String sampleName = rs.getString(index++);
-					long blSessionId = rs.getLong(index++);
-					bean = new BioSAXSDataCollectionBean();
-					bean.setBlSessionId(blSessionId);
-					bean.setBufferAfterMeasurementId(bufferAfterId);
-					bean.setBufferBeforeMeasurementId(bufferBeforeId);
-					bean.setExperimentId(experimentId);
-					bean.setId(dataCollectionId);
-					bean.setSampleName(sampleName);
-					String visit = proposalCode + "-" + visitNumber;
-					bean.setVisit(visit);
-				}
-				rs.close();
-				stmt.close();
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, dataCollectionId);
+		boolean success = stmt.execute();
+		if (success) {
+			int index = 1;
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				long experimentId = rs.getLong(index++);
+				String proposalCode = rs.getString(index++);
+				short visitNumber = rs.getShort(index++);
+				long bufferBeforeId = rs.getLong(index++);
+				long bufferAfterId = rs.getLong(index++);
+				String sampleName = rs.getString(index++);
+				long blSessionId = rs.getLong(index++);
+				bean = new BioSAXSDataCollectionBean();
+				bean.setBlSessionId(blSessionId);
+				bean.setBufferAfterMeasurementId(bufferAfterId);
+				bean.setBufferBeforeMeasurementId(bufferBeforeId);
+				bean.setExperimentId(experimentId);
+				bean.setId(dataCollectionId);
+				bean.setSampleName(sampleName);
+				String visit = proposalCode + "-" + visitNumber;
+				bean.setVisit(visit);
 			}
-
+			rs.close();
+			stmt.close();
 		}
 
 		return bean;
@@ -721,8 +717,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		List<Long> allCollectionIds = getSaxsDataCollectionsForSession(blSessionId);
 		for (Long collectionId : allCollectionIds) {
-			retrieveCollectionInfoIfNecessary(collectionId);
-			ISAXSDataCollection collection = collectionsMap.get(collectionId);
+			retrieveCollection(collectionId);
+			ISAXSDataCollection collection = retrieveCollection(collectionId);
 			saxsDataCollections.add(collection);
 		}
 		return saxsDataCollections;
@@ -915,7 +911,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			bean.getCollectionStatus().setProgress(33); //the previous data collection was done, so set initial progress
 			bean.getCollectionStatus().addFileName(getDataCollectionStatus(previousDataCollectionId).getFileNames().get(2));
 		}
-		collectionsMap.put(saxsDataCollectionId, bean);
 		return saxsDataCollectionId;
 	}
 
@@ -1004,28 +999,24 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		collectionsMap.get(dataCollectionId).setCollectionStatus(status);
+		retrieveCollection(dataCollectionId).setCollectionStatus(status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		return collectionsMap.get(dataCollectionId).getCollectionStatus();
+		return retrieveCollection(dataCollectionId).getCollectionStatus();
 
 	}
 
 	@Override
 	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		collectionsMap.get(dataCollectionId).setReductionStatus(status);
+		retrieveCollection(dataCollectionId).setReductionStatus(status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataReductionStatus(long dataCollectionId) throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		return collectionsMap.get(dataCollectionId).getReductionStatus();
+		return retrieveCollection(dataCollectionId).getReductionStatus();
 	}
 
 	@Override
@@ -1040,14 +1031,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		collectionsMap.get(dataCollectionId).setAnalysisStatus(status);
+		retrieveCollection(dataCollectionId).setAnalysisStatus(status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataAnalysisStatus(long dataCollectionId) throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		return collectionsMap.get(dataCollectionId).getAnalysisStatus();
+		return retrieveCollection(dataCollectionId).getAnalysisStatus();
 	}
 
 	@Override
@@ -1055,25 +1044,20 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return previousCollectionId;
 	}
 	
-	private boolean collectionsMapHasDataCollection(long dataCollectionId) {
-		return collectionsMap.containsKey(dataCollectionId);
-	}
-	
 	/**
 	 * Retrieve data collection status and place in collectionsMap
 	 * @param dataCollectionId
 	 */
-	private void retrieveCollectionInfoIfNecessary(long dataCollectionId) {
-		if (!collectionsMapHasDataCollection(dataCollectionId)) {
-			try {
-				ISAXSDataCollection bioSaxsDataCollection;
-				bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
-				bioSaxsDataCollection.setCollectionStatus(getDataCollectionStatusFromDatabase(dataCollectionId));
-				collectionsMap.put(dataCollectionId, bioSaxsDataCollection);
-			} catch (Exception e) {
-				logger.error("Could not create SAXS data collection object", e);
-			}
+	private ISAXSDataCollection retrieveCollection(long dataCollectionId) {
+		try {
+			ISAXSDataCollection bioSaxsDataCollection;
+			bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
+			bioSaxsDataCollection.setCollectionStatus(getDataCollectionStatusFromDatabase(dataCollectionId));
+			return bioSaxsDataCollection;
+		} catch (Exception e) {
+			logger.error("Could not create SAXS data collection object", e);
 		}
+		return null;
 	}
 
 	/**
