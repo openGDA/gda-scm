@@ -930,7 +930,12 @@ public class MeasurementsFieldComposite extends FieldComposite {
 					TitrationBean copiedBean = (TitrationBean) BeanUtils.cloneBean(oldBean);
 					copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
 					copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
-					copiedBean.setRecouperateLocation((LocationBean) BeanUtils.cloneBean(oldBean.getRecouperateLocation()));
+					
+					if (oldBean.getRecouperateLocation() != null) {
+						copiedBean.setRecouperateLocation((LocationBean) BeanUtils.cloneBean(oldBean
+								.getRecouperateLocation()));
+					}
+					
 					toadd.add(copiedBean);
 				} catch (Exception e) {
 				}
