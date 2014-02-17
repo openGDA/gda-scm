@@ -48,6 +48,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
 	private static final String DATA_ANALYSIS_STARTED = "DataAnalysisStarted";
 	private static final String DATA_ANALYSIS_ERROR = "DataAnalysisError";
+
+	private static final String DATA_REDUCTION_NOT_STARTED = "DatRedNot";
+	private static final String DATA_REDUCTION_COMPLETE = "DatRedCom";
+	private static final String DATA_REDUCTION_FAILED = "DatRedFai";
+	private static final String DATA_REDUCTION_RUNNING = "DatRedRun";
+
 	private static final String DATA_COLLECTION_FAILED = "DataReductionFailed";
 
 	//the following are values of MeasurementToDataCollection datacollectionorder for the named measurements
@@ -846,6 +852,40 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return status;
 	}
 
+	private void setDataReductionStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
+		String statusToSet = getReductionStatusString(status);
+		@SuppressWarnings("unused")
+		long dataReductionStatusId = -1;
+
+		connectIfNotConnected();
+
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.DataReductionStatus ("
+				+ "dataReductionStatusId, dataCollectionId, status, filename, message) "
+				+ "VALUES (ispyb4a_db.s_DataReductionStatus.nextval, ?, ?, ?, ?) RETURNING dataReductionStatusId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		int index = 1;
+		stmt.setLong(index++, dataCollectionId);
+		stmt.setString(index++, statusToSet);
+		if (status.getFileNames().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getFileNames().get(0));
+		}
+		if (status.getMessage().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getMessage());
+		}
+
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
+		stmt.execute();
+		dataReductionStatusId = stmt.getLong(index);
+		stmt.close();
+
+	}
+
 	/* above here are the methods that interact directly with the database.
 	 * other methods, including the interface methods are below here.
 	 */
@@ -1151,11 +1191,29 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public long createDataReduction(long dataCollectionId) throws SQLException {
-		//TODO this should be modifying a data reduction-related table to store status and other fields
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		status.setStatus(ISpyBStatus.RUNNING);
-		setDataReductionStatus(dataCollectionId, status);
+		setDataReductionStatusInDatabase(dataCollectionId, status);
 		return 0;
+	}
+
+	private String getReductionStatusString(ISpyBStatusInfo status) {
+		String statusToSet = null;
+		switch (status.getStatus()) {
+		case NOT_STARTED:
+			statusToSet = DATA_REDUCTION_NOT_STARTED;
+			break;
+		case RUNNING:
+			statusToSet = DATA_REDUCTION_RUNNING;
+			break;
+		case FAILED:
+			statusToSet = DATA_REDUCTION_FAILED;
+			break;
+		case COMPLETE:
+			statusToSet = DATA_REDUCTION_COMPLETE;
+			break;
+		}
+		return statusToSet;
 	}
 
 	private boolean isDataCollectionFailed(long dataCollectionId) {
