@@ -36,6 +36,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PerspectiveAdapter;
 import org.eclipse.ui.PlatformUI;
 
+import uk.ac.gda.devices.bssc.views.BioSAXSPlotView;
 import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
 
 public class BioSAXSResultPerspective implements IPerspectiveFactory {
@@ -48,6 +49,7 @@ public class BioSAXSResultPerspective implements IPerspectiveFactory {
 	public void createInitialLayout(IPageLayout layout) {
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
+		layout.addView(BioSAXSPlotView.ID, IPageLayout.LEFT, 0.45f, IPageLayout.ID_EDITOR_AREA);
 		layout.setEditorAreaVisible(false);
 	}
 
