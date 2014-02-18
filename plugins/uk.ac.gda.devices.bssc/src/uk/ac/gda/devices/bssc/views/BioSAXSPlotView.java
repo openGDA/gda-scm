@@ -18,34 +18,40 @@
 
 package uk.ac.gda.devices.bssc.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import gda.analysis.DataSet;
-import gda.analysis.io.ScanFileHolderException;
-
+import org.dawb.common.services.ServiceManager;
 import org.dawnsci.plotting.api.IPlottingSystem;
 import org.dawnsci.plotting.api.PlotType;
 import org.dawnsci.plotting.api.PlottingFactory;
 import org.dawnsci.plotting.api.tool.IToolPageSystem;
+import org.dawnsci.slicing.api.util.SliceUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.swt.widgets.Slider;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.layout.GridData;
 
+import uk.ac.diamond.scisoft.analysis.dataset.AbstractDataset;
+import uk.ac.diamond.scisoft.analysis.dataset.IDataset;
 import uk.ac.diamond.scisoft.analysis.dataset.ILazyDataset;
-import uk.ac.diamond.scisoft.analysis.dataset.Slice;
-import uk.ac.diamond.scisoft.analysis.io.DataHolder;
-import uk.ac.diamond.scisoft.analysis.io.HDF5Loader;
+import uk.ac.diamond.scisoft.analysis.dataset.Maths;
+import uk.ac.diamond.scisoft.analysis.io.IDataHolder;
+import uk.ac.diamond.scisoft.analysis.io.ILoaderService;
+import uk.ac.diamond.scisoft.analysis.io.SliceObject;
 import uk.ac.diamond.scisoft.analysis.rcp.inspector.LabelledSlider;
+import uk.ac.diamond.scisoft.analysis.rcp.monitor.ProgressMonitorWrapper;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
 public class BioSAXSPlotView extends ViewPart {
@@ -54,13 +60,20 @@ public class BioSAXSPlotView extends ViewPart {
 	private Logger logger = LoggerFactory.getLogger(BioSAXSPlotView.class);
 	private String plotName;
 	private Composite plotComposite;
-	private Composite plotComposite2;
 	private ISAXSProgress sampleProgress;
 	private LabelledSlider slider;
+	private SliceObject sliceObject;
+	protected ILazyDataset lz;
+	protected String dataSetPath;
+	protected IDataHolder dh;
+	private String filePath;
+	private int startValue;
 
 	public BioSAXSPlotView() {
 		try {
 			this.plotting = PlottingFactory.createPlottingSystem();
+			
+			sliceObject = new SliceObject();
 		} catch (Exception e) {
 			logger.error("Cannot create a plotting system!", e);
 		}
@@ -94,6 +107,46 @@ public class BioSAXSPlotView extends ViewPart {
 		slider.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				final Job loadJob = new Job("Load plot Data") {
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {
+						try {
+							ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
+							dataSetPath = "/entry1/instrument/detector/data";
+							dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+							lz = dh.getLazyDataset(dataSetPath);
+							Display.getDefault().asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									startValue = slider.getValue();
+								}
+							});
+							
+							sliceObject.setName(sampleProgress.getSampleName());
+							sliceObject.setFullShape(lz.getShape());
+							sliceObject.setShapeMessage("");
+							sliceObject.setPath(filePath);
+							sliceObject.setSliceStart(new int[] { 0, startValue, 0, 0 });
+							sliceObject.setSliceStop(new int[] { 1, 59, 1679, 1475 });
+							sliceObject.setSliceStep(new int[] { 1, 49, 1 ,1 });
+
+							final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+							List<IDataset> dataSetList = new ArrayList<IDataset>();
+							dataSetList.add(dataSet);
+							plot(dataSetList);
+
+
+						} catch (Exception e) {
+							logger.error("Exception creating 2D plot", e);
+						} catch (Throwable e) {
+							logger.error("Throwing exception creating 2D plot", e);
+						}
+
+						return Status.OK_STATUS;
+					}
+				};
+				loadJob.schedule();
 				// if (slice == null)
 				// return;
 				// final int start = slider.getValue();
@@ -135,26 +188,117 @@ public class BioSAXSPlotView extends ViewPart {
 		return super.getAdapter(clazz);
 	}
 
-	public void setPlot(ISAXSProgress sampleProgress) {
+	public void setPlot(final ISAXSProgress sampleProgress) {
 		this.sampleProgress = sampleProgress;
 
 		// get the frames from the nexus file and set the slider
-		String filePath = this.sampleProgress.getCollectionFileNames().get(0);
+		filePath = this.sampleProgress.getCollectionFileNames().get(0);
 
-		HDF5Loader hdf5Loader = new HDF5Loader(filePath);
-		System.out.println(hdf5Loader);
-		try {
-			DataHolder dataHolder = hdf5Loader.loadFile();
-			List<ILazyDataset> dataSetList = dataHolder.getList();
-			// for (ILazyDataset dataSet : dataSetList) {
-			// System.out.println("dataSet.getName() : " + dataSet.getName());
-			// System.out.println("dataSet size is : " + dataSet.getSize());
-			// }
-			ILazyDataset dataSet = (ILazyDataset) dataSetList.get(0);
-			slider.setMinMax(0, dataSet.getSize(), "0", String.valueOf(dataSet.getSize()));
-		} catch (ScanFileHolderException e) {
-			// TODO Auto-generated catch block
-			logger.error("TODO put description of error here", e);
-		}
+		final Job loadJob = new Job("Load plot Data") {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
+					dataSetPath = "/entry1/instrument/detector/data";
+					dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+					lz = dh.getLazyDataset(dataSetPath);
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							slider.setMinMax(0, lz.getShape()[1], "0", String.valueOf(lz.getShape()[1]));
+						}
+					});
+					
+					sliceObject.setName(sampleProgress.getSampleName());
+					sliceObject.setFullShape(lz.getShape());
+					sliceObject.setShapeMessage("");
+					sliceObject.setPath(filePath);
+					sliceObject.setSliceStart(new int[] { 0, 10, 0, 0 });
+					sliceObject.setSliceStop(new int[] { 1, 59, 1679, 1475 });
+					sliceObject.setSliceStep(new int[] { 1, 49, 1 ,1 });
+
+					final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+					List<IDataset> dataSetList = new ArrayList<IDataset>();
+					dataSetList.add(dataSet);
+					plot(dataSetList);
+
+
+				} catch (Exception e) {
+					logger.error("Exception creating 2D plot", e);
+				} catch (Throwable e) {
+					logger.error("Throwing exception creating 2D plot", e);
+				}
+
+				return Status.OK_STATUS;
+			}
+		};
+		loadJob.schedule();
 	}
+
+	private boolean plot(List<IDataset> list) {
+
+		// setPlotting(true);
+
+		plotting.clear();
+		if (list == null || list.isEmpty())
+			return false;
+
+		if (list.get(0).getShape().length == 1) {
+			plotting.createPlot1D(null, list, null);
+		} else if (list.get(0).getShape().length == 2) {
+			// Average the images, then plot
+			AbstractDataset added = Maths.add(list, list.size() > 1);
+			plotting.createPlot2D(added, null, null);
+		}
+
+		return true;
+
+	}
+
+	// private void update(DatacollectionData dc) throws Throwable {
+	//
+	// final String corPath =
+	// DataCollectionGalleryInfo.getCorrectedPath(dc.getIspybDatacollection().getXtalsnapshotfullpath1());
+	// final File dlsPath = new File(corPath);
+	// if (dlsPath.exists()) {
+	// try {
+	// if (label.getImage()!=null) label.getImage().dispose();
+	// Image image = new Image(null, corPath);
+	// label.setImage(image);
+	// currentImageData = image.getImageData();
+	// setPlotting(false);
+	// scaleImage();
+	//
+	// } catch (Throwable ne) {
+	//
+	// final ILoaderService service = (ILoaderService)ServiceManager.getService(ILoaderService.class);
+	// final IDataHolder holder = service.getData(corPath, new IMonitor.Stub());
+	// if (holder!=null && holder.getDataset(0)!=null) {
+	// plotting.updatePlot2D(holder.getDataset(0), null, dlsPath.getName(), new NullProgressMonitor());
+	// }
+	// setPlotting(true);
+	// }
+	//
+	// }
+	// }
+
+	// private void setPlotting(boolean isPlotting) {
+	//
+	// GridUtils.setVisible(label, !isPlotting);
+	// GridUtils.setVisible(plotting.getPlotComposite(), isPlotting);
+	//
+	// if (isPlotting) {
+	// if (getViewSite().getActionBars().getToolBarManager().isEmpty()) {
+	// for (IContributionItem item : this.plottingActions) {
+	// getViewSite().getActionBars().getToolBarManager().add(item);
+	// }
+	// }
+	// } else {
+	// getViewSite().getActionBars().getToolBarManager().removeAll();
+	// }
+	// getViewSite().getActionBars().getToolBarManager().update(true);
+	// label.getParent().layout();
+	// }
 }
