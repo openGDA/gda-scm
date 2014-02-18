@@ -608,12 +608,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	private boolean isDataAnalysisRunning(long subtractionId) throws SQLException {
-		String gnomFilePath = getGnomFilePathFromSubtraction(subtractionId);
-
-		return (gnomFilePath != null) && (gnomFilePath.equals(DATA_ANALYSIS_STARTED));
-	}
-
 	private boolean clearDataAnalysisStarted(long subtractionId) {
 		try {
 			connectIfNotConnected();
@@ -658,14 +652,18 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return;
 	}
 
-	private ISpyBStatus getDataAnalysisStatusFromDatabase(long dataCollectionId) throws SQLException {
+	private ISpyBStatusInfo getDataAnalysisStatusFromDatabase(long dataCollectionId) throws SQLException {
+		//TODO create message column in Subtraction so we can store the information without using up an existing column
+		ISpyBStatusInfo info = new ISpyBStatusInfo();
 		String rg = null;
 		String rgGnom = null;
 		String gnomFilePath = null;
+		String subtractedFilePath = null;
+		String guinierFilePath = null;
 
 		connectIfNotConnected();
 
-		String selectSql = "SELECT rg, rggnom, gnomFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
+		String selectSql = "SELECT rg, rggnom, gnomFilePath, subtractedFilePath, guinierFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, dataCollectionId);
@@ -676,6 +674,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				rg = rs.getString(1);
 				rgGnom = rs.getString(2);
 				gnomFilePath = rs.getString(3);
+				subtractedFilePath = rs.getString(4);
+				guinierFilePath = rs.getString(5);
 			}
 
 			rs.close();
@@ -683,18 +683,26 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.close();
 
 		if (gnomFilePath == null) {
-			return ISpyBStatus.NOT_STARTED;
+			info.setStatus(ISpyBStatus.NOT_STARTED);
 		}
 		else if (gnomFilePath.equals(DATA_ANALYSIS_ERROR)) {
-			return ISpyBStatus.FAILED;
+			info.setStatus(ISpyBStatus.FAILED);
 		}
 		else if (gnomFilePath.equals(DATA_ANALYSIS_STARTED)) {
-			return ISpyBStatus.RUNNING;
+			info.setStatus(ISpyBStatus.RUNNING);
 		}
 		else if (rg == null || rgGnom == null) {
-			return ISpyBStatus.FAILED;
+			info.setStatus(ISpyBStatus.FAILED);
 		}
-		return ISpyBStatus.COMPLETE;
+		else {
+			info.setStatus(ISpyBStatus.COMPLETE);
+			info.setProgress(100);
+			info.addFileName(subtractedFilePath);
+		}
+
+		info.setMessage(guinierFilePath);
+
+		return info;
 	}
 
 	private ISAXSDataCollection getSAXSDataCollectionFromDataCollection(long dataCollectionId) throws SQLException {
@@ -1232,6 +1240,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			if (bioSaxsDataCollection.getReductionStatus().getStatus() == null) {
 				bioSaxsDataCollection.getReductionStatus().setStatus(ISpyBStatus.NOT_STARTED);
 			}
+			bioSaxsDataCollection.setAnalysisStatus(getDataAnalysisStatusFromDatabase(dataCollectionId));
+
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
 			logger.error("Could not create SAXS data collection object", e);
