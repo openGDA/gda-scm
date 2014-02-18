@@ -44,8 +44,9 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final long INVALID_VALUE = -1l;
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
-	private static final String DATA_ANALYSIS_STARTED = "DataAnalysisStarted";
-	private static final String DATA_ANALYSIS_ERROR = "DataAnalysisError";
+	private static final String DATA_ANALYSIS_NOT_STARTED = "DataAnalysisNotStarted";
+	private static final String DATA_ANALYSIS_RUNNING = "DataAnalysisRunning";
+	private static final String DATA_ANALYSIS_FAILED = "DataAnalysisFailed";
 	private static final String DATA_ANALYSIS_COMPLETE= "DataAnalysisComplete";
 
 	private static final String DATA_REDUCTION_NOT_STARTED = "DatRedNot";
@@ -599,7 +600,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setLong(index++, dataCollectionId);
-		stmt.setString(index++, DATA_ANALYSIS_STARTED);
+		stmt.setString(index++, DATA_ANALYSIS_RUNNING);
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
@@ -639,12 +640,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return gnomFilePath;
 	}
 
-	private void setDataAnalysisFailedToComplete(long dataCollectionId) throws SQLException {
+	private void setDataAnalysisStatusInDatabase(long dataCollectionId, ISpyBStatus status) throws SQLException {
 		connectIfNotConnected();
 		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
 		int index = 1;
-		stmt1.setString(index++, DATA_ANALYSIS_ERROR);
+		stmt1.setString(index++, DATA_ANALYSIS_FAILED);
 		stmt1.setLong(index++, dataCollectionId);
 
 		@SuppressWarnings("unused")
@@ -685,10 +686,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (gnomFilePath == null) {
 			info.setStatus(ISpyBStatus.NOT_STARTED);
 		}
-		else if (gnomFilePath.equals(DATA_ANALYSIS_ERROR)) {
+		else if (gnomFilePath.equals(DATA_ANALYSIS_FAILED)) {
 			info.setStatus(ISpyBStatus.FAILED);
 		}
-		else if (gnomFilePath.equals(DATA_ANALYSIS_STARTED)) {
+		else if (gnomFilePath.equals(DATA_ANALYSIS_RUNNING)) {
 			info.setStatus(ISpyBStatus.RUNNING);
 		}
 		else if (rg == null || rgGnom == null) {
@@ -1364,6 +1365,24 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			return ISpyBStatus.RUNNING;
 		}
 		else if (statusString.equals(DATA_REDUCTION_NOT_STARTED)) {
+			return ISpyBStatus.NOT_STARTED;
+		}
+		else {
+			return ISpyBStatus.NOT_STARTED;
+		}
+	}
+
+	private ISpyBStatus getAnalysisStatusFromString(String statusString) {
+		if (statusString.equals(DATA_ANALYSIS_COMPLETE)) {
+			return ISpyBStatus.COMPLETE;
+		}
+		else if (statusString.equals(DATA_ANALYSIS_FAILED)) {
+			return ISpyBStatus.FAILED;
+		}
+		else if (statusString.equals(DATA_ANALYSIS_RUNNING)) {
+			return ISpyBStatus.RUNNING;
+		}
+		else if (statusString.equals(DATA_ANALYSIS_NOT_STARTED)) {
 			return ISpyBStatus.NOT_STARTED;
 		}
 		else {
