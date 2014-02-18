@@ -747,7 +747,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		List<Long> allCollectionIds = getSaxsDataCollectionsForSession(blSessionId);
 		for (Long collectionId : allCollectionIds) {
-			retrieveCollection(collectionId);
 			ISAXSDataCollection collection = retrieveCollection(collectionId);
 			saxsDataCollections.add(collection);
 		}
@@ -1230,7 +1229,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
-			logger.error("Could not create SAXS data collection object", e);
+			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId, e);
 		}
 		return null;
 	}
