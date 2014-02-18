@@ -1221,47 +1221,35 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			status.addFileName(filename);
 		}
 
-		if (runs.size() == 0) {
+		if (isDataCollectionFailed(dataCollectionId)) { //failed data collection always results in progress of 0
+			status.setStatus(ISpyBStatus.FAILED);
+			status.setProgress(0);
+		}
+
+		else if (runs.size() == 0) {
 			status.setProgress(0);
 			status.setStatus(ISpyBStatus.NOT_STARTED);
 		}
 
 		else if (runs.size() == 1) {
-			if (isDataCollectionFailed(dataCollectionId)) {
-				status.setStatus(ISpyBStatus.FAILED);
-			}
-			else {
-				status.setProgress(33);
-				status.setStatus(ISpyBStatus.RUNNING);
-			}
+			status.setProgress(33);
+			status.setStatus(ISpyBStatus.RUNNING);
 		}
 
 		else if (runs.size() == 2) {
-			if (isDataCollectionFailed(dataCollectionId)) {
-				status.setProgress(33);
-				status.setStatus(ISpyBStatus.FAILED);
-			}
-			else {
-				status.setProgress(66);
-				status.setStatus(ISpyBStatus.RUNNING);
-			}
+			status.setProgress(66);
+			status.setStatus(ISpyBStatus.RUNNING);
 		}
 
 		else if (runs.size() == 3) {
-			if (isDataCollectionFailed(dataCollectionId)) {
-				status.setProgress(66);
-				status.setStatus(ISpyBStatus.FAILED);
-			}
-			else {
-				status.setProgress(100);
-				status.setStatus(ISpyBStatus.COMPLETE);
-			}
+			status.setProgress(100);
+			status.setStatus(ISpyBStatus.COMPLETE);
 		}
 
 		else {
 			throw new Exception("Invalid number of Runs");
 		}
-		
+
 		return status;
 	}
 
