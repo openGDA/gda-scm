@@ -609,17 +609,25 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	private void setDataAnalysisStatusInDatabase(long dataCollectionId, ISpyBStatus status) throws SQLException {
+	private boolean setDataAnalysisStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
 		connectIfNotConnected();
-		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
+		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=?, subtractedFilePath = ?, guinierFilePath = ? "
+				+ "WHERE su.dataCollectionId = ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
 		int index = 1;
-		stmt1.setString(index++, getAnalysisStringFromStatus(status));
+		stmt1.setString(index++, getAnalysisStringFromStatus(status.getStatus()));
+		List<String> filenames = status.getFileNames();
+		if (!filenames.isEmpty()) {
+			stmt1.setString(index++, filenames.get(0));
+		}
+		else {
+			stmt1.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		stmt1.setString(index++, status.getMessage());
 		stmt1.setLong(index++, dataCollectionId);
 
-		@SuppressWarnings("unused")
 		boolean success1 = stmt1.execute();
-		return;
+		return success1;
 	}
 
 	private ISpyBStatusInfo getDataAnalysisStatusFromDatabase(long dataCollectionId) throws SQLException {
@@ -652,7 +660,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 		stmt.close();
 
-		if (gnomFilePath == null) {
+		if (gnomFilePath == null || gnomFilePath.equals(DATA_ANALYSIS_NOT_STARTED)) {
 			info.setStatus(ISpyBStatus.NOT_STARTED);
 		}
 		else if (gnomFilePath.equals(DATA_ANALYSIS_FAILED)) {
@@ -661,16 +669,21 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		else if (gnomFilePath.equals(DATA_ANALYSIS_RUNNING)) {
 			info.setStatus(ISpyBStatus.RUNNING);
 		}
-		else if (rg == null || rgGnom == null) {
-			info.setStatus(ISpyBStatus.FAILED);
-		}
-		else {
+		else if (gnomFilePath.equals(DATA_ANALYSIS_COMPLETE)) {
 			info.setStatus(ISpyBStatus.COMPLETE);
 			info.setProgress(100);
 			info.addFileName(subtractedFilePath);
 		}
+		else if (rg == null || rgGnom == null) {
+			info.setStatus(ISpyBStatus.FAILED);
+		}
+		else {
+			info.setStatus(ISpyBStatus.FAILED);
+		}
 
-		info.setMessage(guinierFilePath);
+		if (guinierFilePath != null) {
+			info.setMessage(guinierFilePath);
+		}
 
 		return info;
 	}
@@ -1184,7 +1197,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
-		retrieveCollection(dataCollectionId).setAnalysisStatus(status);
+		if (!setDataAnalysisStatusInDatabase(dataCollectionId, status)) {
+			createSubtractionForDataAnalysis(dataCollectionId);
+			setDataAnalysisStatusInDatabase(dataCollectionId, status);
+		}
 	}
 
 	@Override
