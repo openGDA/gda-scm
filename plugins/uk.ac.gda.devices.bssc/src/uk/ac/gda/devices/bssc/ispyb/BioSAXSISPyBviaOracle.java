@@ -669,7 +669,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		connectIfNotConnected();
 
-		String selectSql = "SELECT rg, rggnom, subtractedFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
+		String selectSql = "SELECT rg, rggnom, gnomFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, dataCollectionId);
