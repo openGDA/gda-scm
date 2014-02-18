@@ -614,7 +614,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
 		int index = 1;
-		stmt1.setString(index++, DATA_ANALYSIS_FAILED);
+		stmt1.setString(index++, getAnalysisStringFromStatus(status));
 		stmt1.setLong(index++, dataCollectionId);
 
 		@SuppressWarnings("unused")
@@ -1357,6 +1357,22 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		else {
 			return ISpyBStatus.NOT_STARTED;
 		}
+	}
+
+	private String getAnalysisStringFromStatus(ISpyBStatus status) {
+		if (status == ISpyBStatus.COMPLETE) {
+			return DATA_ANALYSIS_COMPLETE;
+		}
+		else if (status == ISpyBStatus.FAILED) {
+			return DATA_ANALYSIS_FAILED;
+		}
+		else if (status == ISpyBStatus.NOT_STARTED) {
+			return DATA_ANALYSIS_NOT_STARTED;
+		}
+		else if (status == ISpyBStatus.RUNNING) {
+			return DATA_ANALYSIS_RUNNING;
+		}
+		return DATA_ANALYSIS_NOT_STARTED;
 	}
 
 	private boolean isDataCollectionFailed(long dataCollectionId) {
