@@ -18,6 +18,13 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+
+import org.eclipse.core.runtime.content.IContentDescriber;
+import org.eclipse.core.runtime.content.IContentDescription;
+
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.richbeans.xml.XMLBeanContentDescriber;
 
@@ -27,9 +34,37 @@ public final class BSSCSessionBeanDescriber extends XMLBeanContentDescriber {
 	public String getBeanName() {
 		return BSSCSessionBean.class.getName();
 	}
-
+	
 	@Override
 	public String getEditorId() {
 		return "uk.ac.gda.devices.bssc.beans.BSSCSessionBeanEditor";
+	}
+	
+	@Override
+	public int describe(Reader contents, IContentDescription description) throws IOException {
+
+		final BufferedReader reader = new BufferedReader(contents);
+		try {
+			// TODO Use castor to read the file and use instanceof
+			// on the bean type returned.
+			@SuppressWarnings("unused")
+			final String titleLine = reader.readLine(); // unused.
+			final String tagLine = reader.readLine();
+			
+			String beanName = getBeanName();
+			final String tagName = beanName.substring(beanName.lastIndexOf(".")+1);
+
+			if (tagLine != null) {
+				if (tagLine.trim().equalsIgnoreCase("<" + tagName + ">")
+						|| tagLine.trim().equalsIgnoreCase("<" + tagName + "/>")) {
+					return IContentDescriber.VALID;
+				}
+			} else {
+				return IContentDescriber.VALID;
+			}
+			return IContentDescriber.INVALID;
+		} finally {
+			reader.close();
+		}
 	}
 }

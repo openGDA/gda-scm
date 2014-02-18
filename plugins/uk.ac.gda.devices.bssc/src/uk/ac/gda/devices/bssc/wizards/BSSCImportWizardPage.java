@@ -77,7 +77,7 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				IPath path = new Path(BSSCImportWizardPage.this.editor.getStringValue());
-				String newFileName = path.removeFileExtension().addFileExtension("xml").lastSegment();
+				String newFileName = path.removeFileExtension().addFileExtension("biosaxs").lastSegment();
 				setFileName(newFileName);
 			}
 		});

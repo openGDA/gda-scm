@@ -26,9 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import oracle.jdbc.OracleConnection;
@@ -46,8 +44,17 @@ import uk.ac.gda.devices.bssc.beans.LocationBean;
 public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final long INVALID_VALUE = -1l;
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
-	private static final String DATA_REDUCTION_STARTED = "DataReductionStarted";
-	private static final String DATA_REDUCTION_ERROR = "DataReductionError";
+	private static final String DATA_ANALYSIS_NOT_STARTED = "DataAnalysisNotStarted";
+	private static final String DATA_ANALYSIS_RUNNING = "DataAnalysisRunning";
+	private static final String DATA_ANALYSIS_FAILED = "DataAnalysisFailed";
+	private static final String DATA_ANALYSIS_COMPLETE= "DataAnalysisComplete";
+
+	private static final String DATA_REDUCTION_NOT_STARTED = "DatRedNot";
+	private static final String DATA_REDUCTION_COMPLETE = "DatRedCom";
+	private static final String DATA_REDUCTION_FAILED = "DatRedFai";
+	private static final String DATA_REDUCTION_RUNNING = "DatRedRun";
+
+	private static final String DATA_COLLECTION_FAILED = "DataReductionFailed";
 
 	//the following are values of MeasurementToDataCollection datacollectionorder for the named measurements
 	private static final int BUFFER_BEFORE_MEASUREMENT = 1;
@@ -56,7 +63,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	
 	Connection conn = null;
 	String URL = null;
-	Map<Long, ISAXSDataCollection> collectionsMap = new HashMap<Long, ISAXSDataCollection>();
 	private int previousCollectionId;
 	long blsessionId;
 
@@ -530,14 +536,45 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return dataCollectionIds;
 	}
 
+
+	private boolean isRunInMultipleMeasurementToDataCollection(Long runId) throws SQLException {
+		boolean toReturn = false;
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT COUNT(*) FROM ispyb4a_db.Measurement m "
+				+ "INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd ON mtd.measurementId = m.measurementId "
+				+ "WHERE m.runId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, runId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				int numOfItems = (int) rs.getLong(1);
+				if (numOfItems > 1) {
+					toReturn = true;
+				}
+				else {
+					toReturn = false;
+				}
+
+			}
+			rs.close();
+		}
+		stmt.close();
+		return toReturn;
+	}
+
 	@Override
 	public List<Long> getExperimentsForSession(long blsessionId) throws SQLException {
 		List<Long> experimentIds = new ArrayList<Long>();
 
 		connectIfNotConnected();
 
-		String selectSql = "SELECT experimentId FROM SaxsDataCollection sd "
-				+ "INNER JOIN Experiment ex ON sd.experimentId = ex.experimentId WHERE sd.blsessionId = ?";
+		String selectSql = "SELECT DISTINCT sd.experimentId FROM ispyb4a_db.SaxsDataCollection sd "
+				+ "INNER JOIN ispyb4a_db.Experiment ex ON sd.experimentId = ex.experimentId WHERE sd.blsessionId = ?";
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, blsessionId);
@@ -552,7 +589,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		return experimentIds;	}
 
-	private long createSubtractionForDataReduction(long dataCollectionId) throws SQLException {
+	private long createSubtractionForDataAnalysis(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
 
 		connectIfNotConnected();
@@ -563,7 +600,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setLong(index++, dataCollectionId);
-		stmt.setString(index++, DATA_REDUCTION_STARTED);
+		stmt.setString(index++, DATA_ANALYSIS_RUNNING);
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
@@ -572,69 +609,39 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	private boolean isDataReductionRunning(long subtractionId) throws SQLException {
-		String gnomFilePath = getGnomFilePathFromSubtraction(subtractionId);
-
-		return (gnomFilePath != null) && (gnomFilePath.equals(DATA_REDUCTION_STARTED));
-	}
-
-	private boolean clearDataReductionStarted(long subtractionId) {
-		try {
-			connectIfNotConnected();
-			// now remove the current dataCollectionId so that it's effectively been deleted
-			String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET dataCollectionId=-1 WHERE su.subtractionId = ?";
-			PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
-			stmt1.setLong(1, subtractionId);
-			boolean success1 = stmt1.execute();
-			return success1;
-		} catch (SQLException e) {
-			return false;
-		}
-	}
-
-	private String getGnomFilePathFromSubtraction(long subtractionId) throws SQLException {
-		String gnomFilePath = null;
+	private boolean setDataAnalysisStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
 		connectIfNotConnected();
-		String selectSql = "SELECT gnomFilePath FROM ispyb4a_db.Subtraction su WHERE su.subtractionId = ?";
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, subtractionId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			if (rs.next())
-				gnomFilePath = rs.getString(1);
-			rs.close();
-		}
-		stmt.close();
-		return gnomFilePath;
-	}
-
-	private boolean isDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
-		String gnomFilePath = getGnomFilePathFromSubtraction(dataCollectionId);
-		return (gnomFilePath != null && gnomFilePath.equals(DATA_REDUCTION_ERROR));
-	}
-
-	private void setDataReductionFailedToComplete(long dataCollectionId) throws SQLException {
-		connectIfNotConnected();
-		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
+		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=?, subtractedFilePath = ?, guinierFilePath = ? "
+				+ "WHERE su.dataCollectionId = ?";
 		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
 		int index = 1;
-		stmt1.setString(index++, DATA_REDUCTION_ERROR);
+		stmt1.setString(index++, getAnalysisStringFromStatus(status.getStatus()));
+		List<String> filenames = status.getFileNames();
+		if (!filenames.isEmpty()) {
+			stmt1.setString(index++, filenames.get(0));
+		}
+		else {
+			stmt1.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		stmt1.setString(index++, status.getMessage());
 		stmt1.setLong(index++, dataCollectionId);
 
-		@SuppressWarnings("unused")
 		boolean success1 = stmt1.execute();
-		return;
+		return success1;
 	}
 
-	private boolean isDataReductionFailed(long dataCollectionId) throws SQLException {
+	private ISpyBStatusInfo getDataAnalysisStatusFromDatabase(long dataCollectionId) throws SQLException {
+		//TODO create message column in Subtraction so we can store the information without using up an existing column
+		ISpyBStatusInfo info = new ISpyBStatusInfo();
 		String rg = null;
 		String rgGnom = null;
 		String gnomFilePath = null;
+		String subtractedFilePath = null;
+		String guinierFilePath = null;
 
 		connectIfNotConnected();
 
-		String selectSql = "SELECT rg, rggnom, subtractedFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
+		String selectSql = "SELECT rg, rggnom, gnomFilePath, subtractedFilePath, guinierFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, dataCollectionId);
@@ -645,17 +652,40 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				rg = rs.getString(1);
 				rgGnom = rs.getString(2);
 				gnomFilePath = rs.getString(3);
+				subtractedFilePath = rs.getString(4);
+				guinierFilePath = rs.getString(5);
 			}
 
 			rs.close();
 		}
 		stmt.close();
 
-		return (gnomFilePath == null || rg == null || rgGnom == null);
-	}
+		if (gnomFilePath == null || gnomFilePath.equals(DATA_ANALYSIS_NOT_STARTED)) {
+			info.setStatus(ISpyBStatus.NOT_STARTED);
+		}
+		else if (gnomFilePath.equals(DATA_ANALYSIS_FAILED)) {
+			info.setStatus(ISpyBStatus.FAILED);
+		}
+		else if (gnomFilePath.equals(DATA_ANALYSIS_RUNNING)) {
+			info.setStatus(ISpyBStatus.RUNNING);
+		}
+		else if (gnomFilePath.equals(DATA_ANALYSIS_COMPLETE)) {
+			info.setStatus(ISpyBStatus.COMPLETE);
+			info.setProgress(100);
+			info.addFileName(subtractedFilePath);
+		}
+		else if (rg == null || rgGnom == null) {
+			info.setStatus(ISpyBStatus.FAILED);
+		}
+		else {
+			info.setStatus(ISpyBStatus.FAILED);
+		}
 
-	private boolean isDataReductionSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
-		return (!isDataReductionFailed(dataCollectionId) && !isDataReductionFailedToComplete(dataCollectionId) && !isDataReductionRunning(subtractionId));
+		if (guinierFilePath != null) {
+			info.setMessage(guinierFilePath);
+		}
+
+		return info;
 	}
 
 	private ISAXSDataCollection getSAXSDataCollectionFromDataCollection(long dataCollectionId) throws SQLException {
@@ -670,45 +700,42 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				+ "  mtd1.measurementid as bufferbeforemeasurementid,"
 				+ "  mtd3.measurementid as bufferaftermeasurementid,"
 				+ "  mac.name as samplename,"
-				+ "  dc.blsessionId"
-				+ "FROM SaxsDataCollection dc"
-				+ "  INNER JOIN Blsession bls ON bls.sessionid=dc.blsessionid"
-				+ "  INNER JOIN Proposal pr ON pr.proposalid=bls.proposalid"
-				+ "  INNER JOIN MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = ? AND mtd1.datacollectionorder = 1"
-				+ "  INNER JOIN MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = ? AND mtd3.datacollectionorder = 3"
-				+ "  INNER JOIN MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = ? AND mtd2.datacollectionorder = 2"
-				+ "  INNER JOIN Measurement m2 ON mtd2.measurementid = m2.measurementid"
-				+ "  INNER JOIN Specimen sp ON m2.specimenid = sp.specimenid"
-				+ "  INNER JOIN Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ;";
-		if (!collectionsMapHasDataCollection(dataCollectionId)) {
-			PreparedStatement stmt = conn.prepareStatement(selectSql);
-			stmt.setLong(1, dataCollectionId);
-			boolean success = stmt.execute();
-			if (success) {
-				int index = 1;
-				ResultSet rs = stmt.getResultSet();
-				if (rs.next()) {
-					long experimentId = rs.getLong(index++);
-					String proposalCode = rs.getString(index++);
-					short visitNumber = rs.getShort(index++);
-					long bufferBeforeId = rs.getLong(index++);
-					long bufferAfterId = rs.getLong(index++);
-					String sampleName = rs.getString(index++);
-					long blSessionId = rs.getLong(index++);
-					bean = new BioSAXSDataCollectionBean();
-					bean.setBlSessionId(blSessionId);
-					bean.setBufferAfterMeasurementId(bufferAfterId);
-					bean.setBufferBeforeMeasurementId(bufferBeforeId);
-					bean.setExperimentId(experimentId);
-					bean.setId(dataCollectionId);
-					bean.setSampleName(sampleName);
-					String visit = proposalCode + "-" + visitNumber;
-					bean.setVisit(visit);
-				}
-				rs.close();
-				stmt.close();
+				+ "  dc.blsessionId "
+				+ "FROM ispyb4a_db.SaxsDataCollection dc"
+				+ "  INNER JOIN ispyb4a_db.Blsession bls ON bls.sessionid=dc.blsessionid"
+				+ "  INNER JOIN ispyb4a_db.Proposal pr ON pr.proposalid=bls.proposalid"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = dc.datacollectionid AND mtd1.datacollectionorder = 1"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = dc.datacollectionid AND mtd3.datacollectionorder = 3"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = dc.datacollectionid AND mtd2.datacollectionorder = 2"
+				+ "  INNER JOIN ispyb4a_db.Measurement m2 ON mtd2.measurementid = m2.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Specimen sp ON m2.specimenid = sp.specimenid"
+				+ "  INNER JOIN ispyb4a_db.Macromolecule mac ON mac.macromoleculeid = sp.macromoleculeid WHERE dc.datacollectionid= ? ";
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, dataCollectionId);
+		boolean success = stmt.execute();
+		if (success) {
+			int index = 1;
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				long experimentId = rs.getLong(index++);
+				String proposalCode = rs.getString(index++);
+				short visitNumber = rs.getShort(index++);
+				long bufferBeforeId = rs.getLong(index++);
+				long bufferAfterId = rs.getLong(index++);
+				String sampleName = rs.getString(index++);
+				long blSessionId = rs.getLong(index++);
+				bean = new BioSAXSDataCollectionBean();
+				bean.setBlSessionId(blSessionId);
+				bean.setBufferAfterMeasurementId(bufferAfterId);
+				bean.setBufferBeforeMeasurementId(bufferBeforeId);
+				bean.setExperimentId(experimentId);
+				bean.setId(dataCollectionId);
+				bean.setSampleName(sampleName);
+				String visit = proposalCode + "-" + visitNumber;
+				bean.setVisit(visit);
 			}
-
+			rs.close();
+			stmt.close();
 		}
 
 		return bean;
@@ -720,8 +747,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		List<Long> allCollectionIds = getSaxsDataCollectionsForSession(blSessionId);
 		for (Long collectionId : allCollectionIds) {
-			retrieveCollectionInfoIfNecessary(collectionId);
-			ISAXSDataCollection collection = collectionsMap.get(collectionId);
+			ISAXSDataCollection collection = retrieveCollection(collectionId);
 			saxsDataCollections.add(collection);
 		}
 		return saxsDataCollections;
@@ -781,6 +807,202 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt1.setLong(1, runId);
 		stmt1.setLong(2, measurementId);
 		stmt1.execute();
+	}
+
+	private List<Long> getRunsForDataCollection(long dataCollectionId) throws SQLException {
+		List<Long> runs= new ArrayList<Long>();
+		connectIfNotConnected();
+		String selectSql = "SELECT "
+				+ "  m1.runid,"
+				+ "  m2.runid,"
+				+ "  m3.runid "
+				+ "FROM ispyb4a_db.SaxsDataCollection dc"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd1 ON mtd1.datacollectionid = dc.datacollectionid AND mtd1.datacollectionorder = 1"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd2 ON mtd2.datacollectionid = dc.datacollectionid AND mtd2.datacollectionorder = 2"
+				+ "  INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd3 ON mtd3.datacollectionid = dc.datacollectionid AND mtd3.datacollectionorder = 3"
+				+ "  INNER JOIN ispyb4a_db.Measurement m1 ON mtd1.measurementid = m1.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Measurement m2 ON mtd2.measurementid = m2.measurementid"
+				+ "  INNER JOIN ispyb4a_db.Measurement m3 ON mtd3.measurementid = m3.measurementid "
+				+ "WHERE dc.datacollectionid= ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql);
+		stmt1.setLong(1, dataCollectionId);
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			while (rs.next()) {
+				if (rs.getLong(1) != 0) {
+					runs.add(rs.getLong(1));
+				}
+				if (rs.getLong(2) != 0) {
+					runs.add(rs.getLong(2));
+				}
+				if (rs.getLong(3) != 0) {
+					runs.add(rs.getLong(3));
+				}
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return runs;
+	}
+
+	private void updateRunWithStatus(long runId, String status) throws SQLException {
+		connectIfNotConnected();
+		String selectSql1 = "UPDATE ispyb4a_db.Run r SET r.timeend= ? WHERE r.runId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		stmt1.setString(1, status);
+		stmt1.setLong(2, runId);
+		stmt1.execute();
+	}
+
+	private String getStatusFromRun(long runId) throws SQLException {
+		String status = null;
+		connectIfNotConnected();
+		String selectSql1 = "SELECT r.timeend FROM ispyb4a_db.Run r WHERE r.runId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		stmt1.setLong(1, runId);
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			if (rs.next()) {
+				status = rs.getString(1);
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return status;
+	}
+
+	private void setDataCollectionStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) {
+		if (status.getStatus() == ISpyBStatus.FAILED) {
+			try {
+				List<Long> runList = getRunsForDataCollection(dataCollectionId);
+				for (long runId: runList) {
+					updateRunWithStatus(runId, DATA_COLLECTION_FAILED);
+				}
+			} catch (SQLException e) {
+				logger.error("Exception while retrieving data collection status", e);
+			}
+		}
+		else {
+			logger.error("Not expecting to be able to set data collection status");
+		}
+	}
+
+	private void setOrUpdateDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
+		ISpyBStatusInfo newInfo = getDataReductionStatusFromDatabase(dataCollectionId);
+		if (newInfo.getStatus() != null || newInfo.getProgress() > 0) {
+			updateDataReductionStatusInDatabase(dataCollectionId, status);
+		}
+		else {
+			setDataReductionStatusInDatabase(dataCollectionId, status);
+		}
+	}
+
+	private void setDataReductionStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
+		String statusToSet = getReductionStatusString(status);
+		@SuppressWarnings("unused")
+		long dataReductionStatusId = -1;
+
+		connectIfNotConnected();
+
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.DataReductionStatus ("
+				+ "dataReductionStatusId, dataCollectionId, status, filename, message) "
+				+ "VALUES (ispyb4a_db.s_DataReductionStatus.nextval, ?, ?, ?, ?) RETURNING dataReductionStatusId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		int index = 1;
+		stmt.setLong(index++, dataCollectionId);
+		stmt.setString(index++, statusToSet);
+		if (status.getFileNames().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getFileNames().get(0));
+		}
+		if (status.getMessage().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getMessage());
+		}
+
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
+		stmt.execute();
+		dataReductionStatusId = stmt.getLong(index);
+		stmt.close();
+
+	}
+
+	private void updateDataReductionStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
+		String statusToSet = getReductionStatusString(status);
+		@SuppressWarnings("unused")
+		long dataReductionStatusId = -1;
+
+		connectIfNotConnected();
+
+		String insertSql = "UPDATE ispyb4a_db.DataReductionStatus dr "
+				+ "SET dr.status = ?, dr.filename = ?, dr.message = ? "
+				+ "WHERE dr.datacollectionid = ?";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		int index = 1;
+		stmt.setString(index++, statusToSet);
+		if (status.getFileNames().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getFileNames().get(0));
+		}
+		if (status.getMessage().isEmpty()) {
+			stmt.setNull(index++, java.sql.Types.VARCHAR);
+		}
+		else {
+			stmt.setString(index++, status.getMessage());
+		}
+		stmt.setLong(index++, dataCollectionId);
+
+		stmt.execute();
+		stmt.close();
+
+	}
+
+	private ISpyBStatusInfo getDataReductionStatusFromDatabase(long dataCollectionId) throws SQLException {
+		ISpyBStatusInfo info = new ISpyBStatusInfo();
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT dr.status, dr.filename, dr.message FROM ispyb4a_db.DataReductionStatus dr WHERE dr.dataCollectionId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, dataCollectionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				ISpyBStatus drStatus = getStatusFromString(rs.getString(1));
+				if (drStatus == ISpyBStatus.COMPLETE) {
+					info.setProgress(100);
+				}
+				else {
+					info.setProgress(0);
+				}
+				info.setStatus(drStatus);
+				String filename = rs.getString(2);
+				if (filename != null) {
+					info.addFileName(filename);
+				}
+				String message = rs.getString(3);
+				if (message != null) {
+					info.setMessage(message);
+				}
+			}
+
+			rs.close();
+		}
+		stmt.close();
+
+		return info;
 	}
 
 	/* above here are the methods that interact directly with the database.
@@ -854,7 +1076,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			bean.getCollectionStatus().setProgress(33); //the previous data collection was done, so set initial progress
 			bean.getCollectionStatus().addFileName(getDataCollectionStatus(previousDataCollectionId).getFileNames().get(2));
 		}
-		collectionsMap.put(saxsDataCollectionId, bean);
 		return saxsDataCollectionId;
 	}
 
@@ -872,7 +1093,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				currentStatus.setStatus(ISpyBStatus.RUNNING);
 				currentStatus.setProgress(33);
 				currentStatus.addFileName(filename);
-				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT); //TODO replace with ISAXSDataCollection object query?
+				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT);
 			}
 			else if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 66) { //must be buffer after
 				currentStatus.setStatus(ISpyBStatus.COMPLETE);
@@ -943,33 +1164,29 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		collectionsMap.get(dataCollectionId).setCollectionStatus(status);
+		setDataCollectionStatusInDatabase(dataCollectionId, status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		return collectionsMap.get(dataCollectionId).getCollectionStatus();
+		return retrieveCollection(dataCollectionId).getCollectionStatus();
 
 	}
 
 	@Override
 	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		collectionsMap.get(dataCollectionId).setReductionStatus(status);
+		setOrUpdateDataReductionStatus(dataCollectionId, status);
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataReductionStatus(long dataCollectionId) throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		return collectionsMap.get(dataCollectionId).getReductionStatus();
+		return retrieveCollection(dataCollectionId).getReductionStatus();
 	}
 
 	@Override
 	public long createDataAnalysis(long dataCollectionId) throws SQLException {
-		long subtractionId = createSubtractionForDataReduction(dataCollectionId);
+		long subtractionId = createSubtractionForDataAnalysis(dataCollectionId);
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		status.setStatus(ISpyBStatus.RUNNING);
 		setDataAnalysisStatus(dataCollectionId, status);
@@ -979,14 +1196,15 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		collectionsMap.get(dataCollectionId).setAnalysisStatus(status);
+		if (!setDataAnalysisStatusInDatabase(dataCollectionId, status)) {
+			createSubtractionForDataAnalysis(dataCollectionId);
+			setDataAnalysisStatusInDatabase(dataCollectionId, status);
+		}
 	}
 
 	@Override
 	public ISpyBStatusInfo getDataAnalysisStatus(long dataCollectionId) throws SQLException {
-		retrieveCollectionInfoIfNecessary(dataCollectionId);
-		return collectionsMap.get(dataCollectionId).getAnalysisStatus();
+		return retrieveCollection(dataCollectionId).getAnalysisStatus();
 	}
 
 	@Override
@@ -994,32 +1212,196 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return previousCollectionId;
 	}
 	
-	private boolean collectionsMapHasDataCollection(long dataCollectionId) {
-		return collectionsMap.containsKey(dataCollectionId);
-	}
-	
 	/**
 	 * Retrieve data collection status and place in collectionsMap
 	 * @param dataCollectionId
 	 */
-	private void retrieveCollectionInfoIfNecessary(long dataCollectionId) {
-		if (!collectionsMapHasDataCollection(dataCollectionId)) {
-			try {
-				ISAXSDataCollection bioSaxsDataCollection;
-				bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
-				collectionsMap.put(dataCollectionId, bioSaxsDataCollection);
-			} catch (SQLException e) {
-				logger.error("Could not create SAXS data collection object", e);
+	private ISAXSDataCollection retrieveCollection(long dataCollectionId) {
+		try {
+			ISAXSDataCollection bioSaxsDataCollection;
+			bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
+			bioSaxsDataCollection.setCollectionStatus(getDataCollectionStatusFromDatabase(dataCollectionId));
+			bioSaxsDataCollection.setReductionStatus(getDataReductionStatusFromDatabase(dataCollectionId));
+			if (bioSaxsDataCollection.getReductionStatus().getStatus() == null) {
+				bioSaxsDataCollection.getReductionStatus().setStatus(ISpyBStatus.NOT_STARTED);
+			}
+			bioSaxsDataCollection.setAnalysisStatus(getDataAnalysisStatusFromDatabase(dataCollectionId));
+
+			return bioSaxsDataCollection;
+		} catch (Exception e) {
+			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId, e);
+		}
+		return null;
+	}
+
+	/**
+	 * Get the status of a data collection. If Runs were created, some measurements must have been made. Check for failure flags.
+	 * @param dataCollectionId
+	 * @return status, including progress and state
+	 * @throws Exception 
+	 */
+	private ISpyBStatusInfo getDataCollectionStatusFromDatabase(long dataCollectionId) throws Exception {
+		ISpyBStatusInfo status = new ISpyBStatusInfo();
+		List<Long> runs = getRunsForDataCollection(dataCollectionId);
+
+		List<String> filenames = getFilesForFrameSet(runs);
+		for (String filename : filenames) {
+			status.addFileName(filename);
+		}
+
+		if (isDataCollectionFailed(dataCollectionId)) { //failed data collection always results in progress of 0
+			status.setStatus(ISpyBStatus.FAILED);
+			status.setProgress(0);
+		}
+
+		else if (runs.size() == 0) {
+			status.setProgress(0);
+			status.setStatus(ISpyBStatus.NOT_STARTED);
+		}
+
+		else if (runs.size() == 1) {
+			status.setProgress(33);
+			//if using previous data collection buffer after, then status is NOT_STARTED
+			if (isRunInMultipleMeasurementToDataCollection(runs.get(0))) {
+				status.setStatus(ISpyBStatus.NOT_STARTED);
+			}
+			else {
+				status.setStatus(ISpyBStatus.RUNNING);
 			}
 		}
+
+		else if (runs.size() == 2) {
+			status.setProgress(66);
+			status.setStatus(ISpyBStatus.RUNNING);
+		}
+
+		else if (runs.size() == 3) {
+			status.setProgress(100);
+			status.setStatus(ISpyBStatus.COMPLETE);
+		}
+
+		else {
+			throw new Exception("Invalid number of Runs");
+		}
+
+		return status;
+	}
+
+	private List<String> getFilesForFrameSet(List<Long> runs) throws SQLException {
+		List<String> files= new ArrayList<String>();
+		connectIfNotConnected();
+		for (long runId : runs) {
+			String selectSql = "SELECT "
+					+ "  fs.filepath "
+					+ "FROM ispyb4a_db.FrameSet fs "
+					+ "WHERE fs.runId= ?";
+			PreparedStatement stmt1 = conn.prepareStatement(selectSql);
+			stmt1.setLong(1, runId);
+			boolean success = stmt1.execute();
+			if (success) {
+				ResultSet rs = stmt1.getResultSet();
+				if (rs.next()) {
+					files.add(rs.getString(1));
+				}
+
+				rs.close();
+			}
+			stmt1.close();
+		}
+		return files;
 	}
 
 	@Override
 	public long createDataReduction(long dataCollectionId) throws SQLException {
-		//TODO this should be modifying a data reduction-related table to store status and other fields
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
 		status.setStatus(ISpyBStatus.RUNNING);
-		setDataReductionStatus(dataCollectionId, status);
+		setOrUpdateDataReductionStatus(dataCollectionId, status);
 		return 0;
+	}
+
+	private String getReductionStatusString(ISpyBStatusInfo status) {
+		String statusToSet = null;
+		switch (status.getStatus()) {
+		case NOT_STARTED:
+			statusToSet = DATA_REDUCTION_NOT_STARTED;
+			break;
+		case RUNNING:
+			statusToSet = DATA_REDUCTION_RUNNING;
+			break;
+		case FAILED:
+			statusToSet = DATA_REDUCTION_FAILED;
+			break;
+		case COMPLETE:
+			statusToSet = DATA_REDUCTION_COMPLETE;
+			break;
+		}
+		return statusToSet;
+	}
+
+	private ISpyBStatus getStatusFromString(String statusString) {
+		if (statusString.equals(DATA_REDUCTION_COMPLETE)) {
+			return ISpyBStatus.COMPLETE;
+		}
+		else if (statusString.equals(DATA_REDUCTION_FAILED)) {
+			return ISpyBStatus.FAILED;
+		}
+		else if (statusString.equals(DATA_REDUCTION_RUNNING)) {
+			return ISpyBStatus.RUNNING;
+		}
+		else if (statusString.equals(DATA_REDUCTION_NOT_STARTED)) {
+			return ISpyBStatus.NOT_STARTED;
+		}
+		else {
+			return ISpyBStatus.NOT_STARTED;
+		}
+	}
+
+	private ISpyBStatus getAnalysisStatusFromString(String statusString) {
+		if (statusString.equals(DATA_ANALYSIS_COMPLETE)) {
+			return ISpyBStatus.COMPLETE;
+		}
+		else if (statusString.equals(DATA_ANALYSIS_FAILED)) {
+			return ISpyBStatus.FAILED;
+		}
+		else if (statusString.equals(DATA_ANALYSIS_RUNNING)) {
+			return ISpyBStatus.RUNNING;
+		}
+		else if (statusString.equals(DATA_ANALYSIS_NOT_STARTED)) {
+			return ISpyBStatus.NOT_STARTED;
+		}
+		else {
+			return ISpyBStatus.NOT_STARTED;
+		}
+	}
+
+	private String getAnalysisStringFromStatus(ISpyBStatus status) {
+		if (status == ISpyBStatus.COMPLETE) {
+			return DATA_ANALYSIS_COMPLETE;
+		}
+		else if (status == ISpyBStatus.FAILED) {
+			return DATA_ANALYSIS_FAILED;
+		}
+		else if (status == ISpyBStatus.NOT_STARTED) {
+			return DATA_ANALYSIS_NOT_STARTED;
+		}
+		else if (status == ISpyBStatus.RUNNING) {
+			return DATA_ANALYSIS_RUNNING;
+		}
+		return DATA_ANALYSIS_NOT_STARTED;
+	}
+
+	private boolean isDataCollectionFailed(long dataCollectionId) {
+		try {
+			List<Long> runList = getRunsForDataCollection(dataCollectionId);
+			for (long runId: runList) {
+				String statusFromRun = getStatusFromRun(runId);
+				if (statusFromRun != null && statusFromRun.equals(DATA_COLLECTION_FAILED)) {
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Exception while retrieving data collection status", e);
+		}
+		return false;
 	}
 }
