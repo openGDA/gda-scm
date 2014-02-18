@@ -609,37 +609,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	private boolean clearDataAnalysisStarted(long subtractionId) {
-		try {
-			connectIfNotConnected();
-			// now remove the current dataCollectionId so that it's effectively been deleted
-			String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET dataCollectionId=-1 WHERE su.subtractionId = ?";
-			PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
-			stmt1.setLong(1, subtractionId);
-			boolean success1 = stmt1.execute();
-			return success1;
-		} catch (SQLException e) {
-			return false;
-		}
-	}
-
-	private String getGnomFilePathFromSubtraction(long subtractionId) throws SQLException {
-		String gnomFilePath = null;
-		connectIfNotConnected();
-		String selectSql = "SELECT gnomFilePath FROM ispyb4a_db.Subtraction su WHERE su.subtractionId = ?";
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, subtractionId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			if (rs.next())
-				gnomFilePath = rs.getString(1);
-			rs.close();
-		}
-		stmt.close();
-		return gnomFilePath;
-	}
-
 	private void setDataAnalysisStatusInDatabase(long dataCollectionId, ISpyBStatus status) throws SQLException {
 		connectIfNotConnected();
 		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
