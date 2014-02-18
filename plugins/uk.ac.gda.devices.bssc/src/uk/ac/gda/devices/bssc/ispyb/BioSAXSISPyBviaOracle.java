@@ -46,6 +46,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSISPyBviaOracle.class);
 	private static final String DATA_ANALYSIS_STARTED = "DataAnalysisStarted";
 	private static final String DATA_ANALYSIS_ERROR = "DataAnalysisError";
+	private static final String DATA_ANALYSIS_COMPLETE= "DataAnalysisComplete";
 
 	private static final String DATA_REDUCTION_NOT_STARTED = "DatRedNot";
 	private static final String DATA_REDUCTION_COMPLETE = "DatRedCom";
@@ -644,11 +645,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return gnomFilePath;
 	}
 
-	private boolean isDataAnalysisFailedToComplete(long dataCollectionId) throws SQLException {
-		String gnomFilePath = getGnomFilePathFromSubtraction(dataCollectionId);
-		return (gnomFilePath != null && gnomFilePath.equals(DATA_ANALYSIS_ERROR));
-	}
-
 	private void setDataAnalysisFailedToComplete(long dataCollectionId) throws SQLException {
 		connectIfNotConnected();
 		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=? WHERE su.dataCollectionId = ?";
@@ -662,7 +658,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return;
 	}
 
-	private boolean isDataAnalysisFailed(long dataCollectionId) throws SQLException {
+	private ISpyBStatus getDataAnalysisStatusFromDatabase(long dataCollectionId) throws SQLException {
 		String rg = null;
 		String rgGnom = null;
 		String gnomFilePath = null;
@@ -686,11 +682,19 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 		stmt.close();
 
-		return (gnomFilePath == null || rg == null || rgGnom == null);
-	}
-
-	private boolean isDataAnalysisSuccessful(long dataCollectionId, long subtractionId) throws SQLException {
-		return (!isDataAnalysisFailed(dataCollectionId) && !isDataAnalysisFailedToComplete(dataCollectionId) && !isDataAnalysisRunning(subtractionId));
+		if (gnomFilePath == null) {
+			return ISpyBStatus.NOT_STARTED;
+		}
+		else if (gnomFilePath.equals(DATA_ANALYSIS_ERROR)) {
+			return ISpyBStatus.FAILED;
+		}
+		else if (gnomFilePath.equals(DATA_ANALYSIS_STARTED)) {
+			return ISpyBStatus.RUNNING;
+		}
+		else if (rg == null || rgGnom == null) {
+			return ISpyBStatus.FAILED;
+		}
+		return ISpyBStatus.COMPLETE;
 	}
 
 	private ISAXSDataCollection getSAXSDataCollectionFromDataCollection(long dataCollectionId) throws SQLException {
