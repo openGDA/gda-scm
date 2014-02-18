@@ -536,6 +536,37 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return dataCollectionIds;
 	}
 
+
+	private boolean isRunInMultipleMeasurementToDataCollection(Long runId) throws SQLException {
+		boolean toReturn = false;
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT COUNT(*) FROM ispyb4a_db.Measurement m "
+				+ "INNER JOIN ispyb4a_db.MeasurementToDataCollection mtd ON mtd.measurementId = m.measurementId "
+				+ "WHERE m.runId = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, runId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				int numOfItems = (int) rs.getLong(1);
+				if (numOfItems > 1) {
+					toReturn = true;
+				}
+				else {
+					toReturn = false;
+				}
+
+			}
+			rs.close();
+		}
+		stmt.close();
+		return toReturn;
+	}
+
 	@Override
 	public List<Long> getExperimentsForSession(long blsessionId) throws SQLException {
 		List<Long> experimentIds = new ArrayList<Long>();
@@ -1233,7 +1264,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		else if (runs.size() == 1) {
 			status.setProgress(33);
-			status.setStatus(ISpyBStatus.RUNNING);
+			//if using previous data collection buffer after, then status is NOT_STARTED
+			if (isRunInMultipleMeasurementToDataCollection(runs.get(0))) {
+				status.setStatus(ISpyBStatus.NOT_STARTED);
+			}
+			else {
+				status.setStatus(ISpyBStatus.RUNNING);
+			}
 		}
 
 		else if (runs.size() == 2) {
