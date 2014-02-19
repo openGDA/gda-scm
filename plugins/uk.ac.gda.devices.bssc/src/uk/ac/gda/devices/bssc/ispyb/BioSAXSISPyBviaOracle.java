@@ -398,16 +398,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			while (rs.next()) {
 				String name = rs.getString(4);
 				String filename = rs.getString(5);
-				if (name == null) {
-					if (sinfo.getName() == null) {
+				if (name == null) { //no Macromolecule name for buffer collections
+					if (sinfo.getName() == null) { //no sample name is set when buffer before is processed
 						sinfo.setBufferBeforeFileName(filename);
-					} else {
+					} else { //must be a buffer after
 						sinfo.setBufferAfterFileName(filename);
 						sinfos.add(sinfo);
 						sinfo = new SampleInfo();
 						sinfo.setBufferBeforeFileName(filename);
 					}
-				} else {
+				} else { //sample collection
 					sinfo.setName(name);
 					sinfo.setSampleFileName(filename);
 					LocationBean loc = new LocationBean();
