@@ -1,4 +1,4 @@
-package uk.ac.gda.beamline.i22.actions;
+package uk.ac.gda.devices.bssc.actions;
 
 import java.util.Properties;
 
