@@ -748,7 +748,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		List<Long> allCollectionIds = getSaxsDataCollectionsForSession(blSessionId);
 		for (Long collectionId : allCollectionIds) {
 			ISAXSDataCollection collection = retrieveCollection(collectionId);
-			saxsDataCollections.add(collection);
+			if (collection != null) {
+				saxsDataCollections.add(collection);
+			}
 		}
 		return saxsDataCollections;
 	}
