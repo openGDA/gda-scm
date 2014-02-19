@@ -1207,10 +1207,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return retrieveCollection(dataCollectionId).getAnalysisStatus();
 	}
 
-	@Override
-	public int getPreviousCollectionId(long dataCollectionId) {
-		return previousCollectionId;
-	}
 	
 	/**
 	 * Retrieve data collection status and place in collectionsMap
