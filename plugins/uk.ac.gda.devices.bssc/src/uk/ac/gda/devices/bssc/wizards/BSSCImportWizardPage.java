@@ -169,7 +169,6 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 
 			sessionBean.setMeasurements(measurements);
 
-			String expXlsFile = editor.getStringValue();
 			String xmlFilePath = newFileName.substring(0, newFileName.lastIndexOf("."));
 			String bioSAXSFilePath = xmlFilePath + ".biosaxs";
 
