@@ -670,9 +670,13 @@ public class BioSAXSScriptTest {
 		// SAXSDATACOLLECTION
 		List<SampleInfo> sampleInfoList = bioSAXSISPyB
 				.getSaxsDataCollectionInfo(dataCollectionId1);
-		// data collection 1 ran successfully so it should contain 3 nexus files
-		// in the sampleInfo list
-		assertEquals(3, sampleInfoList.size());
+		// data collection 1 ran successfully so the first sampleInfoList should be
+		// populated with buffer before, sample, and buffer after filenames
+		assertEquals(1, sampleInfoList.size());
+		SampleInfo info = sampleInfoList.get(0);
+		assert(info.getBufferBeforeFileName().equals(getFilename(1)));
+		assert(info.getSampleFileName().equals(getFilename(2)));
+		assert(info.getBufferAfterFileName().equals(getFilename(3)));
 	}
 
 	protected static String getFilename(int fileNumber) {

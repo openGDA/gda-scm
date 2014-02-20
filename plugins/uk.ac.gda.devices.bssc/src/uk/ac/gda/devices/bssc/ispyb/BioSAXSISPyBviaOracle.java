@@ -398,16 +398,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			while (rs.next()) {
 				String name = rs.getString(4);
 				String filename = rs.getString(5);
-				if (name == null) {
-					if (sinfo.getName() == null) {
+				if (name == null) { //no Macromolecule name for buffer collections
+					if (sinfo.getName() == null) { //no sample name is set when buffer before is processed
 						sinfo.setBufferBeforeFileName(filename);
-					} else {
+					} else { //must be a buffer after
 						sinfo.setBufferAfterFileName(filename);
 						sinfos.add(sinfo);
 						sinfo = new SampleInfo();
 						sinfo.setBufferBeforeFileName(filename);
 					}
-				} else {
+				} else { //sample collection
 					sinfo.setName(name);
 					sinfo.setSampleFileName(filename);
 					LocationBean loc = new LocationBean();
@@ -688,6 +688,41 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return info;
 	}
 
+	/**
+	 * Check whether a data analysis has already been started - this would result in a Subtraction entry.
+	 * @param dataCollectionId
+	 * @return does a Subtraction entry exist for this dataCollectionId?
+	 * @throws SQLException
+	 */
+	private boolean isDataAnalysisExisting(long dataCollectionId) throws SQLException {
+		boolean toReturn = false;
+
+		connectIfNotConnected();
+
+		String selectSql = "SELECT COUNT(*) FROM ispyb4a_db.Subtraction s "
+				+ "WHERE s.datacollectionid = ?";
+
+		PreparedStatement stmt = conn.prepareStatement(selectSql);
+		stmt.setLong(1, dataCollectionId);
+		boolean success = stmt.execute();
+		if (success) {
+			ResultSet rs = stmt.getResultSet();
+			if (rs.next()) {
+				int numOfItems = (int) rs.getLong(1);
+				if (numOfItems >= 1) {
+					toReturn = true;
+				}
+				else {
+					toReturn = false;
+				}
+
+			}
+			rs.close();
+		}
+		stmt.close();
+		return toReturn;
+	}
+
 	private ISAXSDataCollection getSAXSDataCollectionFromDataCollection(long dataCollectionId) throws SQLException {
 		BioSAXSDataCollectionBean bean = null;
 
@@ -748,7 +783,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		List<Long> allCollectionIds = getSaxsDataCollectionsForSession(blSessionId);
 		for (Long collectionId : allCollectionIds) {
 			ISAXSDataCollection collection = retrieveCollection(collectionId);
-			saxsDataCollections.add(collection);
+			if (collection != null) {
+				saxsDataCollections.add(collection);
+			}
 		}
 		return saxsDataCollections;
 	}
@@ -1187,19 +1224,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public long createDataAnalysis(long dataCollectionId) throws SQLException {
 		long subtractionId = createSubtractionForDataAnalysis(dataCollectionId);
-		ISpyBStatusInfo status = new ISpyBStatusInfo();
-		status.setStatus(ISpyBStatus.RUNNING);
-		setDataAnalysisStatus(dataCollectionId, status);
 		return subtractionId;
 	}
 
 	@Override
 	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status)
 			throws SQLException {
-		if (!setDataAnalysisStatusInDatabase(dataCollectionId, status)) {
+		if (!isDataAnalysisExisting(dataCollectionId)) {
 			createSubtractionForDataAnalysis(dataCollectionId);
-			setDataAnalysisStatusInDatabase(dataCollectionId, status);
 		}
+		setDataAnalysisStatusInDatabase(dataCollectionId, status);
 	}
 
 	@Override
