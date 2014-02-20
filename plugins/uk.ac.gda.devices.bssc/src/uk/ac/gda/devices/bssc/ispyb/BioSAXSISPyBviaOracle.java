@@ -66,9 +66,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	String URL = null;
 	private int previousCollectionId;
 	long blsessionId;
+	private NotifyObserversObject notifyObject;
 
 	public BioSAXSISPyBviaOracle(String mode) {
 		URL = mode;
+//		this.notifyObject = notifyObject;
 	}
 
 	@Override
@@ -1143,9 +1145,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 			// TODO store status information in database
 			updateMeasurementWithRunId(bufferMeasurementId, runId);
-			
+
 			sendISpyBUpdate(currentDataCollectionId);
-			
+
 		} catch (SQLException e) {
 			ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
 			newStatus.setStatus(ISpyBStatus.FAILED);
@@ -1176,9 +1178,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		try {
 			sampleMeasurementId = retrievePreviousMeasurement(dataCollectionId, SAMPLE_MEASUREMENT);
 			updateMeasurementWithRunId(sampleMeasurementId, runId);
-			
+
 			sendISpyBUpdate(dataCollectionId);
-			
+
 		} catch (SQLException e) {
 			logger.error("Exception while getting sample measurement or updating Measurement.runId", e);
 		}
@@ -1211,7 +1213,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
 		setDataCollectionStatusInDatabase(dataCollectionId, status);
-		
+
 		sendISpyBUpdate(dataCollectionId);
 	}
 
@@ -1224,7 +1226,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
 		setOrUpdateDataReductionStatus(dataCollectionId, status);
-		
+
 		sendISpyBUpdate(dataCollectionId);
 	}
 
@@ -1245,7 +1247,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			createSubtractionForDataAnalysis(dataCollectionId);
 		}
 		setDataAnalysisStatusInDatabase(dataCollectionId, status);
-		
+
 		sendISpyBUpdate(dataCollectionId);
 	}
 
@@ -1296,7 +1298,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		if (isDataCollectionFailed(dataCollectionId)) { // failed data collection always results in progress of 0
 			status.setStatus(ISpyBStatus.FAILED);
-			status.setProgress(0);
+			status.setProgress(-1);
 		}
 
 		else if (runs.size() == 0) {
@@ -1451,5 +1453,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		// notifyObject = new NotifyObserversObject(9877);
+		// notifyObject.notifyObservers(collectionId);
 	}
 }
