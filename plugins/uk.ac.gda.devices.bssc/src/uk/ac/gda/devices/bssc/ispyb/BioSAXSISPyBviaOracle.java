@@ -18,6 +18,7 @@
 
 package uk.ac.gda.devices.bssc.ispyb;
 
+import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -47,7 +48,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final String DATA_ANALYSIS_NOT_STARTED = "DataAnalysisNotStarted";
 	private static final String DATA_ANALYSIS_RUNNING = "DataAnalysisRunning";
 	private static final String DATA_ANALYSIS_FAILED = "DataAnalysisFailed";
-	private static final String DATA_ANALYSIS_COMPLETE= "DataAnalysisComplete";
+	private static final String DATA_ANALYSIS_COMPLETE = "DataAnalysisComplete";
 
 	private static final String DATA_REDUCTION_NOT_STARTED = "DatRedNot";
 	private static final String DATA_REDUCTION_COMPLETE = "DatRedCom";
@@ -56,11 +57,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	private static final String DATA_COLLECTION_FAILED = "DataReductionFailed";
 
-	//the following are values of MeasurementToDataCollection datacollectionorder for the named measurements
+	// the following are values of MeasurementToDataCollection datacollectionorder for the named measurements
 	private static final int BUFFER_BEFORE_MEASUREMENT = 1;
 	private static final int SAMPLE_MEASUREMENT = 2;
 	private static final int BUFFER_AFTER_MEASUREMENT = 3;
-	
+
 	Connection conn = null;
 	String URL = null;
 	private int previousCollectionId;
@@ -240,9 +241,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			Long samplePlatePositionId, Long stockSolutionId, Double volume) throws SQLException {
 		long specimenId = -1;
 		connectIfNotConnected();
-		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen (" +
-				"specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, volume) " +
-				"VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen ("
+				+ "specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, volume) "
+				+ "VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?) RETURNING specimenId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 
@@ -280,11 +281,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return specimenId;
 	}
 
-	protected long createRun(double timePerFrame, float storageTemperature,
-			float exposureTemperature, double energyInkeV, int numFrames, double transmission, double beamCenterX,
-			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
-			double radiationAbsolute, double normalization)
-			throws SQLException {
+	protected long createRun(double timePerFrame, float storageTemperature, float exposureTemperature,
+			double energyInkeV, int numFrames, double transmission, double beamCenterX, double beamCenterY,
+			double pixelSizeX, double pixelSizeY, double radiationRelative, double radiationAbsolute,
+			double normalization) throws SQLException {
 		long runId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Run ("
@@ -398,16 +398,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			while (rs.next()) {
 				String name = rs.getString(4);
 				String filename = rs.getString(5);
-				if (name == null) { //no Macromolecule name for buffer collections
-					if (sinfo.getName() == null) { //no sample name is set when buffer before is processed
+				if (name == null) { // no Macromolecule name for buffer collections
+					if (sinfo.getName() == null) { // no sample name is set when buffer before is processed
 						sinfo.setBufferBeforeFileName(filename);
-					} else { //must be a buffer after
+					} else { // must be a buffer after
 						sinfo.setBufferAfterFileName(filename);
 						sinfos.add(sinfo);
 						sinfo = new SampleInfo();
 						sinfo.setBufferBeforeFileName(filename);
 					}
-				} else { //sample collection
+				} else { // sample collection
 					sinfo.setName(name);
 					sinfo.setSampleFileName(filename);
 					LocationBean loc = new LocationBean();
@@ -453,7 +453,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		connectIfNotConnected();
 
-		this.blsessionId = blsessionId; //hold onto this information
+		this.blsessionId = blsessionId; // hold onto this information
 		long proposalId = getProposalFromSession(blsessionId);
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Experiment ("
 				+ "experimentId, proposalId, name, experimentType, comments) "
@@ -536,7 +536,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return dataCollectionIds;
 	}
 
-
 	private boolean isRunInMultipleMeasurementToDataCollection(Long runId) throws SQLException {
 		boolean toReturn = false;
 
@@ -555,8 +554,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				int numOfItems = (int) rs.getLong(1);
 				if (numOfItems > 1) {
 					toReturn = true;
-				}
-				else {
+				} else {
 					toReturn = false;
 				}
 
@@ -587,7 +585,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 		stmt.close();
 
-		return experimentIds;	}
+		return experimentIds;
+	}
 
 	private long createSubtractionForDataAnalysis(long dataCollectionId) throws SQLException {
 		long subtractionId = -1;
@@ -619,8 +618,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		List<String> filenames = status.getFileNames();
 		if (!filenames.isEmpty()) {
 			stmt1.setString(index++, filenames.get(0));
-		}
-		else {
+		} else {
 			stmt1.setNull(index++, java.sql.Types.VARCHAR);
 		}
 		stmt1.setString(index++, status.getMessage());
@@ -631,7 +629,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private ISpyBStatusInfo getDataAnalysisStatusFromDatabase(long dataCollectionId) throws SQLException {
-		//TODO create message column in Subtraction so we can store the information without using up an existing column
+		// TODO create message column in Subtraction so we can store the information without using up an existing column
 		ISpyBStatusInfo info = new ISpyBStatusInfo();
 		String rg = null;
 		String rgGnom = null;
@@ -662,22 +660,17 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		if (gnomFilePath == null || gnomFilePath.equals(DATA_ANALYSIS_NOT_STARTED)) {
 			info.setStatus(ISpyBStatus.NOT_STARTED);
-		}
-		else if (gnomFilePath.equals(DATA_ANALYSIS_FAILED)) {
+		} else if (gnomFilePath.equals(DATA_ANALYSIS_FAILED)) {
 			info.setStatus(ISpyBStatus.FAILED);
-		}
-		else if (gnomFilePath.equals(DATA_ANALYSIS_RUNNING)) {
+		} else if (gnomFilePath.equals(DATA_ANALYSIS_RUNNING)) {
 			info.setStatus(ISpyBStatus.RUNNING);
-		}
-		else if (gnomFilePath.equals(DATA_ANALYSIS_COMPLETE)) {
+		} else if (gnomFilePath.equals(DATA_ANALYSIS_COMPLETE)) {
 			info.setStatus(ISpyBStatus.COMPLETE);
 			info.setProgress(100);
 			info.addFileName(subtractedFilePath);
-		}
-		else if (rg == null || rgGnom == null) {
+		} else if (rg == null || rgGnom == null) {
 			info.setStatus(ISpyBStatus.FAILED);
-		}
-		else {
+		} else {
 			info.setStatus(ISpyBStatus.FAILED);
 		}
 
@@ -690,6 +683,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	/**
 	 * Check whether a data analysis has already been started - this would result in a Subtraction entry.
+	 * 
 	 * @param dataCollectionId
 	 * @return does a Subtraction entry exist for this dataCollectionId?
 	 * @throws SQLException
@@ -699,8 +693,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		connectIfNotConnected();
 
-		String selectSql = "SELECT COUNT(*) FROM ispyb4a_db.Subtraction s "
-				+ "WHERE s.datacollectionid = ?";
+		String selectSql = "SELECT COUNT(*) FROM ispyb4a_db.Subtraction s " + "WHERE s.datacollectionid = ?";
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, dataCollectionId);
@@ -711,8 +704,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				int numOfItems = (int) rs.getLong(1);
 				if (numOfItems >= 1) {
 					toReturn = true;
-				}
-				else {
+				} else {
 					toReturn = false;
 				}
 
@@ -798,7 +790,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		PreparedStatement stmt = conn.prepareStatement(selectSql);
 		stmt.setLong(1, previousDataCollectionId);
-		stmt.setShort(2, (short)measurementType);
+		stmt.setShort(2, (short) measurementType);
 		boolean success = stmt.execute();
 		if (success) {
 			ResultSet rs = stmt.getResultSet();
@@ -847,7 +839,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private List<Long> getRunsForDataCollection(long dataCollectionId) throws SQLException {
-		List<Long> runs= new ArrayList<Long>();
+		List<Long> runs = new ArrayList<Long>();
 		connectIfNotConnected();
 		String selectSql = "SELECT "
 				+ "  m1.runid,"
@@ -916,14 +908,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (status.getStatus() == ISpyBStatus.FAILED) {
 			try {
 				List<Long> runList = getRunsForDataCollection(dataCollectionId);
-				for (long runId: runList) {
+				for (long runId : runList) {
 					updateRunWithStatus(runId, DATA_COLLECTION_FAILED);
 				}
 			} catch (SQLException e) {
 				logger.error("Exception while retrieving data collection status", e);
 			}
-		}
-		else {
+		} else {
 			logger.error("Not expecting to be able to set data collection status");
 		}
 	}
@@ -932,8 +923,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		ISpyBStatusInfo newInfo = getDataReductionStatusFromDatabase(dataCollectionId);
 		if (newInfo.getStatus() != null || newInfo.getProgress() > 0) {
 			updateDataReductionStatusInDatabase(dataCollectionId, status);
-		}
-		else {
+		} else {
 			setDataReductionStatusInDatabase(dataCollectionId, status);
 		}
 	}
@@ -954,14 +944,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.setString(index++, statusToSet);
 		if (status.getFileNames().isEmpty()) {
 			stmt.setNull(index++, java.sql.Types.VARCHAR);
-		}
-		else {
+		} else {
 			stmt.setString(index++, status.getFileNames().get(0));
 		}
 		if (status.getMessage().isEmpty()) {
 			stmt.setNull(index++, java.sql.Types.VARCHAR);
-		}
-		else {
+		} else {
 			stmt.setString(index++, status.getMessage());
 		}
 
@@ -980,21 +968,18 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		connectIfNotConnected();
 
 		String insertSql = "UPDATE ispyb4a_db.DataReductionStatus dr "
-				+ "SET dr.status = ?, dr.filename = ?, dr.message = ? "
-				+ "WHERE dr.datacollectionid = ?";
+				+ "SET dr.status = ?, dr.filename = ?, dr.message = ? " + "WHERE dr.datacollectionid = ?";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setString(index++, statusToSet);
 		if (status.getFileNames().isEmpty()) {
 			stmt.setNull(index++, java.sql.Types.VARCHAR);
-		}
-		else {
+		} else {
 			stmt.setString(index++, status.getFileNames().get(0));
 		}
 		if (status.getMessage().isEmpty()) {
 			stmt.setNull(index++, java.sql.Types.VARCHAR);
-		}
-		else {
+		} else {
 			stmt.setString(index++, status.getMessage());
 		}
 		stmt.setLong(index++, dataCollectionId);
@@ -1020,8 +1005,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 				ISpyBStatus drStatus = getStatusFromString(rs.getString(1));
 				if (drStatus == ISpyBStatus.COMPLETE) {
 					info.setProgress(100);
-				}
-				else {
+				} else {
 					info.setProgress(0);
 				}
 				info.setStatus(drStatus);
@@ -1042,12 +1026,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return info;
 	}
 
-	/* above here are the methods that interact directly with the database.
-	 * other methods, including the interface methods are below here.
+	/*
+	 * above here are the methods that interact directly with the database. other methods, including the interface
+	 * methods are below here.
 	 */
 
 	/**
 	 * Creates Measurement, Buffer, SamplePlate, and Specimen-related items
+	 * 
 	 * @param blsessionId
 	 * @param experimentId
 	 * @param plate
@@ -1061,18 +1047,20 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	 * @return measurementId
 	 * @throws SQLException
 	 */
-	private long createMeasurementAndAssociatedItems(long blsessionId, long experimentId, short plate, short row, short column,
-			String sampleName, float exposureTemperature, double flow, double volume, String viscosity) throws SQLException {
+	private long createMeasurementAndAssociatedItems(long blsessionId, long experimentId, short plate, short row,
+			short column, String sampleName, float exposureTemperature, double flow, double volume, String viscosity)
+			throws SQLException {
 		Long macromoleculeId = null;
-		
+
 		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
-		if (sampleName != null && sampleName.isEmpty() == false) { //if this is a sample, name and concentration are defined
+		if (sampleName != null && sampleName.isEmpty() == false) { // if this is a sample, name and concentration are
+																	// defined
 			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
 		}
 		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-					null, volume);
+				null, volume);
 		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
 		return measurementId;
 	}
@@ -1081,7 +1069,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
 			short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature, int numFrames,
 			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
-		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, bufferPlate, bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV, viscosity, INVALID_VALUE);
+		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, bufferPlate,
+				bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV,
+				viscosity, INVALID_VALUE);
 	}
 
 	@Override
@@ -1092,14 +1082,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long bufferBeforeMeasurementId;
 		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
 		if (previousDataCollectionId == INVALID_VALUE) {
-			bufferBeforeMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
-		}
-		else {
+			bufferBeforeMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate,
+					bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
+		} else {
 			bufferBeforeMeasurementId = retrievePreviousMeasurement(previousDataCollectionId, SAMPLE_MEASUREMENT);
 		}
-		long sampleMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, sampleName, exposureTemperature, flow, volume, viscosity);
-		long bufferAfterMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate, bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
-		//now we must relate the Measurements to the SaxsDataCollection
+		long sampleMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate,
+				bufferRow, bufferColumn, sampleName, exposureTemperature, flow, volume, viscosity);
+		long bufferAfterMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate,
+				bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
+		// now we must relate the Measurements to the SaxsDataCollection
 		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
 		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
 		createMeasurementToDataCollection(saxsDataCollectionId, bufferAfterMeasurementId);
@@ -1110,9 +1102,14 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		bean.setBufferBeforeMeasurementId(bufferBeforeMeasurementId);
 		bean.setBufferAfterMeasurementId(bufferAfterMeasurementId);
 		if (previousDataCollectionId != INVALID_VALUE) {
-			bean.getCollectionStatus().setProgress(33); //the previous data collection was done, so set initial progress
-			bean.getCollectionStatus().addFileName(getDataCollectionStatus(previousDataCollectionId).getFileNames().get(2));
+			bean.getCollectionStatus().setProgress(33); // the previous data collection was done, so set initial
+														// progress
+			bean.getCollectionStatus().addFileName(
+					getDataCollectionStatus(previousDataCollectionId).getFileNames().get(2));
 		}
+
+		sendISpyBUpdate(saxsDataCollectionId);
+
 		return saxsDataCollectionId;
 	}
 
@@ -1121,27 +1118,34 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
-		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
-				beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, filename, internalPath);
+		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount,
+				transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,
+				normalization, filename, internalPath);
 		try {
 			long bufferMeasurementId = 0;
 			ISpyBStatusInfo currentStatus = getDataCollectionStatus(currentDataCollectionId);
-			if (currentStatus.getStatus() == ISpyBStatus.NOT_STARTED && currentStatus.getProgress() == 0) { //must be buffer before
+			if (currentStatus.getStatus() == ISpyBStatus.NOT_STARTED && currentStatus.getProgress() == 0) { // must be
+																											// buffer
+																											// before
 				currentStatus.setStatus(ISpyBStatus.RUNNING);
 				currentStatus.setProgress(33);
 				currentStatus.addFileName(filename);
 				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT);
-			}
-			else if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 66) { //must be buffer after
+			} else if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 66) { // must
+																												// be
+																												// buffer
+																												// after
 				currentStatus.setStatus(ISpyBStatus.COMPLETE);
 				currentStatus.setProgress(100);
 				currentStatus.addFileName(filename);
 				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_AFTER_MEASUREMENT);
 			}
 
-			//TODO store status information in database
-
+			// TODO store status information in database
 			updateMeasurementWithRunId(bufferMeasurementId, runId);
+			
+			sendISpyBUpdate(currentDataCollectionId);
+			
 		} catch (SQLException e) {
 			ISpyBStatusInfo newStatus = new ISpyBStatusInfo();
 			newStatus.setStatus(ISpyBStatus.FAILED);
@@ -1156,8 +1160,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
-		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
-					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, filename, internalPath);
+		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount,
+				transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,
+				normalization, filename, internalPath);
 		ISpyBStatusInfo currentStatus;
 		try {
 			currentStatus = getDataCollectionStatus(dataCollectionId);
@@ -1171,6 +1176,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		try {
 			sampleMeasurementId = retrievePreviousMeasurement(dataCollectionId, SAMPLE_MEASUREMENT);
 			updateMeasurementWithRunId(sampleMeasurementId, runId);
+			
+			sendISpyBUpdate(dataCollectionId);
+			
 		} catch (SQLException e) {
 			logger.error("Exception while getting sample measurement or updating Measurement.runId", e);
 		}
@@ -1178,14 +1186,15 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return runId;
 	}
 
-	private long createRunAndFrameSet(double timePerFrame, float storageTemperature,
-			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
-			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
-			double radiationAbsolute, double normalization, String filename, String internalPath) {
+	private long createRunAndFrameSet(double timePerFrame, float storageTemperature, float exposureTemperature,
+			double energy, int frameCount, double transmission, double beamCenterX, double beamCenterY,
+			double pixelSizeX, double pixelSizeY, double radiationRelative, double radiationAbsolute,
+			double normalization, String filename, String internalPath) {
 		long runId = 0;
 		try {
 			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
-					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization);
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,
+					normalization);
 			createFrameSet(runId, filename, internalPath);
 		} catch (SQLException e) {
 			logger.error("problem while creating Run", e);
@@ -1202,6 +1211,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
 		setDataCollectionStatusInDatabase(dataCollectionId, status);
+		
+		sendISpyBUpdate(dataCollectionId);
 	}
 
 	@Override
@@ -1211,9 +1222,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status)
-			throws SQLException {
+	public void setDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
 		setOrUpdateDataReductionStatus(dataCollectionId, status);
+		
+		sendISpyBUpdate(dataCollectionId);
 	}
 
 	@Override
@@ -1228,12 +1240,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status)
-			throws SQLException {
+	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
 		if (!isDataAnalysisExisting(dataCollectionId)) {
 			createSubtractionForDataAnalysis(dataCollectionId);
 		}
 		setDataAnalysisStatusInDatabase(dataCollectionId, status);
+		
+		sendISpyBUpdate(dataCollectionId);
 	}
 
 	@Override
@@ -1241,9 +1254,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return retrieveCollection(dataCollectionId).getAnalysisStatus();
 	}
 
-	
 	/**
 	 * Retrieve data collection status and place in collectionsMap
+	 * 
 	 * @param dataCollectionId
 	 */
 	private ISAXSDataCollection retrieveCollection(long dataCollectionId) {
@@ -1265,10 +1278,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	/**
-	 * Get the status of a data collection. If Runs were created, some measurements must have been made. Check for failure flags.
+	 * Get the status of a data collection. If Runs were created, some measurements must have been made. Check for
+	 * failure flags.
+	 * 
 	 * @param dataCollectionId
 	 * @return status, including progress and state
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private ISpyBStatusInfo getDataCollectionStatusFromDatabase(long dataCollectionId) throws Exception {
 		ISpyBStatusInfo status = new ISpyBStatusInfo();
@@ -1279,7 +1294,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			status.addFileName(filename);
 		}
 
-		if (isDataCollectionFailed(dataCollectionId)) { //failed data collection always results in progress of 0
+		if (isDataCollectionFailed(dataCollectionId)) { // failed data collection always results in progress of 0
 			status.setStatus(ISpyBStatus.FAILED);
 			status.setProgress(0);
 		}
@@ -1291,11 +1306,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		else if (runs.size() == 1) {
 			status.setProgress(33);
-			//if using previous data collection buffer after, then status is NOT_STARTED
+			// if using previous data collection buffer after, then status is NOT_STARTED
 			if (isRunInMultipleMeasurementToDataCollection(runs.get(0))) {
 				status.setStatus(ISpyBStatus.NOT_STARTED);
-			}
-			else {
+			} else {
 				status.setStatus(ISpyBStatus.RUNNING);
 			}
 		}
@@ -1318,13 +1332,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private List<String> getFilesForFrameSet(List<Long> runs) throws SQLException {
-		List<String> files= new ArrayList<String>();
+		List<String> files = new ArrayList<String>();
 		connectIfNotConnected();
 		for (long runId : runs) {
-			String selectSql = "SELECT "
-					+ "  fs.filepath "
-					+ "FROM ispyb4a_db.FrameSet fs "
-					+ "WHERE fs.runId= ?";
+			String selectSql = "SELECT " + "  fs.filepath " + "FROM ispyb4a_db.FrameSet fs " + "WHERE fs.runId= ?";
 			PreparedStatement stmt1 = conn.prepareStatement(selectSql);
 			stmt1.setLong(1, runId);
 			boolean success = stmt1.execute();
@@ -1371,17 +1382,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private ISpyBStatus getStatusFromString(String statusString) {
 		if (statusString.equals(DATA_REDUCTION_COMPLETE)) {
 			return ISpyBStatus.COMPLETE;
-		}
-		else if (statusString.equals(DATA_REDUCTION_FAILED)) {
+		} else if (statusString.equals(DATA_REDUCTION_FAILED)) {
 			return ISpyBStatus.FAILED;
-		}
-		else if (statusString.equals(DATA_REDUCTION_RUNNING)) {
+		} else if (statusString.equals(DATA_REDUCTION_RUNNING)) {
 			return ISpyBStatus.RUNNING;
-		}
-		else if (statusString.equals(DATA_REDUCTION_NOT_STARTED)) {
+		} else if (statusString.equals(DATA_REDUCTION_NOT_STARTED)) {
 			return ISpyBStatus.NOT_STARTED;
-		}
-		else {
+		} else {
 			return ISpyBStatus.NOT_STARTED;
 		}
 	}
@@ -1389,17 +1396,13 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private ISpyBStatus getAnalysisStatusFromString(String statusString) {
 		if (statusString.equals(DATA_ANALYSIS_COMPLETE)) {
 			return ISpyBStatus.COMPLETE;
-		}
-		else if (statusString.equals(DATA_ANALYSIS_FAILED)) {
+		} else if (statusString.equals(DATA_ANALYSIS_FAILED)) {
 			return ISpyBStatus.FAILED;
-		}
-		else if (statusString.equals(DATA_ANALYSIS_RUNNING)) {
+		} else if (statusString.equals(DATA_ANALYSIS_RUNNING)) {
 			return ISpyBStatus.RUNNING;
-		}
-		else if (statusString.equals(DATA_ANALYSIS_NOT_STARTED)) {
+		} else if (statusString.equals(DATA_ANALYSIS_NOT_STARTED)) {
 			return ISpyBStatus.NOT_STARTED;
-		}
-		else {
+		} else {
 			return ISpyBStatus.NOT_STARTED;
 		}
 	}
@@ -1407,14 +1410,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private String getAnalysisStringFromStatus(ISpyBStatus status) {
 		if (status == ISpyBStatus.COMPLETE) {
 			return DATA_ANALYSIS_COMPLETE;
-		}
-		else if (status == ISpyBStatus.FAILED) {
+		} else if (status == ISpyBStatus.FAILED) {
 			return DATA_ANALYSIS_FAILED;
-		}
-		else if (status == ISpyBStatus.NOT_STARTED) {
+		} else if (status == ISpyBStatus.NOT_STARTED) {
 			return DATA_ANALYSIS_NOT_STARTED;
-		}
-		else if (status == ISpyBStatus.RUNNING) {
+		} else if (status == ISpyBStatus.RUNNING) {
 			return DATA_ANALYSIS_RUNNING;
 		}
 		return DATA_ANALYSIS_NOT_STARTED;
@@ -1423,7 +1423,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private boolean isDataCollectionFailed(long dataCollectionId) {
 		try {
 			List<Long> runList = getRunsForDataCollection(dataCollectionId);
-			for (long runId: runList) {
+			for (long runId : runList) {
 				String statusFromRun = getStatusFromRun(runId);
 				if (statusFromRun != null && statusFromRun.equals(DATA_COLLECTION_FAILED)) {
 					return true;
@@ -1433,5 +1433,23 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			logger.error("Exception while retrieving data collection status", e);
 		}
 		return false;
+	}
+
+	private void sendISpyBUpdate(long collectionId) {
+		final String[] cmd = { "python", "/home/xlw00930/scripts/simple_udp.py", "ws141", "9877",
+				"simpleUDPServer:" + collectionId };
+
+		try {
+			Runtime.getRuntime().exec(cmd);
+			// Sleep for two seconds so that we do not retrieve from model
+			// before
+			// it has been notified of updates
+			Thread.sleep(2000);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
