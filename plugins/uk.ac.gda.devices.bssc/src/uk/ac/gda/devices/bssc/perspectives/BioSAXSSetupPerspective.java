@@ -106,7 +106,46 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 		// } else {
 		// //Do something if the file does not exist
 		// }
+		// Need add listener to workbench to always have at least one editor available
+		final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IPartService service = (IPartService) window.getService(IPartService.class);
+		service.addPartListener(new IPartListener() {
 
+			@Override
+			public void partActivated(IWorkbenchPart part) {
+
+			}
+
+			@Override
+			public void partBroughtToTop(IWorkbenchPart part) {
+			}
+
+			@Override
+			public void partClosed(IWorkbenchPart part) {
+				if (part instanceof RichBeanMultiPageEditorPart) {
+					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart) part;
+					IWorkbenchPage page = part.getSite().getPage();
+					IEditorInput editorInput = editor.getEditorInput();
+				}
+			}
+
+			@Override
+			public void partDeactivated(IWorkbenchPart part) {
+			}
+
+			@Override
+			public void partOpened(IWorkbenchPart part) {
+				if (part instanceof RichBeanMultiPageEditorPart) {
+					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart) part;
+					IWorkbenchPage page = part.getSite().getPage();
+					IEditorInput editorInput = editor.getEditorInput();
+				}
+			}
+		});
+	}
+
+	public void openEditor()
+	{
 		Workbook wb;
 		String bioSAXSFilePath = "Sample" + ".biosaxs";
 		sessionBean = new BSSCSessionBean();
@@ -182,45 +221,8 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 			// TODO Auto-generated catch block
 			logger.error("TODO put description of error here", e);
 		}
-		
-		// Need add listener to workbench to always have at least one editor available
-		final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IPartService service = (IPartService) window.getService(IPartService.class);
-		service.addPartListener(new IPartListener() {
-
-			@Override
-			public void partActivated(IWorkbenchPart part) {
-
-			}
-
-			@Override
-			public void partBroughtToTop(IWorkbenchPart part) {
-			}
-
-			@Override
-			public void partClosed(IWorkbenchPart part) {
-				if (part instanceof RichBeanMultiPageEditorPart) {
-					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart) part;
-					IWorkbenchPage page = part.getSite().getPage();
-					IEditorInput editorInput = editor.getEditorInput();
-				}
-			}
-
-			@Override
-			public void partDeactivated(IWorkbenchPart part) {
-			}
-
-			@Override
-			public void partOpened(IWorkbenchPart part) {
-				if (part instanceof RichBeanMultiPageEditorPart) {
-					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart) part;
-					IWorkbenchPage page = part.getSite().getPage();
-					IEditorInput editorInput = editor.getEditorInput();
-				}
-			}
-		});
 	}
-
+	
 	private short parsePlateCell(Cell cell) {
 		if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 			return (short) cell.getNumericCellValue();
