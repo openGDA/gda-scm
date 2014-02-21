@@ -20,7 +20,6 @@ package uk.ac.gda.devices.bssc.perspectives;
 
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import uk.ac.gda.devices.bssc.views.BioSAXSPlotView;
 
 public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
@@ -28,7 +27,6 @@ public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
 		layout.addView("uk.ac.gda.devices.bssc.views.CapillaryView", IPageLayout.LEFT, 0.25f, IPageLayout.ID_EDITOR_AREA);
-		layout.addView(BioSAXSPlotView.ID, IPageLayout.LEFT, 0.45f, IPageLayout.ID_EDITOR_AREA);
 		layout.addView("uk.ac.gda.client.ncd.saxsview", IPageLayout.BOTTOM, 0.25f, "uk.ac.gda.devices.bssc.views.CapillaryView");
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
