@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -154,7 +153,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName));
 
 		final IObservableMap collectionProgressValues = BeanProperties.value(ISAXSProgress.class,
-				ISAXSProgress.COLLECTION_PROGRESS).observeDetail(knownElements);
+				ISAXSProgress.COLLECTION_STATUS_INFO).observeDetail(knownElements);
 
 		viewerColumn2.setLabelProvider(new ObservableMapOwnerDrawProvider(collectionProgressValues) {
 			org.eclipse.swt.graphics.Color original = null;
@@ -181,7 +180,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
-				Object value = attributeMaps[0].get(element);
+				ISAXSProgress progress = (ISAXSProgress)element;
+				Object value = progress.getCollectionStatusInfo().getProgress();
 				int percentage = ((Double) value).intValue();
 				int columnWidth = viewerColumn2.getColumn().getWidth();
 
@@ -199,7 +199,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		});
 
 		final IObservableMap reductionProgressValues = BeanProperties.value(ISAXSProgress.class,
-				ISAXSProgress.REDUCTION_PROGRESS).observeDetail(knownElements);
+				ISAXSProgress.REDUCTION_STATUS_INFO).observeDetail(knownElements);
 
 		viewerColumn3.setLabelProvider(new ObservableMapOwnerDrawProvider(reductionProgressValues) {
 			org.eclipse.swt.graphics.Color original = null;
@@ -226,7 +226,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
-				Object value = attributeMaps[0].get(element);
+				ISAXSProgress progress = (ISAXSProgress)element;
+				Object value = progress.getReductionStatusInfo().getProgress();
 				int percentage = ((Double) value).intValue();
 				int columnWidth = viewerColumn3.getColumn().getWidth();
 
@@ -244,7 +245,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		});
 
 		final IObservableMap analysisProgressValues = BeanProperties.value(ISAXSProgress.class,
-				ISAXSProgress.ANALYSIS_PROGRESS).observeDetail(knownElements);
+				ISAXSProgress.ANALYSIS_STATUS_INFO).observeDetail(knownElements);
 
 		viewerColumn4.setLabelProvider(new ObservableMapOwnerDrawProvider(analysisProgressValues) {
 			org.eclipse.swt.graphics.Color original = null;
@@ -271,7 +272,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
-				Object value = attributeMaps[0].get(element);
+				ISAXSProgress progress = (ISAXSProgress)element;
+				Object value = progress.getAnalysisStatusInfo().getProgress();
 				int percentage = ((Double) value).intValue();
 				int columnWidth = viewerColumn4.getColumn().getWidth();
 
