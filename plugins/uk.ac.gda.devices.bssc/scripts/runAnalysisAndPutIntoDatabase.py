@@ -72,7 +72,7 @@ def storeAnalysis(client, results):
 	client.service.storeDataAnalysisResultByMeasurementId(results["measurementId"], results["filename"],
 		results["rg"], results["rgstdev"], results["i0"], results["i0stdev"], 0, 0,
 		results["quality"], results["isagregated"], "", 0, results["gnomFile"], results["rgGuinier"], results["rgGnom"], results["dmax"], "",
-		results["volume"], 0, 0, [], 2, "", "", "", "", results["densityPlot"])
+		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
 def storeModels(client, results):
 	damaverResults = []#assemble from results["dammaver"]
 	dammifResults = [] #assemble from results["dammif"]
