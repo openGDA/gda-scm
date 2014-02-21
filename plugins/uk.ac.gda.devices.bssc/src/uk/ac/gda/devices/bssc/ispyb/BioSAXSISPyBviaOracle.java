@@ -201,19 +201,37 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return bufferId;
 	}
 
-	protected long createSamplePlate(long blsessionId, long experimentId, String name) throws SQLException {
+	private long createPlateGroup(String name, double storageTemperature) throws SQLException {
+		long plateGroupId = -1;
+		connectIfNotConnected();
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.PlateGroup (plateGroupId, name, storageTemperature) "
+				+ "VALUES (ispyb4a_db.s_PlateGroup.nextval, ?, ?) RETURNING plateGroupId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		stmt.setString(1, name);
+		stmt.setDouble(2, storageTemperature);
+
+		stmt.registerOutParameter(3, java.sql.Types.VARCHAR);
+		stmt.execute();
+		plateGroupId = stmt.getLong(3);
+		stmt.close();
+
+		return plateGroupId;
+	}
+
+	protected long createSamplePlate(long blsessionId, long experimentId, String name, long plateGroupId) throws SQLException {
 		long samplePlateId = -1;
 		connectIfNotConnected();
-		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name) "
-				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?) RETURNING samplePlateId INTO ?; END;";
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name, plateGroupId) "
+				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?) RETURNING samplePlateId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 		stmt.setLong(2, blsessionId);
 		stmt.setString(3, name);
+		stmt.setLong(4, plateGroupId);
 
-		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(5, java.sql.Types.VARCHAR);
 		stmt.execute();
-		samplePlateId = stmt.getLong(4);
+		samplePlateId = stmt.getLong(5);
 		stmt.close();
 
 		return samplePlateId;
@@ -1058,7 +1076,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 																	// defined
 			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
 		}
-		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
+		long plateGroupId = createPlateGroup(sampleName, exposureTemperature);
+		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate), plateGroupId);
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
 				null, volume);
