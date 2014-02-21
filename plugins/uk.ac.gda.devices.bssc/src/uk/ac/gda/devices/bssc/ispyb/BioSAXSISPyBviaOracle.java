@@ -70,7 +70,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	public BioSAXSISPyBviaOracle(String mode) {
 		URL = mode;
-//		this.notifyObject = notifyObject;
+		// this.notifyObject = notifyObject;
 	}
 
 	@Override
@@ -1298,7 +1298,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		if (isDataCollectionFailed(dataCollectionId)) { // failed data collection always results in progress of 0
 			status.setStatus(ISpyBStatus.FAILED);
-			status.setProgress(-1);
+			status.setProgress(0);
 		}
 
 		else if (runs.size() == 0) {
