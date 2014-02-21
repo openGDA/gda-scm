@@ -29,17 +29,21 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,26 +101,55 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		// labels
 		IObservableSet knownElements = contentProvider.getKnownElements();
 
-		Table table = bioSaxsProgressViewer.getTable();
+		final Table table = bioSaxsProgressViewer.getTable();
 
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TableItem tableItem = (TableItem) e.item;
-				ISAXSProgress sampleProgress = (ISAXSProgress) tableItem.getData();
 
-				final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-				IWorkbenchPage page = window.getActivePage();
-				BioSAXSPlotView plotView = (BioSAXSPlotView)page.findView(BioSAXSPlotView.ID);
-				window.getActivePage().activate(plotView);
-				
-				sampleProgress.getCollectionStatus();
-				plotView.setPlot(sampleProgress);
 			}
 		});
 
-		final IObservableMap sampleName = BeanProperties.value(ISAXSProgress.class,
-				ISAXSProgress.SAMPLE_NAME).observeDetail(knownElements);
+		table.addListener(SWT.MouseDown, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				Point pt = new Point(event.x, event.y);
+				TableItem tableItem = table.getItem(pt);
+				ISAXSProgress sampleProgress = (ISAXSProgress) tableItem.getData();
+
+				IWorkbench workBench = PlatformUI.getWorkbench();
+				final IWorkbenchWindow window = workBench.getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+
+				try {
+					workBench.showPerspective("uk.ac.gda.devices.bssc.biosaxsresultperspective", window);
+				} catch (WorkbenchException e1) {
+					logger.error("Exception showing the perpective uk.ac.gda.devices.bssc.biosaxsresultperspective", e1);
+				}
+
+				BioSAXSPlotView plotView = (BioSAXSPlotView) page.findView(BioSAXSPlotView.ID);
+				window.getActivePage().activate(plotView);
+				for (int col = 0; col < table.getColumnCount(); col++) {
+					Rectangle rect = tableItem.getBounds(col);
+					if (rect.contains(pt)) {
+						switch (col) {
+						case 0:
+							plotView.setPlot(sampleProgress);
+							break;
+						case 1:
+							plotView.setPlot(sampleProgress);
+							break;
+						case 2:
+							plotView.setPlot(sampleProgress);
+							break;
+						}
+					}
+				}
+			}
+		});
+
+		final IObservableMap sampleName = BeanProperties.value(ISAXSProgress.class, ISAXSProgress.SAMPLE_NAME)
+				.observeDetail(knownElements);
 
 		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName));
 
@@ -151,14 +184,12 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				Object value = attributeMaps[0].get(element);
 				int percentage = ((Double) value).intValue();
 				int columnWidth = viewerColumn2.getColumn().getWidth();
-				
+
 				if (percentage >= 0) {
 					event.gc.setBackground(green);
 					int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
 					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-				}
-				else
-				{
+				} else {
 					event.gc.setBackground(red);
 					int columnPercentage = (int) ((columnWidth * 0.01) * 100);
 					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
@@ -198,14 +229,12 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				Object value = attributeMaps[0].get(element);
 				int percentage = ((Double) value).intValue();
 				int columnWidth = viewerColumn3.getColumn().getWidth();
-				
+
 				if (percentage >= 0) {
 					event.gc.setBackground(green);
 					int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
 					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-				}
-				else
-				{
+				} else {
 					event.gc.setBackground(red);
 					int columnPercentage = (int) ((columnWidth * 0.01) * 100);
 					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
@@ -245,14 +274,12 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				Object value = attributeMaps[0].get(element);
 				int percentage = ((Double) value).intValue();
 				int columnWidth = viewerColumn4.getColumn().getWidth();
-				
+
 				if (percentage >= 0) {
 					event.gc.setBackground(green);
 					int columnPercentage = (int) ((columnWidth * 0.01) * percentage);
 					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-				}
-				else
-				{
+				} else {
 					event.gc.setBackground(red);
 					int columnPercentage = (int) ((columnWidth * 0.01) * 100);
 					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
