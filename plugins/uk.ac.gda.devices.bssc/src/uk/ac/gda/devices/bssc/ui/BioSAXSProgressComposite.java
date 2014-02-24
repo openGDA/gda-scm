@@ -23,6 +23,7 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -59,7 +60,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
 
-	public BioSAXSProgressComposite(Composite parent, IObservableList input, int style) {
+	public BioSAXSProgressComposite(Composite parent, final IObservableList input, int style) {
 		super(parent, style);
 
 		setLayout(new FillLayout());
@@ -134,16 +135,20 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					if (rect.contains(pt)) {
 						switch (col) {
 						case 0:
-							plotView.setPlot(sampleProgress);
+							plotView.setName(sampleProgress.getSampleName() + " Collection Result");
 							break;
 						case 1:
-							plotView.setPlot(sampleProgress);
+							plotView.setName(sampleProgress.getSampleName() + " Collection Result");
 							break;
 						case 2:
-							plotView.setPlot(sampleProgress);
+							plotView.setName(sampleProgress.getSampleName() + " Reduction Result");
+							break;
+						case 3:
+							plotView.setName(sampleProgress.getSampleName() + " Analysis Result");
 							break;
 						}
 					}
+					plotView.setPlot(sampleProgress);
 				}
 			}
 		});
@@ -181,13 +186,13 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
-				ISAXSProgress progress = (ISAXSProgress)element;
+				ISAXSProgress progress = (ISAXSProgress) element;
 				ISpyBStatus status = progress.getCollectionStatusInfo().getStatus();
 				double progressValue = progress.getCollectionStatusInfo().getProgress();
 				int percentage = ((Double) progressValue).intValue();
 				int columnWidth = viewerColumn2.getColumn().getWidth();
 				int columnPercentage;
-				
+
 				if (status == ISpyBStatus.FAILED) {
 					event.gc.setBackground(red);
 					columnPercentage = (int) ((columnWidth * 0.01) * 100);
@@ -195,7 +200,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					event.gc.setBackground(green);
 					columnPercentage = (int) ((columnWidth * 0.01) * percentage);
 				}
-				
+
 				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
 				event.gc.fillRectangle(event.getBounds());
 			}
@@ -229,13 +234,13 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
-				ISAXSProgress progress = (ISAXSProgress)element;
+				ISAXSProgress progress = (ISAXSProgress) element;
 				ISpyBStatus status = progress.getReductionStatusInfo().getStatus();
 				double progressValue = progress.getReductionStatusInfo().getProgress();
 				int percentage = ((Double) progressValue).intValue();
 				int columnWidth = viewerColumn2.getColumn().getWidth();
 				int columnPercentage;
-				
+
 				if (status == ISpyBStatus.FAILED) {
 					event.gc.setBackground(red);
 					columnPercentage = (int) ((columnWidth * 0.01) * 100);
@@ -243,7 +248,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					event.gc.setBackground(green);
 					columnPercentage = (int) ((columnWidth * 0.01) * percentage);
 				}
-				
+
 				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
 				event.gc.fillRectangle(event.getBounds());
 			}
@@ -277,13 +282,13 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
-				ISAXSProgress progress = (ISAXSProgress)element;
+				ISAXSProgress progress = (ISAXSProgress) element;
 				ISpyBStatus status = progress.getAnalysisStatusInfo().getStatus();
 				double progressValue = progress.getAnalysisStatusInfo().getProgress();
 				int percentage = ((Double) progressValue).intValue();
 				int columnWidth = viewerColumn2.getColumn().getWidth();
 				int columnPercentage;
-				
+
 				if (status == ISpyBStatus.FAILED) {
 					event.gc.setBackground(red);
 					columnPercentage = (int) ((columnWidth * 0.01) * 100);
@@ -291,13 +296,18 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					event.gc.setBackground(green);
 					columnPercentage = (int) ((columnWidth * 0.01) * percentage);
 				}
-				
+
 				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
 				event.gc.fillRectangle(event.getBounds());
 			}
 		});
 
 		bioSaxsProgressViewer.setInput(input);
+		
+		int tableSize = input.size();
+		if (tableSize > 0) {
+			bioSaxsProgressViewer.reveal(tableSize - 1);
+		}
 	}
 
 	public Viewer getViewer() {
