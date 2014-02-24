@@ -39,14 +39,39 @@ public class BioSAXSScriptTest {
 				"TEMPLATE", "test");
 		experimentCount++;
 
-		// ********* Test data collection successful ************************
-		// create a SAXSDATACOLLECTION in ISpyB
+		// create 5 data collections
 		long dataCollectionId1 = bioSAXSISPyB.createSaxsDataCollection(
 				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 				10.0, "viscosity");
 		dataCollectionCount++;
 
+		long dataCollectionId2 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
+		dataCollectionCount++;
+		
+		long dataCollectionId3 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
+		dataCollectionCount++;
+
+		long dataCollectionId4 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
+		dataCollectionCount++;
+		
+		long dataCollectionId5 = bioSAXSISPyB
+				.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
+						(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
+						(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
+						"viscosity", dataCollectionId4);
+		dataCollectionCount++;
+		
+		//************Run data collection 1 **********************
 		// Check status values are correct on data collection creation
 		ISpyBStatusInfo expectedCollectionStatusInfo = new ISpyBStatusInfo();
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
@@ -67,6 +92,7 @@ public class BioSAXSScriptTest {
 				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				1.0, getFilename(1), defaultDataPath);
 
+		
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(33);
@@ -206,14 +232,10 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedAnalysisStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 
-		// **********************Test data collection failed
-		// create SAXSDATACOLLECTION in ISpyB
-		long dataCollectionId2 = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
-				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
-		dataCollectionCount++;
-
+		
+		
+		
+		//************Run data collection 2 **********************
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
 		expectedCollectionStatusInfo.setProgress(0);
@@ -270,15 +292,11 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getFileNames().get(0));
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-
-		// ******************Test data reduction failed
-		// create SAXSDATACOLLECTION in ISpyB
-		long dataCollectionId3 = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
-				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
-		dataCollectionCount++;
-
+		
+		
+		
+		
+		//************Run data collection 3 **********************
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
@@ -401,20 +419,16 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 
-		// ********** Test data analysis failed
-		// create a SAXSDATACOLLECTION in ISpyB
-		long dataCollectionId4 = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
-				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
-		dataCollectionCount++;
-
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
 		expectedCollectionStatusInfo.setProgress(0);
 		expectedCollectionStatusInfo.setMessage("");
 
+		
+		
+		
+		//************Run data collection 4 **********************
 		ispyBStatusInfo = bioSAXSISPyB
 				.getDataCollectionStatus(dataCollectionId4);
 		assertEquals(expectedCollectionStatusInfo.getStatus(),
@@ -566,17 +580,6 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedAnalysisStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 
-		// ***************** Test a data collection which uses the same buffer
-		// as the previous collection
-		// create a data collection that uses the same buffer before as the
-		// buffer after from the previous collection, not sure how we can assert
-		long dataCollectionId5 = bioSAXSISPyB
-				.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
-						(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
-						(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
-						"viscosity", dataCollectionId4);
-		dataCollectionCount++;
-
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
 		// Because we are using the previous buffer then set STATUS to RUNNING
@@ -586,6 +589,9 @@ public class BioSAXSScriptTest {
 		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo.setMessage("");
 
+		
+		
+		//************ Run data collection 5 **********************
 		ispyBStatusInfo = bioSAXSISPyB
 				.getDataCollectionStatus(dataCollectionId5);
 		assertEquals(expectedCollectionStatusInfo.getStatus(),
