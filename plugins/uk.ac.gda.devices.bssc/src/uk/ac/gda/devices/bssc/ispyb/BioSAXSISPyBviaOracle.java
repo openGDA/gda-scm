@@ -1097,18 +1097,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
 		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
 		createMeasurementToDataCollection(saxsDataCollectionId, bufferAfterMeasurementId);
-		BioSAXSDataCollectionBean bean = new BioSAXSDataCollectionBean();
-		bean.setBlSessionId(blsessionId);
-		bean.setExperimentId(experimentID);
-		bean.setId(saxsDataCollectionId);
-		bean.setBufferBeforeMeasurementId(bufferBeforeMeasurementId);
-		bean.setBufferAfterMeasurementId(bufferAfterMeasurementId);
-		if (previousDataCollectionId != INVALID_VALUE) {
-			bean.getCollectionStatus().setProgress(33); // the previous data collection was done, so set initial
-														// progress
-			bean.getCollectionStatus().addFileName(
-					getDataCollectionStatus(previousDataCollectionId).getFileNames().get(2));
-		}
 
 		sendISpyBUpdate(saxsDataCollectionId);
 
