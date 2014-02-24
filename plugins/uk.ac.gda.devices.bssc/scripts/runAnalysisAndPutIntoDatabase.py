@@ -69,6 +69,8 @@ def parseResults(outputFolderName, measurementId):
 	return results
 
 def storeAnalysis(client, results):
+	client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
+	client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
 	client.service.storeDataAnalysisResultByMeasurementId(results["measurementId"], results["filename"],
 		results["rg"], results["rgstdev"], results["i0"], results["i0stdev"], 0, 0,
 		results["quality"], results["isagregated"], "", 0, results["gnomFile"], results["rgGuinier"], results["rgGnom"], results["dmax"], "",
@@ -77,7 +79,7 @@ def storeModels(client, results):
 	damaverResults = []#assemble from results["dammaver"]
 	dammifResults = [] #assemble from results["dammif"]
 	client.service.storeAbInitioModels(results["measurementId"], [], damaverResults,
-	dammifResults, [], results["nsdPlot"], None)
+		dammifResults, [], results["nsdPlot"], None)
 def runPipeline(filename, outputFolderName, datapath, threads, columns):
 	os.system("module load edna/sas && run-sas-pipeline.py --rMaxStop 700 --rMaxIntervals 50 --data " + filename + " --threads "+ threads + " --columns " + columns + " --nxsQ " + dataPath+"q --nxsData " + dataPath + "data")
 
