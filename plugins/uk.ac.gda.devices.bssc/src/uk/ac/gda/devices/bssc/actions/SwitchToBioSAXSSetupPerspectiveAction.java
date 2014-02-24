@@ -38,23 +38,7 @@ import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSSetupPerspective.class);
-	private static final int PLATE_COL_NO = 0;
-	private static final int PLATE_ROW_COL_NO = 1;
-	private static final int PLATE_COLUMN_COL_NO = 2;
-	private static final int SAMPLE_NAME_COL_NO = 3;
-	private static final int CONCENTRATION_COL_NO = 4;
-	private static final int VISCOSITY_COL_NO = 5;
-	private static final int MOLECULAR_WEIGHT_COL_NO = 6;
-	private static final int BUFFER_PLATE_COL_NO = 7;
-	private static final int BUFFER_ROW_COL_NO = 8;
-	private static final int BUFFER_COLUMN_COL_NO = 9;
-	// private static final int RECOUP_COL_NO = 10;
-	private static final int RECOUP_PLATE_COL_NO = 10;
-	private static final int RECOUP_ROW_COL_NO = 11;
-	private static final int RECOUP_COLUMN_COL_NO = 12;
-	private static final int TIME_PER_FRAME_COL_NO = 13;
-	private static final int FRAMES_COL_NO = 14;
-	private static final int EXPOSURE_TEMP_COL_NO = 15;
+	private static final int SAMPLE_COLLECTIONS_SIZE = 1;
 	private BSSCSessionBean sessionBean;
 	private ArrayList<TitrationBean> measurements;
 
@@ -74,7 +58,7 @@ public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 			IPerspectiveRegistry iPerspectiveRegistry = PlatformUI.getWorkbench().getPerspectiveRegistry();
 			iPerspectiveRegistry.setDefaultPerspective("uk.ac.gda.devices.bssc.biosaxssetupperspective");
 
-			//open sample template in setup perspective when perspective is opened first time from the welcome page
+			// open sample template in setup perspective when perspective is opened first time from the welcome page
 			openEditor();
 		} catch (WorkbenchException e) {
 			// TODO Auto-generated catch block
@@ -89,45 +73,37 @@ public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 	}
 
 	private void openEditor() {
-		Workbook wb;
-		String bioSAXSFilePath = "Sample" + ".biosaxs";
+		String bioSAXSFilePath = "Samples" + ".biosaxs";
 		sessionBean = new BSSCSessionBean();
 		measurements = new ArrayList<TitrationBean>();
 
 		try {
-			wb = WorkbookFactory.create(new File(bioSAXSFilePath));
-
-			Sheet sheet = wb.getSheetAt(0);
-
-			for (Row row : sheet) {
+			for (int i = 0; i < SAMPLE_COLLECTIONS_SIZE; i++) {
 				TitrationBean tibi = new TitrationBean();
 
-				LocationBean location = locationFromCells(row.getCell(PLATE_COL_NO), row.getCell(PLATE_ROW_COL_NO),
-						row.getCell(PLATE_COLUMN_COL_NO));
+				LocationBean location = new LocationBean();
 				if (!location.isValid())
 					throw new Exception("invalid sample location");
 				tibi.setLocation(location);
 
-				tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
+				tibi.setSampleName("Sample " + i);
 
-				location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO),
-						row.getCell(BUFFER_COLUMN_COL_NO));
+				location = new LocationBean();
 				if (!location.isValid())
 					throw new Exception("invalid buffer location");
 				tibi.setBufferLocation(location);
 
-				location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO),
-						row.getCell(RECOUP_COLUMN_COL_NO));
+				location = new LocationBean();
 				if (!location.isValid())
 					location = null;
 
-				tibi.setRecouperateLocation(location);
-				tibi.setConcentration(row.getCell(CONCENTRATION_COL_NO).getNumericCellValue());
-				tibi.setViscosity(row.getCell(VISCOSITY_COL_NO).getStringCellValue());
-				tibi.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL_NO).getNumericCellValue());
-				tibi.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL_NO).getNumericCellValue());
-				tibi.setFrames((int) row.getCell(FRAMES_COL_NO).getNumericCellValue());
-				tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue());
+				tibi.setRecouperateLocation(null);
+				tibi.setConcentration(1);
+				tibi.setViscosity("high");
+				tibi.setMolecularWeight(1);
+				tibi.setTimePerFrame(1);
+				tibi.setFrames(1);
+				tibi.setExposureTemperature(22);
 
 				measurements.add(tibi);
 			}
@@ -157,7 +133,7 @@ public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 		try {
 			IDE.openEditorOnFileStore(page, biosaxsFileStore);
 		} catch (PartInitException e) {
-			logger.error("PartyInitException opening editor", e);
+			logger.error("PartInitException opening editor", e);
 		}
 	}
 
