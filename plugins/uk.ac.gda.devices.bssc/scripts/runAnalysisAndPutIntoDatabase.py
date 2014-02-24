@@ -7,7 +7,9 @@
 #find the log file and file locations where the analysis stored stuff
 #call ISPyB web service and store the results
 import os
+import json
 
+additionalPath = "ControlSolutionScatteringv0_3"
 def createWebService():
 	from suds.client import Client
 	host = "cs04r-sc-vserv-49"
@@ -50,11 +52,11 @@ def parseResults(outputFolderName, measurementId):
 	results["measurementId"] = measurementId
 	folder = getLastFolderCreated(outputFolderName)
 	#get filenames from last folder created
-	results['firFile'] = os.path.join(folder, "Dammifv0_1", "dammif.fir")
-	results['fitFile'] = os.path.join(folder, "Dammifv0_1", "dammif.fit")
-	results['nsdPlot'] = os.path.join(folder, "dammifNSDResults.png")
-	results['densityPlot'] = os.path.join(folder, "distributionPR.png")
-	results['scatteringFilePath'] = os.path.join(folder, "gnomFittingResults.png")
+	results['firFile'] = os.path.join(folder, additionalPath, "Dammifv0_1", "dammif.fir")
+	results['fitFile'] = os.path.join(folder, additionalPath, "Dammifv0_1", "dammif.fit")
+	results['nsdPlot'] = os.path.join(folder, additionalPath, "dammifNSDResults.png")
+	results['densityPlot'] = os.path.join(folder, additionalPath, "distributionPR.png")
+	results['scatteringFilePath'] = os.path.join(folder, additionalPath, "gnomFittingResults.png")
 	#get last log file created - then get some information from it
 	lastLogName = folder + ".log"
 	parseLogFile(lastLogName, results)
@@ -66,20 +68,36 @@ def parseResults(outputFolderName, measurementId):
 	results["volume"] = "0"
 	results["filename"] = ""
 	results["dmax"] = "0"
-	return results
+	return results, folder
+
+def createModels(outputFolderName,results):
+	modelList = []
+	model = {}
+	model["pdbFile"] = "Dammif"
+	modelList.append(model)
+	dammifResultsModel = {}
+	dammifResultsModel["firFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fir")
+	dammifResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif-0.pdb")
+	dammifResultsModel["fitFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fit")
+	damminResultsModel = {}
+	damminResultsModel["firFile"] = ""
+	damminResultsModel["pdbFile"] = ""
+	damminResultsModel["fitFile"] = ""
+	return model, dammifResultsModel, damminResultsModel
 
 def storeAnalysis(client, results):
-	client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
-	client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
+	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
+	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
 	client.service.storeDataAnalysisResultByMeasurementId(results["measurementId"], results["filename"],
 		results["rg"], results["rgstdev"], results["i0"], results["i0stdev"], 0, 0,
 		results["quality"], results["isagregated"], "", 0, results["gnomFile"], results["rgGuinier"], results["rgGnom"], results["dmax"], "",
 		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
-def storeModels(client, results):
+
+def storeModels(client, model, dammifModel, damminModel, results): #TODO model unused at the moment
 	damaverResults = []#assemble from results["dammaver"]
-	dammifResults = [] #assemble from results["dammif"]
-	client.service.storeAbInitioModels(results["measurementId"], [], damaverResults,
-		dammifResults, [], results["nsdPlot"], None)
+	client.service.storeAbInitioModels(json.dumps([results["measurementId"]]), json.dumps([dammifModel]), json.dumps(damminModel), #TODO this should be damaver
+		json.dumps(dammifModel), json.dumps(damminModel), results["nsdPlot"], "")
+
 def runPipeline(filename, outputFolderName, datapath, threads, columns):
 	os.system("module load edna/sas && run-sas-pipeline.py --rMaxStop 700 --rMaxIntervals 50 --data " + filename + " --threads "+ threads + " --columns " + columns + " --nxsQ " + dataPath+"q --nxsData " + dataPath + "data")
 
@@ -118,7 +136,7 @@ if __name__ == '__main__':
 
 	runPipeline(filename, outputFolderName, "/entry1/"+detector+"_result/",threads, columns)
 
-	results = parseResults(outputFolderName, measurementId)
+	results, folder = parseResults(outputFolderName, measurementId)
 	client = createWebService()
 	storeAnalysis(client, results)
 
