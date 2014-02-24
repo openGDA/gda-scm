@@ -39,6 +39,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +55,10 @@ import uk.ac.diamond.scisoft.analysis.rcp.inspector.LabelledSlider;
 import uk.ac.diamond.scisoft.analysis.rcp.monitor.ProgressMonitorWrapper;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
-public class BioSAXSPlotView extends ViewPart {
-	public static String ID = "uk.ac.gda.devices.bssc.views.BioSAXSPlotView";
+public class BioSAXSPlotResultView extends ViewPart {
+	public static String ID = "uk.ac.gda.devices.bssc.views.BioSAXSPlotResultView";
 	private IPlottingSystem plotting;
-	private Logger logger = LoggerFactory.getLogger(BioSAXSPlotView.class);
+	private Logger logger = LoggerFactory.getLogger(BioSAXSPlotResultView.class);
 	private String plotName;
 	private Composite plotComposite;
 	private ISAXSProgress sampleProgress;
@@ -68,11 +69,13 @@ public class BioSAXSPlotView extends ViewPart {
 	protected IDataHolder dh;
 	private String filePath;
 	private int startValue;
+	private Label lblStartValue;
+	private Text textStartValue;
 
-	public BioSAXSPlotView() {
+	public BioSAXSPlotResultView() {
 		try {
 			this.plotting = PlottingFactory.createPlottingSystem();
-			
+
 			sliceObject = new SliceObject();
 		} catch (Exception e) {
 			logger.error("Cannot create a plotting system!", e);
@@ -81,6 +84,7 @@ public class BioSAXSPlotView extends ViewPart {
 
 	public void setName(String plotName) {
 		this.plotName = plotName;
+		this.setPartName(plotName);
 	}
 
 	@Override
@@ -96,7 +100,7 @@ public class BioSAXSPlotView extends ViewPart {
 		sliderCompositeGL.marginWidth = 10;
 		sliderCompositeGL.marginHeight = 10;
 		sliderCompositeGL.horizontalSpacing = 10;
-		sliderCompositeGL.numColumns = 2;
+		sliderCompositeGL.numColumns = 5;
 
 		Label lblFrames = new Label(sliderComposite, SWT.NONE);
 		sliderComposite.setLayout(sliderCompositeGL);
@@ -111,7 +115,8 @@ public class BioSAXSPlotView extends ViewPart {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						try {
-							ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
+							ILoaderService loaderService = (ILoaderService) ServiceManager
+									.getService(ILoaderService.class);
 							dataSetPath = "/entry1/instrument/detector/data";
 							dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
 							lz = dh.getLazyDataset(dataSetPath);
@@ -119,23 +124,28 @@ public class BioSAXSPlotView extends ViewPart {
 								@Override
 								public void run() {
 									startValue = slider.getValue();
+									textStartValue.setText(String.valueOf(startValue));
 								}
 							});
-							
+
 							sliceObject.setName(sampleProgress.getSampleName());
-							sliceObject.setFullShape(lz.getShape());
+							
+							int[] shape = lz.getShape();
+							sliceObject.setFullShape(shape);
 							sliceObject.setShapeMessage("");
-							sliceObject.setPath(filePath);
-							sliceObject.setSliceStart(new int[] { 0, startValue, 0, 0 });
-							sliceObject.setSliceStop(new int[] { 1, 59, 1679, 1475 });
-							sliceObject.setSliceStep(new int[] { 1, 49, 1 ,1 });
+							int dim1 = shape[0];
+							int dim2 = shape[1];
+							int dim3 = shape[2];
+							int dim4 = shape[3];
+							sliceObject.setSliceStart(new int[] { 0, (dim2-1), 0, 0 });
+							sliceObject.setSliceStop(new int[] { dim1, (dim2), dim3, dim4 });
+							sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
 
 							final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
 							List<IDataset> dataSetList = new ArrayList<IDataset>();
 							dataSetList.add(dataSet);
 							plot(dataSetList);
-
 
 						} catch (Exception e) {
 							logger.error("Exception creating 2D plot", e);
@@ -161,12 +171,22 @@ public class BioSAXSPlotView extends ViewPart {
 				// reset.setEnabled(true);
 			}
 		});
-		slider.setIncrements(1, 5);
+		slider.setIncrements(1, 1);
 		slider.setToolTipText("Starting position");
 
 		GridData gd_slider = new GridData(SWT.NONE);
 		gd_slider.widthHint = 222;
 		slider.setLayoutData(gd_slider);
+		new Label(sliderComposite, SWT.NONE);
+
+		lblStartValue = new Label(sliderComposite, SWT.NONE);
+		lblStartValue.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lblStartValue.setText("Start Value");
+
+		textStartValue = new Text(sliderComposite, SWT.BORDER);
+		GridData gd_text = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_text.widthHint = 39;
+		textStartValue.setLayoutData(gd_text);
 
 		plotting.createPlotPart(plotComposite, plotName, getViewSite().getActionBars(), PlotType.IMAGE, this);
 		GridData plotGD = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -192,9 +212,10 @@ public class BioSAXSPlotView extends ViewPart {
 		this.sampleProgress = sampleProgress;
 
 		// get the frames from the nexus file and set the slider
-		filePath = this.sampleProgress.getCollectionFileNames().get(0);
+		filePath = this.sampleProgress.getCollectionFileNames().get(1);
+		// filePath = "/dls/b21/data/2014/cm4976-1/b21-5077.nxs";
 
-		final Job loadJob = new Job("Load plot Data") {
+		final Job loadPlotJob = new Job("Load plot Data") {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -209,21 +230,25 @@ public class BioSAXSPlotView extends ViewPart {
 							slider.setMinMax(0, lz.getShape()[1], "0", String.valueOf(lz.getShape()[1]));
 						}
 					});
-					
+
+					int[] shape = lz.getShape();
 					sliceObject.setName(sampleProgress.getSampleName());
-					sliceObject.setFullShape(lz.getShape());
+					sliceObject.setFullShape(shape);
 					sliceObject.setShapeMessage("");
 					sliceObject.setPath(filePath);
-					sliceObject.setSliceStart(new int[] { 0, 10, 0, 0 });
-					sliceObject.setSliceStop(new int[] { 1, 59, 1679, 1475 });
-					sliceObject.setSliceStep(new int[] { 1, 49, 1 ,1 });
+					int dim1 = shape[0];
+					int dim2 = shape[1];
+					int dim3 = shape[2];
+					int dim4 = shape[3];
+					sliceObject.setSliceStart(new int[] { 0, (dim2-1), 0, 0 });
+					sliceObject.setSliceStop(new int[] { dim1, (dim2), dim3, dim4 });
+					sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
 
 					final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
 					List<IDataset> dataSetList = new ArrayList<IDataset>();
 					dataSetList.add(dataSet);
 					plot(dataSetList);
-
 
 				} catch (Exception e) {
 					logger.error("Exception creating 2D plot", e);
@@ -234,7 +259,7 @@ public class BioSAXSPlotView extends ViewPart {
 				return Status.OK_STATUS;
 			}
 		};
-		loadJob.schedule();
+		loadPlotJob.schedule();
 	}
 
 	private boolean plot(List<IDataset> list) {

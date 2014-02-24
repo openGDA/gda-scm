@@ -51,7 +51,7 @@ import uk.ac.gda.common.rcp.jface.viewers.ObservableMapColumnLabelProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
-import uk.ac.gda.devices.bssc.views.BioSAXSPlotView;
+import uk.ac.gda.devices.bssc.views.BioSAXSPlotResultView;
 import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
@@ -128,7 +128,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					logger.error("Exception showing the perpective uk.ac.gda.devices.bssc.biosaxsresultperspective", e1);
 				}
 
-				BioSAXSPlotView plotView = (BioSAXSPlotView) page.findView(BioSAXSPlotView.ID);
+				BioSAXSPlotResultView plotView = (BioSAXSPlotResultView) page.findView(BioSAXSPlotResultView.ID);
 				window.getActivePage().activate(plotView);
 				for (int col = 0; col < table.getColumnCount(); col++) {
 					Rectangle rect = tableItem.getBounds(col);
@@ -303,7 +303,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		});
 
 		bioSaxsProgressViewer.setInput(input);
-		
+
 		int tableSize = input.size();
 		if (tableSize > 0) {
 			bioSaxsProgressViewer.reveal(tableSize - 1);

@@ -20,36 +20,21 @@ package uk.ac.gda.devices.bssc.perspectives;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IPartService;
-import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PerspectiveAdapter;
-import org.eclipse.ui.PlatformUI;
 
-import uk.ac.gda.devices.bssc.views.BioSAXSPlotView;
-import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
+import uk.ac.gda.devices.bssc.views.BioSAXSPlotResultView;
 
 public class BioSAXSResultPerspective implements IPerspectiveFactory {
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsresultperspective";
-	private HashMap<String, ArrayList<IEditorReference>> perspectiveEditors = new HashMap<String, ArrayList<IEditorReference>>();
-	private HashMap<String, IEditorReference> lastActiveEditors = new HashMap<String, IEditorReference>();
-	private ArrayList<IEditorReference> editorRefs;
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
-		layout.addView(BioSAXSPlotView.ID, IPageLayout.LEFT, 0.45f, IPageLayout.ID_EDITOR_AREA);
+		layout.addView(BioSAXSPlotResultView.ID, IPageLayout.LEFT, 0.45f, IPageLayout.ID_EDITOR_AREA);
 		layout.setEditorAreaVisible(false);
 	}
 
