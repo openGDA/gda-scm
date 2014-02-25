@@ -18,18 +18,9 @@
 
 package uk.ac.gda.devices.bssc.perspectives;
 
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-
-import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
 
 public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxssetupperspective";
@@ -40,43 +31,5 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 				IPageLayout.ID_EDITOR_AREA);
 
 		folderLayout.addView("uk.ac.gda.client.CommandQueueViewFactory");
-
-		final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-
-		// Need add listener to workbench to always have at least one editor available
-		IPartService service = (IPartService) window.getService(IPartService.class);
-		service.addPartListener(new IPartListener() {
-
-			@Override
-			public void partActivated(IWorkbenchPart part) {
-
-			}
-
-			@Override
-			public void partBroughtToTop(IWorkbenchPart part) {
-			}
-
-			@Override
-			public void partClosed(IWorkbenchPart part) {
-				if (part instanceof RichBeanMultiPageEditorPart) {
-					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart) part;
-					IWorkbenchPage page = part.getSite().getPage();
-					IEditorInput editorInput = editor.getEditorInput();
-				}
-			}
-
-			@Override
-			public void partDeactivated(IWorkbenchPart part) {
-			}
-
-			@Override
-			public void partOpened(IWorkbenchPart part) {
-				if (part instanceof RichBeanMultiPageEditorPart) {
-					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart) part;
-					IWorkbenchPage page = part.getSite().getPage();
-					IEditorInput editorInput = editor.getEditorInput();
-				}
-			}
-		});
 	}
 }
