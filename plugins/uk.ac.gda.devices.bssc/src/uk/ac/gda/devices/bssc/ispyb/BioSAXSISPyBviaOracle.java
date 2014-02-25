@@ -1426,22 +1426,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private void sendISpyBUpdate(long collectionId) {
-//		final String[] cmd = { "python", "/home/xlw00930/scripts/simple_udp.py", "ws141", "9877",
-//				"simpleUDPServer:" + collectionId };
-//
-//		try {
-//			Runtime.getRuntime().exec(cmd);
-//			// Sleep for two seconds so that we do not retrieve from model
-//			// before
-//			// it has been notified of updates
-//			Thread.sleep(2000);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
 		 notifyObject.notifyObservers(collectionId);
 	}
 }
