@@ -18,23 +18,29 @@
 
 package uk.ac.gda.devices.bssc.perspectives;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-import uk.ac.gda.devices.bssc.views.BioSAXSResultPlotView;
+import uk.ac.gda.devices.bssc.views.BioSAXSAnalysisResultPlotView;
+import uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView;
+import uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView;
 
 public class BioSAXSResultPerspective implements IPerspectiveFactory {
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsresultperspective";
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
+		IFolderLayout folderLayout = layout.createFolder("folder", IPageLayout.LEFT, 0.73f,
+				IPageLayout.ID_EDITOR_AREA);
+		
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
-		layout.addView(BioSAXSResultPlotView.ID, IPageLayout.LEFT, 0.45f, IPageLayout.ID_EDITOR_AREA);
+		
+		folderLayout.addView(BioSAXSCollectionResultPlotView.ID);
+		folderLayout.addView(BioSAXSReductionResultPlotView.ID);
+		folderLayout.addView(BioSAXSAnalysisResultPlotView.ID);
+		
 		layout.setEditorAreaVisible(false);
 	}
 
