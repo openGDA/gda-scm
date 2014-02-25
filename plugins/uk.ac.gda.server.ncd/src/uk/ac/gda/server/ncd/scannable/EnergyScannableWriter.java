@@ -16,7 +16,7 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.beamline.i22.scannable;
+package uk.ac.gda.server.ncd.scannable;
 
 import gda.data.scan.datawriter.SelfCreatingLink;
 import gda.data.scan.datawriter.scannablewriter.DefaultComponentWriter;
@@ -45,7 +45,7 @@ public class EnergyScannableWriter extends SingleScannableWriter {
 		DefaultComponentWriter trueEnergyWriter = new DefaultComponentWriter() {
 			@Override
 			protected void addCustomAttributes(NeXusFileInterface file, String scannableName, String componentName) throws NexusException {
-				String uncertaintiesName = uncertaintiesPath.substring(0, uncertaintiesPath.lastIndexOf("/"));
+				String uncertaintiesName = uncertaintiesPath.substring(uncertaintiesPath.lastIndexOf("/")+1);
 				file.putattr("uncertainties", uncertaintiesName.getBytes(), NexusFile.NX_CHAR);
 			}
 		};
