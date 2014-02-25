@@ -45,6 +45,22 @@ def parseLogFile(logFileName, results):
 				results["isagregated"] = False
 			else:
 				results["isagregated"] = True
+		if line.count("Results of DAMMIF run:")>0:
+			f.readline()
+			line = f.readline()
+			splitLine = line.split()
+			results["dammifchi"]=splitLine[3]
+			results["dammifrfactor"]=splitLine[6]
+		if line.count("Optimized value of RMax")>0:
+			results["dmax"] = splitLine[6]
+		if line.count("Number of DAMMIF jobs run : ")>0:
+			numberOfDammifJobs = int(splitLine[7])
+			for i in range(numberOfDammifJobs):
+				line = f.readline()
+				splitLine = line.split()
+				results["chiSqrt"+str(i)] = splitLine[3]
+				results["rfactor"+str(i)] = splitLine[6]
+				results["dammifFile"+str(i)] = splitLine[7]
 		line = f.readline()
 
 def parseResults(outputFolderName, measurementId):
@@ -67,23 +83,31 @@ def parseResults(outputFolderName, measurementId):
 	results["rgGnom"] = ""
 	results["volume"] = "0"
 	results["filename"] = ""
-	results["dmax"] = "0"
 	return results, folder
 
 def createModels(outputFolderName,results):
 	modelList = []
 	model = {}
-	model["pdbFile"] = "Dammif"
-	modelList.append(model)
+	for i in range(0,10):
+		if "dammifFile"+str(i) in results:
+			model["pdbFile"] = results["dammifFile"+str(i)]
+			model["chiSqrt"] = results["chiSqrt"+str(i)]
+			model["rfactor"] = results["rfactor"+str(i)]
+			model["name"] = "dammif-"+str(i)
+			modelList.append(model)
+		else:
+			continue
 	dammifResultsModel = {}
 	dammifResultsModel["firFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fir")
 	dammifResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif-0.pdb")
 	dammifResultsModel["fitFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fit")
-	damminResultsModel = {}
+	dammifResultsModel["chiSqrt"] = results["dammifchi"]
+	dammifResultsModel["rfactor"] = results["dammifrfactor"]
+	damminResultsModel = {} #our "default" empty model because we do not run Dammin in the automated method
 	damminResultsModel["firFile"] = ""
 	damminResultsModel["pdbFile"] = ""
 	damminResultsModel["fitFile"] = ""
-	return model, dammifResultsModel, damminResultsModel
+	return modelList, dammifResultsModel, damminResultsModel
 
 def storeAnalysis(client, results):
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
@@ -93,9 +117,9 @@ def storeAnalysis(client, results):
 		results["quality"], results["isagregated"], "", 0, results["gnomFile"], results["rgGuinier"], results["rgGnom"], results["dmax"], "",
 		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
 
-def storeModels(client, model, dammifModel, damminModel, results): #TODO model unused at the moment
+def storeModels(client, model, dammifModel, damminModel, results):
 	damaverResults = []#assemble from results["dammaver"]
-	client.service.storeAbInitioModels(json.dumps([results["measurementId"]]), json.dumps([dammifModel]), json.dumps(damminModel), #TODO this should be damaver
+	client.service.storeAbInitioModels(json.dumps([results["measurementId"]]), json.dumps(model), json.dumps(damminModel), #TODO this should be damaver
 		json.dumps(dammifModel), json.dumps(damminModel), results["nsdPlot"], "")
 
 def runPipeline(filename, outputFolderName, datapath, threads, columns):
