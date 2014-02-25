@@ -580,18 +580,19 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedAnalysisStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 
+		
+		
+		
+		//************ Run data collection 5 **********************
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
-		// Because we are using the previous buffer then set STATUS to RUNNING
+		// Because we are using the previous buffer then set STATUS to NOT_STARTED
 		// and progress to 33 (because the buffer before has already been run in
 		// the previous collection)
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
 		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo.setMessage("");
 
-		
-		
-		//************ Run data collection 5 **********************
 		ispyBStatusInfo = bioSAXSISPyB
 				.getDataCollectionStatus(dataCollectionId5);
 		assertEquals(expectedCollectionStatusInfo.getStatus(),
