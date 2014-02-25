@@ -25,7 +25,7 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-import uk.ac.gda.devices.bssc.views.BioSAXSPlotResultView;
+import uk.ac.gda.devices.bssc.views.BioSAXSResultPlotView;
 
 public class BioSAXSResultPerspective implements IPerspectiveFactory {
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsresultperspective";
@@ -34,7 +34,7 @@ public class BioSAXSResultPerspective implements IPerspectiveFactory {
 	public void createInitialLayout(IPageLayout layout) {
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
-		layout.addView(BioSAXSPlotResultView.ID, IPageLayout.LEFT, 0.45f, IPageLayout.ID_EDITOR_AREA);
+		layout.addView(BioSAXSResultPlotView.ID, IPageLayout.LEFT, 0.45f, IPageLayout.ID_EDITOR_AREA);
 		layout.setEditorAreaVisible(false);
 	}
 
