@@ -23,7 +23,6 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -39,9 +38,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ import uk.ac.gda.common.rcp.jface.viewers.ObservableMapColumnLabelProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
-import uk.ac.gda.devices.bssc.views.BioSAXSResultPlotView;
+import uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView;
 import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
@@ -128,27 +129,41 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					logger.error("Exception showing the perpective uk.ac.gda.devices.bssc.biosaxsresultperspective", e1);
 				}
 
-				BioSAXSResultPlotView plotView = (BioSAXSResultPlotView) page.findView(BioSAXSResultPlotView.ID);
-				window.getActivePage().activate(plotView);
 				for (int col = 0; col < table.getColumnCount(); col++) {
 					Rectangle rect = tableItem.getBounds(col);
 					if (rect.contains(pt)) {
 						switch (col) {
 						case 0:
-							plotView.setName(sampleProgress.getSampleName() + " Collection Result");
-							break;
 						case 1:
-							plotView.setName(sampleProgress.getSampleName() + " Collection Result");
+							BioSAXSCollectionResultPlotView collectionResultPlotView;
+							try {
+								collectionResultPlotView = (BioSAXSCollectionResultPlotView)page.showView("uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView");
+								page.activate(collectionResultPlotView);
+								collectionResultPlotView.setPlot(sampleProgress);
+							} catch (PartInitException e) {
+								logger.error("Error activating the data analysis results view", e);
+							}
 							break;
 						case 2:
-							plotView.setName(sampleProgress.getSampleName() + " Reduction Result");
+							IViewPart reductionResultPlotView;
+							try {
+								reductionResultPlotView = page.showView("uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView");
+								page.activate(reductionResultPlotView);
+							} catch (PartInitException e) {
+								logger.error("Error activating the data reduction results view", e);
+							}
 							break;
 						case 3:
-							plotView.setName(sampleProgress.getSampleName() + " Analysis Result");
+							IViewPart analysisResultPlotView;
+							try {
+								analysisResultPlotView = page.showView("uk.ac.gda.devices.bssc.views.BioSAXSAnalysisResultPlotView");
+								page.activate(analysisResultPlotView);
+							} catch (PartInitException e) {
+								logger.error("Error activating the data analysis results view", e);
+							}
 							break;
 						}
 					}
-					plotView.setPlot(sampleProgress);
 				}
 			}
 		});
