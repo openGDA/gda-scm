@@ -64,13 +64,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	Connection conn = null;
 	String URL = null;
-	private int previousCollectionId;
 	long blsessionId;
-	private NotifyObserversObject notifyObject;
+	private NotifyISpyBObserversObject notifyObject;
 
-	public BioSAXSISPyBviaOracle(String mode) {
+	public BioSAXSISPyBviaOracle(String mode, NotifyISpyBObserversObject notifyObject) {
 		URL = mode;
-		// this.notifyObject = notifyObject;
+		this.notifyObject = notifyObject;
 	}
 
 	@Override
@@ -1244,7 +1243,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return getSAXSDataCollection(dataCollectionId).getAnalysisStatus();
 	}
 
-	
 	/**
 	 * Retrieve data collection status and place in collectionsMap
 	 * 
@@ -1428,23 +1426,22 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private void sendISpyBUpdate(long collectionId) {
-		final String[] cmd = { "python", "/home/xlw00930/scripts/simple_udp.py", "ws141", "9877",
-				"simpleUDPServer:" + collectionId };
+//		final String[] cmd = { "python", "/home/xlw00930/scripts/simple_udp.py", "ws141", "9877",
+//				"simpleUDPServer:" + collectionId };
+//
+//		try {
+//			Runtime.getRuntime().exec(cmd);
+//			// Sleep for two seconds so that we do not retrieve from model
+//			// before
+//			// it has been notified of updates
+//			Thread.sleep(2000);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
-		try {
-			Runtime.getRuntime().exec(cmd);
-			// Sleep for two seconds so that we do not retrieve from model
-			// before
-			// it has been notified of updates
-			Thread.sleep(2000);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// notifyObject = new NotifyObserversObject(9877);
-		// notifyObject.notifyObservers(collectionId);
+		 notifyObject.notifyObservers(collectionId);
 	}
 }
