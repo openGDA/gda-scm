@@ -776,7 +776,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		List<Long> allCollectionIds = getSaxsDataCollectionsForSession(blSessionId);
 		for (Long collectionId : allCollectionIds) {
-			ISAXSDataCollection collection = retrieveCollection(collectionId);
+			ISAXSDataCollection collection = getSAXSDataCollection(collectionId);
 			if (collection != null) {
 				saxsDataCollections.add(collection);
 			}
@@ -1207,7 +1207,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
-		return retrieveCollection(dataCollectionId).getCollectionStatus();
+		return getSAXSDataCollection(dataCollectionId).getCollectionStatus();
 
 	}
 
@@ -1220,7 +1220,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public ISpyBStatusInfo getDataReductionStatus(long dataCollectionId) throws SQLException {
-		return retrieveCollection(dataCollectionId).getReductionStatus();
+		return getSAXSDataCollection(dataCollectionId).getReductionStatus();
 	}
 
 	@Override
@@ -1241,15 +1241,17 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public ISpyBStatusInfo getDataAnalysisStatus(long dataCollectionId) throws SQLException {
-		return retrieveCollection(dataCollectionId).getAnalysisStatus();
+		return getSAXSDataCollection(dataCollectionId).getAnalysisStatus();
 	}
 
+	
 	/**
 	 * Retrieve data collection status and place in collectionsMap
 	 * 
 	 * @param dataCollectionId
 	 */
-	private ISAXSDataCollection retrieveCollection(long dataCollectionId) {
+	@Override
+	public ISAXSDataCollection getSAXSDataCollection(long dataCollectionId) {
 		try {
 			ISAXSDataCollection bioSaxsDataCollection;
 			bioSaxsDataCollection = getSAXSDataCollectionFromDataCollection(dataCollectionId);
