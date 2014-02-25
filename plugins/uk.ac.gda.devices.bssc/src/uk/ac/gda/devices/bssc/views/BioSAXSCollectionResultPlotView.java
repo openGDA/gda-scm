@@ -55,10 +55,10 @@ import uk.ac.diamond.scisoft.analysis.rcp.inspector.LabelledSlider;
 import uk.ac.diamond.scisoft.analysis.rcp.monitor.ProgressMonitorWrapper;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
-public class BioSAXSResultPlotView extends ViewPart {
-	public static String ID = "uk.ac.gda.devices.bssc.views.BioSAXSResultPlotView";
+public class BioSAXSCollectionResultPlotView extends ViewPart {
+	public static String ID = "uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView";
 	private IPlottingSystem plotting;
-	private Logger logger = LoggerFactory.getLogger(BioSAXSResultPlotView.class);
+	private Logger logger = LoggerFactory.getLogger(BioSAXSCollectionResultPlotView.class);
 	private String plotName;
 	private Composite plotComposite;
 	private ISAXSProgress sampleProgress;
@@ -72,7 +72,7 @@ public class BioSAXSResultPlotView extends ViewPart {
 	private Label lblStartValue;
 	private Text textStartValue;
 
-	public BioSAXSResultPlotView() {
+	public BioSAXSCollectionResultPlotView() {
 		try {
 			this.plotting = PlottingFactory.createPlottingSystem();
 
