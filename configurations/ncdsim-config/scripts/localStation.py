@@ -45,6 +45,10 @@ try:
 except:
     pass
 
+# preseed listener dispatcher
+finder.find("ncdlistener").monitorLive("Saxs Plot", "SAXS")
+finder.find("ncdlistener").monitorLive("Waxs Plot", "WAXS")
+
 from ncdutils import DetectorMeta
 waxs_distance = DetectorMeta("waxs_distance", ncddetectors, "WAXS", "distance", "m")
 saxs_distance = DetectorMeta("saxs_distance", ncddetectors, "SAXS", "distance", "m")
