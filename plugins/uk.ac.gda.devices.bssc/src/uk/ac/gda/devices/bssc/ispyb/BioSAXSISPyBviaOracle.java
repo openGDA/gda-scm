@@ -18,7 +18,6 @@
 
 package uk.ac.gda.devices.bssc.ispyb;
 
-import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -95,28 +94,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (conn == null || conn.isClosed()) {
 			connect();
 		}
-	}
-
-	private long getProposalForVisit(String visitname) throws SQLException {
-		long proposalId = -1;
-		connectIfNotConnected();
-
-		String selectSql = "SELECT bs.proposalId "
-				+ "FROM ispyb4a_db.BLSession bs INNER JOIN ispyb4a_db.Proposal p on (bs.proposalId = p.proposalId) "
-				+ "WHERE p.proposalCode || p.proposalNumber || '-' || bs.visit_number = ?";
-
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setString(1, visitname);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			if (rs.next())
-				proposalId = rs.getLong(1);
-			rs.close();
-		}
-		stmt.close();
-
-		return proposalId;
 	}
 
 	@Override
@@ -880,30 +857,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementId;
 	}
 
-	private long getBlSessionIdFromExperiment(long experimentId) throws SQLException {
-		long blsessionId = -1;
-		connectIfNotConnected();
-
-		String selectSql = "SELECT s.blsessionId FROM ispyb4a_db.Experiment e "
-				+ "INNER JOIN ispyb4a_db.SaxsDataCollection s on s.experimentid = e.experimentid "
-				+ "WHERE e.experimentId = ?";
-
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, experimentId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			if (rs.next()) {
-				blsessionId = rs.getLong(1);
-			}
-
-			rs.close();
-		}
-		stmt.close();
-
-		return blsessionId;
-	}
-
 	private void updateMeasurementWithRunId(long measurementId, long runId) throws SQLException {
 		connectIfNotConnected();
 		String selectSql1 = "UPDATE ispyb4a_db.Measurement m SET m.runId= ? WHERE m.measurementId = ?";
@@ -1456,20 +1409,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		} else if (statusString.equals(DATA_REDUCTION_RUNNING)) {
 			return ISpyBStatus.RUNNING;
 		} else if (statusString.equals(DATA_REDUCTION_NOT_STARTED)) {
-			return ISpyBStatus.NOT_STARTED;
-		} else {
-			return ISpyBStatus.NOT_STARTED;
-		}
-	}
-
-	private ISpyBStatus getAnalysisStatusFromString(String statusString) {
-		if (statusString.equals(DATA_ANALYSIS_COMPLETE)) {
-			return ISpyBStatus.COMPLETE;
-		} else if (statusString.equals(DATA_ANALYSIS_FAILED)) {
-			return ISpyBStatus.FAILED;
-		} else if (statusString.equals(DATA_ANALYSIS_RUNNING)) {
-			return ISpyBStatus.RUNNING;
-		} else if (statusString.equals(DATA_ANALYSIS_NOT_STARTED)) {
 			return ISpyBStatus.NOT_STARTED;
 		} else {
 			return ISpyBStatus.NOT_STARTED;
