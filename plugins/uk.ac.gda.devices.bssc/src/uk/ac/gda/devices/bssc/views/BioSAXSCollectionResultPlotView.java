@@ -89,7 +89,8 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 						slider.setValue(0);
 					}
 				});
-
+				
+				sliceJob.schedule();
 			} catch (Exception e) {
 				logger.error("Exception creating 2D plot", e);
 			} catch (Throwable e) {
@@ -111,15 +112,23 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 				sliceObject.setShapeMessage("");
 
 				sliceObject.setSliceStart(new int[] { 0, frame, 0, 0 });
-				sliceObject.setSliceStop(new int[] { 0, frame+1, shape[2], shape[3] });
-				sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
-
+				sliceObject.setSliceStop(new int[] { 1, frame+1, shape[2], shape[3] });
+				//sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
+				sliceObject.setSliceStep(null);
+				
 				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
 				List<IDataset> dataSetList = new ArrayList<IDataset>();
 				dataSetList.add(dataSet);
 				plot(dataSetList);
 
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						slider.slider.setToolTipText(String.valueOf(frame));
+					}
+				});
+				
 			} catch (Exception e) {
 				logger.error("Exception creating 2D plot", e);
 			} catch (Throwable e) {
