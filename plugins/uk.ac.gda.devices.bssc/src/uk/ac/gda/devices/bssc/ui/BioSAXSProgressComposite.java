@@ -129,15 +129,25 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					logger.error("Exception showing the perpective uk.ac.gda.devices.bssc.biosaxsresultperspective", e1);
 				}
 
+				BioSAXSCollectionResultPlotView collectionResultPlotView;
 				for (int col = 0; col < table.getColumnCount(); col++) {
 					Rectangle rect = tableItem.getBounds(col);
 					if (rect.contains(pt)) {
 						switch (col) {
 						case 0:
-						case 1:
-							BioSAXSCollectionResultPlotView collectionResultPlotView;
 							try {
-								collectionResultPlotView = (BioSAXSCollectionResultPlotView)page.showView("uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView");
+								collectionResultPlotView = (BioSAXSCollectionResultPlotView) page
+										.showView("uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView");
+								page.activate(collectionResultPlotView);
+								collectionResultPlotView.setPlot(sampleProgress);
+							} catch (PartInitException e) {
+								logger.error("Error activating the data analysis results view", e);
+							}
+							break;
+						case 1:
+							try {
+								collectionResultPlotView = (BioSAXSCollectionResultPlotView) page
+										.showView("uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView");
 								page.activate(collectionResultPlotView);
 								collectionResultPlotView.setPlot(sampleProgress);
 							} catch (PartInitException e) {
@@ -147,7 +157,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 						case 2:
 							IViewPart reductionResultPlotView;
 							try {
-								reductionResultPlotView = page.showView("uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView");
+								reductionResultPlotView = page
+										.showView("uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView");
 								page.activate(reductionResultPlotView);
 							} catch (PartInitException e) {
 								logger.error("Error activating the data reduction results view", e);
@@ -156,7 +167,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 						case 3:
 							IViewPart analysisResultPlotView;
 							try {
-								analysisResultPlotView = page.showView("uk.ac.gda.devices.bssc.views.BioSAXSAnalysisResultPlotView");
+								analysisResultPlotView = page
+										.showView("uk.ac.gda.devices.bssc.views.BioSAXSAnalysisResultPlotView");
 								page.activate(analysisResultPlotView);
 							} catch (PartInitException e) {
 								logger.error("Error activating the data analysis results view", e);
