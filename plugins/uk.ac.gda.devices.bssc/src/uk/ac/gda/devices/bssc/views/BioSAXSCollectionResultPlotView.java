@@ -57,6 +57,7 @@ import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
 public class BioSAXSCollectionResultPlotView extends ViewPart {
 	public static String ID = "uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView";
+	private static final String DEFAULT_START_VALUE = "0";
 	private IPlottingSystem plotting;
 	private Logger logger = LoggerFactory.getLogger(BioSAXSCollectionResultPlotView.class);
 	private String plotName;
@@ -187,6 +188,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		GridData gd_text = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_text.widthHint = 39;
 		textStartValue.setLayoutData(gd_text);
+		textStartValue.setText(DEFAULT_START_VALUE);
 
 		plotting.createPlotPart(plotComposite, plotName, getViewSite().getActionBars(), PlotType.IMAGE, this);
 		GridData plotGD = new GridData(SWT.FILL, SWT.FILL, true, true);
