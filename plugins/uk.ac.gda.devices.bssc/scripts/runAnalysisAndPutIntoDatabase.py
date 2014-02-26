@@ -63,9 +63,9 @@ def parseLogFile(logFileName, results):
 				results["dammifFile"+str(i)] = splitLine[7]
 		line = f.readline()
 
-def parseResults(outputFolderName, measurementId):
+def parseResults(outputFolderName, dataCollectionId):
 	results = {}
-	results["measurementId"] = measurementId
+	results["dataCollectionId"] = dataCollectionId
 	folder = getLastFolderCreated(outputFolderName)
 	#get filenames from last folder created
 	results['firFile'] = os.path.join(folder, additionalPath, "Dammifv0_1", "dammif.fir")
@@ -112,14 +112,14 @@ def createModels(outputFolderName,results):
 def storeAnalysis(client, results):
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
-	client.service.storeDataAnalysisResultByMeasurementId(results["measurementId"], results["filename"],
+	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
 		results["rg"], results["rgstdev"], results["i0"], results["i0stdev"], 0, 0,
 		results["quality"], results["isagregated"], "", 0, results["gnomFile"], results["rgGuinier"], results["rgGnom"], results["dmax"], "",
 		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
 
 def storeModels(client, model, dammifModel, damminModel, results):
 	damaverResults = []#assemble from results["dammaver"]
-	client.service.storeAbInitioModels(json.dumps([results["measurementId"]]), json.dumps(model), json.dumps(damminModel), #TODO this should be damaver
+	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damminModel), #TODO this should be damaver
 		json.dumps(dammifModel), json.dumps(damminModel), results["nsdPlot"], "")
 
 def runPipeline(filename, outputFolderName, datapath, threads, columns):
@@ -132,7 +132,7 @@ if __name__ == '__main__':
 	parser.add_argument("--n", "--filename", type=str, help="input filename after data reduction")
 	parser.add_argument("--o", "--outputFolderName", type=str, help="output folder location")
 	parser.add_argument("--d", "--detector", type=str, help="detector name")
-	parser.add_argument("--m", "--measurementId", type=int, help="measurementId")
+	parser.add_argument("--i", "--dataCollectionId", type=int, help="dataCollectionId")
 	parser.add_argument("--t", "--threads", type=int, help="number of threads to use")
 	parser.add_argument("--f", "--fedid", type=str, help="fedid of user for output folder location, if folder is not specified (ignored if outputfolder name is used")
 	parser.add_argument("--c", "--columns", type=int, help="number of columns to use from data file")
@@ -160,7 +160,9 @@ if __name__ == '__main__':
 
 	runPipeline(filename, outputFolderName, "/entry1/"+detector+"_result/",threads, columns)
 
-	results, folder = parseResults(outputFolderName, measurementId)
+	results, folder = parseResults(outputFolderName, dataCollectionId)
 	client = createWebService()
+	(model, dammifModel, damminModel) = createModels(folder, results)
 	storeAnalysis(client, results)
+	storeModels(client, model, dammifModel, damminModel, results)
 
