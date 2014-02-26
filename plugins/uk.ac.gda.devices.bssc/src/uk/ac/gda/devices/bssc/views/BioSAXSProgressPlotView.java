@@ -38,9 +38,7 @@ public class BioSAXSProgressPlotView extends ViewPart {
 			this.plotting = PlottingFactory.createPlottingSystem();
 		} catch (Exception e) {
 			logger.error("Cannot create a plotting system!", e);
-
 		}
-
 	}
 
 	@Override
@@ -50,9 +48,7 @@ public class BioSAXSProgressPlotView extends ViewPart {
 
 	@Override
 	public void setFocus() {
-
 		plotting.setFocus();
-
 	}
 
 	@Override
@@ -65,7 +61,5 @@ public class BioSAXSProgressPlotView extends ViewPart {
 			return plotting;
 
 		return super.getAdapter(clazz);
-
 	}
-
 }

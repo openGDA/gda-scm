@@ -41,9 +41,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			this.plotting = PlottingFactory.createPlottingSystem();
 		} catch (Exception e) {
 			logger.error("Cannot create a plotting system!", e);
-
 		}
-
 	}
 
 	@Override
@@ -53,22 +51,15 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 	@Override
 	public void setFocus() {
-
 		plotting.setFocus();
-
 	}
 
 	@Override
 	public Object getAdapter(final Class clazz) {
-
 		if (IPlottingSystem.class == clazz)
 			return plotting;
-
 		if (IToolPageSystem.class == clazz)
 			return plotting;
-
 		return super.getAdapter(clazz);
-
 	}
-
 }
