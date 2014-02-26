@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2011 Diamond Light Source Ltd.
+ * Copyright © 2014 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -39,7 +39,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +50,11 @@ import uk.ac.diamond.scisoft.analysis.dataset.Maths;
 import uk.ac.diamond.scisoft.analysis.io.IDataHolder;
 import uk.ac.diamond.scisoft.analysis.io.ILoaderService;
 import uk.ac.diamond.scisoft.analysis.io.SliceObject;
-import uk.ac.diamond.scisoft.analysis.rcp.inspector.LabelledSlider;
 import uk.ac.diamond.scisoft.analysis.rcp.monitor.ProgressMonitorWrapper;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
 public class BioSAXSCollectionResultPlotView extends ViewPart {
 	public static String ID = "uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView";
-	private static final String DEFAULT_START_VALUE = "0";
 	private IPlottingSystem plotting;
 	private Logger logger = LoggerFactory.getLogger(BioSAXSCollectionResultPlotView.class);
 	private String plotName;
@@ -69,10 +66,69 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 	protected String dataSetPath;
 	protected IDataHolder dh;
 	private String filePath;
-	private int startValue;
-	private Label lblStartValue;
-	private Text textStartValue;
+	private int frame;
 
+	final Job loadJob = new Job("Load Plot Data") {
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				ILoaderService loaderService = (ILoaderService) ServiceManager
+						.getService(ILoaderService.class);
+				dataSetPath = "/entry1/instrument/detector/data";
+				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+				lz = dh.getLazyDataset(dataSetPath);
+				int[] shape = lz.getShape();
+
+				final int maxframes = shape[1];
+				
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						slider.setMinMax(0, maxframes, "0", String.valueOf(maxframes));
+						slider.slider.setToolTipText(String.valueOf(frame));
+						slider.setValue(0);
+					}
+				});
+
+			} catch (Exception e) {
+				logger.error("Exception creating 2D plot", e);
+			} catch (Throwable e) {
+				logger.error("Throwing exception creating 2D plot", e);
+			}
+
+			return Status.OK_STATUS;
+		}
+	};
+
+	final Job sliceJob = new Job("Slice Plot Data") {
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				sliceObject.setName(sampleProgress.getSampleName());
+				
+				int[] shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+
+				sliceObject.setSliceStart(new int[] { 0, frame, 0, 0 });
+				sliceObject.setSliceStop(new int[] { 0, frame+1, shape[2], shape[3] });
+				sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
+
+				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+				List<IDataset> dataSetList = new ArrayList<IDataset>();
+				dataSetList.add(dataSet);
+				plot(dataSetList);
+
+			} catch (Exception e) {
+				logger.error("Exception creating 2D plot", e);
+			} catch (Throwable e) {
+				logger.error("Throwing exception creating 2D plot", e);
+			}
+
+			return Status.OK_STATUS;
+		}
+	};
 	public BioSAXSCollectionResultPlotView() {
 		try {
 			this.plotting = PlottingFactory.createPlottingSystem();
@@ -105,71 +161,15 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 
 		Label lblFrames = new Label(sliderComposite, SWT.NONE);
 		sliderComposite.setLayout(sliderCompositeGL);
-		lblFrames.setText("Frames ");
+		lblFrames.setText("Frame ");
 		lblFrames.setLayoutData(new GridData(SWT.NONE));
 
 		slider = new LabelledSlider(sliderComposite, SWT.HORIZONTAL);
 		slider.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				final Job loadJob = new Job("Load plot Data") {
-					@Override
-					protected IStatus run(IProgressMonitor monitor) {
-						try {
-							ILoaderService loaderService = (ILoaderService) ServiceManager
-									.getService(ILoaderService.class);
-							dataSetPath = "/entry1/instrument/detector/data";
-							dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
-							lz = dh.getLazyDataset(dataSetPath);
-							Display.getDefault().asyncExec(new Runnable() {
-								@Override
-								public void run() {
-									startValue = slider.getValue();
-									textStartValue.setText(String.valueOf(startValue));
-								}
-							});
-
-							sliceObject.setName(sampleProgress.getSampleName());
-							
-							int[] shape = lz.getShape();
-							sliceObject.setFullShape(shape);
-							sliceObject.setShapeMessage("");
-							int dim1 = shape[0];
-							int dim2 = shape[1];
-							int dim3 = shape[2];
-							int dim4 = shape[3];
-							sliceObject.setSliceStart(new int[] { 0, (dim2-1), 0, 0 });
-							sliceObject.setSliceStop(new int[] { dim1, (dim2), dim3, dim4 });
-							sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
-
-							final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
-
-							List<IDataset> dataSetList = new ArrayList<IDataset>();
-							dataSetList.add(dataSet);
-							plot(dataSetList);
-
-						} catch (Exception e) {
-							logger.error("Exception creating 2D plot", e);
-						} catch (Throwable e) {
-							logger.error("Throwing exception creating 2D plot", e);
-						}
-
-						return Status.OK_STATUS;
-					}
-				};
-				loadJob.schedule();
-				// if (slice == null)
-				// return;
-				// final int start = slider.getValue();
-				// final Slice s = slice.getValue();
-				// if (s.setPosition(start)) {
-				// if (size != null)
-				// size.setSelection(s.getNumSteps());
-				// }
-				// slice.setStart(start);
-				// if (value != null)
-				// value.setText(adata.getString(start));
-				// reset.setEnabled(true);
+				frame = slider.getValue();
+				sliceJob.schedule();
 			}
 		});
 		slider.setIncrements(1, 1);
@@ -178,17 +178,6 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		GridData gd_slider = new GridData(SWT.NONE);
 		gd_slider.widthHint = 222;
 		slider.setLayoutData(gd_slider);
-		new Label(sliderComposite, SWT.NONE);
-
-		lblStartValue = new Label(sliderComposite, SWT.NONE);
-		lblStartValue.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lblStartValue.setText("Start Value");
-
-		textStartValue = new Text(sliderComposite, SWT.BORDER);
-		GridData gd_text = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_text.widthHint = 39;
-		textStartValue.setLayoutData(gd_text);
-		textStartValue.setText(DEFAULT_START_VALUE);
 
 		plotting.createPlotPart(plotComposite, plotName, getViewSite().getActionBars(), PlotType.IMAGE, this);
 		GridData plotGD = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -216,58 +205,11 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		// get the frames from the nexus file and set the slider
 		filePath = this.sampleProgress.getCollectionFileNames().get(1);
 		// filePath = "/dls/b21/data/2014/cm4976-1/b21-5077.nxs";
-
-		final Job loadPlotJob = new Job("Load plot Data") {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
-					dataSetPath = "/entry1/instrument/detector/data";
-					dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
-					lz = dh.getLazyDataset(dataSetPath);
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							slider.setMinMax(0, lz.getShape()[1], "0", String.valueOf(lz.getShape()[1]));
-						}
-					});
-
-					int[] shape = lz.getShape();
-					sliceObject.setName(sampleProgress.getSampleName());
-					sliceObject.setFullShape(shape);
-					sliceObject.setShapeMessage("");
-					sliceObject.setPath(filePath);
-					int dim1 = shape[0];
-					int dim2 = shape[1];
-					int dim3 = shape[2];
-					int dim4 = shape[3];
-					sliceObject.setSliceStart(new int[] { 0, (dim2-1), 0, 0 });
-					sliceObject.setSliceStop(new int[] { dim1, (dim2), dim3, dim4 });
-					sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
-
-					final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
-
-					List<IDataset> dataSetList = new ArrayList<IDataset>();
-					dataSetList.add(dataSet);
-					plot(dataSetList);
-
-				} catch (Exception e) {
-					logger.error("Exception creating 2D plot", e);
-				} catch (Throwable e) {
-					logger.error("Throwing exception creating 2D plot", e);
-				}
-
-				return Status.OK_STATUS;
-			}
-		};
-		loadPlotJob.schedule();
+		
+		loadJob.schedule();
 	}
 
 	private boolean plot(List<IDataset> list) {
-
-		// setPlotting(true);
-
 		plotting.clear();
 		if (list == null || list.isEmpty())
 			return false;
@@ -279,53 +221,6 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 			AbstractDataset added = Maths.add(list, list.size() > 1);
 			plotting.createPlot2D(added, null, null);
 		}
-
 		return true;
-
 	}
-
-	// private void update(DatacollectionData dc) throws Throwable {
-	//
-	// final String corPath =
-	// DataCollectionGalleryInfo.getCorrectedPath(dc.getIspybDatacollection().getXtalsnapshotfullpath1());
-	// final File dlsPath = new File(corPath);
-	// if (dlsPath.exists()) {
-	// try {
-	// if (label.getImage()!=null) label.getImage().dispose();
-	// Image image = new Image(null, corPath);
-	// label.setImage(image);
-	// currentImageData = image.getImageData();
-	// setPlotting(false);
-	// scaleImage();
-	//
-	// } catch (Throwable ne) {
-	//
-	// final ILoaderService service = (ILoaderService)ServiceManager.getService(ILoaderService.class);
-	// final IDataHolder holder = service.getData(corPath, new IMonitor.Stub());
-	// if (holder!=null && holder.getDataset(0)!=null) {
-	// plotting.updatePlot2D(holder.getDataset(0), null, dlsPath.getName(), new NullProgressMonitor());
-	// }
-	// setPlotting(true);
-	// }
-	//
-	// }
-	// }
-
-	// private void setPlotting(boolean isPlotting) {
-	//
-	// GridUtils.setVisible(label, !isPlotting);
-	// GridUtils.setVisible(plotting.getPlotComposite(), isPlotting);
-	//
-	// if (isPlotting) {
-	// if (getViewSite().getActionBars().getToolBarManager().isEmpty()) {
-	// for (IContributionItem item : this.plottingActions) {
-	// getViewSite().getActionBars().getToolBarManager().add(item);
-	// }
-	// }
-	// } else {
-	// getViewSite().getActionBars().getToolBarManager().removeAll();
-	// }
-	// getViewSite().getActionBars().getToolBarManager().update(true);
-	// label.getParent().layout();
-	// }
 }
