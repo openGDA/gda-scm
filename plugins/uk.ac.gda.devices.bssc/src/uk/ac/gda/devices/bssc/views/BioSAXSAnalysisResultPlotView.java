@@ -18,7 +18,6 @@
 
 package uk.ac.gda.devices.bssc.views;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -45,7 +44,7 @@ public class BioSAXSAnalysisResultPlotView extends ViewPart {
 		composite.setLayout(new FillLayout());
 		AbstractUIPlugin plugin = Activator.getDefault();
 		ImageRegistry imageRegistry = plugin.getImageRegistry();
-		Image image = imageRegistry.get(Activator.IMAGE_ID);
+		Image image = imageRegistry.get(Activator.DATA_ANALYSIS_IMAGE_ID);
 		Label label = new Label(composite, SWT.BORDER);
 		label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		label.setImage(image);
