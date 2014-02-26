@@ -201,19 +201,37 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return bufferId;
 	}
 
-	protected long createSamplePlate(long blsessionId, long experimentId, String name) throws SQLException {
+	private long createPlateGroup(String name, double storageTemperature) throws SQLException {
+		long plateGroupId = -1;
+		connectIfNotConnected();
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.PlateGroup (plateGroupId, name, storageTemperature) "
+				+ "VALUES (ispyb4a_db.s_PlateGroup.nextval, ?, ?) RETURNING plateGroupId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		stmt.setString(1, name);
+		stmt.setDouble(2, storageTemperature);
+
+		stmt.registerOutParameter(3, java.sql.Types.VARCHAR);
+		stmt.execute();
+		plateGroupId = stmt.getLong(3);
+		stmt.close();
+
+		return plateGroupId;
+	}
+
+	protected long createSamplePlate(long blsessionId, long experimentId, String name, long plateGroupId) throws SQLException {
 		long samplePlateId = -1;
 		connectIfNotConnected();
-		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name) "
-				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?) RETURNING samplePlateId INTO ?; END;";
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name, plateGroupId) "
+				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?) RETURNING samplePlateId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 		stmt.setLong(2, blsessionId);
 		stmt.setString(3, name);
+		stmt.setLong(4, plateGroupId);
 
-		stmt.registerOutParameter(4, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(5, java.sql.Types.VARCHAR);
 		stmt.execute();
-		samplePlateId = stmt.getLong(4);
+		samplePlateId = stmt.getLong(5);
 		stmt.close();
 
 		return samplePlateId;
@@ -334,6 +352,62 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.close();
 
 		return frameSetId;
+	}
+
+	private long createFrameList() throws SQLException {
+		long frameListId = -1;
+		connectIfNotConnected();
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.FrameList (frameListId) "
+				+ "VALUES (ispyb4a_db.s_FrameList.nextval) RETURNING frameListId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		stmt.registerOutParameter(1, java.sql.Types.VARCHAR);
+		stmt.execute();
+		frameListId = stmt.getLong(1);
+		stmt.close();
+
+		return frameListId;
+	}
+
+	private long createMerge(long measurementId) throws SQLException {
+		long mergeId = -1;
+		connectIfNotConnected();
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Merge (" + "mergeId, measurementId) "
+				+ "VALUES (ispyb4a_db.s_Merge.nextval, ?) RETURNING mergeId INTO ?; END;";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		stmt.setLong(1, measurementId);
+
+		stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
+		stmt.execute();
+		mergeId = stmt.getLong(2);
+		stmt.close();
+
+		return mergeId;
+	}
+
+	private boolean updateFrameSetWithFrameList(long frameSetId, long frameListId) throws SQLException {
+		connectIfNotConnected();
+		String selectSql1 = "UPDATE ispyb4a_db.FrameSet fr SET frameListId = ? "
+				+ "WHERE fr.frameSetId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		int index = 1;
+		stmt1.setLong(index++, frameListId);
+		stmt1.setLong(index++, frameSetId);
+
+		boolean success1 = stmt1.execute();
+		return success1;
+	}
+
+	private boolean updateMergeWithFrameList(long mergeId, long frameListId) throws SQLException {
+		connectIfNotConnected();
+		String selectSql1 = "UPDATE ispyb4a_db.Merge m SET frameListId = ? "
+				+ "WHERE m.mergeId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		int index = 1;
+		stmt1.setLong(index++, frameListId);
+		stmt1.setLong(index++, mergeId);
+
+		boolean success1 = stmt1.execute();
+		return success1;
 	}
 
 	protected long createMacromolecule(long proposalId, String name, String acronym) throws SQLException {
@@ -1058,7 +1132,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 																	// defined
 			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
 		}
-		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate));
+		long plateGroupId = createPlateGroup(sampleName, exposureTemperature);
+		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate), plateGroupId);
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
 				null, volume);
@@ -1107,9 +1182,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
-		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount,
-				transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,
-				normalization, filename, internalPath);
+		long runId = 0;
 		try {
 			long bufferMeasurementId = 0;
 			ISpyBStatusInfo currentStatus = getDataCollectionStatus(currentDataCollectionId);
@@ -1131,6 +1204,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			}
 
 			// TODO store status information in database
+			runId = createRunFrameSetFrameListMerge(bufferMeasurementId, timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, filename, internalPath);
+
 			updateMeasurementWithRunId(bufferMeasurementId, runId);
 
 			sendISpyBUpdate(currentDataCollectionId);
@@ -1149,9 +1225,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
 			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
 			double radiationAbsolute, double normalization, String filename, String internalPath) {
-		long runId = createRunAndFrameSet(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount,
-				transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,
-				normalization, filename, internalPath);
+		long runId = 0;
 		ISpyBStatusInfo currentStatus;
 		try {
 			currentStatus = getDataCollectionStatus(dataCollectionId);
@@ -1164,6 +1238,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long sampleMeasurementId = 0;
 		try {
 			sampleMeasurementId = retrievePreviousMeasurement(dataCollectionId, SAMPLE_MEASUREMENT);
+			runId = createRunFrameSetFrameListMerge(sampleMeasurementId, timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, filename, internalPath);
 			updateMeasurementWithRunId(sampleMeasurementId, runId);
 
 			sendISpyBUpdate(dataCollectionId);
@@ -1175,16 +1251,19 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return runId;
 	}
 
-	private long createRunAndFrameSet(double timePerFrame, float storageTemperature, float exposureTemperature,
-			double energy, int frameCount, double transmission, double beamCenterX, double beamCenterY,
-			double pixelSizeX, double pixelSizeY, double radiationRelative, double radiationAbsolute,
-			double normalization, String filename, String internalPath) {
+	private long createRunFrameSetFrameListMerge(long measurementId, double timePerFrame, float storageTemperature,
+			float exposureTemperature, double energy, int frameCount, double transmission, double beamCenterX,
+			double beamCenterY, double pixelSizeX, double pixelSizeY, double radiationRelative,
+			double radiationAbsolute, double normalization, String filename, String internalPath) {
 		long runId = 0;
 		try {
 			runId = createRun(timePerFrame, storageTemperature, exposureTemperature, energy, frameCount, transmission,
-					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute,
-					normalization);
-			createFrameSet(runId, filename, internalPath);
+					beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization);
+			long frameSetId = createFrameSet(runId, filename, internalPath);
+			long frameListId = createFrameList();
+			long mergeId = createMerge(measurementId);
+			updateFrameSetWithFrameList(frameSetId, frameListId);
+			updateMergeWithFrameList(mergeId, frameListId);
 		} catch (SQLException e) {
 			logger.error("problem while creating Run", e);
 		}

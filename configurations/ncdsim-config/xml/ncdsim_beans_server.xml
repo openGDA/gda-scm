@@ -233,6 +233,12 @@
 		<constructor-arg value="9877" />
 	</bean>
 
+	<bean id="udplistener" class="uk.ac.gda.devices.bssc.ispyb.UDPListener">
+		<property name="port" value="9877" />
+		<property name="running" value="true" />
+		<property name="prefix" value="biosaxs" />
+	</bean>
+	
 	<bean class="uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory">
 		<property name="jdbcURL"
 			value="jdbc:oracle:thin:@ws096.diamond.ac.uk:1521:xe" />

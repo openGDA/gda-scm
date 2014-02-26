@@ -49,7 +49,6 @@ http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
 		<property name="service" ref="plot_server" />
 	</bean>
 
-
 	<bean class="gda.rcp.util.OSGIServiceRegister">
 		<property name="class"
 			value="uk.ac.gda.devices.bssc.beans.BioSAXSProgressController" />
@@ -72,6 +71,7 @@ http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
 	<bean id="controller" class="uk.ac.gda.devices.bssc.beans.BioSAXSProgressController">
 		<property name="Model" ref="model" />
 		<property name="ISpyBAPI" ref="ispyb" />
+		<property name="UDPListenerName" value="udplistener" />
 	</bean>
 
 	<bean class="gda.rcp.util.OSGIServiceRegister">
