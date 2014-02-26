@@ -18,4 +18,4 @@
 
 # /dls_sw/apps/DawnDiamond/master/builds-stable/stable-linux64/dawn -noSplash -application com.isencia.passerelle.workbench.model.launch -data $WORKSPACE -consolelog -os linux -ws gtk -arch $HOSTTYPE -vmargs -Dorg.dawb.workbench.jmx.headless=true -Dcom.isencia.jmx.service.terminate=false -Dmodel=$MODEL -Dxml.path=/scratch/ws/gda836_git/scisoft-ncd.git/uk.ac.diamond.scisoft.ncd.actors/test/uk/ac/diamond/scisoft/ncd/actors/test/ncd_configuration.xml -Draw.path=/scratch/ws/gda836_git/scisoft-ncd.git/uk.ac.diamond.scisoft.ncd.actors/test/uk/ac/diamond/scisoft/ncd/actors/test/i22-34820.nxs -Dpersistence.path=/scratch/ws/gda836_git/scisoft-ncd.git/uk.ac.diamond.scisoft.ncd.actors/test/uk/ac/diamond/scisoft/ncd/actors/test/persistence_file.nxs -Doutput.path=/scratch/ws/junit-workspace/workflows/output
 
-echo "$0 running!" | wall
+#echo "$0 running!" | wall
