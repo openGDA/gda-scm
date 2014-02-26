@@ -1505,6 +1505,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private void sendISpyBUpdate(long collectionId) {
-		 notifyObject.notifyObservers(collectionId);
+		if (notifyObject != null)
+			notifyObject.notifyObservers(collectionId);
 	}
 }
