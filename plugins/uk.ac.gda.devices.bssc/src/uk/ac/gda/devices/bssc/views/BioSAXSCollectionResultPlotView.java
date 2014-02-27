@@ -34,8 +34,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -63,10 +65,12 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 	private LabelledSlider slider;
 	private SliceObject sliceObject;
 	protected ILazyDataset lz;
-	protected String dataSetPath;
+	protected String dataSetPath = "/entry1/instrument/detector/data";
 	protected IDataHolder dh;
-	private String filePath;
+	private List<String> filePath;
 	private int frame;
+	private List<Button> fileRadios = new ArrayList<Button>();
+	private int activeRadio;
 
 	final Job loadJob = new Job("Load Plot Data") {
 		@Override
@@ -74,8 +78,8 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 			try {
 				ILoaderService loaderService = (ILoaderService) ServiceManager
 						.getService(ILoaderService.class);
-				dataSetPath = "/entry1/instrument/detector/data";
-				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+
+				dh = loaderService.getData(filePath.get(activeRadio), new ProgressMonitorWrapper(monitor));
 				lz = dh.getLazyDataset(dataSetPath);
 				int[] shape = lz.getShape();
 
@@ -85,8 +89,9 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 					@Override
 					public void run() {
 						slider.setMinMax(0, maxframes, "0", String.valueOf(maxframes));
+						frame = 0;
 						slider.slider.setToolTipText(String.valueOf(frame));
-						slider.setValue(0);
+						slider.setValue(frame);
 					}
 				});
 				
@@ -113,13 +118,12 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 
 				sliceObject.setSliceStart(new int[] { 0, frame, 0, 0 });
 				sliceObject.setSliceStop(new int[] { 1, frame+1, shape[2], shape[3] });
-				//sliceObject.setSliceStep(new int[] { 1, 1, 1, 1 });
 				sliceObject.setSliceStep(null);
 				
 				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
 				List<IDataset> dataSetList = new ArrayList<IDataset>();
-				dataSetList.add(dataSet);
+				dataSetList.add(dataSet.squeeze());
 				plot(dataSetList);
 
 				Display.getDefault().asyncExec(new Runnable() {
@@ -138,6 +142,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 			return Status.OK_STATUS;
 		}
 	};
+
 	public BioSAXSCollectionResultPlotView() {
 		try {
 			this.plotting = PlottingFactory.createPlottingSystem();
@@ -166,7 +171,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		sliderCompositeGL.marginWidth = 10;
 		sliderCompositeGL.marginHeight = 10;
 		sliderCompositeGL.horizontalSpacing = 10;
-		sliderCompositeGL.numColumns = 5;
+		sliderCompositeGL.numColumns = 8;
 
 		Label lblFrames = new Label(sliderComposite, SWT.NONE);
 		sliderComposite.setLayout(sliderCompositeGL);
@@ -187,7 +192,39 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		GridData gd_slider = new GridData(SWT.NONE);
 		gd_slider.widthHint = 222;
 		slider.setLayoutData(gd_slider);
+		new Label(sliderComposite, SWT.NONE);
+		new Label(sliderComposite, SWT.NONE);
+		new Label(sliderComposite, SWT.NONE);
 
+		for (int i = 0; i < 3; i++) {
+			Button button = new Button(sliderComposite, SWT.RADIO);
+			button.setEnabled(false);
+			button.addSelectionListener(new SelectionListener() {
+				
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					final int oldActive = activeRadio;
+					for (int j = 0; j < fileRadios.size(); j++) {
+						if (fileRadios.get(j).equals(e.getSource())) {
+							activeRadio = j;
+						} else {
+							fileRadios.get(j).setSelection(false);
+						}
+					}
+					if (oldActive != activeRadio)
+						loadJob.schedule();
+				}
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+			fileRadios.add(button);
+		}
+		fileRadios.get(0).setText("buffer before");
+		fileRadios.get(1).setText("sample");
+		fileRadios.get(2).setText("buffer after");
+		
 		plotting.createPlotPart(plotComposite, plotName, getViewSite().getActionBars(), PlotType.IMAGE, this);
 		GridData plotGD = new GridData(SWT.FILL, SWT.FILL, true, true);
 		plotGD.horizontalSpan = 2;
@@ -210,12 +247,21 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 
 	public void setPlot(final ISAXSProgress sampleProgress) {
 		this.sampleProgress = sampleProgress;
+		filePath = this.sampleProgress.getCollectionFileNames();
 
-		// get the frames from the nexus file and set the slider
-		filePath = this.sampleProgress.getCollectionFileNames().get(1);
-		// filePath = "/dls/b21/data/2014/cm4976-1/b21-5077.nxs";
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				for (int j = 0; j < fileRadios.size(); j++) {
+					fileRadios.get(j).setEnabled(j<filePath.size());
+				}
+				fileRadios.get(1).setSelection(filePath.size() > 1);
+				fileRadios.get(0).setSelection(filePath.size() == 1);
+				activeRadio = filePath.size() > 1 ? 1 : 0;
+				loadJob.schedule();
+			}
+		});
 		
-		loadJob.schedule();
 	}
 
 	private boolean plot(List<IDataset> list) {
