@@ -110,7 +110,14 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
-				sliceObject.setName(sampleProgress.getSampleName());
+				String name = sampleProgress.getSampleName();
+				
+				if (activeRadio == 0) {
+					name = name + " (buffer before)";
+				} else if (activeRadio == 2) {
+					name = name + " (buffer after)";
+				}
+				sliceObject.setName(name);
 				
 				int[] shape = lz.getShape();
 				sliceObject.setFullShape(shape);
@@ -207,6 +214,8 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 					for (int j = 0; j < fileRadios.size(); j++) {
 						if (fileRadios.get(j).equals(e.getSource())) {
 							activeRadio = j;
+							fileRadios.get(j).setSelection(true);
+
 						} else {
 							fileRadios.get(j).setSelection(false);
 						}
@@ -255,6 +264,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 				for (int j = 0; j < fileRadios.size(); j++) {
 					fileRadios.get(j).setEnabled(j<filePath.size());
 				}
+				fileRadios.get(2).setSelection(false);
 				fileRadios.get(1).setSelection(filePath.size() > 1);
 				fileRadios.get(0).setSelection(filePath.size() == 1);
 				activeRadio = filePath.size() > 1 ? 1 : 0;
