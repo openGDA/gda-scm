@@ -26,7 +26,7 @@ public class BioSAXSScriptTest {
 
 	@Test
 	public void testBBSCScript() throws SQLException {
-		String visit = "nt20-12";
+		String visit = "nt20-13";
 		int experimentCount = 0;
 		int dataCollectionCount = 0;
 
@@ -41,32 +41,32 @@ public class BioSAXSScriptTest {
 
 		// create 5 data collections
 		long dataCollectionId1 = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample 1",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 				10.0, "viscosity");
 		dataCollectionCount++;
 
 		long dataCollectionId2 = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample 2",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 				10.0, "viscosity");
 		dataCollectionCount++;
 		
 		long dataCollectionId3 = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample 3",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 				10.0, "viscosity");
 		dataCollectionCount++;
 
 		long dataCollectionId4 = bioSAXSISPyB.createSaxsDataCollection(
-				experimentId, (short) 0, (short) 1, (short) 1, "Sample1",
+				experimentId, (short) 0, (short) 1, (short) 1, "Sample 4",
 				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
 				10.0, "viscosity");
 		dataCollectionCount++;
 		
 		long dataCollectionId5 = bioSAXSISPyB
 				.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
-						(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
+						(short) 0, (short) 1, (short) 1, "Sample 5", (short) 0,
 						(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
 						"viscosity", dataCollectionId4);
 		dataCollectionCount++;
