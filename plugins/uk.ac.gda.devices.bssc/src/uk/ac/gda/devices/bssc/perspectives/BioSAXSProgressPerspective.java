@@ -35,6 +35,7 @@ public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 		layout.addView("org.dawb.workbench.plotting.views.toolPageView.fixed:org.dawb.workbench.plotting.tools.radialProfileTool", IPageLayout.LEFT, 0.5f, IPageLayout.ID_EDITOR_AREA);
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
+		layout.addView("uk.ac.gda.client.CommandQueueViewFactory", IPageLayout.BOTTOM, 0.75f, "uk.ac.gda.devices.bssc.biosaxsprogressview");
 		layout.setEditorAreaVisible(false);
 	}
 }

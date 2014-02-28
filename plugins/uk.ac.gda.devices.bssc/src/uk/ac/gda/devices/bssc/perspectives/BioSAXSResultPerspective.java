@@ -36,6 +36,7 @@ public class BioSAXSResultPerspective implements IPerspectiveFactory {
 		
 		layout.addView("uk.ac.gda.devices.bssc.biosaxsprogressview", IPageLayout.RIGHT, 0.60f,
 				IPageLayout.ID_EDITOR_AREA);
+		layout.addView("uk.ac.gda.client.CommandQueueViewFactory", IPageLayout.BOTTOM, 0.75f, "uk.ac.gda.devices.bssc.biosaxsprogressview");
 		
 		folderLayout.addView(BioSAXSCollectionResultPlotView.ID);
 		folderLayout.addView(BioSAXSReductionResultPlotView.ID);
