@@ -58,7 +58,7 @@ public class CapillaryView extends ViewPart {
 
 	private IObserver processorObserver;
 
-	protected String progressBarText;
+	private String progressBarText;
 
 	public CapillaryView() {
 	}
@@ -102,6 +102,8 @@ public class CapillaryView extends ViewPart {
 		final ProgressBar progressBar = new ProgressBar(progressComposite, SWT.NONE);
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(2000);
+		progressBarText = "";
+		
 		progressBar.addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
