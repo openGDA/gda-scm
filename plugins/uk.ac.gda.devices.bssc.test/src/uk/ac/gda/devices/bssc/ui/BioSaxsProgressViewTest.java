@@ -89,28 +89,28 @@ public class BioSaxsProgressViewTest {
 			ISpyBStatusInfo collectionStatusDetails = new ISpyBStatusInfo();
 			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			collectionStatusDetails.setProgress(33);
-			progress.setCollectionProgress(collectionStatusDetails);
+			progress.setCollectionStatusInfo(collectionStatusDetails);
 			delay(1000);
 
 			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			collectionStatusDetails.setProgress(66);
-			progress.setCollectionProgress(collectionStatusDetails);
+			progress.setCollectionStatusInfo(collectionStatusDetails);
 			delay(1000);
 
 			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			collectionStatusDetails.setProgress(100);
-			progress.setCollectionProgress(collectionStatusDetails);
+			progress.setCollectionStatusInfo(collectionStatusDetails);
 			delay(1000);
 
 			ISpyBStatusInfo reductionStatusDetails = new ISpyBStatusInfo();
 			reductionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			reductionStatusDetails.setProgress(100);
-			progress.setReductionProgress(reductionStatusDetails);
+			progress.setReductionStatusInfo(reductionStatusDetails);
 
 			ISpyBStatusInfo analysisStatusDetails = new ISpyBStatusInfo();
 			analysisStatusDetails.setStatus(ISpyBStatus.COMPLETE);
 			analysisStatusDetails.setProgress(100);
-			progress.setAnalysisProgress(analysisStatusDetails);
+			progress.setAnalysisStatusInfo(analysisStatusDetails);
 		}
 		delay(1000);
 	}
@@ -139,9 +139,9 @@ public class BioSaxsProgressViewTest {
 				reductionStatusInfo, analysisStatusInfo);
 		;
 
-		newProgress.setCollectionProgress(collectionStatusInfo);
-		newProgress.setReductionProgress(reductionStatusInfo);
-		newProgress.setAnalysisProgress(analysisStatusInfo);
+		newProgress.setCollectionStatusInfo(collectionStatusInfo);
+		newProgress.setAnalysisStatusInfo(reductionStatusInfo);
+		newProgress.setAnalysisStatusInfo(analysisStatusInfo);
 
 		items.add(newProgress);
 	}

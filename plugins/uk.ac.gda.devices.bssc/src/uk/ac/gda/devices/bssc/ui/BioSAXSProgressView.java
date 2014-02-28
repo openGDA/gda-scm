@@ -24,13 +24,21 @@ import gda.rcp.GDAClientActivator;
 import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.Activator;
 import uk.ac.gda.devices.bssc.beans.BioSAXSProgressController;
 
 public class BioSAXSProgressView extends ViewPart {
@@ -41,13 +49,14 @@ public class BioSAXSProgressView extends ViewPart {
 	private IObservableList model;
 	private BioSAXSProgressController controller;
 	private IObserver controllerObserver;
+	private Action scrollLockAction;
 
 	@Override
 	public void createPartControl(Composite parent) {
 		controller = (BioSAXSProgressController) GDAClientActivator.getNamedService(BioSAXSProgressController.class,
 				null);
 
-		model = (IObservableList)controller.getModel();
+		model = (IObservableList) controller.getModel();
 
 		bioSAXSComposite = new BioSAXSProgressComposite(parent, model, SWT.NONE);
 		listChangedListener = new IListChangeListener() {
@@ -68,16 +77,15 @@ public class BioSAXSProgressView extends ViewPart {
 		};
 		// model.addListChangeListener(listChangedListener);
 		controller.addIObserver(controllerObserver);
+
+		createActions();
+		createToolbar();
 	}
 
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
 
-	}
-
-	public Viewer getViewer() {
-		return bioSAXSComposite.getViewer();
 	}
 
 	@Override
@@ -96,4 +104,50 @@ public class BioSAXSProgressView extends ViewPart {
 		super.dispose();
 	}
 
+	public void createActions() {
+		scrollLockAction = new Action("Lock Scrollbar", SWT.CHECK) {
+			@Override
+			public void run() {
+				if (scrollLockAction.isChecked()) {
+					scrollLockAction.setChecked(true);
+				} else {
+					scrollLockAction.setChecked(false);
+				}
+			}
+		};
+
+		scrollLockAction.setImageDescriptor(getImageDescriptor("scrollLock.gif"));
+		scrollLockAction.setChecked(false);
+	}
+
+	/**
+	 * Returns the image descriptor with the given relative path.
+	 */
+	private ImageDescriptor getImageDescriptor(String relativePath) {
+		String iconPath = "icons/";
+
+		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+		ImageDescriptor scrollLockImageDesriptor = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path(
+				iconPath + "scrollLock.jpeg"), null));
+
+		return scrollLockImageDesriptor;
+	}
+
+	/**
+	 * Create toolbar.
+	 */
+	private void createToolbar() {
+		IToolBarManager mgr = getViewSite().getActionBars().getToolBarManager();
+		mgr.add(scrollLockAction);
+	}
+
+	public void reveal() {
+		TableViewer bioSAXSTableViewer = (TableViewer) bioSAXSComposite.getViewer();
+
+		if (bioSAXSTableViewer.getControl().isVisible()) {
+			if (!scrollLockAction.isChecked()) {
+				bioSAXSTableViewer.reveal(model.get(model.size() - 1));
+			}
+		}
+	}
 }
