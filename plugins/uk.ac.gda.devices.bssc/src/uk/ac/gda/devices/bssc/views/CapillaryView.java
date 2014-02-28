@@ -18,18 +18,33 @@
 
 package uk.ac.gda.devices.bssc.views;
 
+import gda.commandqueue.CommandProgress;
+import gda.commandqueue.Processor;
+import gda.commandqueue.QueueChangeEvent;
 import gda.factory.FactoryException;
+import gda.observable.IObserver;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.client.CommandQueueView;
 import uk.ac.gda.video.views.BasicCameraComposite;
 
 public class CapillaryView extends ViewPart {
@@ -38,6 +53,12 @@ public class CapillaryView extends ViewPart {
 	public static final String ID = "uk.ac.gda.devices.bssc.views.CapillaryView"; //$NON-NLS-1$
 
 	private BasicCameraComposite bcc;
+
+	private Composite progressComposite;
+
+	private IObserver processorObserver;
+
+	protected String progressBarText;
 
 	public CapillaryView() {
 	}
@@ -50,6 +71,7 @@ public class CapillaryView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite com = new Composite(parent, SWT.FILL);
+		com.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		com.setLayout(new GridLayout());
 
 		bcc = new BasicCameraComposite(com, SWT.DOUBLE_BUFFERED);
@@ -68,6 +90,55 @@ public class CapillaryView extends ViewPart {
 				bcc.zoomFit();
 			}
 		});
+
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IWorkbenchPage page = window.getActivePage();
+
+		CommandQueueView view = (CommandQueueView) page.findView("uk.ac.gda.client.CommandQueueViewFactory");
+
+		progressComposite = new Composite(com, SWT.NONE);
+		progressComposite.setLayout(new FillLayout());
+		progressComposite.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
+		final ProgressBar progressBar = new ProgressBar(progressComposite, SWT.NONE);
+		progressBar.setMinimum(0);
+		progressBar.setMaximum(2000);
+		progressBar.addPaintListener(new PaintListener() {
+			@Override
+			public void paintControl(PaintEvent e) {
+				Point point = progressBar.getSize();
+				FontMetrics fontMetrics = e.gc.getFontMetrics();
+				int width = fontMetrics.getAverageCharWidth() * progressBarText.length();
+				int height = fontMetrics.getHeight();
+				e.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
+				e.gc.drawString(progressBarText, (point.x - width) / 2, (point.y - height) / 2, true);
+			}
+		});
+
+		if (view.getProcessor() != null) {
+			processorObserver = new IObserver() {
+				@Override
+				public void update(Object source, final Object arg) {
+					if (arg instanceof Processor.STATE) {
+						// CommandProcessorComposite.this.updateStateAndDescription((Processor.STATE) arg);
+					} else if (arg instanceof QueueChangeEvent) {
+						// do nothing
+					} else if (arg instanceof CommandProgress) {
+						Display.getDefault().asyncExec(new Runnable() {
+
+							@Override
+							public void run() {
+								CommandProgress progress = (CommandProgress) arg;
+								progressBarText = progress.getMsg();
+								progressBar.setSelection((int) (progress.getPercentDone() * 20));
+								progressBar.redraw();// this is needed to cope with a change in text but no change in
+														// percentage
+							}
+						});
+					}
+				}
+			};
+			view.getProcessor().addIObserver(processorObserver);
+		}
 	}
 
 	@Override
