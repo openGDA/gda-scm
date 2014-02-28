@@ -38,7 +38,7 @@ import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSSetupPerspective.class);
-	private static final int SAMPLE_COLLECTIONS_SIZE = 1;
+	private static final int SAMPLE_COLLECTIONS_SIZE = 7;
 	private BSSCSessionBean sessionBean;
 	private ArrayList<TitrationBean> measurements;
 
@@ -73,38 +73,59 @@ public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 	}
 
 	private void openEditor() {
-		String bioSAXSFilePath = "Samples" + ".biosaxs";
+		String bioSAXSFilePath = "default" + ".biosaxs";
 		sessionBean = new BSSCSessionBean();
 		measurements = new ArrayList<TitrationBean>();
+		short plateIndex = 3;
+		char[] rows = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
+		String[] viscosities = { "low", "medium", "high" };
+		int viscosityIndex = 0;
 
 		try {
-			for (int i = 0; i < SAMPLE_COLLECTIONS_SIZE; i++) {
+
+			for (int i = 1; i <= SAMPLE_COLLECTIONS_SIZE; i++) {
 				TitrationBean tibi = new TitrationBean();
 
+				LocationBean bufferLocation = new LocationBean();
 				LocationBean location = new LocationBean();
+				tibi.setSampleName("Sample " + i);
+				tibi.setFrames(i);
+
+				if (viscosityIndex > 2)
+					viscosityIndex = 0;
+				tibi.setViscosity(viscosities[viscosityIndex]);
+
+				short columnIndex = Integer.valueOf(i).shortValue();
+				bufferLocation.setColumn(columnIndex);
+				location.setColumn(columnIndex);
+				bufferLocation.setRow(rows[i]);
+				location.setRow(rows[i]);
+
+				if (plateIndex < 1)
+					plateIndex = 3;
+
+				location.setPlate(plateIndex);
+				
 				if (!location.isValid())
 					throw new Exception("invalid sample location");
 				tibi.setLocation(location);
-
-				tibi.setSampleName("Sample " + i);
-
-				location = new LocationBean();
+				tibi.setBufferLocation(location);
+				
 				if (!location.isValid())
 					throw new Exception("invalid buffer location");
-				tibi.setBufferLocation(location);
 
-				location = new LocationBean();
 				if (!location.isValid())
 					location = null;
 
 				tibi.setRecouperateLocation(null);
 				tibi.setConcentration(1);
-				tibi.setViscosity("high");
 				tibi.setMolecularWeight(1);
 				tibi.setTimePerFrame(1);
 				tibi.setFrames(1);
 				tibi.setExposureTemperature(22);
 
+				plateIndex--;
+				viscosityIndex++;
 				measurements.add(tibi);
 			}
 		} catch (InvalidFormatException e) {
