@@ -21,8 +21,11 @@ package uk.ac.gda.devices.bssc.ui;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -32,18 +35,28 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.common.rcp.util.EclipseUtils;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
+import uk.ac.gda.devices.bssc.beans.LocationBean;
+import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
+import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanEditor.class);
+	private static final int SAMPLE_COLLECTIONS_SIZE = 7;
+	private BSSCSessionBean sessionBean;
+	private ArrayList<TitrationBean> measurements;
 
 	public BSSCSessionBeanEditor() {
 		super();
@@ -146,6 +159,92 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 			assignInput(input);
 			doSave(new NullProgressMonitor());
 			setDirty(false);
+		}
+	}
+	
+	public void openDefaultEditor() {
+		String bioSAXSFilePath = "default" + ".biosaxs";
+		sessionBean = new BSSCSessionBean();
+		measurements = new ArrayList<TitrationBean>();
+		short plateIndex = 3;
+		char[] rows = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
+		String[] viscosities = { "low", "medium", "high" };
+		int viscosityIndex = 0;
+
+		try {
+
+			for (int i = 1; i <= SAMPLE_COLLECTIONS_SIZE; i++) {
+				TitrationBean tibi = new TitrationBean();
+
+				LocationBean bufferLocation = new LocationBean();
+				LocationBean location = new LocationBean();
+				tibi.setSampleName("Sample " + i);
+				tibi.setFrames(i);
+
+				if (viscosityIndex > 2)
+					viscosityIndex = 0;
+				tibi.setViscosity(viscosities[viscosityIndex]);
+
+				short columnIndex = Integer.valueOf(i).shortValue();
+				bufferLocation.setColumn(columnIndex);
+				location.setColumn(columnIndex);
+				bufferLocation.setRow(rows[i]);
+				location.setRow(rows[i]);
+
+				if (plateIndex < 1)
+					plateIndex = 3;
+
+				location.setPlate(plateIndex);
+				
+				if (!location.isValid())
+					throw new Exception("invalid sample location");
+				tibi.setLocation(location);
+				tibi.setBufferLocation(location);
+				
+				if (!location.isValid())
+					throw new Exception("invalid buffer location");
+
+				if (!location.isValid())
+					location = null;
+
+				tibi.setRecouperateLocation(null);
+				tibi.setConcentration(1);
+				tibi.setMolecularWeight(1);
+				tibi.setTimePerFrame(1);
+				tibi.setFrames(1);
+				tibi.setExposureTemperature(22);
+
+				plateIndex--;
+				viscosityIndex++;
+				measurements.add(tibi);
+			}
+		} catch (InvalidFormatException e) {
+			logger.error("InvalidFormatException reading Workbook ", e);
+		} catch (IOException e) {
+			logger.error("IOException reading Workbook ", e);
+		} catch (Exception e) {
+			logger.error("Exception ", e);
+		}
+
+		sessionBean.setMeasurements(measurements);
+
+		File bioSAXSfile = new File(bioSAXSFilePath);
+
+		try {
+			XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSfile);
+		} catch (Exception e) {
+			logger.error("Exception writing bean to XML", e);
+		}
+
+		new BSSCSessionBeanUIEditor(bioSAXSFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
+				sessionBean);
+
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSfile.toURI());
+		try {
+			IDE.openEditorOnFileStore(page, biosaxsFileStore);
+		} catch (PartInitException e) {
+			logger.error("PartInitException opening editor", e);
 		}
 	}
 }
