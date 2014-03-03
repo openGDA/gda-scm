@@ -115,8 +115,6 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 		window.addPerspectiveListener(new PerspectiveAdapter() {
 			@Override
 			public void perspectiveActivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
-				// updateTitle();
-
 				if (perspective.getId().equals(ID)) {
 					// Hide all the editors
 					IEditorReference[] editors = page.getEditorReferences();
