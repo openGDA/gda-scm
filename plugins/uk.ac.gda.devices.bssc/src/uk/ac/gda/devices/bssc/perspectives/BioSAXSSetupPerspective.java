@@ -22,7 +22,9 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPartService;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -42,7 +44,6 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 		folderLayout.addView("uk.ac.gda.client.CommandQueueViewFactory");
 
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		final IWorkbenchPage page = window.getActivePage();
 
 		// Need add listener to workbench to always have at least one editor available
 		IPartService service = (IPartService) window.getService(IPartService.class);
@@ -59,11 +60,17 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 
 			@Override
 			public void partClosed(IWorkbenchPart part) {
-				if (part instanceof RichBeanMultiPageEditorPart) {
-					if (page.getEditorReferences().length == 0)
-					{
-						BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
-						editor.openDefaultEditor();
+				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+
+				IPerspectiveDescriptor perspective = page.getPerspective();
+
+				if (perspective.getId().equals(ID)) {
+					if (part instanceof RichBeanMultiPageEditorPart) {
+						if (page.getEditorReferences().length == 0) {
+							BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
+							editor.openDefaultEditor();
+						}
 					}
 				}
 			}
