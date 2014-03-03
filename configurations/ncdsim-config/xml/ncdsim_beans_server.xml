@@ -164,15 +164,32 @@
 		<property name="scaling" value="0.5" />
 		<property name="description" value="test" />
 	</bean>
+	
+	<bean id="sao2"
+		class="uk.ac.gda.server.ncd.subdetector.ConstantScalingAndOffset">
+		<property name="offset" value="8" />
+		<property name="scaling" value="0.7" />
+		<property name="description" value="test" />
+	</bean>
 
-	<bean id="ScaledScaler"
+	<bean id="I0"
+		class="uk.ac.gda.server.ncd.subdetector.SingleScalerWithScalingAndOffset">
+		<property name="detectorType" value="CALIB" />
+		<property name="memory" ref="CalibMemory" />
+		<property name="units" value="counts" />
+		<property name="channel" value="1" />
+		<property name="label" value="I0" />
+		<property name="scalingAndOffset" ref="sao1" />
+	</bean>
+	
+	<bean id="It"
 		class="uk.ac.gda.server.ncd.subdetector.SingleScalerWithScalingAndOffset">
 		<property name="detectorType" value="CALIB" />
 		<property name="memory" ref="CalibMemory" />
 		<property name="units" value="counts" />
 		<property name="channel" value="1" />
 		<property name="label" value="It" />
-		<property name="scalingAndOffset" ref="sao1" />
+		<property name="scalingAndOffset" ref="sao2" />
 	</bean>
 
 	<bean id="TfgTimes" class="uk.ac.gda.server.ncd.subdetector.NcdTimesDetector">
@@ -187,7 +204,8 @@
 				<ref bean="Saxs" />
 				<ref bean="Waxs" />
 				<ref bean="Scaler" />
-				<ref bean="ScaledScaler" />
+				<ref bean="I0" />
+				<ref bean="It" />
 				<ref bean="TfgTimes" />
 			</list>
 		</property>
