@@ -161,7 +161,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 			setDirty(false);
 		}
 	}
-	
+
 	public void openDefaultEditor() {
 		String bioSAXSFilePath = "default" + ".biosaxs";
 		sessionBean = new BSSCSessionBean();
@@ -171,78 +171,82 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		String[] viscosities = { "low", "medium", "high" };
 		int viscosityIndex = 0;
 
-		try {
-
-			for (int i = 1; i <= SAMPLE_COLLECTIONS_SIZE; i++) {
-				TitrationBean tibi = new TitrationBean();
-
-				LocationBean bufferLocation = new LocationBean();
-				LocationBean location = new LocationBean();
-				tibi.setSampleName("Sample " + i);
-				tibi.setFrames(i);
-
-				if (viscosityIndex > 2)
-					viscosityIndex = 0;
-				tibi.setViscosity(viscosities[viscosityIndex]);
-
-				short columnIndex = Integer.valueOf(i).shortValue();
-				bufferLocation.setColumn(columnIndex);
-				location.setColumn(columnIndex);
-				bufferLocation.setRow(rows[i]);
-				location.setRow(rows[i]);
-
-				if (plateIndex < 1)
-					plateIndex = 3;
-
-				location.setPlate(plateIndex);
-				
-				if (!location.isValid())
-					throw new Exception("invalid sample location");
-				tibi.setLocation(location);
-				tibi.setBufferLocation(location);
-				
-				if (!location.isValid())
-					throw new Exception("invalid buffer location");
-
-				if (!location.isValid())
-					location = null;
-
-				tibi.setRecouperateLocation(null);
-				tibi.setConcentration(1);
-				tibi.setMolecularWeight(1);
-				tibi.setTimePerFrame(1);
-				tibi.setFrames(1);
-				tibi.setExposureTemperature(22);
-
-				plateIndex--;
-				viscosityIndex++;
-				measurements.add(tibi);
-			}
-		} catch (InvalidFormatException e) {
-			logger.error("InvalidFormatException reading Workbook ", e);
-		} catch (IOException e) {
-			logger.error("IOException reading Workbook ", e);
-		} catch (Exception e) {
-			logger.error("Exception ", e);
-		}
-
-		sessionBean.setMeasurements(measurements);
-
 		File bioSAXSfile = new File(bioSAXSFilePath);
 
-		try {
-			XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSfile);
-		} catch (Exception e) {
-			logger.error("Exception writing bean to XML", e);
-		}
+		// if the file dosen't exist then create a new one with default values
+		if (!bioSAXSfile.exists()) {
+			try {
 
-		new BSSCSessionBeanUIEditor(bioSAXSFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
-				sessionBean);
+				for (int i = 1; i <= SAMPLE_COLLECTIONS_SIZE; i++) {
+					TitrationBean tibi = new TitrationBean();
+
+					LocationBean bufferLocation = new LocationBean();
+					LocationBean location = new LocationBean();
+					tibi.setSampleName("Sample " + i);
+					tibi.setFrames(i);
+
+					if (viscosityIndex > 2)
+						viscosityIndex = 0;
+					tibi.setViscosity(viscosities[viscosityIndex]);
+
+					short columnIndex = Integer.valueOf(i).shortValue();
+					bufferLocation.setColumn(columnIndex);
+					location.setColumn(columnIndex);
+					bufferLocation.setRow(rows[i]);
+					location.setRow(rows[i]);
+
+					if (plateIndex < 1)
+						plateIndex = 3;
+
+					location.setPlate(plateIndex);
+
+					if (!location.isValid())
+						throw new Exception("invalid sample location");
+					tibi.setLocation(location);
+					tibi.setBufferLocation(location);
+
+					if (!location.isValid())
+						throw new Exception("invalid buffer location");
+
+					if (!location.isValid())
+						location = null;
+
+					tibi.setRecouperateLocation(null);
+					tibi.setConcentration(1);
+					tibi.setMolecularWeight(1);
+					tibi.setTimePerFrame(1);
+					tibi.setFrames(1);
+					tibi.setExposureTemperature(22);
+
+					plateIndex--;
+					viscosityIndex++;
+					measurements.add(tibi);
+				}
+			} catch (InvalidFormatException e) {
+				logger.error("InvalidFormatException reading Workbook ", e);
+			} catch (IOException e) {
+				logger.error("IOException reading Workbook ", e);
+			} catch (Exception e) {
+				logger.error("Exception ", e);
+			}
+
+			sessionBean.setMeasurements(measurements);
+			try {
+				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSfile);
+			} catch (Exception e) {
+				logger.error("Exception writing bean to XML", e);
+			}
+
+			new BSSCSessionBeanUIEditor(bioSAXSFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
+					sessionBean);
+		}
 
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSfile.toURI());
 		try {
-			IDE.openEditorOnFileStore(page, biosaxsFileStore);
+			if (page != null) {
+				IDE.openEditorOnFileStore(page, biosaxsFileStore);
+			}
 		} catch (PartInitException e) {
 			logger.error("PartInitException opening editor", e);
 		}
