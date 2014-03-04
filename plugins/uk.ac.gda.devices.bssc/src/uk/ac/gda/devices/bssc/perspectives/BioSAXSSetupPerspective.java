@@ -73,13 +73,14 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 
-				IPerspectiveDescriptor perspective = page.getPerspective();
-
-				if (perspective.getId().equals(ID)) {
-					if (part instanceof RichBeanMultiPageEditorPart) {
-						if (page.getEditorReferences().length == 0) {
-							BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
-							editor.openDefaultEditor();
+				if (page != null) {
+					IPerspectiveDescriptor perspective = page.getPerspective();
+					if (perspective.getId().equals(ID)) {
+						if (part instanceof RichBeanMultiPageEditorPart) {
+							if (page.getEditorReferences().length == 0) {
+								BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
+								editor.openDefaultEditor();
+							}
 						}
 					}
 				}
@@ -92,18 +93,18 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 			@Override
 			public void partOpened(IWorkbenchPart part) {
 				if (part instanceof RichBeanMultiPageEditorPart) {
-					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart)part;
+					RichBeanMultiPageEditorPart editor = (RichBeanMultiPageEditorPart) part;
 					IWorkbenchPage page = part.getSite().getPage();
 					IEditorInput editorInput = editor.getEditorInput();
 					IPerspectiveDescriptor activePerspective = page.getPerspective();
-					
+
 					ArrayList<IEditorReference> editors = perspectiveEditors.get(activePerspective.getId());
 					if (editors == null)
 						editors = new ArrayList<IEditorReference>();
 
 					// Find the editor reference that relates to this editor input
 					IEditorReference[] editorRefs = page.findEditors(editorInput, null, IWorkbenchPage.MATCH_INPUT);
-					
+
 					if (editorRefs.length > 0) {
 						editors.add(editorRefs[0]);
 						perspectiveEditors.put(activePerspective.getId(), editors);
