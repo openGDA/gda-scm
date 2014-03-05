@@ -396,7 +396,8 @@
 	<bean id="biosaxsprocessingrunner" class="uk.ac.gda.server.ncd.data.ProcessingRunner">
 		<property name="environment">
 			<map>
-				<entry key="DAWN" value="/dev/null" />
+				<entry key="NCDREDXML" value="${gda.config}/processing/ncdredsetup.xml" />
+				<entry key="PERSISTENCEFILE" value="/dev/null" />
 			</map>
 		</property>
 		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" />
