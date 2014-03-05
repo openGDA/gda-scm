@@ -61,6 +61,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final int SAMPLE_MEASUREMENT = 2;
 	private static final int BUFFER_AFTER_MEASUREMENT = 3;
 
+	@SuppressWarnings("unused")
+	private static String EXPERIMENTTYPE_TEMPLATE = "TEMPLATE";
+	private static String EXPERIMENTTYPE_FINISHED = "FINISHED";
+	private static String EXPERIMENTTYPE_ABORTED = "ABORTED";
+
 	Connection conn = null;
 	String URL = null;
 	long blsessionId;
@@ -1054,6 +1059,38 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return info;
 	}
 
+	private void updateExperimentStatus(long experimentId, String statusToSet) throws SQLException {
+		connectIfNotConnected();
+
+		String insertSql = "UPDATE ispyb4a_db.Experiment e "
+				+ "SET e.experimentType = ? WHERE e.experimentId = ?";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		int index = 1;
+		stmt.setString(index++, statusToSet);
+		stmt.setLong(index++, experimentId);
+
+		stmt.execute();
+		stmt.close();
+		
+	}
+
+	@Override
+	public void setExperimentAborted(long experimentId) {
+		try {
+			updateExperimentStatus(experimentId, EXPERIMENTTYPE_ABORTED);
+		} catch (SQLException e) {
+			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTTYPE_ABORTED, e);
+		}
+	}
+
+	@Override
+	public void setExperimentFinished(long experimentId) {
+		try {
+			updateExperimentStatus(experimentId, EXPERIMENTTYPE_FINISHED);
+		} catch (SQLException e) {
+			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTTYPE_FINISHED, e);
+		}
+	}
 	/*
 	 * above here are the methods that interact directly with the database. other methods, including the interface
 	 * methods are below here.
@@ -1294,7 +1331,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
-			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId, e);
+			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId);
 		}
 		return null;
 	}
