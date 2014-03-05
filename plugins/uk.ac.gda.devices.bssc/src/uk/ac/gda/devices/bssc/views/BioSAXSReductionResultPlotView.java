@@ -178,10 +178,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (guinear.getSelection()) {
-					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.GUINIER_PLOT,
-							plotting);
-					delegate.setLinkedPlottingSystem(plotting);
-					delegate.process(SaxsAnalysisPlotType.GUINIER_PLOT);
+//					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.GUINIER_PLOT,
+//							plotting);
+//					delegate.setLinkedPlottingSystem(plotting);
+//					delegate.process(SaxsAnalysisPlotType.GUINIER_PLOT);
 				}
 			}
 
@@ -199,9 +199,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (porod.getSelection()) {
-					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.POROD_PLOT, plotting);
-					delegate.setLinkedPlottingSystem(plotting);
-					delegate.process(SaxsAnalysisPlotType.POROD_PLOT);
+//					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.POROD_PLOT, plotting);
+//					delegate.setLinkedPlottingSystem(plotting);
+//					delegate.process(SaxsAnalysisPlotType.POROD_PLOT);
 				}
 			}
 
@@ -219,9 +219,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (kratky.getSelection()) {
-					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.KRATKY_PLOT, plotting);
-					delegate.setLinkedPlottingSystem(plotting);
-					delegate.process(SaxsAnalysisPlotType.KRATKY_PLOT);
+//					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.KRATKY_PLOT, plotting);
+//					delegate.setLinkedPlottingSystem(plotting);
+//					delegate.process(SaxsAnalysisPlotType.KRATKY_PLOT);
 				}
 			}
 
@@ -239,9 +239,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (zimm.getSelection()) {
-					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.ZIMM_PLOT, plotting);
-					delegate.setLinkedPlottingSystem(plotting);
-					delegate.process(SaxsAnalysisPlotType.ZIMM_PLOT);
+//					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.ZIMM_PLOT, plotting);
+//					delegate.setLinkedPlottingSystem(plotting);
+//					delegate.process(SaxsAnalysisPlotType.ZIMM_PLOT);
 				}
 			}
 
@@ -259,10 +259,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (debeyeBueche.getSelection()) {
-					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT,
-							plotting);
-					delegate.setLinkedPlottingSystem(plotting);
-					delegate.process(SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT);
+//					SaxsAnalysisDelegate delegate = new SaxsAnalysisDelegate(SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT,
+//							plotting);
+//					delegate.setLinkedPlottingSystem(plotting);
+//					delegate.process(SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT);
 				}
 			}
 
