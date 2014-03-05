@@ -50,7 +50,7 @@ mkdir $WORKSPACE
 OUTPUTDIR=$TMPDIR/output
 mkdir $OUTPUTDIR
 
-sed "s,bgFile>/dls/i22/data/2013/sm8174-1/i22-107002.nxs</bgFile,bgFile>${BACKGROUNDFILE}</bgFile," < $NCDREDXML > ncd_reduction.xml
+sed "s,bgFile>.*</bgFile,bgFile>${BACKGROUNDFILE}</bgFile," < $NCDREDXML > ncd_reduction.xml
 NCDREDXML=${TMPDIR}/ncd_reduction.xml
 
 mkdir ${WORKSPACE}/reduction/
@@ -62,6 +62,10 @@ ln -s $MOML $WORKSPACEMOML
 
 SCRIPT=$TMPDIR/qsub.script.$$
 cat >> qsub.script.$$ <<EOF
+#! /bin/sh
+
+## set data reduction to started
+
 $DAWN -noSplash -application com.isencia.passerelle.workbench.model.launch \
 -data $WORKSPACE \
 -consolelog -os linux -ws gtk -arch $(arch) -vmargs \
@@ -77,10 +81,17 @@ $DAWN -noSplash -application com.isencia.passerelle.workbench.model.launch \
 
 if test -n "$REDUCTIONOUTPUTFILE" ; then 
 	for i in $OUTPUTDIR/results*.nxs ; do
-		mv \$i $REDUCTIONOUTPUTFILE
+		ln \$i $REDUCTIONOUTPUTFILE
 		break;
 	done
 fi
+
+## check it worked and set data collection status in ispyb
+## abort here if failed
+
+## set analysis status started 
+## run edna 
+## update ispyb
 EOF
 
 qsub $SCRIPT
