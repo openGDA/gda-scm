@@ -132,8 +132,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (q.getSelection()) {
-//					loadJob.schedule();
-					Job loadJob = new LoadPlotJob("/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs", dataSetPath, xAxisPath);
+					// loadJob.schedule();
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							dataSetPath, xAxisPath);
 					loadJob.schedule();
 				}
 			}
@@ -283,7 +285,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (reduced.getSelection()) {
-					Job loadJob = new LoadPlotJob("/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs", dataSetPath, xAxisPath);
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							dataSetPath, xAxisPath);
 					loadJob.schedule();
 				}
 			}
@@ -302,7 +306,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (backGround.getSelection()) {
-					Job loadJob = new LoadPlotJob("/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs", backGroundPath, null);
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							backGroundPath, null);
 					loadJob.schedule();
 				}
 			}
@@ -320,7 +326,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (sample.getSelection()) {
-					Job loadJob = new LoadPlotJob("/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs", samplePath, null);
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							samplePath, null);
 					loadJob.schedule();
 				}
 			}
@@ -338,7 +346,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
-					Job loadJob = new LoadPlotJob("/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs", rgPath, null);
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							rgPath, null);
 					loadJob.schedule();
 				}
 			}
@@ -379,19 +389,21 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-//				loadJob.schedule();
-				Job loadJob = new LoadPlotJob("/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs", dataSetPath, xAxisPath);
+				// loadJob.schedule();
+				Job loadJob = new LoadPlotJob(
+						"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+						dataSetPath, xAxisPath);
 				loadJob.schedule();
 			}
 		});
 	}
 
-//	final Job loadJob = new Job("Load Plot Data") {
-//		@Override
-//		protected IStatus run(IProgressMonitor monitor) {
-//			return null;
-//		}
-//	};
+	// final Job loadJob = new Job("Load Plot Data") {
+	// @Override
+	// protected IStatus run(IProgressMonitor monitor) {
+	// return null;
+	// }
+	// };
 
 	private boolean plot(IDataset x, List<IDataset> list) {
 		plotting.clear();
@@ -407,6 +419,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		private String filePath;
 		private String dataSetLocation;
 		private String xAxisLocation;
+		private IDataset xAxisDataSet;
 
 		public LoadPlotJob(String filePath, String dataSetLocation, String xAxisLocation) {
 			super("Load Plot");
@@ -437,10 +450,12 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				List<IDataset> dataSetList = new ArrayList<IDataset>();
 				dataSetList.add(dataSet.squeeze());
 
-				// Get the q axis
-				xAxisLazyDataSet = dh.getLazyDataset(xAxisLocation);
-				final IDataset xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
-				xAxisDataSet.setName(xAxisLazyDataSet.getName());
+				// Get the x axis
+				if (xAxisLocation != null) {
+					xAxisLazyDataSet = dh.getLazyDataset(xAxisLocation);
+					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
+					xAxisDataSet.setName(xAxisLazyDataSet.getName());
+				}
 				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
 
 				plot(xAxisDataSet, dataSetList);
