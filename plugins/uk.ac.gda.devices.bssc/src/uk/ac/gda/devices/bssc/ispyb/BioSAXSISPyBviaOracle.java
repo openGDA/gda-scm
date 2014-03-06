@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -290,9 +291,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Run ("
 				+ "runId, storageTemperature, exposureTemperature, energy, frameCount, timePerFrame, "
-				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization) "
+				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, timeStart) "
 				+ "VALUES (ispyb4a_db.s_Run.nextval, ?, ?, ?, ?, ?, "
-				+ "?, ?, ?, ?, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
+				+ "?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setFloat(index++, storageTemperature);
@@ -309,6 +310,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.setDouble(index++, radiationRelative);
 		stmt.setDouble(index++, radiationAbsolute);
 		stmt.setDouble(index++, normalization);
+		String startDate = new Date().toString();
+		stmt.setString(index++, startDate);
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
