@@ -20,7 +20,6 @@ package uk.ac.gda.devices.bssc.views;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.math3.util.Pair;
@@ -31,7 +30,6 @@ import org.dawnsci.plotting.api.PlottingFactory;
 import org.dawnsci.plotting.api.tool.IToolPageSystem;
 import org.dawnsci.plotting.api.trace.ILineTrace;
 import org.dawnsci.plotting.api.trace.ITrace;
-import org.dawnsci.plotting.system.LineTraceImpl;
 import org.dawnsci.slicing.api.util.SliceUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -120,8 +118,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		slider.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				 frame = slider.getValue();
-				 sliceJob.schedule();
+				frame = slider.getValue();
+				sliceJob.schedule();
 			}
 		});
 		slider.setIncrements(1, 1);
@@ -130,92 +128,92 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		GridData gd_slider = new GridData(SWT.NONE);
 		gd_slider.widthHint = 178;
 		slider.setLayoutData(gd_slider);
-		
-				Group grpData = new Group(sliderComposite, SWT.NONE);
-				grpData.setLayout(new GridLayout(2, false));
-				grpData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-				grpData.setText("Data");
-				
-						final Button reduced = new Button(grpData, SWT.RADIO);
-						reduced.addSelectionListener(new SelectionListener() {
-							@Override
-							public void widgetSelected(SelectionEvent e) {
-								if (reduced.getSelection()) {
-									Job loadJob = new LoadPlotJob(
-											"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-											dataSetPath, qPath);
-									loadJob.schedule();
-								}
-							}
 
-							@Override
-							public void widgetDefaultSelected(SelectionEvent e) {
-								// TODO Auto-generated method stub
+		Group grpData = new Group(sliderComposite, SWT.NONE);
+		grpData.setLayout(new GridLayout(2, false));
+		grpData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		grpData.setText("Data");
 
-							}
-						});
-						reduced.setText("Reduced");
-						reduced.setSelection(true);
-						
-								final Button backGround = new Button(grpData, SWT.RADIO);
-								backGround.addSelectionListener(new SelectionListener() {
-									@Override
-									public void widgetSelected(SelectionEvent e) {
-										if (backGround.getSelection()) {
-											Job loadJob = new LoadPlotJob(
-													"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-													backGroundPath, null);
-											loadJob.schedule();
-										}
-									}
+		final Button reduced = new Button(grpData, SWT.RADIO);
+		reduced.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (reduced.getSelection()) {
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							dataSetPath, qPath);
+					loadJob.schedule();
+				}
+			}
 
-									@Override
-									public void widgetDefaultSelected(SelectionEvent e) {
-										// TODO Auto-generated method stub
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
 
-									}
-								});
-								backGround.setText("Background");
-								
-										final Button sample = new Button(grpData, SWT.RADIO);
-										sample.addSelectionListener(new SelectionListener() {
-											@Override
-											public void widgetSelected(SelectionEvent e) {
-												if (sample.getSelection()) {
-													Job loadJob = new LoadPlotJob(
-															"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-															samplePath, null);
-													loadJob.schedule();
-												}
-											}
+			}
+		});
+		reduced.setText("Reduced");
+		reduced.setSelection(true);
 
-											@Override
-											public void widgetDefaultSelected(SelectionEvent e) {
-												// TODO Auto-generated method stub
+		final Button backGround = new Button(grpData, SWT.RADIO);
+		backGround.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (backGround.getSelection()) {
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							backGroundPath, null);
+					loadJob.schedule();
+				}
+			}
 
-											}
-										});
-										sample.setText("Sample");
-										
-												final Button rg = new Button(grpData, SWT.RADIO);
-												rg.addSelectionListener(new SelectionListener() {
-													@Override
-													public void widgetSelected(SelectionEvent e) {
-														if (rg.getSelection()) {
-															Job loadJob = new LoadRgPlotJob(
-																	"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-																	rgPath, null);
-															loadJob.schedule();
-														}
-													}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
 
-													@Override
-													public void widgetDefaultSelected(SelectionEvent e) {
-														// TODO Auto-generated method stub
+			}
+		});
+		backGround.setText("Background");
 
-													}
-												});
-												rg.setText("Rg");
+		final Button sample = new Button(grpData, SWT.RADIO);
+		sample.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (sample.getSelection()) {
+					Job loadJob = new LoadPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							samplePath, null);
+					loadJob.schedule();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		sample.setText("Sample");
+
+		final Button rg = new Button(grpData, SWT.RADIO);
+		rg.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (rg.getSelection()) {
+					Job loadJob = new LoadRgPlotJob(
+							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+							rgPath, null);
+					loadJob.schedule();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		rg.setText("Rg");
 
 		Group grpPlot = new Group(sliderComposite, SWT.NONE);
 		grpPlot.setText("Plot");
@@ -252,10 +250,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (logLog.getSelection()) {
-//					Job loadPlotTypeJob = new LoadPlotTypeJob(
-//							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-//							dataSetPath, xAxisPath, SaxsAnalysisPlotType.LOGLOG_PLOT);
-//					loadPlotTypeJob.schedule();
+					// Job loadPlotTypeJob = new LoadPlotTypeJob(
+					// "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+					// dataSetPath, xAxisPath, SaxsAnalysisPlotType.LOGLOG_PLOT);
+					// loadPlotTypeJob.schedule();
 
 					process(SaxsAnalysisPlotType.LOGLOG_PLOT);
 				}
@@ -275,10 +273,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (guinear.getSelection()) {
-//					Job loadPlotTypeJob = new LoadPlotTypeJob(
-//							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-//							dataSetPath, xAxisPath, SaxsAnalysisPlotType.GUINIER_PLOT);
-//					loadPlotTypeJob.schedule();
+					// Job loadPlotTypeJob = new LoadPlotTypeJob(
+					// "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
+					// dataSetPath, xAxisPath, SaxsAnalysisPlotType.GUINIER_PLOT);
+					// loadPlotTypeJob.schedule();
 					process(SaxsAnalysisPlotType.GUINIER_PLOT);
 				}
 			}
@@ -433,22 +431,22 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
 				String name = sampleProgress.getSampleName();
-				
+
 				sliceObject.setName(name);
-				
+
 				int[] shape = lz.getShape();
 				sliceObject.setFullShape(shape);
 				sliceObject.setShapeMessage("");
 
-				sliceObject.setSliceStart(new int[] { 0, frame, 0});
-				sliceObject.setSliceStop(new int[] { 1, frame+1, shape[2]});
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[2] });
 				sliceObject.setSliceStep(null);
-				
+
 				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
 				List<IDataset> dataSetList = new ArrayList<IDataset>();
 				dataSetList.add(dataSet.squeeze());
-				
+
 				plot(xAxisDataSet, dataSetList);
 
 				Display.getDefault().asyncExec(new Runnable() {
@@ -457,7 +455,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 						slider.slider.setToolTipText(String.valueOf(frame));
 					}
 				});
-				
+
 			} catch (Exception e) {
 				logger.error("Exception creating 2D plot", e);
 			} catch (Throwable e) {
@@ -468,7 +466,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		}
 	};
 	public IDataset xAxisDataSet;
-	
+
 	private boolean plot(IDataset x, List<IDataset> list) {
 		saxsPlottingSystem.clear();
 		if (list == null || list.isEmpty())
@@ -505,7 +503,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				sliceObject.setFullShape(shape);
 				sliceObject.setShapeMessage("");
 				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
-				sliceObject.setSliceStop(new int[] { 1, frame+1, shape[shape.length-1] });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
 				sliceObject.setSliceStep(null);
 
 				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
@@ -557,8 +555,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				int[] shape = lz.getShape();
 				sliceObject.setFullShape(shape);
 				sliceObject.setShapeMessage("");
-				sliceObject.setSliceStart(new int[] {frame, 0 });
-				sliceObject.setSliceStop(new int[] {frame+1, shape[shape.length-1] });
+				sliceObject.setSliceStart(new int[] { frame, 0 });
+				sliceObject.setSliceStop(new int[] { frame + 1, shape[shape.length - 1] });
 				sliceObject.setSliceStep(null);
 
 				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
@@ -570,9 +568,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 					xAxisLazyDataSet = dh.getLazyDataset(xAxisPath);
 					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
 					xAxisDataSet.setName(xAxisLazyDataSet.getName());
-				}
-				else
-				{
+				} else {
 					xAxisDataSet = null;
 				}
 				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
@@ -587,7 +583,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return Status.OK_STATUS;
 		}
 	}
-	
+
 	private class LoadPlotTypeJob extends Job {
 		private String filePath;
 		private String dataSetPath;
@@ -632,9 +628,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 					xAxisDataSet.setName(xAxisLazyDataSet.getName());
 				}
 				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
-				
+
 				plot(xAxisDataSet, dataSetList);
-				
+
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
@@ -667,7 +663,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				return Status.CANCEL_STATUS;
 
 			for (ITrace trace : traces) {
-				ILineTrace lineTrace = (ILineTrace) trace;
+				// ILineTrace lineTrace = (ILineTrace) trace;
+				ILineTrace lineTrace = (ILineTrace) saxsPlottingSystem.getTraces().toArray()[0];
 				if (!lineTrace.isUserTrace())
 					return Status.CANCEL_STATUS;
 				if (lineTrace.getXData() == null || lineTrace.getYData() == null)
@@ -683,15 +680,28 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 					continue;
 				}
 				ILineTrace tr = saxsPlottingSystem.createLineTrace(lineTrace.getName());
+				tr.setName(pt.getName());
 				tr.setData(xTraceData, yTraceData);
 				tr.setTraceColor(lineTrace.getTraceColor());
 
-//				saxsPlottingSystem.clear();
+				showSelectedTrace(pt);
 				saxsPlottingSystem.addTrace(tr);
 				saxsPlottingSystem.repaint();
 			}
 
 			return Status.OK_STATUS;
+		}
+
+		private void showSelectedTrace(SaxsAnalysisPlotType saxsPlotType) {
+			Collection<ITrace> traces = saxsPlottingSystem.getTraces();
+
+			for (ITrace trace : traces) {
+				if (trace.getName() == saxsPlotType.toString()) {
+					trace.setVisible(true);
+				} else {
+					trace.setVisible(false);
+				}
+			}
 		}
 
 		public void schedule(Collection<ITrace> traces, final SaxsAnalysisPlotType pt) {
