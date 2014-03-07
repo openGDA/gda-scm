@@ -659,42 +659,38 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 
+			Collection<ITrace> traces = saxsPlottingSystem.getTraces();
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 
-			for (ITrace trace : traces) {
-				// ILineTrace lineTrace = (ILineTrace) trace;
-				ILineTrace lineTrace = (ILineTrace) saxsPlottingSystem.getTraces().toArray()[0];
-				if (!lineTrace.isUserTrace())
-					return Status.CANCEL_STATUS;
-				if (lineTrace.getXData() == null || lineTrace.getYData() == null)
-					return Status.CANCEL_STATUS;
+			ILineTrace lineTrace = (ILineTrace) traces.toArray()[0];
+			if (!lineTrace.isUserTrace())
+				return Status.CANCEL_STATUS;
+			if (lineTrace.getXData() == null || lineTrace.getYData() == null)
+				return Status.CANCEL_STATUS;
 
-				AbstractDataset xTraceData = (AbstractDataset) lineTrace.getXData().clone();
-				AbstractDataset yTraceData = (AbstractDataset) lineTrace.getYData().clone();
+			AbstractDataset xTraceData = (AbstractDataset) lineTrace.getXData().clone();
+			AbstractDataset yTraceData = (AbstractDataset) lineTrace.getYData().clone();
 
-				try {
-					this.pt.process(xTraceData, yTraceData.squeeze());
-				} catch (Throwable ne) {
-					logger.error("Cannot process " + yTraceData.getName(), ne);
-					continue;
-				}
-				ILineTrace tr = saxsPlottingSystem.createLineTrace(lineTrace.getName());
-				tr.setName(pt.getName());
-				tr.setData(xTraceData, yTraceData);
-				tr.setTraceColor(lineTrace.getTraceColor());
-
-				showSelectedTrace(pt);
-				saxsPlottingSystem.addTrace(tr);
-				saxsPlottingSystem.repaint();
+			try {
+				this.pt.process(xTraceData, yTraceData.squeeze());
+			} catch (Throwable ne) {
+				logger.error("Cannot process " + yTraceData.getName(), ne);
 			}
+
+			ILineTrace tr = saxsPlottingSystem.createLineTrace(lineTrace.getName());
+			tr.setName(pt.getName());
+			tr.setData(xTraceData, yTraceData);
+			tr.setTraceColor(lineTrace.getTraceColor());
+
+			showSelectedTrace(pt, traces);
+			saxsPlottingSystem.addTrace(tr);
+			saxsPlottingSystem.repaint();
 
 			return Status.OK_STATUS;
 		}
 
-		private void showSelectedTrace(SaxsAnalysisPlotType saxsPlotType) {
-			Collection<ITrace> traces = saxsPlottingSystem.getTraces();
-
+		private void showSelectedTrace(SaxsAnalysisPlotType saxsPlotType, Collection<ITrace> traces) {
 			for (ITrace trace : traces) {
 				if (trace.getName() == saxsPlotType.toString()) {
 					trace.setVisible(true);
