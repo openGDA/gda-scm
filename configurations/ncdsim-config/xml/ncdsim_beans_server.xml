@@ -2,10 +2,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gda="http://www.diamond.ac.uk/schema/gda/gda"
 	xmlns:util="http://www.springframework.org/schema/util" xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
-	http://www.diamond.ac.uk/schema/gda/gda http://www.diamond.ac.uk/schema/gda/gda/gda-gda-1.0.xsd
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-2.0.xsd
+	http://www.diamond.ac.uk/schema/gda/gda http://www.diamond.ac.uk/schema/gda/gda/gda-gda-1.1.xsd
 	http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.1.xsd">
 	<gda:rbac />
+	
 
 	<corba:adapterfactory namespace="${gda.factory.factoryName}" />
 
@@ -58,7 +60,21 @@
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSamplename">
 		<property name="storedMetadataEntry" ref="samplename" />
 	</bean>
-
+	
+	<bean class="uk.ac.gda.server.ncd.beans.StoredDetectorInfoImpl" id="detectorInfoPath">
+		<property name="currentDataDirectoryUpdater" ref="observableSubdirectory"/>
+	</bean>
+	
+	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="serviceName" value="gda/detectorInfoPath"/>
+		<property name="service" ref="detectorInfoPath"/>
+		<property name="serviceInterface" value="uk.ac.gda.server.ncd.beans.StoredDetectorInfo"/>
+	</bean>
+<!-- 	<rmi:rmi-export -->
+<!--         service="detectorInfoPath" -->
+<!--         serviceName="gda/detectorInfoPath" -->
+<!--         serviceInterface="uk.ac.gda.server.ncd.beans.StoredDetectorInfo" /> -->
+	
 	<bean id="GDAHashtable" class="gda.util.findableHashtable.FindableHashtable" />
 
 	<bean id="commandQueue" class="gda.commandqueue.CommandQueue" />
