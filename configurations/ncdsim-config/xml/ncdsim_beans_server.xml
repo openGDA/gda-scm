@@ -70,11 +70,7 @@
 		<property name="service" ref="detectorInfoPath"/>
 		<property name="serviceInterface" value="uk.ac.gda.server.ncd.beans.StoredDetectorInfo"/>
 	</bean>
-<!-- 	<rmi:rmi-export -->
-<!--         service="detectorInfoPath" -->
-<!--         serviceName="gda/detectorInfoPath" -->
-<!--         serviceInterface="uk.ac.gda.server.ncd.beans.StoredDetectorInfo" /> -->
-	
+
 	<bean id="GDAHashtable" class="gda.util.findableHashtable.FindableHashtable" />
 
 	<bean id="commandQueue" class="gda.commandqueue.CommandQueue" />
