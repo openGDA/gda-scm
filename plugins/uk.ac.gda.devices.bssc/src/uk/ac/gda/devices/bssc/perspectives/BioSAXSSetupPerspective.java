@@ -42,9 +42,10 @@ import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
 
 public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxssetupperspective";
-	private HashMap<String, ArrayList<IEditorReference>> perspectiveEditors = new HashMap<String, ArrayList<IEditorReference>>();
-	private HashMap<String, IEditorReference> lastActiveEditors = new HashMap<String, IEditorReference>();
-	private ArrayList<IEditorReference> editorRefs;
+	private HashMap<String, ArrayList<IEditorReference>> perspectiveEditorRefs = new HashMap<String, ArrayList<IEditorReference>>();
+	private HashMap<String, IEditorReference> lastActiveEditorRefs = new HashMap<String, IEditorReference>();
+	private IWorkbenchWindow window;
+	private IWorkbenchPage page;
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
@@ -53,7 +54,7 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 
 		folderLayout.addView("uk.ac.gda.client.CommandQueueViewFactory");
 
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
 		// Need add listener to workbench to always have at least one editor available
 		IPartService service = (IPartService) window.getService(IPartService.class);
@@ -70,16 +71,29 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 
 			@Override
 			public void partClosed(IWorkbenchPart part) {
-				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-				IWorkbenchPage page = window.getActivePage();
+				window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				page = window.getActivePage();
 
-				if (page != null) {
-					IPerspectiveDescriptor perspective = page.getPerspective();
-					if (perspective.getId().equals(ID)) {
-						if (part instanceof RichBeanMultiPageEditorPart) {
-							if (page.getEditorReferences().length == 0) {
-								BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
-								editor.openDefaultEditor();
+				if (part instanceof IEditorPart) {
+					IEditorPart editorPart = (IEditorPart) part;
+					ArrayList<IEditorReference> editorRefs = perspectiveEditorRefs.get(ID);
+
+					IEditorReference refToBeRemoved = null;
+					for (IEditorReference ref : editorRefs) {
+						if (ref.getEditor(false) == editorPart) {
+							refToBeRemoved = ref;
+						}
+					}
+					editorRefs.remove(refToBeRemoved);
+
+					if (page != null) {
+						IPerspectiveDescriptor perspective = page.getPerspective();
+						if (perspective.getId().equals(ID)) {
+							if (part instanceof RichBeanMultiPageEditorPart) {
+								if (editorRefs.isEmpty()) {
+									BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
+									editor.openDefaultEditor();
+								}
 							}
 						}
 					}
@@ -98,7 +112,7 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 					IEditorInput editorInput = editor.getEditorInput();
 					IPerspectiveDescriptor activePerspective = page.getPerspective();
 
-					ArrayList<IEditorReference> editors = perspectiveEditors.get(activePerspective.getId());
+					ArrayList<IEditorReference> editors = perspectiveEditorRefs.get(activePerspective.getId());
 					if (editors == null)
 						editors = new ArrayList<IEditorReference>();
 
@@ -107,7 +121,7 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 
 					if (editorRefs.length > 0) {
 						editors.add(editorRefs[0]);
-						perspectiveEditors.put(activePerspective.getId(), editors);
+						perspectiveEditorRefs.put(activePerspective.getId(), editors);
 					}
 				}
 			}
@@ -124,16 +138,21 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 					}
 
 					// Show the editors associated with this perspective
-					editorRefs = perspectiveEditors.get(ID);
+					ArrayList<IEditorReference> editorRefs = perspectiveEditorRefs.get(perspective.getId());
 					if (editorRefs != null) {
-						for (Iterator<IEditorReference> it = editorRefs.iterator(); it.hasNext();) {
-							IEditorReference editorInput = it.next();
-							page.showEditor(editorInput);
-						}
+						if (editorRefs.isEmpty()) {
+							BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
+							editor.openDefaultEditor();
+						} else {
+							for (Iterator<IEditorReference> it = editorRefs.iterator(); it.hasNext();) {
+								IEditorReference editorInput = it.next();
+								page.showEditor(editorInput);
+							}
 
-						// Send the last active editor to the top
-						IEditorReference lastActiveRef = lastActiveEditors.get(ID);
-						page.bringToTop(lastActiveRef.getPart(true));
+							// Send the last active editor to the top
+							IEditorReference lastActiveRef = lastActiveEditorRefs.get(perspective.getId());
+							page.bringToTop(lastActiveRef.getPart(true));
+						}
 					}
 				}
 			}
@@ -153,7 +172,7 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 					IEditorReference[] editorRefs = page.findEditors(activeEditor.getEditorInput(), null,
 							IWorkbenchPage.MATCH_INPUT);
 					if (editorRefs.length > 0) {
-						lastActiveEditors.put(ID, editorRefs[0]);
+						lastActiveEditorRefs.put(perspective.getId(), editorRefs[0]);
 					}
 				}
 			}
