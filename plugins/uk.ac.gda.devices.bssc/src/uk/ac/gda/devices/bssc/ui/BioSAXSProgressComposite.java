@@ -53,6 +53,7 @@ import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
 import uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView;
+import uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView;
 import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
@@ -130,6 +131,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				}
 
 				BioSAXSCollectionResultPlotView collectionResultPlotView;
+				BioSAXSReductionResultPlotView reductionResultPlotView;
+
 				for (int col = 0; col < table.getColumnCount(); col++) {
 					Rectangle rect = tableItem.getBounds(col);
 					if (rect.contains(pt)) {
@@ -155,11 +158,11 @@ public class BioSAXSProgressComposite extends FieldComposite {
 							}
 							break;
 						case 2:
-							IViewPart reductionResultPlotView;
 							try {
-								reductionResultPlotView = page
+								reductionResultPlotView = (BioSAXSReductionResultPlotView) page
 										.showView("uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView");
 								page.activate(reductionResultPlotView);
+								reductionResultPlotView.setPlot(sampleProgress);
 							} catch (PartInitException e) {
 								logger.error("Error activating the data reduction results view", e);
 							}
@@ -240,6 +243,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			org.eclipse.swt.graphics.Color original = null;
 			org.eclipse.swt.graphics.Color green = null;
 			org.eclipse.swt.graphics.Color red = null;
+			org.eclipse.swt.graphics.Color yellow = null;
 
 			@Override
 			protected void measure(Event event, Object element) {
@@ -260,6 +264,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				original = event.display.getSystemColor(SWT.COLOR_WHITE);
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
+				yellow = event.display.getSystemColor(SWT.COLOR_YELLOW);
 
 				ISAXSProgress progress = (ISAXSProgress) element;
 				ISpyBStatus status = progress.getReductionStatusInfo().getStatus();
@@ -270,6 +275,9 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 				if (status == ISpyBStatus.FAILED) {
 					event.gc.setBackground(red);
+					columnPercentage = (int) ((columnWidth * 0.01) * 100);
+				} else if (status == ISpyBStatus.RUNNING) {
+					event.gc.setBackground(yellow);
 					columnPercentage = (int) ((columnWidth * 0.01) * 100);
 				} else {
 					event.gc.setBackground(green);
@@ -288,6 +296,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			org.eclipse.swt.graphics.Color original = null;
 			org.eclipse.swt.graphics.Color green = null;
 			org.eclipse.swt.graphics.Color red = null;
+			org.eclipse.swt.graphics.Color yellow = null;
 
 			@Override
 			protected void measure(Event event, Object element) {
@@ -308,6 +317,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				original = event.display.getSystemColor(SWT.COLOR_WHITE);
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
+				yellow = event.display.getSystemColor(SWT.COLOR_YELLOW);
 
 				ISAXSProgress progress = (ISAXSProgress) element;
 				ISpyBStatus status = progress.getAnalysisStatusInfo().getStatus();
@@ -318,6 +328,9 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 				if (status == ISpyBStatus.FAILED) {
 					event.gc.setBackground(red);
+					columnPercentage = (int) ((columnWidth * 0.01) * 100);
+				} else if (status == ISpyBStatus.RUNNING) {
+					event.gc.setBackground(yellow);
 					columnPercentage = (int) ((columnWidth * 0.01) * 100);
 				} else {
 					event.gc.setBackground(green);
