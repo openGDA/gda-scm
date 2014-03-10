@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
@@ -54,7 +53,6 @@ import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanEditor.class);
-	private static final int SAMPLE_COLLECTIONS_SIZE = 7;
 	private BSSCSessionBean sessionBean;
 	private ArrayList<TitrationBean> measurements;
 
@@ -166,66 +164,28 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		String bioSAXSFilePath = "default" + ".biosaxs";
 		sessionBean = new BSSCSessionBean();
 		measurements = new ArrayList<TitrationBean>();
-		short plateIndex = 3;
-		char[] rows = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
-		String[] viscosities = { "low", "medium", "high" };
-		int viscosityIndex = 0;
 
 		File bioSAXSfile = new File(bioSAXSFilePath);
 
 		// if the file dosen't exist then create a new one with default values
 		if (!bioSAXSfile.exists()) {
 			try {
-
-				for (int i = 1; i <= SAMPLE_COLLECTIONS_SIZE; i++) {
-					TitrationBean tibi = new TitrationBean();
-
-					LocationBean bufferLocation = new LocationBean();
-					LocationBean location = new LocationBean();
-					tibi.setSampleName("Sample " + i);
-					tibi.setFrames(i);
-
-					if (viscosityIndex > 2)
-						viscosityIndex = 0;
-					tibi.setViscosity(viscosities[viscosityIndex]);
-
-					short columnIndex = Integer.valueOf(i).shortValue();
-					bufferLocation.setColumn(columnIndex);
-					location.setColumn(columnIndex);
-					bufferLocation.setRow(rows[i]);
-					location.setRow(rows[i]);
-
-					if (plateIndex < 1)
-						plateIndex = 3;
-
-					location.setPlate(plateIndex);
-
-					if (!location.isValid())
-						throw new Exception("invalid sample location");
-					tibi.setLocation(location);
-					tibi.setBufferLocation(location);
-
-					if (!location.isValid())
-						throw new Exception("invalid buffer location");
-
-					if (!location.isValid())
-						location = null;
-
-					tibi.setRecouperateLocation(null);
-					tibi.setConcentration(1);
-					tibi.setMolecularWeight(1);
-					tibi.setTimePerFrame(1);
-					tibi.setFrames(1);
-					tibi.setExposureTemperature(22);
-
-					plateIndex--;
-					viscosityIndex++;
-					measurements.add(tibi);
-				}
-			} catch (InvalidFormatException e) {
-				logger.error("InvalidFormatException reading Workbook ", e);
-			} catch (IOException e) {
-				logger.error("IOException reading Workbook ", e);
+				TitrationBean tibi1 = new TitrationBean();
+				initialiseTitrationBean(tibi1, "Sample A1", "low", (short) 1, 'A', (short) 3, (short) 1, 'A',
+						(short) 1, 10, 560, 0.5, 120, (float) 22.0);
+				TitrationBean tibi2 = new TitrationBean();
+				initialiseTitrationBean(tibi2, "Sample B1", "medium", (short) 1, 'B', (short) 3, (short) 1, 'B',
+						(short) 1, 30, 78, 0.5, 120, (float) 22.0);
+				TitrationBean tibi3 = new TitrationBean();
+				initialiseTitrationBean(tibi3, "Sample C1", "medium", (short) 1, 'C', (short) 3, (short) 1, 'C',
+						(short) 1, 300, 340, 2.0, 30, (float) 22.0);
+				TitrationBean tibi4 = new TitrationBean();
+				initialiseTitrationBean(tibi4, "Sample C2", "medium", (short) 1, 'C', (short) 3, (short) 2, 'C',
+						(short) 1, 150, 340, 2.0, 30, (float) 22.0);
+				measurements.add(tibi1);
+				measurements.add(tibi2);
+				measurements.add(tibi3);
+				measurements.add(tibi4);
 			} catch (Exception e) {
 				logger.error("Exception ", e);
 			}
@@ -250,5 +210,36 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		} catch (PartInitException e) {
 			logger.error("PartInitException opening editor", e);
 		}
+	}
+
+	private void initialiseTitrationBean(TitrationBean titrationBean, String name, String viscosity, short bufferCol,
+			char bufferRow, short bufferPlate, short col, char row, short plate, double concentration,
+			double molecularWeight, double timePerFrame, int noOfFrames, float exposureTemp) throws Exception {
+		LocationBean bufferLocation = new LocationBean();
+		LocationBean location = new LocationBean();
+		titrationBean.setSampleName(name);
+		titrationBean.setViscosity(viscosity);
+		bufferLocation.setColumn(bufferCol);
+		bufferLocation.setRow(bufferRow);
+		bufferLocation.setPlate(bufferPlate);
+		location.setColumn(col);
+		location.setRow(row);
+		location.setPlate(plate);
+		if (!location.isValid()) {
+			location = null;
+			throw new Exception("invalid sample location");
+		}
+		if (!bufferLocation.isValid()) {
+			bufferLocation = null;
+			throw new Exception("invalid buffer location");
+		}
+		titrationBean.setLocation(location);
+		titrationBean.setBufferLocation(bufferLocation);
+		titrationBean.setRecouperateLocation(null);
+		titrationBean.setConcentration(concentration);
+		titrationBean.setMolecularWeight(molecularWeight);
+		titrationBean.setTimePerFrame(timePerFrame);
+		titrationBean.setFrames(noOfFrames);
+		titrationBean.setExposureTemperature(exposureTemp);
 	}
 }
