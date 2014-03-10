@@ -58,7 +58,7 @@ import uk.ac.diamond.scisoft.analysis.io.IDataHolder;
 import uk.ac.diamond.scisoft.analysis.io.ILoaderService;
 import uk.ac.diamond.scisoft.analysis.io.SliceObject;
 import uk.ac.diamond.scisoft.analysis.rcp.monitor.ProgressMonitorWrapper;
-import uk.ac.diamond.scisoft.ncd.utils.SaxsAnalysisPlotType;
+import uk.ac.diamond.scisoft.ncd.core.data.SaxsAnalysisPlotType;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
 public class BioSAXSReductionResultPlotView extends ViewPart {
