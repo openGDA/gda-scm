@@ -67,27 +67,154 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private Logger logger = LoggerFactory.getLogger(BioSAXSProgressPlotView.class);
 	private ILazyDataset lz;
 	private ILazyDataset xAxisLazyDataSet;
-	private String dataSetPath = "/entry1/detector_result/data";
+	private IDataset xAxisDataSet;
+	private String filePath;
+	private String xAxisPath;
+	private String dataResultPath = "/entry1/detector_result/data";
 	private String qPath = "/entry1/detector_result/q";
 	private String backGroundPath = "/entry1/detector_processing/BackgroundSubtraction/data";
 	private String samplePath = "/entry1/detector_processing/SectorIntegration/data";
 	private String rgPath = "/entry1/detector_processing/GuinierPlot/Rg";
+	private String dataSetPath;
 	private IDataHolder dh;
 	private int frame;
 	private SliceObject sliceObject;
 	private ISAXSProgress sampleProgress;
 	private Composite plotComposite;
 	private LabelledSlider slider;
-	private BioSAXSReductionResultPlotView ref;
 	private SaxsAnalysisPlotType plotType;
 	private SaxsJob saxsUpdateJob;
-	private List<ITrace> savedTraces;
+
+	final Job loadPlotJob = new Job("Load Plot Data") {
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
+
+				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+				lz = dh.getLazyDataset(dataSetPath);
+
+				String name = sampleProgress.getSampleName();
+				sliceObject.setName(name);
+
+				int[] shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStep(null);
+
+				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+				List<IDataset> dataSetList = new ArrayList<IDataset>();
+				dataSetList.add(dataSet.squeeze());
+
+				// Get the x axis
+				if (xAxisPath != null) {
+					xAxisLazyDataSet = dh.getLazyDataset(xAxisPath);
+					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
+					xAxisDataSet.setName(xAxisLazyDataSet.getName());
+				}
+				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
+
+				plot(xAxisDataSet, dataSetList);
+			} catch (Exception e) {
+				logger.error("Exception creating plot", e);
+			} catch (Throwable e) {
+				logger.error("Throwing exception creating plot", e);
+			}
+			return Status.OK_STATUS;
+		}
+	};
+
+	final Job loadRgPlotJob = new Job("Load Rg plot") {
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
+
+				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+				lz = dh.getLazyDataset(dataSetPath);
+
+				String name = sampleProgress.getSampleName();
+				sliceObject.setName(name);
+
+				int[] shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+				sliceObject.setSliceStart(new int[] { frame, 0 });
+				sliceObject.setSliceStop(new int[] { frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStep(null);
+
+				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+				List<IDataset> dataSetList = new ArrayList<IDataset>();
+				dataSetList.add(dataSet.squeeze());
+
+				// Get the x axis
+				if (xAxisPath != null) {
+					xAxisLazyDataSet = dh.getLazyDataset(xAxisPath);
+					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
+					xAxisDataSet.setName(xAxisLazyDataSet.getName());
+				} else {
+					xAxisDataSet = null;
+				}
+				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
+
+				plot(xAxisDataSet, dataSetList);
+			} catch (Exception e) {
+				logger.error("Exception creating plot", e);
+			} catch (Throwable e) {
+				logger.error("Throwing exception creating plot", e);
+			}
+
+			return Status.OK_STATUS;
+		}
+	};
+	
+	final Job sliceJob = new Job("Slice Plot Data") {
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				String name = sampleProgress.getSampleName();
+
+				sliceObject.setName(name);
+
+				int[] shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[2] });
+				sliceObject.setSliceStep(null);
+
+				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+				List<IDataset> dataSetList = new ArrayList<IDataset>();
+				dataSetList.add(dataSet.squeeze());
+
+				plot(xAxisDataSet, dataSetList);
+
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						slider.slider.setToolTipText(String.valueOf(frame));
+					}
+				});
+
+			} catch (Exception e) {
+				logger.error("Exception creating 2D plot", e);
+			} catch (Throwable e) {
+				logger.error("Throwing exception creating 2D plot", e);
+			}
+
+			return Status.OK_STATUS;
+		}
+	};
 
 	public BioSAXSReductionResultPlotView() {
 		try {
-			ref = this;
 			this.saxsPlottingSystem = PlottingFactory.createPlottingSystem();
 			sliceObject = new SliceObject();
+			
 			saxsUpdateJob = new SaxsJob();
 		} catch (Exception e) {
 			logger.error("Cannot create a plotting system!", e);
@@ -139,10 +266,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (reduced.getSelection()) {
-					Job loadJob = new LoadPlotJob(
-							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-							dataSetPath, qPath);
-					loadJob.schedule();
+					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					dataSetPath = dataResultPath;
+					xAxisPath = qPath;
+					loadPlotJob.schedule();
 				}
 			}
 
@@ -160,10 +287,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (backGround.getSelection()) {
-					Job loadJob = new LoadPlotJob(
-							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-							backGroundPath, null);
-					loadJob.schedule();
+					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					dataSetPath = backGroundPath;
+					xAxisPath = null;
+					loadPlotJob.schedule();
 				}
 			}
 
@@ -180,10 +307,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (sample.getSelection()) {
-					Job loadJob = new LoadPlotJob(
-							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-							samplePath, null);
-					loadJob.schedule();
+					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					dataSetPath = samplePath;
+					xAxisPath = null;
+					loadPlotJob.schedule();
 				}
 			}
 
@@ -200,10 +327,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
-					Job loadJob = new LoadRgPlotJob(
-							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-							rgPath, null);
-					loadJob.schedule();
+					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					dataSetPath = rgPath;
+					xAxisPath = null;
+					loadRgPlotJob.schedule();
 				}
 			}
 
@@ -227,11 +354,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (q.getSelection()) {
-					// loadJob.schedule();
-					Job loadJob = new LoadPlotJob(
-							"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-							dataSetPath, qPath);
-					loadJob.schedule();
+					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					xAxisPath = qPath;
+					loadPlotJob.schedule();
 				}
 			}
 
@@ -250,11 +375,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (logLog.getSelection()) {
-					// Job loadPlotTypeJob = new LoadPlotTypeJob(
-					// "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-					// dataSetPath, xAxisPath, SaxsAnalysisPlotType.LOGLOG_PLOT);
-					// loadPlotTypeJob.schedule();
-
 					process(SaxsAnalysisPlotType.LOGLOG_PLOT);
 				}
 			}
@@ -273,10 +393,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (guinear.getSelection()) {
-					// Job loadPlotTypeJob = new LoadPlotTypeJob(
-					// "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-					// dataSetPath, xAxisPath, SaxsAnalysisPlotType.GUINIER_PLOT);
-					// loadPlotTypeJob.schedule();
+					;
 					process(SaxsAnalysisPlotType.GUINIER_PLOT);
 				}
 			}
@@ -375,7 +492,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return;
 
 		plotType = pt;
-		// Activator.getDefault().getPreferenceStore().setValue(PLOT_TYPE_PROP, pt.getName());
 
 		final Collection<ITrace> traces = saxsPlottingSystem.getTraces(ILineTrace.class);
 		if (traces != null && !traces.isEmpty()) {
@@ -410,62 +526,13 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				// loadJob.schedule();
-				Job loadJob = new LoadPlotJob(
-						"/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs",
-						dataSetPath, qPath);
-				loadJob.schedule();
+				filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+				xAxisPath = qPath;
+				dataSetPath = dataResultPath;
+				loadPlotJob.schedule();
 			}
 		});
 	}
-
-	// final Job loadJob = new Job("Load Plot Data") {
-	// @Override
-	// protected IStatus run(IProgressMonitor monitor) {
-	// return null;
-	// }
-	// };
-
-	final Job sliceJob = new Job("Slice Plot Data") {
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				String name = sampleProgress.getSampleName();
-
-				sliceObject.setName(name);
-
-				int[] shape = lz.getShape();
-				sliceObject.setFullShape(shape);
-				sliceObject.setShapeMessage("");
-
-				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
-				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[2] });
-				sliceObject.setSliceStep(null);
-
-				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
-
-				List<IDataset> dataSetList = new ArrayList<IDataset>();
-				dataSetList.add(dataSet.squeeze());
-
-				plot(xAxisDataSet, dataSetList);
-
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						slider.slider.setToolTipText(String.valueOf(frame));
-					}
-				});
-
-			} catch (Exception e) {
-				logger.error("Exception creating 2D plot", e);
-			} catch (Throwable e) {
-				logger.error("Throwing exception creating 2D plot", e);
-			}
-
-			return Status.OK_STATUS;
-		}
-	};
-	public IDataset xAxisDataSet;
 
 	private boolean plot(IDataset x, List<IDataset> list) {
 		saxsPlottingSystem.clear();
@@ -474,177 +541,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 		saxsPlottingSystem.createPlot1D(x, list, null);
 		return true;
-	}
-
-	private class LoadPlotJob extends Job {
-		private String filePath;
-		private String dataSetPath;
-		private String xAxisPath;
-
-		public LoadPlotJob(String filePath, String dataSetPath, String xAxisPath) {
-			super("Load Plot");
-			this.filePath = filePath;
-			this.dataSetPath = dataSetPath;
-			this.xAxisPath = xAxisPath;
-		}
-
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
-
-				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
-				lz = dh.getLazyDataset(dataSetPath);
-
-				String name = sampleProgress.getSampleName();
-				sliceObject.setName(name);
-
-				int[] shape = lz.getShape();
-				sliceObject.setFullShape(shape);
-				sliceObject.setShapeMessage("");
-				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
-				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
-				sliceObject.setSliceStep(null);
-
-				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
-				List<IDataset> dataSetList = new ArrayList<IDataset>();
-				dataSetList.add(dataSet.squeeze());
-
-				// Get the x axis
-				if (xAxisPath != null) {
-					xAxisLazyDataSet = dh.getLazyDataset(xAxisPath);
-					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
-					xAxisDataSet.setName(xAxisLazyDataSet.getName());
-				}
-				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
-
-				plot(xAxisDataSet, dataSetList);
-			} catch (Exception e) {
-				logger.error("Exception creating plot", e);
-			} catch (Throwable e) {
-				logger.error("Throwing exception creating plot", e);
-			}
-
-			return Status.OK_STATUS;
-		}
-	}
-
-	private class LoadRgPlotJob extends Job {
-		private String filePath;
-		private String dataSetPath;
-		private String xAxisPath;
-
-		public LoadRgPlotJob(String filePath, String dataSetPath, String xAxisPath) {
-			super("Load Plot");
-			this.filePath = filePath;
-			this.dataSetPath = dataSetPath;
-			this.xAxisPath = xAxisPath;
-		}
-
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
-
-				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
-				lz = dh.getLazyDataset(dataSetPath);
-
-				String name = sampleProgress.getSampleName();
-				sliceObject.setName(name);
-
-				int[] shape = lz.getShape();
-				sliceObject.setFullShape(shape);
-				sliceObject.setShapeMessage("");
-				sliceObject.setSliceStart(new int[] { frame, 0 });
-				sliceObject.setSliceStop(new int[] { frame + 1, shape[shape.length - 1] });
-				sliceObject.setSliceStep(null);
-
-				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
-				List<IDataset> dataSetList = new ArrayList<IDataset>();
-				dataSetList.add(dataSet.squeeze());
-
-				// Get the x axis
-				if (xAxisPath != null) {
-					xAxisLazyDataSet = dh.getLazyDataset(xAxisPath);
-					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
-					xAxisDataSet.setName(xAxisLazyDataSet.getName());
-				} else {
-					xAxisDataSet = null;
-				}
-				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
-
-				plot(xAxisDataSet, dataSetList);
-			} catch (Exception e) {
-				logger.error("Exception creating plot", e);
-			} catch (Throwable e) {
-				logger.error("Throwing exception creating plot", e);
-			}
-
-			return Status.OK_STATUS;
-		}
-	}
-
-	private class LoadPlotTypeJob extends Job {
-		private String filePath;
-		private String dataSetPath;
-		private String xAxisLocation;
-		private IDataset xAxisDataSet;
-		private SaxsAnalysisPlotType plotType;
-
-		public LoadPlotTypeJob(String filePath, String dataSetPath, String xAxisLocation, SaxsAnalysisPlotType plotType) {
-			super("Load Plot");
-			this.filePath = filePath;
-			this.dataSetPath = dataSetPath;
-			this.xAxisLocation = xAxisLocation;
-			this.plotType = plotType;
-		}
-
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
-
-				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
-				lz = dh.getLazyDataset(dataSetPath);
-
-				String name = sampleProgress.getSampleName();
-				sliceObject.setName(name);
-
-				int[] shape = lz.getShape();
-				sliceObject.setFullShape(shape);
-				sliceObject.setShapeMessage("");
-				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
-				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[2] });
-				sliceObject.setSliceStep(null);
-
-				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
-				List<IDataset> dataSetList = new ArrayList<IDataset>();
-				dataSetList.add(dataSet.squeeze());
-
-				// Get the x axis
-				if (xAxisLocation != null) {
-					xAxisLazyDataSet = dh.getLazyDataset(xAxisLocation);
-					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
-					xAxisDataSet.setName(xAxisLazyDataSet.getName());
-				}
-				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
-
-				plot(xAxisDataSet, dataSetList);
-
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						process(plotType);
-					}
-				});
-			} catch (Exception e) {
-				logger.error("Exception creating plot", e);
-			} catch (Throwable e) {
-				logger.error("Throwing exception creating plot", e);
-			}
-
-			return Status.OK_STATUS;
-		}
 	}
 
 	private class SaxsJob extends UIJob {
@@ -658,8 +554,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
-
-			Collection<ITrace> traces = saxsPlottingSystem.getTraces();
+			traces = saxsPlottingSystem.getTraces();
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 
@@ -706,5 +601,5 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			SaxsJob.this.setName("Process " + plotType.getName());
 			schedule();
 		}
-	};
+	}
 }
