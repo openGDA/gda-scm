@@ -11,6 +11,7 @@ public class BioSAXSISPyBviaOracleTest extends BioSAXSScriptTest {
 	public static void setUpBeforeClass() throws Exception{
 		new BioSAXSDBFactory()
 				.setJdbcURL("jdbc:oracle:thin:@ws096.diamond.ac.uk:1521:xe");
+		BioSAXSDBFactory.setNotifyObject(new NotifyISpyBObserversObject("localhost", "9877"));
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
 
 	}

@@ -6,8 +6,7 @@
 #remove the existing subtraction(s) - consider merging subtraction in the web service stage
 #find the log file and file locations where the analysis stored stuff
 #call ISPyB web service and store the results
-import os
-import json
+import os, sys, json
 
 additionalPath = "ControlSolutionScatteringv0_3"
 def createWebService():
@@ -23,11 +22,12 @@ def getLastFolderCreated(outputFolderName):
 	newestFolder = ""
 	for directory in directoryList:
 		newDirectory = os.path.join(outputFolderName, directory)
-		newTime = os.stat(newDirectory).st_mtime
-		if newestTime < newTime:
-			newestTime = newTime
-			newestFolder = newDirectory
-	return newDirectory
+		if os.path.isdir(newDirectory) and newDirectory.count("mostRecentEDNASasDirectory")==0:
+			newTime = os.stat(newDirectory).st_mtime
+			if newestTime < newTime:
+				newestTime = newTime
+				newestFolder = newDirectory
+	return newestFolder
 
 def parseLogFile(logFileName, results):
 	f=open(logFileName,'r')
@@ -63,9 +63,9 @@ def parseLogFile(logFileName, results):
 				results["dammifFile"+str(i)] = splitLine[7]
 		line = f.readline()
 
-def parseResults(outputFolderName, measurementId):
+def parseResults(outputFolderName, dataCollectionId):
 	results = {}
-	results["measurementId"] = measurementId
+	results["dataCollectionId"] = dataCollectionId
 	folder = getLastFolderCreated(outputFolderName)
 	#get filenames from last folder created
 	results['firFile'] = os.path.join(folder, additionalPath, "Dammifv0_1", "dammif.fir")
@@ -112,34 +112,37 @@ def createModels(outputFolderName,results):
 def storeAnalysis(client, results):
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
-	client.service.storeDataAnalysisResultByMeasurementId(results["measurementId"], results["filename"],
+	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
 		results["rg"], results["rgstdev"], results["i0"], results["i0stdev"], 0, 0,
 		results["quality"], results["isagregated"], "", 0, results["gnomFile"], results["rgGuinier"], results["rgGnom"], results["dmax"], "",
 		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
 
 def storeModels(client, model, dammifModel, damminModel, results):
 	damaverResults = []#assemble from results["dammaver"]
-	client.service.storeAbInitioModels(json.dumps([results["measurementId"]]), json.dumps(model), json.dumps(damminModel), #TODO this should be damaver
+	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damminModel), #TODO this should be damaver
 		json.dumps(dammifModel), json.dumps(damminModel), results["nsdPlot"], "")
 
-def runPipeline(filename, outputFolderName, datapath, threads, columns):
-	os.system("module load edna/sas && run-sas-pipeline.py --rMaxStop 700 --rMaxIntervals 50 --data " + filename + " --threads "+ threads + " --columns " + columns + " --nxsQ " + dataPath+"q --nxsData " + dataPath + "data")
+def runPipeline(filename, dataPath, threads, columns):
+	os.system("module load edna/sas && run-sas-pipeline.py --rMaxStop 700 --rMaxIntervals 50 --data " + filename + " --threads "+ str(threads) + " --columns " + str(columns) + " --nxsQ " + dataPath+"q --nxsData " + dataPath + "data")
 
 if __name__ == '__main__':
 
 	import argparse
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--n", "--filename", type=str, help="input filename after data reduction")
-	parser.add_argument("--o", "--outputFolderName", type=str, help="output folder location")
-	parser.add_argument("--d", "--detector", type=str, help="detector name")
-	parser.add_argument("--m", "--measurementId", type=int, help="measurementId")
-	parser.add_argument("--t", "--threads", type=int, help="number of threads to use")
-	parser.add_argument("--f", "--fedid", type=str, help="fedid of user for output folder location, if folder is not specified (ignored if outputfolder name is used")
-	parser.add_argument("--c", "--columns", type=int, help="number of columns to use from data file")
+	parser.add_argument("--filename", type=str, help="input filename after data reduction")
+	parser.add_argument("--outputFolderName", type=str, help="output folder location")
+	parser.add_argument("--detector", type=str, help="detector name")
+	parser.add_argument("--dataCollectionId", type=int, help="dataCollectionId")
+	parser.add_argument("--threads", type=int, help="number of threads to use")
+	parser.add_argument("--fedid", type=str, help="fedid of user for output folder location, if folder is not specified (ignored if outputfolder name is used")
+	parser.add_argument("--columns", type=int, help="number of columns to use from data file")
 	args = parser.parse_args()
 
 	if args.filename:
 		filename = args.filename
+	else:
+		print "filename must be defined"
+		sys.exit(1)
 	if args.outputFolderName:
 		outputFolderName = args.outputFolderName
 	else:
@@ -150,17 +153,39 @@ if __name__ == '__main__':
 	if args.detector:
 		detector = args.detector
 	else:
-		detector = "detector"
+		defaultDetectorName = "detector"
+		if filename.startswith("/dls/b21"):
+			detector = "detector"
+		elif filename.startswith("/dls/i22"):
+			detector = "Pilatus2M"
+		else:
+			print "Unexpected data path, setting detector name to " + defaultDetectorName
+			detector = defaultDetectorName
 	if args.threads:
 		threads = args.threads
 	else:
 		threads = 10
 	if args.columns:
 		columns = args.columns
+	else:
+		columns = 1
+	if args.dataCollectionId:
+		dataCollectionId = args.dataCollectionId
+	else:
+		print "cannot proceed without a data collection ID to attach the results to"
+		sys.exit(1)
 
-	runPipeline(filename, outputFolderName, "/entry1/"+detector+"_result/",threads, columns)
+	originalDirectory = os.getcwd()
+	os.chdir(outputFolderName)
+	try:
+		runPipeline(filename, "/entry1/"+detector+"_result/",threads, columns)
 
-	results, folder = parseResults(outputFolderName, measurementId)
-	client = createWebService()
-	storeAnalysis(client, results)
+		results, folder = parseResults(outputFolderName, dataCollectionId)
+		client = createWebService()
+		(model, dammifModel, damminModel) = createModels(folder, results)
+		storeAnalysis(client, results)
+		storeModels(client, model, dammifModel, damminModel, results)
 
+		os.chdir(originalDirectory)
+	except Exception as e:
+		print "exception during the pipeline run or results insertion into database: ", e

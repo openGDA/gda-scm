@@ -18,7 +18,6 @@
 
 package uk.ac.gda.devices.bssc.ispyb;
 
-import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -27,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -62,6 +62,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final int SAMPLE_MEASUREMENT = 2;
 	private static final int BUFFER_AFTER_MEASUREMENT = 3;
 
+	@SuppressWarnings("unused")
+	private static String EXPERIMENTTYPE_TEMPLATE = "TEMPLATE";
+	private static String EXPERIMENTTYPE_FINISHED = "FINISHED";
+	private static String EXPERIMENTTYPE_ABORTED = "ABORTED";
+
 	Connection conn = null;
 	String URL = null;
 	long blsessionId;
@@ -95,28 +100,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		if (conn == null || conn.isClosed()) {
 			connect();
 		}
-	}
-
-	private long getProposalForVisit(String visitname) throws SQLException {
-		long proposalId = -1;
-		connectIfNotConnected();
-
-		String selectSql = "SELECT bs.proposalId "
-				+ "FROM ispyb4a_db.BLSession bs INNER JOIN ispyb4a_db.Proposal p on (bs.proposalId = p.proposalId) "
-				+ "WHERE p.proposalCode || p.proposalNumber || '-' || bs.visit_number = ?";
-
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setString(1, visitname);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			if (rs.next())
-				proposalId = rs.getLong(1);
-			rs.close();
-		}
-		stmt.close();
-
-		return proposalId;
 	}
 
 	@Override
@@ -308,9 +291,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Run ("
 				+ "runId, storageTemperature, exposureTemperature, energy, frameCount, timePerFrame, "
-				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization) "
+				+ "transmission, beamCenterX, beamCenterY, pixelSizeX, pixelSizeY, radiationRelative, radiationAbsolute, normalization, timeStart) "
 				+ "VALUES (ispyb4a_db.s_Run.nextval, ?, ?, ?, ?, ?, "
-				+ "?, ?, ?, ?, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
+				+ "?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING runId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setFloat(index++, storageTemperature);
@@ -327,6 +310,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		stmt.setDouble(index++, radiationRelative);
 		stmt.setDouble(index++, radiationAbsolute);
 		stmt.setDouble(index++, normalization);
+		String startDate = new Date().toString();
+		stmt.setString(index++, startDate);
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
@@ -880,30 +865,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return measurementId;
 	}
 
-	private long getBlSessionIdFromExperiment(long experimentId) throws SQLException {
-		long blsessionId = -1;
-		connectIfNotConnected();
-
-		String selectSql = "SELECT s.blsessionId FROM ispyb4a_db.Experiment e "
-				+ "INNER JOIN ispyb4a_db.SaxsDataCollection s on s.experimentid = e.experimentid "
-				+ "WHERE e.experimentId = ?";
-
-		PreparedStatement stmt = conn.prepareStatement(selectSql);
-		stmt.setLong(1, experimentId);
-		boolean success = stmt.execute();
-		if (success) {
-			ResultSet rs = stmt.getResultSet();
-			if (rs.next()) {
-				blsessionId = rs.getLong(1);
-			}
-
-			rs.close();
-		}
-		stmt.close();
-
-		return blsessionId;
-	}
-
 	private void updateMeasurementWithRunId(long measurementId, long runId) throws SQLException {
 		connectIfNotConnected();
 		String selectSql1 = "UPDATE ispyb4a_db.Measurement m SET m.runId= ? WHERE m.measurementId = ?";
@@ -1101,6 +1062,38 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return info;
 	}
 
+	private void updateExperimentStatus(long experimentId, String statusToSet) throws SQLException {
+		connectIfNotConnected();
+
+		String insertSql = "UPDATE ispyb4a_db.Experiment e "
+				+ "SET e.experimentType = ? WHERE e.experimentId = ?";
+		CallableStatement stmt = conn.prepareCall(insertSql);
+		int index = 1;
+		stmt.setString(index++, statusToSet);
+		stmt.setLong(index++, experimentId);
+
+		stmt.execute();
+		stmt.close();
+		
+	}
+
+	@Override
+	public void setExperimentAborted(long experimentId) {
+		try {
+			updateExperimentStatus(experimentId, EXPERIMENTTYPE_ABORTED);
+		} catch (SQLException e) {
+			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTTYPE_ABORTED, e);
+		}
+	}
+
+	@Override
+	public void setExperimentFinished(long experimentId) {
+		try {
+			updateExperimentStatus(experimentId, EXPERIMENTTYPE_FINISHED);
+		} catch (SQLException e) {
+			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTTYPE_FINISHED, e);
+		}
+	}
 	/*
 	 * above here are the methods that interact directly with the database. other methods, including the interface
 	 * methods are below here.
@@ -1341,7 +1334,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
-			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId, e);
+			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId);
 		}
 		return null;
 	}
@@ -1456,20 +1449,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		} else if (statusString.equals(DATA_REDUCTION_RUNNING)) {
 			return ISpyBStatus.RUNNING;
 		} else if (statusString.equals(DATA_REDUCTION_NOT_STARTED)) {
-			return ISpyBStatus.NOT_STARTED;
-		} else {
-			return ISpyBStatus.NOT_STARTED;
-		}
-	}
-
-	private ISpyBStatus getAnalysisStatusFromString(String statusString) {
-		if (statusString.equals(DATA_ANALYSIS_COMPLETE)) {
-			return ISpyBStatus.COMPLETE;
-		} else if (statusString.equals(DATA_ANALYSIS_FAILED)) {
-			return ISpyBStatus.FAILED;
-		} else if (statusString.equals(DATA_ANALYSIS_RUNNING)) {
-			return ISpyBStatus.RUNNING;
-		} else if (statusString.equals(DATA_ANALYSIS_NOT_STARTED)) {
 			return ISpyBStatus.NOT_STARTED;
 		} else {
 			return ISpyBStatus.NOT_STARTED;
