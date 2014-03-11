@@ -139,6 +139,7 @@ public class BioSAXSScriptTest {
 		long bufferAfterId = bioSAXSISPyB.createBufferRun(dataCollectionId1,
 				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				1.0, getFilename(3), defaultDataPath);
+		bioSAXSISPyB.setExperimentFinished(experimentId);
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.COMPLETE);
 		expectedCollectionStatusInfo.setProgress(100);

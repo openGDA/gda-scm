@@ -33,6 +33,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -41,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.gda.devices.bssc.Activator;
 import uk.ac.gda.devices.bssc.beans.BioSAXSProgressController;
 
-public class BioSAXSProgressView extends ViewPart {
+public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsprogressview";
 	private BioSAXSProgressComposite bioSAXSComposite;
@@ -80,6 +84,9 @@ public class BioSAXSProgressView extends ViewPart {
 
 		createActions();
 		createToolbar();
+
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		page.addPartListener(this);
 	}
 
 	@Override
@@ -146,8 +153,58 @@ public class BioSAXSProgressView extends ViewPart {
 
 		if (bioSAXSTableViewer.getControl().isVisible()) {
 			if (!scrollLockAction.isChecked()) {
-				bioSAXSTableViewer.reveal(model.get(model.size() - 1));
+				if (!model.isEmpty()) {
+					bioSAXSTableViewer.reveal(model.get(model.size() - 1));
+				}
 			}
 		}
+	}
+
+	@Override
+	public void partActivated(IWorkbenchPartReference partRef) {
+
+	}
+
+	@Override
+	public void partBroughtToTop(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void partClosed(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void partDeactivated(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void partOpened(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void partHidden(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void partVisible(IWorkbenchPartReference partRef) {
+		if (partRef.getId().equals(ID)) {
+			reveal();
+		}
+	}
+
+	@Override
+	public void partInputChanged(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+
 	}
 }
