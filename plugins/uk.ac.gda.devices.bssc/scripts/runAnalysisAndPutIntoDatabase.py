@@ -14,6 +14,7 @@ def createWebService():
 	host = "cs04r-sc-vserv-49"
 	URL = "http://"+host+":8080/ispyb-ejb3/ispybWS/ToolsForBiosaxsWebService?wsdl"
 	client = Client(URL)
+	client.options.cache.clear() #TODO prevent caching while testing. remove when deployed
 	return client
 
 def getLastFolderCreated(outputFolderName):
@@ -98,30 +99,33 @@ def createModels(outputFolderName,results):
 			modelList.append(model)
 		else:
 			continue
+
 	dammifResultsModel = {}
-	dammifResultsModel["firFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fir")
-	dammifResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif-0.pdb")
+	dammifResultsModel["firFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fir") #TODO should this and fit be from dammif?
+	dammifResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Damfiltv0_1","damfilt.pdb")
 	dammifResultsModel["fitFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fit")
-	dammifResultsModel["chiSqrt"] = results["dammifchi"]
-	dammifResultsModel["rfactor"] = results["dammifrfactor"]
+	#dammifResultsModel["chiSqrt"] = results["dammifchi"]
+	#dammifResultsModel["rfactor"] = results["dammifrfactor"]
 	damminResultsModel = {} #our "default" empty model because we do not run Dammin in the automated method
 	damminResultsModel["firFile"] = ""
 	damminResultsModel["pdbFile"] = ""
 	damminResultsModel["fitFile"] = ""
-	return modelList, dammifResultsModel, damminResultsModel
+
+	damaverResultsModel = {}
+	damaverResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Damaverv0_1","damaver.pdb")
+	return modelList, dammifResultsModel, damaverResultsModel, damminResultsModel
 
 def storeAnalysis(client, results):
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
 	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
-		float(results["rg"])/10, float(results["rgstdev"])/10, results["i0"], results["i0stdev"], 0, 0,
-		results["quality"], results["isagregated"], "", 0, results["gnomFile"], float(results["rgGuinier"])/10, float(results["rgGnom"])/10, float(results["dmax"])/10, results["total"],
+		None, None, None, None, 0, 0,
+		None, results["isagregated"], "", 0, results["gnomFile"], None, float(results["rgGnom"])/10, float(results["dmax"])/10, results["total"],
 		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
 
-def storeModels(client, model, dammifModel, damminModel, results):
-	damaverResults = []#assemble from results["dammaver"]
-	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damminModel), #TODO this should be damaver
-		json.dumps(dammifModel), json.dumps(damminModel), results["nsdPlot"], "")
+def storeModels(client, model, dammifModel, damaverModel, damminModel, results):
+	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damaverModel),
+		json.dumps(dammifModel), json.dumps(dammifModel), results["nsdPlot"], "") #TODO replace last dammifModel with real damminModel
 
 def runPipeline(filename, dataPath, threads, columns):
 	os.system("module load edna/sas && run-sas-pipeline.py --rMaxStop 700 --rMaxIntervals 50 --data " + filename + " --threads "+ str(threads) + " --columns " + str(columns) + " --nxsQ " + dataPath+"q --nxsData " + dataPath + "data")
@@ -183,9 +187,9 @@ if __name__ == '__main__':
 
 		results, folder = parseResults(outputFolderName, dataCollectionId)
 		client = createWebService()
-		(model, dammifModel, damminModel) = createModels(folder, results)
+		(model, dammifModel, damaverModel, damminModel) = createModels(folder, results)
 		storeAnalysis(client, results)
-		storeModels(client, model, dammifModel, damminModel, results)
+		storeModels(client, model, dammifModel, damaverModel, damminModel, results)
 
 		os.chdir(originalDirectory)
 	except Exception as e:
