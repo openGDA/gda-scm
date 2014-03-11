@@ -18,6 +18,8 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import gda.rcp.DataProject;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -27,6 +29,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -55,6 +58,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanEditor.class);
 	private BSSCSessionBean sessionBean;
 	private ArrayList<TitrationBean> measurements;
+	private File bioSAXSFile;
 
 	public BSSCSessionBeanEditor() {
 		super();
@@ -161,14 +165,25 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	}
 
 	public void openDefaultEditor() {
-		String bioSAXSFilePath = "default" + ".biosaxs";
-		sessionBean = new BSSCSessionBean();
-		measurements = new ArrayList<TitrationBean>();
+		IProject dataProject = DataProject.getDataProjectIfExists();
+		IFile workspaceFile;
 
-		File bioSAXSfile = new File(bioSAXSFilePath);
+		String bioSAXSFilePath;
 
-		// if the file dosen't exist then create a new one with default values
-		if (!bioSAXSfile.exists()) {
+		if (dataProject != null) {
+			IFolder folder = dataProject.getFolder("data/xml");
+			bioSAXSFilePath = folder.getFullPath().toString() + "/default.biosaxs";
+			workspaceFile = folder.getFile("default.biosaxs");
+			if (!workspaceFile.exists()) {
+				bioSAXSFile = workspaceFile.getRawLocation().makeAbsolute().toFile();
+				bioSAXSFilePath = bioSAXSFile.getAbsolutePath();
+			} else {
+				bioSAXSFile = workspaceFile.getRawLocation().makeAbsolute().toFile();
+			}
+
+			sessionBean = new BSSCSessionBean();
+			measurements = new ArrayList<TitrationBean>();
+
 			try {
 				TitrationBean tibi1 = new TitrationBean();
 				initialiseTitrationBean(tibi1, "Sample A1", "low", (short) 1, 'A', (short) 3, (short) 1, 'A',
@@ -192,23 +207,23 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 
 			sessionBean.setMeasurements(measurements);
 			try {
-				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSfile);
+				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSFile);
 			} catch (Exception e) {
 				logger.error("Exception writing bean to XML", e);
 			}
 
 			new BSSCSessionBeanUIEditor(bioSAXSFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
 					sessionBean);
-		}
 
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSfile.toURI());
-		try {
-			if (page != null) {
-				IDE.openEditorOnFileStore(page, biosaxsFileStore);
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSFile.toURI());
+			try {
+				if (page != null) {
+					IDE.openEditorOnFileStore(page, biosaxsFileStore);
+				}
+			} catch (PartInitException e) {
+				logger.error("PartInitException opening editor", e);
 			}
-		} catch (PartInitException e) {
-			logger.error("PartInitException opening editor", e);
 		}
 	}
 
