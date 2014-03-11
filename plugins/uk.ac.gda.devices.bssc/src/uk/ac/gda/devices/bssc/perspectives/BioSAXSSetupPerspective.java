@@ -151,7 +151,10 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 
 							// Send the last active editor to the top
 							IEditorReference lastActiveRef = lastActiveEditorRefs.get(perspective.getId());
-							page.bringToTop(lastActiveRef.getPart(true));
+
+							if (lastActiveRef != null) {
+								page.bringToTop(lastActiveRef.getPart(true));
+							}
 						}
 					}
 				}
@@ -165,17 +168,20 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 
 			@Override
 			public void perspectiveDeactivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
-				IEditorPart activeEditor = page.getActiveEditor();
-				if (activeEditor != null) {
+				if (perspective.getId().equals(ID)) {
+					IEditorPart activeEditor = page.getActiveEditor();
+					if (activeEditor != null) {
 
-					// Find the editor reference that relates to this editor input
-					IEditorReference[] editorRefs = page.findEditors(activeEditor.getEditorInput(), null,
-							IWorkbenchPage.MATCH_INPUT);
-					if (editorRefs.length > 0) {
-						lastActiveEditorRefs.put(perspective.getId(), editorRefs[0]);
+						// Find the editor reference that relates to this editor input
+						IEditorReference[] editorRefs = page.findEditors(activeEditor.getEditorInput(), null,
+								IWorkbenchPage.MATCH_INPUT);
+						if (editorRefs.length > 0) {
+							lastActiveEditorRefs.put(perspective.getId(), editorRefs[0]);
+						}
 					}
 				}
 			}
 		});
 	}
+
 }
