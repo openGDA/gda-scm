@@ -35,12 +35,9 @@ def parseLogFile(logFileName, results):
 	while line:
 		splitLine = line.split()
 		if line.count("Real space: Rg =")>0:
-			results["rg"] = splitLine[5]
-			results["rgstdev"] = splitLine[7]
-			results["i0"] = splitLine[10]
-			results["i0stdev"] = splitLine[12]
+			results["rgGnom"] = splitLine[5]
 		if line.count("Total  estimate : ")>0:
-			results["quality"] = splitLine[4]
+			results["total"] = splitLine[4]
 			if splitLine[8] == "REASONABLE" or splitLine[8] == "GOOD" or splitLine[8] == "EXCELLENT":
 				results["isagregated"] = False
 			else:
@@ -78,9 +75,13 @@ def parseResults(outputFolderName, dataCollectionId):
 	parseLogFile(lastLogName, results)
 	
 	#TODO fix these up later - not sure exactly how I can get these values
+	results["rg"] = 0
+	results["rgstdev"] = 0
+	results["i0"] = 0
+	results["i0stdev"] = 0
+	results["quality"] = 0
 	results["gnomFile"] = ""
-	results["rgGuinier"] = ""
-	results["rgGnom"] = ""
+	results["rgGuinier"] = 0
 	results["volume"] = "0"
 	results["filename"] = ""
 	return results, folder
@@ -113,8 +114,8 @@ def storeAnalysis(client, results):
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
 	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
-		results["rg"], results["rgstdev"], results["i0"], results["i0stdev"], 0, 0,
-		results["quality"], results["isagregated"], "", 0, results["gnomFile"], results["rgGuinier"], results["rgGnom"], results["dmax"], "",
+		float(results["rg"])/10, float(results["rgstdev"])/10, results["i0"], results["i0stdev"], 0, 0,
+		results["quality"], results["isagregated"], "", 0, results["gnomFile"], float(results["rgGuinier"])/10, float(results["rgGnom"])/10, float(results["dmax"])/10, results["total"],
 		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
 
 def storeModels(client, model, dammifModel, damminModel, results):
