@@ -84,6 +84,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private LabelledSlider slider;
 	private SaxsAnalysisPlotType plotType;
 	private SaxsJob saxsUpdateJob;
+	public List<ITrace> cachedTraces;
 
 	final Job loadPlotJob = new Job("Load Plot Data") {
 		@Override
@@ -209,7 +210,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return Status.OK_STATUS;
 		}
 	};
-	public List<ITrace> cachedTraces;
+
 
 	public BioSAXSReductionResultPlotView() {
 		try {
