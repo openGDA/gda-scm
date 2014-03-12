@@ -70,12 +70,12 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private IDataset xAxisDataSet;
 	private String filePath;
 	private String xAxisPath;
-	private String dataResultPath = "/entry1/detector_result/data";
-	private String qPath = "/entry1/detector_result/q";
-	private String backGroundPath = "/entry1/detector_processing/BackgroundSubtraction/data";
-	private String samplePath = "/entry1/detector_processing/SectorIntegration/data";
-	private String rgPath = "/entry1/detector_processing/GuinierPlot/Rg";
 	private String dataSetPath;
+	private String resultDataSetPath = "/entry1/detector_result/data";
+	private String qDataSetPath = "/entry1/detector_result/q";
+	private String bGroundDataSetPath = "/entry1/detector_processing/BackgroundSubtraction/data";
+	private String sampleDataSetPath = "/entry1/detector_processing/SectorIntegration/data";
+	private String rgPath = "/entry1/detector_processing/GuinierPlot/Rg";
 	private IDataHolder dh;
 	private int frame;
 	private SliceObject sliceObject;
@@ -85,14 +85,14 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private SaxsAnalysisPlotType plotType;
 	private SaxsJob saxsUpdateJob;
 
-	final Job loadPlotJob = new Job("Load Plot Data") {
+	final Job loadReducedPlotJob = new Job("Load Plot Data") {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
 				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
 
 				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
-				lz = dh.getLazyDataset(dataSetPath);
+				lz = dh.getLazyDataset(resultDataSetPath);
 
 				String name = sampleProgress.getSampleName();
 				sliceObject.setName(name);
@@ -107,6 +107,65 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 				List<IDataset> dataSetList = new ArrayList<IDataset>();
 				dataSetList.add(dataSet.squeeze());
+
+				// Get the x axis
+				if (xAxisPath != null) {
+					xAxisLazyDataSet = dh.getLazyDataset(xAxisPath);
+					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
+					xAxisDataSet.setName(xAxisLazyDataSet.getName());
+				}
+				// final IDataset qDataset = SliceUtils.getAxis(sliceObject, varMan, data, monitor);
+
+				plot(xAxisDataSet, dataSetList);
+			} catch (Exception e) {
+				logger.error("Exception creating plot", e);
+			} catch (Throwable e) {
+				logger.error("Throwing exception creating plot", e);
+			}
+			return Status.OK_STATUS;
+		}
+	};
+
+	final Job loadReducedWithSampleAndBgroundPlotJob = new Job("Load Plot Data") {
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				String name = sampleProgress.getSampleName();
+				sliceObject.setName(name);
+
+				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
+				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+				lz = dh.getLazyDataset(resultDataSetPath);
+				int[] shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStep(null);
+				final IDataset reducedDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+				lz = dh.getLazyDataset(sampleDataSetPath);
+				shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStep(null);
+				final IDataset sampleDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+				lz = dh.getLazyDataset(bGroundDataSetPath);
+				shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStep(null);
+				final IDataset backGroundDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+				List<IDataset> dataSetList = new ArrayList<IDataset>();
+				dataSetList.add(reducedDataSet.squeeze());
+				dataSetList.add(sampleDataSet.squeeze());
+				dataSetList.add(backGroundDataSet.squeeze());
 
 				// Get the x axis
 				if (xAxisPath != null) {
@@ -169,27 +228,51 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return Status.OK_STATUS;
 		}
 	};
-	
+
 	final Job sliceJob = new Job("Slice Plot Data") {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
-				String name = sampleProgress.getSampleName();
-
-				sliceObject.setName(name);
-
+				ILoaderService loaderService = (ILoaderService) ServiceManager.getService(ILoaderService.class);
+				dh = loaderService.getData(filePath, new ProgressMonitorWrapper(monitor));
+				lz = dh.getLazyDataset(resultDataSetPath);
 				int[] shape = lz.getShape();
 				sliceObject.setFullShape(shape);
 				sliceObject.setShapeMessage("");
-
 				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
-				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[2] });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
 				sliceObject.setSliceStep(null);
+				final IDataset reducedDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
-				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+				lz = dh.getLazyDataset(sampleDataSetPath);
+				shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStep(null);
+				final IDataset sampleDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
+
+				lz = dh.getLazyDataset(bGroundDataSetPath);
+				shape = lz.getShape();
+				sliceObject.setFullShape(shape);
+				sliceObject.setShapeMessage("");
+				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
+				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStep(null);
+				final IDataset backGroundDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
 				List<IDataset> dataSetList = new ArrayList<IDataset>();
-				dataSetList.add(dataSet.squeeze());
+				dataSetList.add(reducedDataSet.squeeze());
+				dataSetList.add(sampleDataSet.squeeze());
+				dataSetList.add(backGroundDataSet.squeeze());
+
+				// Get the x axis
+				if (xAxisPath != null) {
+					xAxisLazyDataSet = dh.getLazyDataset(xAxisPath);
+					xAxisDataSet = SliceUtils.getSlice(xAxisLazyDataSet, new SliceObject(), monitor);
+					xAxisDataSet.setName(xAxisLazyDataSet.getName());
+				}
 
 				plot(xAxisDataSet, dataSetList);
 
@@ -199,7 +282,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 						slider.slider.setToolTipText(String.valueOf(frame));
 					}
 				});
-
 			} catch (Exception e) {
 				logger.error("Exception creating 2D plot", e);
 			} catch (Throwable e) {
@@ -209,12 +291,21 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return Status.OK_STATUS;
 		}
 	};
+	private Group grpData;
+	private Group grpPlot;
+	private Button logNorm;
+	private Button logLog;
+	private Button guinear;
+	private Button porod;
+	private Button kratky;
+	private Button zimm;
+	private Button debeyeBueche;
 
 	public BioSAXSReductionResultPlotView() {
 		try {
 			this.saxsPlottingSystem = PlottingFactory.createPlottingSystem();
 			sliceObject = new SliceObject();
-			
+
 			saxsUpdateJob = new SaxsJob();
 		} catch (Exception e) {
 			logger.error("Cannot create a plotting system!", e);
@@ -256,7 +347,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		gd_slider.widthHint = 178;
 		slider.setLayoutData(gd_slider);
 
-		Group grpData = new Group(sliderComposite, SWT.NONE);
+		grpData = new Group(sliderComposite, SWT.NONE);
 		grpData.setLayout(new GridLayout(2, false));
 		grpData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		grpData.setText("Data");
@@ -266,10 +357,12 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (reduced.getSelection()) {
+					enablePlotGroup(true);
+					slider.setEnabled(false);
 					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
-					dataSetPath = dataResultPath;
-					xAxisPath = qPath;
-					loadPlotJob.schedule();
+					dataSetPath = resultDataSetPath;
+					xAxisPath = qDataSetPath;
+					loadReducedPlotJob.schedule();
 				}
 			}
 
@@ -282,15 +375,16 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		reduced.setText("Reduced");
 		reduced.setSelection(true);
 
-		final Button backGround = new Button(grpData, SWT.RADIO);
-		backGround.addSelectionListener(new SelectionListener() {
+		final Button reducedWithSampleAndBackground = new Button(grpData, SWT.RADIO);
+		reducedWithSampleAndBackground.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (backGround.getSelection()) {
+				if (reducedWithSampleAndBackground.getSelection()) {
+					enablePlotGroup(true);
+					slider.setEnabled(true);
 					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
-					dataSetPath = backGroundPath;
 					xAxisPath = null;
-					loadPlotJob.schedule();
+					loadReducedWithSampleAndBgroundPlotJob.schedule();
 				}
 			}
 
@@ -300,33 +394,14 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 			}
 		});
-		backGround.setText("Background");
-
-		final Button sample = new Button(grpData, SWT.RADIO);
-		sample.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (sample.getSelection()) {
-					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
-					dataSetPath = samplePath;
-					xAxisPath = null;
-					loadPlotJob.schedule();
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-		sample.setText("Sample");
+		reducedWithSampleAndBackground.setText("Reduced (With Sample and Background)");
 
 		final Button rg = new Button(grpData, SWT.RADIO);
 		rg.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
+					enablePlotGroup(true);
 					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
 					dataSetPath = rgPath;
 					xAxisPath = null;
@@ -342,21 +417,21 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		rg.setText("Rg");
 
-		Group grpPlot = new Group(sliderComposite, SWT.NONE);
+		grpPlot = new Group(sliderComposite, SWT.NONE);
 		grpPlot.setText("Plot");
 		GridData gd_grpPlot = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gd_grpPlot.widthHint = 351;
 		grpPlot.setLayoutData(gd_grpPlot);
 		grpPlot.setLayout(new GridLayout(4, false));
 
-		final Button q = new Button(grpPlot, SWT.RADIO);
-		q.addSelectionListener(new SelectionListener() {
+		logNorm = new Button(grpPlot, SWT.RADIO);
+		logNorm.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (q.getSelection()) {
+				if (logNorm.getSelection()) {
 					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
-					xAxisPath = qPath;
-					loadPlotJob.schedule();
+					xAxisPath = qDataSetPath;
+					loadReducedPlotJob.schedule();
 				}
 			}
 
@@ -366,10 +441,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 			}
 		});
-		q.setText("q");
-		q.setSelection(true);
+		logNorm.setText("Log/Norm");
+		logNorm.setSelection(true);
 
-		final Button logLog = new Button(grpPlot, SWT.RADIO);
+		logLog = new Button(grpPlot, SWT.RADIO);
 		logLog.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -387,7 +462,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		logLog.setText("Log/Log");
 
-		final Button guinear = new Button(grpPlot, SWT.RADIO);
+		guinear = new Button(grpPlot, SWT.RADIO);
 		guinear.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -406,7 +481,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		guinear.setText("Guinear");
 
-		final Button porod = new Button(grpPlot, SWT.RADIO);
+		porod = new Button(grpPlot, SWT.RADIO);
 		porod.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -424,7 +499,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		porod.setText("Porod");
 
-		final Button kratky = new Button(grpPlot, SWT.RADIO);
+		kratky = new Button(grpPlot, SWT.RADIO);
 		kratky.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -442,7 +517,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		kratky.setText("Kratky");
 
-		final Button zimm = new Button(grpPlot, SWT.RADIO);
+		zimm = new Button(grpPlot, SWT.RADIO);
 		zimm.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -460,7 +535,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		zimm.setText("Zimm");
 
-		final Button debeyeBueche = new Button(grpPlot, SWT.RADIO);
+		debeyeBueche = new Button(grpPlot, SWT.RADIO);
 		debeyeBueche.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -485,6 +560,17 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		GridData plotGD = new GridData(SWT.FILL, SWT.FILL, true, true);
 		plotGD.horizontalSpan = 2;
 		saxsPlottingSystem.getPlotComposite().setLayoutData(plotGD);
+	}
+
+	private void enablePlotGroup(boolean enabled) {
+		grpPlot.setEnabled(enabled);
+		logNorm.setEnabled(enabled);
+		logLog.setEnabled(enabled);
+		guinear.setEnabled(enabled);
+		porod.setEnabled(enabled);
+		kratky.setEnabled(enabled);
+		zimm.setEnabled(enabled);
+		debeyeBueche.setEnabled(enabled);
 	}
 
 	private void process(SaxsAnalysisPlotType pt) {
@@ -527,9 +613,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void run() {
 				filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
-				xAxisPath = qPath;
-				dataSetPath = dataResultPath;
-				loadPlotJob.schedule();
+				xAxisPath = qDataSetPath;
+				dataSetPath = resultDataSetPath;
+				loadReducedPlotJob.schedule();
 			}
 		});
 	}
@@ -577,17 +663,17 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			tr.setName(pt.getName());
 			tr.setData(xTraceData, yTraceData);
 			tr.setTraceColor(lineTrace.getTraceColor());
-
+			traces.add(tr);
+			
 			showSelectedTrace(pt, traces);
-			saxsPlottingSystem.addTrace(tr);
 			saxsPlottingSystem.repaint();
-
+			
 			return Status.OK_STATUS;
 		}
 
 		private void showSelectedTrace(SaxsAnalysisPlotType saxsPlotType, Collection<ITrace> traces) {
 			for (ITrace trace : traces) {
-				if (trace.getName() == saxsPlotType.toString()) {
+				if (trace.getName().equalsIgnoreCase(saxsPlotType.getName())) {
 					trace.setVisible(true);
 				} else {
 					trace.setVisible(false);
