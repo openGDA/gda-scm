@@ -11,7 +11,7 @@ import os, sys, json
 additionalPath = "ControlSolutionScatteringv0_3"
 def createWebService():
 	from suds.client import Client
-	host = "cs04r-sc-vserv-49"
+	host = "ispybb-test.diamond.ac.uk"
 	URL = "http://"+host+":8080/ispyb-ejb3/ispybWS/ToolsForBiosaxsWebService?wsdl"
 	client = Client(URL)
 	client.options.cache.clear() #TODO prevent caching while testing. remove when deployed
@@ -101,7 +101,7 @@ def createModels(outputFolderName,results):
 			continue
 
 	dammifResultsModel = {}
-	dammifResultsModel["firFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fir") #TODO should this and fit be from dammif?
+	dammifResultsModel["firFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fir")
 	dammifResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Damfiltv0_1","damfilt.pdb")
 	dammifResultsModel["fitFile"] = os.path.join(outputFolderName,additionalPath, "Dammifv0_1","dammif.fit")
 	#dammifResultsModel["chiSqrt"] = results["dammifchi"]
