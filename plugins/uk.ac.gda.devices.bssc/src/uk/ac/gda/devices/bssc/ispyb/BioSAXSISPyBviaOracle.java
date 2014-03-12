@@ -1156,8 +1156,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		} else {
 			bufferBeforeMeasurementId = retrievePreviousMeasurement(previousDataCollectionId, BUFFER_AFTER_MEASUREMENT);
 		}
-		long sampleMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate,
-				bufferRow, bufferColumn, sampleName, exposureTemperature, flow, volume, viscosity);
+		long sampleMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, plate,
+				row, column, sampleName, exposureTemperature, flow, volume, viscosity);
 		long bufferAfterMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate,
 				bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
 		// now we must relate the Measurements to the SaxsDataCollection
