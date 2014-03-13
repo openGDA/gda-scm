@@ -85,7 +85,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private SaxsAnalysisPlotType plotType;
 	private SaxsJob saxsUpdateJob;
 	public List<ITrace> cachedTraces;
-	
+
 	final Job loadReducedPlotJob = new Job("Load Plot Data") {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
@@ -418,6 +418,27 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		rg.setText("Rg");
 
+		final Button invariant = new Button(grpData, SWT.RADIO);
+		invariant.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (rg.getSelection()) {
+					enablePlotGroup(true);
+					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					dataSetPath = rgPath;
+					xAxisPath = null;
+					loadRgPlotJob.schedule();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		invariant.setText("Invariant");
+		
 		grpPlot = new Group(sliderComposite, SWT.NONE);
 		grpPlot.setText("Plot");
 		GridData gd_grpPlot = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
@@ -565,10 +586,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 	private void cacheTraces(Collection<ITrace> traces) {
 		cachedTraces = new ArrayList<ITrace>();
-		
-		for (ITrace trace : traces)
-		{
-			ILineTrace lineTrace = (ILineTrace)trace;
+
+		for (ITrace trace : traces) {
+			ILineTrace lineTrace = (ILineTrace) trace;
 			AbstractDataset xTraceData = (AbstractDataset) lineTrace.getXData().clone();
 			AbstractDataset yTraceData = (AbstractDataset) lineTrace.getYData().clone();
 			ILineTrace cachedLineTrace = saxsPlottingSystem.createLineTrace(lineTrace.getName());
@@ -577,7 +597,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			cachedTraces.add(cachedLineTrace);
 		}
 	}
-	
+
 	private void enablePlotGroup(boolean enabled) {
 		grpPlot.setEnabled(enabled);
 		logNorm.setEnabled(enabled);
@@ -658,7 +678,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			saxsPlottingSystem.clear();
-			
+
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 
@@ -681,13 +701,13 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			tr.setName(pt.getName());
 			tr.setData(xTraceData, yTraceData);
 			tr.setTraceColor(lineTrace.getTraceColor());
-			
+			tr.setErrorBarColor(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+
 			saxsPlottingSystem.addTrace(tr);
 			saxsPlottingSystem.repaint();
-			
+
 			return Status.OK_STATUS;
 		}
-
 
 		public void schedule(Collection<ITrace> traces, final SaxsAnalysisPlotType pt) {
 			this.traces = traces;
