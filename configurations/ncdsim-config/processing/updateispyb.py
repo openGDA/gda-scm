@@ -2,15 +2,15 @@
 
 import sys
 from suds.client import Client
-from socket import UDPSock
+from socket import *
 
 host = "cs04r-sc-vserv-49"
 # this needs to be set to the machine running GDA server
 # since it is evaluated on the cluster, "localhost" WILL NOT WORK
 controlserver = "localhost"
 
-updport=9877
-prefix="biosax"
+udpport=9877
+prefix="biosaxs"
 
 URL="http://"+host+":8080/ispyb-ejb3/ispybWS/ToolsForBiosaxsWebService?wsdl"
 client = Client(URL)
@@ -30,7 +30,7 @@ else:
 #client.service.setDataReductionStatus(dataCollectionId = "2033", status = "FAILED", filenameOrMessage = "failed message")
 #client.service.setDataReductionStatus(2033, "COMPLETE", "/dls/b21/data/2013/sm999-9/b21-14.nxs")
 
-addr = (controlserver,port)
+addr = (controlserver,udpport)
 UDPSock = socket(AF_INET,SOCK_DGRAM)
 UDPSock.sendto(prefix+":"+collid,addr)
 UDPSock.close()

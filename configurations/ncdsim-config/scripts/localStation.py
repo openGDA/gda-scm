@@ -61,7 +61,7 @@ gridxy.setName("gridxy")
 gridxy.setGroupMembers([x, y])
 gridxy.configure()
 # make work without camera
-import PseudoCam
-camera=PseudoCam.PseudoCam()#bsdiode
+import DummyCam
+camera=DummyCam.DummyCam(256, 256, gridxy)
 ncdgridscan=gridscan.Grid("Microscope View", "Mapping Grid", camera, gridxy, ncddetectors)
 ncdgridscan.snap()
