@@ -204,8 +204,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	protected long createSamplePlate(long blsessionId, long experimentId, String name, long plateGroupId) throws SQLException {
 		long samplePlateId = -1;
 		connectIfNotConnected();
-		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name, plateGroupId, plateTypeId) "
-				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?, 2) RETURNING samplePlateId INTO ?; END;";
+		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name, plateGroupId, plateTypeId, slotPositionColumn) "
+				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?, 2, 1) RETURNING samplePlateId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 		stmt.setLong(2, blsessionId);
