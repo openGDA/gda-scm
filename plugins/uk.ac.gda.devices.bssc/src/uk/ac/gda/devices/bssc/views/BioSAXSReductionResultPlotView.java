@@ -402,7 +402,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
-					enablePlotGroup(true);
+					enablePlotGroup(false);
 					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
 					dataSetPath = rgPath;
 					xAxisPath = null;
@@ -423,7 +423,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
-					enablePlotGroup(true);
+					enablePlotGroup(false);
 					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
 					dataSetPath = rgPath;
 					xAxisPath = null;
