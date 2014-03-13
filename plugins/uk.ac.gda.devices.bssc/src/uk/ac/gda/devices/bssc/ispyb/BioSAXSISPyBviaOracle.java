@@ -199,20 +199,22 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return plateGroupId;
 	}
 
-	protected long createSamplePlate(long blsessionId, long experimentId, String name, long plateGroupId) throws SQLException {
+	protected long createSamplePlate(long blsessionId, long experimentId, String name, long plateGroupId, short plate) throws SQLException {
 		long samplePlateId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name, plateGroupId, plateTypeId, slotPositionColumn) "
-				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?, 2, 1) RETURNING samplePlateId INTO ?; END;";
+				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?, 2, ?) RETURNING samplePlateId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
-		stmt.setLong(1, experimentId);
-		stmt.setLong(2, blsessionId);
-		stmt.setString(3, name);
-		stmt.setLong(4, plateGroupId);
+		int index = 1;
+		stmt.setLong(index++, experimentId);
+		stmt.setLong(index++, blsessionId);
+		stmt.setString(index++, name);
+		stmt.setLong(index++, plateGroupId);
+		stmt.setShort(index++, plate);
 
-		stmt.registerOutParameter(5, java.sql.Types.VARCHAR);
+		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
-		samplePlateId = stmt.getLong(5);
+		samplePlateId = stmt.getLong(index);
 		stmt.close();
 
 		return samplePlateId;
@@ -1092,6 +1094,31 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTSTATUS_FINISHED, e);
 		}
 	}
+
+	private long getSamplePlate(long blsessionId, long experimentId, short slotPositionColumn) throws SQLException {
+		long samplePlateId = INVALID_VALUE;
+
+		connectIfNotConnected();
+		String selectSql1 = "SELECT sp.samplePlateId FROM ispyb4a_db.SamplePlate sp " + 
+				"WHERE sp.blsessionId = ? AND sp.experimentId = ? AND sp.slotPositionColumn = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		stmt1.setLong(1, blsessionId);
+		stmt1.setLong(2, experimentId);
+		stmt1.setShort(3, slotPositionColumn);
+
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			if (rs.next()) {
+				samplePlateId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return samplePlateId;
+	}
+
 	/*
 	 * above here are the methods that interact directly with the database. other methods, including the interface
 	 * methods are below here.
@@ -1123,8 +1150,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 																	// defined
 			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
 		}
-		long plateGroupId = createPlateGroup(sampleName, exposureTemperature);
-		long samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate), plateGroupId);
+		long samplePlateId = getSamplePlate(blsessionId, experimentId, plate);
+		//if plate does not already exist, create a new one
+		if (samplePlateId == INVALID_VALUE) {
+			long plateGroupId = createPlateGroup(sampleName, exposureTemperature);
+			samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate), plateGroupId, plate);
+		}
 		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
 		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
 				null, volume);
