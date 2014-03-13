@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.diamond.scisoft.analysis.dataset.AbstractDataset;
 import uk.ac.diamond.scisoft.analysis.dataset.IDataset;
+import uk.ac.diamond.scisoft.analysis.dataset.IErrorDataset;
 import uk.ac.diamond.scisoft.analysis.dataset.ILazyDataset;
 import uk.ac.diamond.scisoft.analysis.io.IDataHolder;
 import uk.ac.diamond.scisoft.analysis.io.ILoaderService;
@@ -438,7 +439,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			}
 		});
 		invariant.setText("Invariant");
-		
+
 		grpPlot = new Group(sliderComposite, SWT.NONE);
 		grpPlot.setText("Plot");
 		GridData gd_grpPlot = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
@@ -679,28 +680,44 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			saxsPlottingSystem.clear();
 
-			if (monitor.isCanceled())
-				return Status.CANCEL_STATUS;
-
 			ILineTrace lineTrace = (ILineTrace) cachedTraces.toArray()[0];
-			if (!lineTrace.isUserTrace())
+			if (!lineTrace.isUserTrace()) {
 				return Status.CANCEL_STATUS;
-			if (lineTrace.getXData() == null || lineTrace.getYData() == null)
-				return Status.CANCEL_STATUS;
+			}
 
-			AbstractDataset xTraceData = (AbstractDataset) lineTrace.getXData().clone();
-			AbstractDataset yTraceData = (AbstractDataset) lineTrace.getYData().clone();
+			IDataset xData = lineTrace.getXData();
+			IDataset yData = lineTrace.getYData();
+			if (xData == null || yData == null) {
+				return Status.CANCEL_STATUS;
+			}
+
+			IDataset xErrors = null;
+			IDataset yErrors = null;
+			if (xData instanceof IErrorDataset && ((IErrorDataset) xData).hasErrors()) {
+				xErrors = ((IErrorDataset) xData).getError().clone();
+			}
+			if (yData instanceof IErrorDataset && ((IErrorDataset) yData).hasErrors()) {
+				yErrors = ((IErrorDataset) yData).getError().clone();
+			}
+
+			AbstractDataset xTraceData = (AbstractDataset) xData.clone();
+			if (xErrors != null) {
+				xTraceData.setError(xErrors);
+			}
+			AbstractDataset yTraceData = (AbstractDataset) yData.clone();
+			if (yErrors != null) {
+				yTraceData.setError(yErrors);
+			}
 
 			try {
 				this.pt.process(xTraceData, yTraceData.squeeze());
 			} catch (Throwable ne) {
 				logger.error("Cannot process " + yTraceData.getName(), ne);
 			}
-
 			ILineTrace tr = saxsPlottingSystem.createLineTrace(lineTrace.getName());
-			tr.setName(pt.getName());
 			tr.setData(xTraceData, yTraceData);
 			tr.setTraceColor(lineTrace.getTraceColor());
+			tr.setErrorBarEnabled(true);
 			tr.setErrorBarColor(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 
 			saxsPlottingSystem.addTrace(tr);
