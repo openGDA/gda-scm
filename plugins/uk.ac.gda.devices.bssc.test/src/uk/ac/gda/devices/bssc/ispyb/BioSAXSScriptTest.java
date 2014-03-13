@@ -36,7 +36,7 @@ public class BioSAXSScriptTest {
 
 		// create an EXPERIMENT in ISpyB
 		long experimentId = bioSAXSISPyB.createExperiment(blsessionId, "test",
-				"TEMPLATE", "test");
+				"STATIC", "test");
 		experimentCount++;
 
 		// create 5 data collections
