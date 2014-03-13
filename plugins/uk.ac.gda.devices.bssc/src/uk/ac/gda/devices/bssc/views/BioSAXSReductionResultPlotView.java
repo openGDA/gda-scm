@@ -27,6 +27,7 @@ import org.dawb.common.services.ServiceManager;
 import org.dawnsci.plotting.api.IPlottingSystem;
 import org.dawnsci.plotting.api.PlotType;
 import org.dawnsci.plotting.api.PlottingFactory;
+import org.dawnsci.plotting.api.axis.IAxis;
 import org.dawnsci.plotting.api.tool.IToolPageSystem;
 import org.dawnsci.plotting.api.trace.ILineTrace;
 import org.dawnsci.plotting.api.trace.ITrace;
@@ -663,6 +664,14 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return false;
 
 		saxsPlottingSystem.createPlot1D(x, list, null);
+		for (IAxis axis : saxsPlottingSystem.getAxes())
+		{
+			if (axis.isYAxis())
+			{
+				axis.setTitle("Y-Axis");
+			}
+		}
+		
 		cacheTraces(saxsPlottingSystem.getTraces());
 		return true;
 	}
