@@ -76,7 +76,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private String resultDataSetPath = "/entry1/detector_result/data";
 	private String qDataSetPath = "/entry1/detector_result/q";
 	private String bGroundDataSetPath = "/entry1/detector_processing/BackgroundSubtraction/data";
-	private String sampleDataSetPath = "/entry1/detector_processing/SectorIntegration/data";
+	private String sampleDataSetPath = "/entry1/detector_processing/Normalisation/data";
 	private String rgPath = "/entry1/detector_processing/GuinierPlot/Rg";
 	private IDataHolder dh;
 	private int frame;
@@ -664,14 +664,12 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return false;
 
 		saxsPlottingSystem.createPlot1D(x, list, null);
-		for (IAxis axis : saxsPlottingSystem.getAxes())
-		{
-			if (axis.isYAxis())
-			{
+		for (IAxis axis : saxsPlottingSystem.getAxes()) {
+			if (axis.isYAxis()) {
 				axis.setTitle("Y-Axis");
 			}
 		}
-		
+
 		cacheTraces(saxsPlottingSystem.getTraces());
 		return true;
 	}
