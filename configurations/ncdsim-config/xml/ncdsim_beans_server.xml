@@ -25,13 +25,6 @@
 				<bean id="instrument" class="gda.data.metadata.PropertyMetadataEntry">
 					<property name="propertyName" value="gda.instrument" />
 				</bean>
-				<!-- <bean id="title" class="gda.data.metadata.StoredScanMetadataEntry"> -->
-				<!-- <property name="value" value="undefined" /> -->
-				<!-- </bean> -->
-				<bean id="instrument.monochromator.energy" class="gda.data.metadata.ScannableMetadataEntry">
-					<property name="name" value="instrument.monochromator.energy" />
-					<property name="scannableName" value="bkeV" />
-				</bean>
 				<ref bean="title" />
 				<ref bean="subdirectory" />
 				<ref bean="samplename" />
@@ -432,5 +425,48 @@
 		</property>
 		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" />
 	</bean>
-
+	
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="gda.data.scan.datawriter.NexusDataWriter.setLocationmap" />
+		<property name="arguments">
+			<map>
+				<entry key="energy">
+					<bean
+						class="uk.ac.gda.server.ncd.scannable.EnergyScannableWriter">
+						<property name="paths">
+							<list>
+								<value>instrument:NXinstrument/monochromator:NXmonochromator/energy</value>
+								<value>instrument:NXinstrument/insertion_device:NXinsertion_device/gap</value>
+							</list>
+						</property>
+						<property name="units">
+							<list>
+								<value>keV</value>
+								<value>mm</value>
+							</list>
+						</property>
+						<property name="prerequisiteScannableNames">
+							<list>
+							</list>
+						</property>
+						<property name="uncertaintyFraction" value="1.14e-4" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="gda.data.scan.datawriter.NexusDataWriter.setMetadatascannables" />
+		<property name="arguments">
+			<set>
+				<value>energy</value>
+				<value>sample_name</value>
+				<value>sample_thickness</value>
+			</set>
+		</property>
+	</bean>
 </beans>
