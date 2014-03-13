@@ -62,10 +62,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final int SAMPLE_MEASUREMENT = 2;
 	private static final int BUFFER_AFTER_MEASUREMENT = 3;
 
-	@SuppressWarnings("unused")
-	private static String EXPERIMENTTYPE_TEMPLATE = "TEMPLATE";
-	private static String EXPERIMENTTYPE_FINISHED = "FINISHED";
-	private static String EXPERIMENTTYPE_ABORTED = "ABORTED";
+	private static String EXPERIMENTSTATUS_FINISHED = "FINISHED";
+	private static String EXPERIMENTSTATUS_ABORTED = "ABORTED";
 
 	Connection conn = null;
 	String URL = null;
@@ -1066,7 +1064,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		connectIfNotConnected();
 
 		String insertSql = "UPDATE ispyb4a_db.Experiment e "
-				+ "SET e.experimentType = ? WHERE e.experimentId = ?";
+				+ "SET e.status = ? WHERE e.experimentId = ?";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setString(index++, statusToSet);
@@ -1080,18 +1078,18 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	@Override
 	public void setExperimentAborted(long experimentId) {
 		try {
-			updateExperimentStatus(experimentId, EXPERIMENTTYPE_ABORTED);
+			updateExperimentStatus(experimentId, EXPERIMENTSTATUS_ABORTED);
 		} catch (SQLException e) {
-			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTTYPE_ABORTED, e);
+			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTSTATUS_ABORTED, e);
 		}
 	}
 
 	@Override
 	public void setExperimentFinished(long experimentId) {
 		try {
-			updateExperimentStatus(experimentId, EXPERIMENTTYPE_FINISHED);
+			updateExperimentStatus(experimentId, EXPERIMENTSTATUS_FINISHED);
 		} catch (SQLException e) {
-			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTTYPE_FINISHED, e);
+			logger.error("Exception while attempting to set the experiment status to " + EXPERIMENTSTATUS_FINISHED, e);
 		}
 	}
 	/*
