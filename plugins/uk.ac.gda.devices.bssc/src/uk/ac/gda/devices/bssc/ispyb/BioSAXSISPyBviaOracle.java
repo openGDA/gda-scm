@@ -1119,6 +1119,90 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return samplePlateId;
 	}
 
+	private long getSamplePlatePosition(long experimentId, long samplePlateId, short row,
+			short column) throws SQLException {
+		long samplePlatePositionId = INVALID_VALUE;
+
+		connectIfNotConnected();
+		String selectSql1 = "SELECT spp.samplePlatePositionId FROM ispyb4a_db.SamplePlatePosition spp " + 
+				"INNER JOIN ispyb4a_db.SamplePlate sp ON spp.samplePlateId = sp.samplePlateId " +
+				"WHERE sp.experimentId = ? AND spp.samplePlateId = ? AND spp.rownumber = ? AND spp.columnnumber = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		int index = 1;
+		stmt1.setLong(index++, experimentId);
+		stmt1.setLong(index++, samplePlateId);
+		stmt1.setShort(index++, row);
+		stmt1.setShort(index++, column);
+
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			if (rs.next()) {
+				samplePlatePositionId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return samplePlatePositionId;
+	}
+
+	private long getBuffer(long blsessionId, long experimentId, String name, String acronym, String composition) throws SQLException {
+		long bufferId = INVALID_VALUE;
+
+		connectIfNotConnected();
+		String selectSql1 = "SELECT b.bufferId FROM ispyb4a_db.Buffer b " + 
+				"INNER JOIN ispyb4a_db.Specimen sp ON sp.bufferId = b.bufferId " +
+				"WHERE sp.blsessionId = ? AND sp.experimentId = ? AND b.name = ? AND b.acronym = ? AND b.composition = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		int index = 1;
+		stmt1.setLong(index++, blsessionId);
+		stmt1.setLong(index++, experimentId);
+		stmt1.setString(index++, name);
+		stmt1.setString(index++, acronym);
+		stmt1.setString(index++, composition);
+
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			if (rs.next()) {
+				bufferId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return bufferId;
+	}
+
+	private long getSpecimen(long blsessionId, long experimentId, long bufferId, long samplePlatePositionId, double volume) throws SQLException {
+		long specimenId = INVALID_VALUE;
+
+		connectIfNotConnected();
+		String selectSql1 = "SELECT sp.specimenId FROM ispyb4a_db.Specimen sp " + 
+				"WHERE sp.blsessionId = ? AND sp.experimentId = ? AND sp.bufferId = ? " +
+				"AND sp.sampleplatepositionId = ? and sp.volume = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		int index = 1;
+		stmt1.setLong(index++, blsessionId);
+		stmt1.setLong(index++, experimentId);
+		stmt1.setLong(index++, bufferId);
+		stmt1.setLong(index++, samplePlatePositionId);
+		stmt1.setDouble(index++, volume);
+
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			if (rs.next()) {
+				specimenId = rs.getLong(1);
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return specimenId;
+	}
+
 	/*
 	 * above here are the methods that interact directly with the database. other methods, including the interface
 	 * methods are below here.
@@ -1145,20 +1229,36 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			throws SQLException {
 		Long macromoleculeId = null;
 
-		long bufferId = createBuffer(blsessionId, "buffer", "acronym", "composition");
+		String bufferName = "buffer";
+		String bufferAcronym = "acronym";
+		String bufferComposition = "composition";
+		long bufferId = getBuffer(blsessionId, experimentId, bufferName, bufferAcronym, bufferComposition);
+		if (bufferId == INVALID_VALUE) {
+			bufferId = createBuffer(blsessionId, bufferName, bufferAcronym, bufferComposition);
+		}
+
 		if (sampleName != null && sampleName.isEmpty() == false) { // if this is a sample, name and concentration are
 																	// defined
 			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
 		}
+
 		long samplePlateId = getSamplePlate(blsessionId, experimentId, plate);
 		//if plate does not already exist, create a new one
 		if (samplePlateId == INVALID_VALUE) {
 			long plateGroupId = createPlateGroup(sampleName, exposureTemperature);
 			samplePlateId = createSamplePlate(blsessionId, experimentId, String.valueOf(plate), plateGroupId, plate);
 		}
-		long samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
-		long sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-				null, volume);
+
+		long samplePlatePositionId = getSamplePlatePosition(experimentId, samplePlateId, row, column);
+		if (samplePlatePositionId == INVALID_VALUE) {
+			samplePlatePositionId = createSamplePlatePosition(samplePlateId, row, column);
+		}
+
+		long sampleId = getSpecimen(blsessionId, experimentId, bufferId, samplePlatePositionId, volume);
+		if (sampleId == INVALID_VALUE) {
+			sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
+					null, volume);
+		}
 		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
 		return measurementId;
 	}
