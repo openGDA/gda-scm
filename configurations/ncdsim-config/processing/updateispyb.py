@@ -2,7 +2,7 @@
 
 import sys
 from suds.client import Client
-from socket import UDPSock
+from socket import *
 
 host = "cs04r-sc-vserv-49"
 # this needs to be set to the machine running GDA server
