@@ -76,7 +76,7 @@ cat >> $SCRIPT <<EOF
 #! /bin/sh
 
 ## set data reduction to started
-$ISPYBUPDATE reduction $DATACOLLID STARTED ""
+$ISPYBUPDATE reduction $DATACOLLID STARTED \"\"
 
 $DAWN -noSplash -application com.isencia.passerelle.workbench.model.launch \
 -data $WORKSPACE \
@@ -118,7 +118,7 @@ $ISPYBUPDATE reduction $DATACOLLID COMPLETE \$REDUCEDFILE
 
 #module load edna/sas-local  ## we are on the cluster
 ## set analysis status started 
-$ISPYBUPDATE analysis $DATACOLLID STARTED ""
+$ISPYBUPDATE analysis $DATACOLLID STARTED \"\"
 ## run edna 
 #run-sas-pipeline.py --data \$REDUCEDFILE --nxsQ '/entry1/detector_result/q' --nxsData '/entry1/detector_result/data' --rMaxStart 50 --rMaxStop 600 --rMaxIntervals 25 --rMaxAbsTol 0.1 --mode fast --threads 10 --columns 10 --symmetry P6 --qmin 0.005 --qmax 0.3 --plotFit
 ## update ispyb

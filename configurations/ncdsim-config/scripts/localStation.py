@@ -49,6 +49,21 @@ except:
 finder.find("ncdlistener").monitorLive("Saxs Plot", "SAXS")
 finder.find("ncdlistener").monitorLive("Waxs Plot", "WAXS")
 
+import metadatatweaks
+getTitle = metadatatweaks.getTitle
+alias("getTitle")
+setTitle = metadatatweaks.setTitle
+alias("setTitle")
+getSubdirectory = metadatatweaks.getSubdirectory
+alias("getSubdirectory")
+setSubdirectory = metadatatweaks.setSubdirectory
+alias("setSubdirectory")
+getVisit = metadatatweaks.getVisit
+alias("getVisit")
+setVisit = metadatatweaks.setVisit
+alias("setVisit")
+sample_name=metadatatweaks.SampleNameScannable("sample_name","samplename")
+
 from ncdutils import DetectorMeta
 waxs_distance = DetectorMeta("waxs_distance", ncddetectors, "WAXS", "distance", "m")
 saxs_distance = DetectorMeta("saxs_distance", ncddetectors, "SAXS", "distance", "m")
