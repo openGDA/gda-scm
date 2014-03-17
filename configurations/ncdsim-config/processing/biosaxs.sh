@@ -21,7 +21,8 @@ DATAFILE="$1"
 BACKGROUNDFILE="$2"
 DATACOLLID="$3"
 
-
+# avoid messages popping up in testing
+export DISPLAY=
 REDUCTIONOUTPUTFILE=
 
 echo edited file
