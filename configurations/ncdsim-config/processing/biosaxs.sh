@@ -123,10 +123,11 @@ $ISPYBUPDATE analysis $DATACOLLID STARTED ""
 #run-sas-pipeline.py --data \$REDUCEDFILE --nxsQ '/entry1/detector_result/q' --nxsData '/entry1/detector_result/data' --rMaxStart 50 --rMaxStop 600 --rMaxIntervals 25 --rMaxAbsTol 0.1 --mode fast --threads 10 --columns 10 --symmetry P6 --qmin 0.005 --qmax 0.3 --plotFit
 ## update ispyb
 
-module load edna/sas-local  ## we are on the cluster
+#module load edna/sas-local  ## we are on the cluster
+module load python/2.7
 mkdir $ANALYSISOUTPUT
 $ISPYBUPDATE analysis $DATACOLLID STARTED ""
-/home/zjt21856/ws836_git/gda-scm.git/plugins/uk.ac.gda.devices.bssc/scripts/runAnalysisAndPutIntoDatabase.py --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
+python /home/zjt21856/ws836_git/gda-scm.git/plugins/uk.ac.gda.devices.bssc/scripts/runAnalysisAndPutIntoDatabase.py --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
 
 EOF
 
