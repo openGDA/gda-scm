@@ -162,7 +162,10 @@ public class BioSAXSProgressComposite extends FieldComposite {
 								reductionResultPlotView = (BioSAXSReductionResultPlotView) page
 										.showView("uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView");
 								page.activate(reductionResultPlotView);
-								reductionResultPlotView.setPlot(sampleProgress);
+
+								if (sampleProgress.getReductionStatusInfo().getStatus() == ISpyBStatus.COMPLETE) {
+									reductionResultPlotView.setPlot(sampleProgress);
+								}
 							} catch (PartInitException e) {
 								logger.error("Error activating the data reduction results view", e);
 							}
