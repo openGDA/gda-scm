@@ -122,8 +122,9 @@ module load python/2.7
 mkdir $ANALYSISOUTPUT
 $ISPYBUPDATE analysis $DATACOLLID STARTED ""
 python $EDNAPYSCRIPT --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
+$ISPYBUPDATE analysis $DATACOLLID COMPLETE $ANALYSISOUTPUT
 
 EOF
 
-bash $SCRIPT
+bash $SCRIPT > ${SCRIPT}.stdout 2> ${SCRIPT}.errout
 #qsub $SCRIPT
