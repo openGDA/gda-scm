@@ -75,7 +75,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private String dataSetPath;
 	private String resultDataSetPath = "/entry1/detector_result/data";
 	private String qDataSetPath = "/entry1/detector_result/q";
-	private String bGroundDataSetPath = "/entry1/detector_processing/BackgroundSubtraction/data";
+	private String bGroundDataSetPath = "/entry1/detector_processing/BackgroundSubtraction/background";
 	private String sampleDataSetPath = "/entry1/detector_processing/Normalisation/data";
 	private String rgPath = "/entry1/detector_processing/GuinierPlot/Rg";
 	private IDataHolder dh;
@@ -242,8 +242,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				int[] shape = lz.getShape();
 				sliceObject.setFullShape(shape);
 				sliceObject.setShapeMessage("");
-				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
-				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStart(new int[] { 0, 0, 0 });
+				sliceObject.setSliceStop(new int[] { 1, 1, shape[shape.length - 1] });
 				sliceObject.setSliceStep(null);
 				final IDataset reducedDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
@@ -260,8 +260,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				shape = lz.getShape();
 				sliceObject.setFullShape(shape);
 				sliceObject.setShapeMessage("");
-				sliceObject.setSliceStart(new int[] { 0, frame, 0 });
-				sliceObject.setSliceStop(new int[] { 1, frame + 1, shape[shape.length - 1] });
+				sliceObject.setSliceStart(new int[] { 0, 0, 0 });
+				sliceObject.setSliceStop(new int[] { 1, 1, shape[shape.length - 1] });
 				sliceObject.setSliceStep(null);
 				final IDataset backGroundDataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
@@ -286,9 +286,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 					}
 				});
 			} catch (Exception e) {
-				logger.error("Exception creating 2D plot", e);
+				logger.error("Exception slicing plot", e);
 			} catch (Throwable e) {
-				logger.error("Throwing exception creating 2D plot", e);
+				logger.error("Exception slicing plot", e);
 			}
 
 			return Status.OK_STATUS;
@@ -362,7 +362,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				if (reduced.getSelection()) {
 					enablePlotGroup(true);
 					slider.setEnabled(false);
-					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					filePath = "/dls/b21/data/2014/cm4976-1/tmp/dawn/results_b21-5790_detector_130314_191335.nxs";
 					dataSetPath = resultDataSetPath;
 					xAxisPath = qDataSetPath;
 					loadReducedPlotJob.schedule();
@@ -385,7 +385,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				if (reducedWithSampleAndBackground.getSelection()) {
 					enablePlotGroup(true);
 					slider.setEnabled(true);
-					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+					filePath = "/dls/b21/data/2014/cm4976-1/tmp/dawn/results_b21-5790_detector_130314_191335.nxs";
 					xAxisPath = null;
 					loadReducedWithSampleAndBgroundPlotJob.schedule();
 				}
@@ -650,7 +650,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
+				filePath = sampleProgress.getReductionStatusInfo().getFileNames().get(0);
 				xAxisPath = qDataSetPath;
 				dataSetPath = resultDataSetPath;
 				loadReducedPlotJob.schedule();
