@@ -6,22 +6,21 @@ module load global/cluster
 
 # those two need to be in sync
 #DAWN=/dls_sw/apps/DawnDiamond/1.4.1/builds-stable/stable-linux64/dawn
-DAWN=/dls/b21/data/2014/cm4976-1/tmp/DawnDiamond-1.5.0.v20140314-1320-linux64/dawn
-MOML=/home/zjt21856/biosaxsred/ncd_model.moml
-
+#DAWN=/dls/b21/data/2014/cm4976-1/tmp/DawnDiamond-1.5.0.v20140314-1320-linux64/dawn
+#MOML=${GDA_CONFIG}/processing/ncd_model.moml
 # those would be found in the environment
 # beamline staff specified
 #PERSISTENCEFILE=/home/zjt21856/persistence_file.nxs
 #NCDREDXML=/home/zjt21856/ncd_configuration.xml
-
 # these should be on the command line
 #DATAFILE=/home/zjt21856/i22-34820.nxs
 #BACKGROUNDFILE=/home/zjt21856/i22-34820.nxs
+#ISPYBUPDATE=$(dirname $0)/updateispyb.py
+
 DATAFILE="$1"
 BACKGROUNDFILE="$2"
 DATACOLLID="$3"
 
-ISPYBUPDATE=$(dirname $0)/updateispyb.py
 
 REDUCTIONOUTPUTFILE=
 
@@ -55,9 +54,6 @@ echo now in $TMPDIR
 
 WORKSPACE=$TMPDIR/workspace
 mkdir $WORKSPACE
-#cd $WORKSPACE
-#tar xvzf /home/zjt21856/ws836_git/gda-scm.git/configurations/ncdsim-config/processing/dw.tar.gz
-#cd ..
 OUTPUTDIR=$TMPDIR/output
 mkdir $OUTPUTDIR
 
@@ -67,9 +63,6 @@ NCDREDXML=${TMPDIR}/ncd_reduction.xml
 mkdir ${WORKSPACE}/workflows/
 WORKSPACEMOML=${WORKSPACE}/workflows/reduction.moml
 ln -s $MOML $WORKSPACEMOML
-
-# /dls_sw/apps/DawnDiamond/master/builds-stable/stable-linux64/dawn -noSplash -application com.isencia.passerelle.workbench.model.launch -data $WORKSPACE -consolelog -os linux -ws gtk -arch $HOSTTYPE -vmargs -Dorg.dawb.workbench.jmx.headless=true -Dcom.isencia.jmx.service.terminate=false -Dmodel=$MODEL -Dxml.path=/scratch/ws/gda836_git/scisoft-ncd.git/uk.ac.diamond.scisoft.ncd.actors/test/uk/ac/diamond/scisoft/ncd/actors/test/ncd_configuration.xml -Draw.path=/scratch/ws/gda836_git/scisoft-ncd.git/uk.ac.diamond.scisoft.ncd.actors/test/uk/ac/diamond/scisoft/ncd/actors/test/i22-34820.nxs -Dpersistence.path=/scratch/ws/gda836_git/scisoft-ncd.git/uk.ac.diamond.scisoft.ncd.actors/test/uk/ac/diamond/scisoft/ncd/actors/test/persistence_file.nxs -Doutput.path=/scratch/ws/junit-workspace/workflows/output
-#-data /tmp/foo \
 
 SCRIPT=$TMPDIR/qsub.script
 cat >> $SCRIPT <<EOF
@@ -127,7 +120,7 @@ $ISPYBUPDATE analysis $DATACOLLID STARTED \"\"
 module load python/2.7
 mkdir $ANALYSISOUTPUT
 $ISPYBUPDATE analysis $DATACOLLID STARTED ""
-python /home/zjt21856/ws836_git/gda-scm.git/plugins/uk.ac.gda.devices.bssc/scripts/runAnalysisAndPutIntoDatabase.py --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
+python $EDNAPYSCRIPT --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
 
 EOF
 
