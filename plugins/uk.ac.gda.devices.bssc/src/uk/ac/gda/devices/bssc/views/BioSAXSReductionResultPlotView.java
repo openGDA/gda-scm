@@ -58,7 +58,7 @@ import uk.ac.diamond.scisoft.analysis.io.IDataHolder;
 import uk.ac.diamond.scisoft.analysis.io.ILoaderService;
 import uk.ac.diamond.scisoft.analysis.io.SliceObject;
 import uk.ac.diamond.scisoft.analysis.rcp.monitor.ProgressMonitorWrapper;
-import uk.ac.diamond.scisoft.ncd.core.data.SaxsAnalysisPlotType;
+import uk.ac.diamond.scisoft.ncd.utils.SaxsAnalysisPlotType;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
 public class BioSAXSReductionResultPlotView extends ViewPart {
@@ -84,6 +84,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private LabelledSlider slider;
 	private SaxsAnalysisPlotType plotType;
 	private SaxsJob saxsUpdateJob;
+	public List<ITrace> cachedTraces;
 
 	final Job loadPlotJob = new Job("Load Plot Data") {
 		@Override
@@ -169,7 +170,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return Status.OK_STATUS;
 		}
 	};
-	
+
 	final Job sliceJob = new Job("Slice Plot Data") {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
@@ -210,11 +211,14 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		}
 	};
 
+
 	public BioSAXSReductionResultPlotView() {
 		try {
 			this.saxsPlottingSystem = PlottingFactory.createPlottingSystem();
+			// this.cachedPlottingSystem = PlottingFactory.createPlottingSystem();
+
 			sliceObject = new SliceObject();
-			
+
 			saxsUpdateJob = new SaxsJob();
 		} catch (Exception e) {
 			logger.error("Cannot create a plotting system!", e);
@@ -487,6 +491,21 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		saxsPlottingSystem.getPlotComposite().setLayoutData(plotGD);
 	}
 
+	private void cacheTraces(Collection<ITrace> traces) {
+		cachedTraces = new ArrayList<ITrace>();
+		
+		for (ITrace trace : traces)
+		{
+			ILineTrace lineTrace = (ILineTrace)trace;
+			AbstractDataset xTraceData = (AbstractDataset) lineTrace.getXData().clone();
+			AbstractDataset yTraceData = (AbstractDataset) lineTrace.getYData().clone();
+			ILineTrace cachedLineTrace = saxsPlottingSystem.createLineTrace(lineTrace.getName());
+			cachedLineTrace.setData(xTraceData, yTraceData);
+			cachedLineTrace.setTraceColor(lineTrace.getTraceColor());
+			cachedTraces.add(cachedLineTrace);
+		}
+	}
+	
 	private void process(SaxsAnalysisPlotType pt) {
 		if (saxsPlottingSystem == null || saxsPlottingSystem.getPlotComposite() == null)
 			return;
@@ -536,10 +555,12 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 	private boolean plot(IDataset x, List<IDataset> list) {
 		saxsPlottingSystem.clear();
+
 		if (list == null || list.isEmpty())
 			return false;
 
 		saxsPlottingSystem.createPlot1D(x, list, null);
+		cacheTraces(saxsPlottingSystem.getTraces());
 		return true;
 	}
 
@@ -554,11 +575,12 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
-			traces = saxsPlottingSystem.getTraces();
+			saxsPlottingSystem.clear();
+
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 
-			ILineTrace lineTrace = (ILineTrace) traces.toArray()[0];
+			ILineTrace lineTrace = (ILineTrace) cachedTraces.toArray()[0];
 			if (!lineTrace.isUserTrace())
 				return Status.CANCEL_STATUS;
 			if (lineTrace.getXData() == null || lineTrace.getYData() == null)
@@ -578,21 +600,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			tr.setData(xTraceData, yTraceData);
 			tr.setTraceColor(lineTrace.getTraceColor());
 
-			showSelectedTrace(pt, traces);
 			saxsPlottingSystem.addTrace(tr);
 			saxsPlottingSystem.repaint();
 
 			return Status.OK_STATUS;
-		}
-
-		private void showSelectedTrace(SaxsAnalysisPlotType saxsPlotType, Collection<ITrace> traces) {
-			for (ITrace trace : traces) {
-				if (trace.getName() == saxsPlotType.toString()) {
-					trace.setVisible(true);
-				} else {
-					trace.setVisible(false);
-				}
-			}
 		}
 
 		public void schedule(Collection<ITrace> traces, final SaxsAnalysisPlotType pt) {
