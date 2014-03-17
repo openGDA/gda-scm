@@ -362,7 +362,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				if (reduced.getSelection()) {
 					enablePlotGroup(true);
 					slider.setEnabled(false);
-					filePath = "/dls/b21/data/2014/cm4976-1/tmp/dawn/results_b21-5790_detector_130314_191335.nxs";
 					dataSetPath = resultDataSetPath;
 					xAxisPath = qDataSetPath;
 					loadReducedPlotJob.schedule();
@@ -385,7 +384,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				if (reducedWithSampleAndBackground.getSelection()) {
 					enablePlotGroup(true);
 					slider.setEnabled(true);
-					filePath = "/dls/b21/data/2014/cm4976-1/tmp/dawn/results_b21-5790_detector_130314_191335.nxs";
 					xAxisPath = null;
 					loadReducedWithSampleAndBgroundPlotJob.schedule();
 				}
@@ -405,7 +403,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
 					enablePlotGroup(false);
-					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
 					dataSetPath = rgPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
@@ -426,7 +423,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
 					enablePlotGroup(false);
-					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
 					dataSetPath = rgPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
@@ -453,7 +449,6 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (logNorm.getSelection()) {
-					filePath = "/dls/b21/data/2014/cm4976-1/processing/results_b21-5790_detector_280214_180858.nxs";
 					xAxisPath = qDataSetPath;
 					loadReducedPlotJob.schedule();
 				}
@@ -645,8 +640,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 
 	public void setPlot(final ISAXSProgress sampleProgress) {
 		this.sampleProgress = sampleProgress;
-		// filePath = this.sampleProgress.getCollectionFileNames();
-		//
+
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
