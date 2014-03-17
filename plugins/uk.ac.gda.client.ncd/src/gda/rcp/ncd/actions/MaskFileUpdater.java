@@ -19,6 +19,7 @@
 package gda.rcp.ncd.actions;
 
 import gda.data.PathConstructor;
+import gda.data.metadata.GDAMetadataProvider;
 import gda.factory.Finder;
 
 import java.text.SimpleDateFormat;
@@ -40,6 +41,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.diamond.scisoft.analysis.io.IDiffractionMetadata;
+import uk.ac.diamond.scisoft.analysis.io.IMetaData;
 import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
 
 public class MaskFileUpdater extends AbstractHandler {
@@ -52,6 +55,7 @@ public class MaskFileUpdater extends AbstractHandler {
 	}
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		logger.debug("metadata: {}, {}", GDAMetadataProvider.getInstance(), GDAMetadataProvider.getInstance().getName());
 		String newFile = PathConstructor.createFromDefaultProperty() + "/" + newFileName();
 		saveMaskFile(newFile);
 		fileLocation.setSaxsDetectorInfoPath(newFile);
@@ -61,9 +65,10 @@ public class MaskFileUpdater extends AbstractHandler {
 	private void saveMaskFile(String newFile) {
 		try {
 			logger.debug("Saving mask file to {}", newFile);
-			 createMaskFile(newFile);
-			 addMaskToFile();
-			 addRegionsToFile();
+			createMaskFile(newFile);
+			addMaskToFile();
+			addRegionsToFile();
+			addDiffractionMetadataToFile();
 		} catch (Exception e) {
 			logger.error("Could not save mask file", e);
 		} finally {
@@ -106,6 +111,16 @@ public class MaskFileUpdater extends AbstractHandler {
 		if (regions!=null && !regions.isEmpty()) {
 			for (IRegion iRegion : regions) {
 				addRegionToFile(iRegion);
+			}
+		}
+	}
+	
+	private void addDiffractionMetadataToFile() throws Exception {
+		IImageTrace trace = getImage();
+		if (trace!=null && trace.getData() != null) {
+			IMetaData meta = trace.getData().getMetadata();
+			if (meta == null || meta instanceof IDiffractionMetadata) {
+				file.setDiffractionMetadata((IDiffractionMetadata) meta);
 			}
 		}
 	}
