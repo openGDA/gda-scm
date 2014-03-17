@@ -436,6 +436,7 @@
 			</map>
 		</property>
 		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" />
+		<property name="detectorInfo" ref="detectorInfoPath" />
 	</bean>
 	
 	<bean
