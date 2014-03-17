@@ -35,15 +35,18 @@ if test -d $VISIT ; then
 	if test -w $VISIT ; then
 		REDUCTIONOUTPUTFILE=${VISIT}/processed/${RESTOFPATH}.reduced.nxs
 		mkdir -p $(dirname $REDUCTIONOUTPUTFILE)
+		ANALYSISOUTPUT=${VISIT}/processed/${RESTOFPATH}.analysis
 	else 
 		REDUCTIONOUTPUTFILE=${VISIT}/processing/${RESTOFPATH}.reduced.nxs
 		mkdir -p $(dirname $REDUCTIONOUTPUTFILE)
 		REDUCTIONOUTPUTFILE=
+		ANALYSISOUTPUT=${VISIT}/processing/${RESTOFPATH}.analysis
 	fi
 	TMPDIR=${VISIT}/tmp/${RESTOFPATH}.$$
 else
 	echo running reduction outside of a visit
-	TMPDIR=${DATAFILE}.$$
+	TMPDIR=${DATAFILE}.$$.reduction
+	ANALYSISOUTPUT=${DATAFILE}.$$.analysis
 fi
 
 mkdir -p $TMPDIR
@@ -113,14 +116,18 @@ fi
 # tell ispyb reduction worked and result is in \$REDUCEDFILE
 $ISPYBUPDATE reduction $DATACOLLID COMPLETE \$REDUCEDFILE
 
-module load edna/sas-local  ## we are on the cluster
-
+#module load edna/sas-local  ## we are on the cluster
 ## set analysis status started 
 $ISPYBUPDATE analysis $DATACOLLID STARTED ""
 ## run edna 
-run-sas-pipeline.py --data \$REDUCEDFILE --nxsQ '/entry1/detector_result/q' --nxsData '/entry1/detector_result/data' --rMaxStart 50 --rMaxStop 600 --rMaxIntervals 25 --rMaxAbsTol 0.1 --mode fast --threads 10 --columns 10 --symmetry P6 --qmin 0.005 --qmax 0.3 --plotFit
-
+#run-sas-pipeline.py --data \$REDUCEDFILE --nxsQ '/entry1/detector_result/q' --nxsData '/entry1/detector_result/data' --rMaxStart 50 --rMaxStop 600 --rMaxIntervals 25 --rMaxAbsTol 0.1 --mode fast --threads 10 --columns 10 --symmetry P6 --qmin 0.005 --qmax 0.3 --plotFit
 ## update ispyb
+
+module load edna/sas-local  ## we are on the cluster
+mkdir $ANALYSISOUTPUT
+$ISPYBUPDATE analysis $DATACOLLID STARTED ""
+/home/zjt21856/ws836_git/gda-scm.git/plugins/uk.ac.gda.devices.bssc/scripts/runAnalysisAndPutIntoDatabase.py --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
+
 EOF
 
 bash $SCRIPT

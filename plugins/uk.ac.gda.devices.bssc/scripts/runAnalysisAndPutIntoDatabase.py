@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 #input: datacollectionid, folder name, reduced results filename, detector name 
 
 #run the data analysis pipeline that Irakli set up
