@@ -190,7 +190,7 @@
 		<property name="memory" ref="CalibMemory" />
 		<property name="units" value="counts" />
 		<property name="channel" value="1" />
-		<property name="label" value="I0" />
+		<property name="label" value="data" />
 		<property name="scalingAndOffset" ref="sao1" />
 	</bean>
 	
@@ -200,7 +200,7 @@
 		<property name="memory" ref="CalibMemory" />
 		<property name="units" value="counts" />
 		<property name="channel" value="1" />
-		<property name="label" value="It" />
+		<property name="label" value="data" />
 		<property name="scalingAndOffset" ref="sao2" />
 	</bean>
 

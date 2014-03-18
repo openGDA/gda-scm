@@ -29,7 +29,7 @@
         </property>
         <property name="Mask Name" class="com.isencia.passerelle.util.ptolemy.StringChoiceParameter" value="mask">
         </property>
-        <property name="Sector Name" class="com.isencia.passerelle.util.ptolemy.StringChoiceParameter" value="Calibration">
+        <property name="Sector Name" class="com.isencia.passerelle.util.ptolemy.StringChoiceParameter" value="Profile 1">
         </property>
         <property name="Raw file" class="ptolemy.data.expr.StringParameter" value="${raw.path}">
         </property>
