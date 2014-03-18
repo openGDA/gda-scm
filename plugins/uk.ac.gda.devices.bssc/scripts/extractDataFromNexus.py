@@ -59,8 +59,8 @@ def writeOutData(outputDir, datas, qs, normalizations, backgroundData):
 	subtractedFileSuffix = "_sub.dat"
 	if not os.path.exists(outputDir):
 		os.makedirs(outputDir)
-	if not outputDir.endswith(os.linesep):
-		outputDir += os.linesep
+	if not outputDir.endswith(os.sep):
+		outputDir += os.sep
 	#check that outputDir ends with file separator
 	numpy.savetxt(outputDir + "dataq.dat",numpy.column_stack((q,data, dataErrors))) #TODO filename
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 		print "filename must be defined"
 		sys.exit(1)
 
-	(dataPaths, qPaths, normalizationPaths, backgroundPath) = setupPathNames(fileIn, detector)
-	(datas, qs, normalizations, backgroundData) = getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPath)
+	(dataPaths, qPaths, normalizationPaths, backgroundPath) = setupPathNames(filename, detector)
+	(datas, qs, normalizations, backgroundData) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPath)
 	writeOutData(outputFolderName, datas, qs, normalizations, backgroundData)
 
