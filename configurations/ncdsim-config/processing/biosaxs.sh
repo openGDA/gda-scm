@@ -94,8 +94,8 @@ if test -n "\$GENERATEDFILE" && test -r \$GENERATEDFILE ; then
 else 
 	# raise ISPyB error and exit
 	MESSAGE="ERROR cannot find generated reduction file for collection $DATACOLLID in $OUTPUTDIR"
-	$ISPYBUPDATE reduction $DATACOLLID FAILED $MESSAGE 
-	echo $MESSAGE  >&2
+	$ISPYBUPDATE reduction $DATACOLLID FAILED \$MESSAGE 
+	echo \$MESSAGE  >&2
 	echo ABORTING. >&2
 	exit 1
 fi

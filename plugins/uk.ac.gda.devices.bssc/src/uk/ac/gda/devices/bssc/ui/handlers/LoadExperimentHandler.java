@@ -20,7 +20,6 @@ package uk.ac.gda.devices.bssc.ui.handlers;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +38,10 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +51,6 @@ import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
 import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanUIEditor;
 import uk.ac.gda.devices.bssc.wizards.BSSCImportWizardPage;
-import uk.ac.gda.devices.bssc.wizards.BSSCWizardUtils;
-import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class LoadExperimentHandler implements IHandler {
@@ -156,9 +150,7 @@ public class LoadExperimentHandler implements IHandler {
 
 				// Need to convert xls to biosaxs
 				String expXlsFile = fileToOpen.getAbsolutePath();
-				System.out.println("file to open is : " + expXlsFile);
 				String xmlFilePath = expXlsFile.substring(0, expXlsFile.lastIndexOf("."));
-				System.out.println("file to write to is : " + xmlFilePath);
 				String bioSAXSFilePath = xmlFilePath + ".biosaxs";
 
 				File bioSAXSfile = new File(bioSAXSFilePath);
