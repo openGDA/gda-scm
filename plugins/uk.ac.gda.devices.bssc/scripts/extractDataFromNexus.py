@@ -35,8 +35,12 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 	backgroundErrorsPath = backgroundPaths[1]
 	if backgroundPath[1:] in f:
 		backgroundData = f[backgroundPath][0][0]
+	else:
+		backgroundData = None
 	if backgroundErrorsPath[1:] in f:
 		backgroundErrors = numpy.multiply(backgroundData, defaultErrorRatio)
+	else:
+		backgroundErrors = None
 
 	normalizationPath = normalizationPaths[0]
 	normalizationErrorsPath = normalizationPaths[1]
@@ -56,7 +60,7 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 		qErrors = numpy.multiply(q, defaultErrorRatio)
 	return (data, dataErrors), (q, qErrors), (normalizationData, normalizationErrors), (backgroundData, backgroundErrors)
 
-def writeOutData(outputDir, datas, qs, normalizations, backgrounds):
+def writeOutData(outputDir, datas, qs, normalizations, backgrounds, results): #results: if true, results. if false, background
 	curveFiles = []
 	data = datas[0]
 	dataErrors = datas[1]
@@ -68,20 +72,24 @@ def writeOutData(outputDir, datas, qs, normalizations, backgrounds):
 	if not outputDir.endswith(os.sep):
 		outputDir += os.sep
 	#check that outputDir ends with file separator
-	sampleAverageFilename = outputDir + "dataq_ave.dat"
-	numpy.savetxt(sampleAverageFilename,numpy.column_stack((q,data, dataErrors))) #TODO filename
-	curveFiles.append(sampleAverageFilename)
-
-	backgroundData = backgrounds[0]
-	backgroundErrors = backgrounds[1]
-	backgroundAverageFilename = outputDir + "background_averbuffer.dat"
-	numpy.savetxt(backgroundAverageFilename,numpy.column_stack((q,backgroundData, backgroundErrors))) #TODO filename
-	curveFiles.append(backgroundAverageFilename)
+	if results: #for background, these curves are not relevant, so skip this
+		sampleAverageFilename = outputDir + "dataq_ave.dat"
+		numpy.savetxt(sampleAverageFilename,numpy.column_stack((q,data, dataErrors))) #TODO filename
+		curveFiles.append(sampleAverageFilename)
+		backgroundData = backgrounds[0]
+		backgroundErrors = backgrounds[1]
+		backgroundAverageFilename = outputDir + "background_averbuffer.dat"
+		numpy.savetxt(backgroundAverageFilename,numpy.column_stack((q,backgroundData, backgroundErrors))) #TODO filename
+		curveFiles.append(backgroundAverageFilename)
 
 	normalizationData = normalizations[0]
 	normalizationErrors = normalizations[1]
+	if results:
+		suffix = ".dat"
+	else:
+		suffix = "_background.dat"
 	for i in xrange(0,normalizationData.shape[0]):
-		frameFilename = outputDir + "frame"+str(i).zfill(4)+".dat"
+		frameFilename = outputDir + "frame"+str(i).zfill(4)+suffix
 		numpy.savetxt(frameFilename,numpy.column_stack((q,normalizationData[i], normalizationErrors[i])))
 		curveFiles.append(frameFilename)
 	return curveFiles
@@ -89,7 +97,11 @@ def writeOutData(outputDir, datas, qs, normalizations, backgrounds):
 def directCall(filename, outputFolderName, detector, returnFilenames):
 	(dataPaths, qPaths, normalizationPaths, backgroundPaths) = setupPathNames(filename, detector)
 	(datas, qs, normalizations, backgrounds) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPaths)
-	curveFiles = writeOutData(outputFolderName, datas, qs, normalizations, backgrounds)
+	if os.path.basename(filename).startswith("results"):
+		results = True
+	else:
+		results = False
+	curveFiles = writeOutData(outputFolderName, datas, qs, normalizations, backgrounds, results)
 	if returnFilenames:
 		return curveFiles
 
