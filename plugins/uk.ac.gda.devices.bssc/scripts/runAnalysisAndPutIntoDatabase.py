@@ -121,13 +121,14 @@ def storeAnalysis(client, filename, outputFolderName, detector, results):
 	import extractDataFromNexus
 	filenames = extractDataFromNexus.directCall(filename, outputFolderName + os.sep + "extractData_"+str(results["dataCollectionId"]), detector, True)
 	curvesFiles = ",".join(filenames)
+	numFiles = len(filenames) #TODO assuming all files are merged
 
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
 	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
 		None, None, None, None, 0, 0,
 		None, results["isagregated"], "", 0, results["gnomFile"], None, float(results["rgGnom"])/10, float(results["dmax"])/10, results["total"],
-		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
+		results["volume"], numFiles, numFiles, curvesFiles, 2, "", "", "", "", results["densityPlot"])
 
 def storeModels(client, model, dammifModel, damaverModel, damminModel, results):
 	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damaverModel),
