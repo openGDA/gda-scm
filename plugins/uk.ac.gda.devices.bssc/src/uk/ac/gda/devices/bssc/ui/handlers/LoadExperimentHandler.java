@@ -18,8 +18,11 @@
 
 package uk.ac.gda.devices.bssc.ui.handlers;
 
+import gda.rcp.DataProject;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,11 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -96,10 +104,8 @@ public class LoadExperimentHandler implements IHandler {
 		File fileToOpen = new File(selected);
 
 		if (fileToOpen.exists() && fileToOpen.isFile()) {
-			IFileStore fileStore = EFS.getLocalFileSystem().getStore(fileToOpen.toURI());
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
-			// IDE.openEditorOnFileStore(page, fileStore);
 			Workbook wb;
 			try {
 				wb = WorkbookFactory.create(fileToOpen);
@@ -148,24 +154,15 @@ public class LoadExperimentHandler implements IHandler {
 
 				sessionBean.setMeasurements(measurements);
 
-				// Need to convert xls to biosaxs
-				String expXlsFile = fileToOpen.getAbsolutePath();
-				String xmlFilePath = expXlsFile.substring(0, expXlsFile.lastIndexOf("."));
-				String bioSAXSFilePath = xmlFilePath + ".biosaxs";
-
-				File bioSAXSfile = new File(bioSAXSFilePath);
-				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSfile);
-
-//				BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
-//				editor.getRichBeanEditorPart(bioSAXSFilePath, sessionBean);
-
-				new BSSCSessionBeanUIEditor(bioSAXSFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
-						sessionBean);
-
-				IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSfile.toURI());
+				// Need to convert file to .biosaxs and put in default location in workspace (<project>/data/xml
+				String spreadSheetFileName = selected.substring(selected.lastIndexOf("/")+1, selected.lastIndexOf("."));
+				IProject dataProject = DataProject.getDataProjectIfExists();
+				IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
+				IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile(spreadSheetFileName + ".biosaxs");
+				File nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, nativeFile);
+				IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(nativeFile.toURI());
 				IDE.openEditorOnFileStore(page, biosaxsFileStore);
-
-				bioSAXSfile.delete();
 			} catch (PartInitException e) {
 				logger.error("PartInitException opening editor", e);
 			} catch (InvalidFormatException e1) {
