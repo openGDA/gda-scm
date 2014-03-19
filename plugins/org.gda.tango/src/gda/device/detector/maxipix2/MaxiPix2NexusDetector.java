@@ -26,9 +26,11 @@ import gda.data.nexus.tree.NexusTreeNode;
 import gda.data.nexus.tree.NexusTreeProvider;
 import gda.device.DeviceException;
 import gda.device.TangoUtils;
+import gda.device.continuouscontroller.HardwareTriggerProvider;
 import gda.device.detector.DetectorBase;
 import gda.device.detector.NXDetectorData;
 import gda.device.detector.NexusDetector;
+import gda.device.detector.hardwaretriggerable.HardwareTriggerableDetector;
 import gda.device.lima.LimaBin;
 import gda.device.lima.LimaCCD;
 import gda.device.lima.LimaCCD.AcqMode;
@@ -53,7 +55,7 @@ import org.nexusformat.NexusFile;
  * each consisting of 10 frames each 0.1 s apart. There will be 20 scandatapoints. Timing between each point is
  * determined by GDA server.
  */
-public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector, PositionCallableProvider<NexusTreeProvider> {
+public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector, PositionCallableProvider<NexusTreeProvider>, HardwareTriggerableDetector {
 
 	MaxiPix2MultiFrameDetector maxiPix2MultiFrameDetector;
 
@@ -89,13 +91,6 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 	@Override
 	public void collectData() throws DeviceException {
 		maxiPix2MultiFrameDetector.collectData();
-		nexusMetaDataForLima = getNexusMetaDataForLima(maxiPix2MultiFrameDetector.getLimaCCD(), maxiPix2MultiFrameDetector.getMaxiPix2());
-		double collectionTimeCurrentAcq = getCollectionTime();
-		numberOfFramesCurrentAcq = getNumberOfFrames();
-		timesCurrentAcq = new double[numberOfFramesCurrentAcq];
-		for (int i = 0; i < timesCurrentAcq.length; i++) {
-			timesCurrentAcq[i] = i * collectionTimeCurrentAcq;
-		}
 		getPositionCalledForCurrentAcq = false;
 
 	}
@@ -160,7 +155,15 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 
 	@Override
 	public void atScanStart() throws DeviceException {
+		nexusMetaDataForLima = getNexusMetaDataForLima(maxiPix2MultiFrameDetector.getLimaCCD(), maxiPix2MultiFrameDetector.getMaxiPix2());
 		maxiPix2MultiFrameDetector.atScanStart();
+		double collectionTimeCurrentAcq = getCollectionTime();
+		numberOfFramesCurrentAcq = getNumberOfFrames();
+		timesCurrentAcq = new double[numberOfFramesCurrentAcq];
+		for (int i = 0; i < timesCurrentAcq.length; i++) {
+			timesCurrentAcq[i] = i * collectionTimeCurrentAcq;
+		}
+		
 	}
 
 	@Override
@@ -192,11 +195,17 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 
 	@Override
 	public Callable<NexusTreeProvider> getPositionCallable() throws DeviceException {
-		FilePathNumber[] filePathNumberArray = maxiPix2MultiFrameDetector.getFilePathNumberArray();
-		if (filePathNumberArray.length != numberOfFramesCurrentAcq)
-			throw new DeviceException("filePathNumberArray.length != numberOfFramesCurrentAcq");
+		FilePathNumber[] filePathNumberArray=null;
+		Callable<FilePathNumber> filePathNumberCallable=null;
+		if( !isHardwareTriggering()){
+			filePathNumberArray = maxiPix2MultiFrameDetector.getFilePathNumberArray();
+			if (filePathNumberArray.length != numberOfFramesCurrentAcq)
+				throw new DeviceException("filePathNumberArray.length != numberOfFramesCurrentAcq");
+		}else{
+			filePathNumberCallable = maxiPix2MultiFrameDetector.getFilePathNumberCallable();
+		}
 		NexusTreeProviderCallable nexusTreeProviderCallable = new NexusTreeProviderCallable(getName(),
-				nexusMetaDataForLima, filePathNumberArray, timesCurrentAcq, !getPositionCalledForCurrentAcq);
+				nexusMetaDataForLima, filePathNumberArray, filePathNumberCallable, timesCurrentAcq, !getPositionCalledForCurrentAcq);
 		getPositionCalledForCurrentAcq = true;
 		return nexusTreeProviderCallable;
 	}
@@ -230,15 +239,17 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 
 		final private String name;
 		final private INexusTree nexusMetaDataForLima1;
-		private final FilePathNumber[] filePathNumbers;
+		private FilePathNumber[] filePathNumbers;
 		private final double[] timesCurrentAcq2;
 		private final boolean firstCall;
+		private Callable<FilePathNumber> filePathNumberCallable;
 
 		public NexusTreeProviderCallable(String name, INexusTree nexusMetaDataForLima,
-				FilePathNumber[] filePathNumbers, double[] timesCurrentAcq, boolean firstCall) {
+				FilePathNumber[] filePathNumbers, Callable<FilePathNumber> filePathNumberCallable, double[] timesCurrentAcq, boolean firstCall) {
 			this.name = name;
 			this.nexusMetaDataForLima1 = nexusMetaDataForLima;
 			this.filePathNumbers = filePathNumbers;
+			this.filePathNumberCallable = filePathNumberCallable;
 			timesCurrentAcq2 = timesCurrentAcq;
 			this.firstCall = firstCall;
 		}
@@ -250,6 +261,9 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 			NXDetectorData data = new NXDetectorData(MaxiPix2NexusDetector.this);
 			int lastImageNumber = -1;
 			Vector<String> filenames = new Vector<String>();
+			if( filePathNumberCallable != null){
+				filePathNumbers = new FilePathNumber[]{filePathNumberCallable.call()};
+			}
 			for (FilePathNumber fPathNumber : filePathNumbers) {
 				filenames.add(fPathNumber.path);
 				lastImageNumber = fPathNumber.imageNumber;
@@ -285,4 +299,46 @@ public class MaxiPix2NexusDetector extends DetectorBase implements NexusDetector
 		}
 
 	}
+
+	@Override
+	public HardwareTriggerProvider getHardwareTriggerProvider() {
+		return maxiPix2MultiFrameDetector.getHardwareTriggerProvider();
+	}
+
+	@Override
+	public boolean integratesBetweenPoints() {
+		return maxiPix2MultiFrameDetector.integratesBetweenPoints();
+	}
+
+	@Override
+	public void setHardwareTriggering(boolean b) throws DeviceException {
+		maxiPix2MultiFrameDetector.setHardwareTriggering(b);
+	}
+
+	@Override
+	public boolean isHardwareTriggering() {
+		return maxiPix2MultiFrameDetector.isHardwareTriggering();
+	}
+
+	@Override
+	public void setNumberImagesToCollect(int numberImagesToCollect) {
+		maxiPix2MultiFrameDetector.setNumberImagesToCollect(numberImagesToCollect);
+	}
+
+	@Override
+	public void stop() throws DeviceException {
+		maxiPix2MultiFrameDetector.stop();
+	}
+
+	@Override
+	public void atScanEnd() throws DeviceException {
+		maxiPix2MultiFrameDetector.atScanEnd();
+	}
+
+	@Override
+	public void atCommandFailure() throws DeviceException {
+		maxiPix2MultiFrameDetector.atCommandFailure();
+	}
+	
+	
 }
