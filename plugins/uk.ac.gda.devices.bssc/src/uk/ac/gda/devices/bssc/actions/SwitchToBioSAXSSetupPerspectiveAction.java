@@ -30,9 +30,6 @@ public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 			IPerspectiveRegistry iPerspectiveRegistry = PlatformUI.getWorkbench().getPerspectiveRegistry();
 			iPerspectiveRegistry.setDefaultPerspective("uk.ac.gda.devices.bssc.biosaxssetupperspective");
 
-			// open sample template in setup perspective when perspective is opened first time from the welcome page
-			BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
-			editor.openDefaultEditor();
 		} catch (WorkbenchException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
