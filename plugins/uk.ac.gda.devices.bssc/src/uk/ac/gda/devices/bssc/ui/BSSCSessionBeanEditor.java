@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -166,54 +167,49 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 
 	public void openDefaultEditor() {
 		IProject dataProject = DataProject.getDataProjectIfExists();
-		IFile workspaceFile;
-
-		String bioSAXSFilePath;
 
 		if (dataProject != null) {
-			IFolder folder = dataProject.getFolder("data/xml");
-			bioSAXSFilePath = folder.getFullPath().toString() + "/default.biosaxs";
-			workspaceFile = folder.getFile("default.biosaxs");
-			if (!workspaceFile.exists()) {
-				bioSAXSFile = workspaceFile.getRawLocation().makeAbsolute().toFile();
-				bioSAXSFilePath = bioSAXSFile.getAbsolutePath();
-			} else {
-				bioSAXSFile = workspaceFile.getRawLocation().makeAbsolute().toFile();
+			String defaultFolderPath = dataProject.getFolder("data/xml").getFullPath().toString();
+			IFolder defaultFolder = dataProject.getFolder("data/xml");
+			IFile defaultWorkSpaceFile = defaultFolder.getFile("default.biosaxs");
+			String defaultFilePath = defaultWorkSpaceFile.getFullPath().toString();
+			File bioSAXSFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+
+			if (!defaultWorkSpaceFile.exists()) {
+				sessionBean = new BSSCSessionBean();
+				measurements = new ArrayList<TitrationBean>();
+
+				try {
+					TitrationBean tibi1 = new TitrationBean();
+					initialiseTitrationBean(tibi1, "Sample A1", "low", (short) 1, 'A', (short) 3, (short) 1, 'A',
+							(short) 1, 10, 560, 0.5, 120, (float) 22.0);
+					TitrationBean tibi2 = new TitrationBean();
+					initialiseTitrationBean(tibi2, "Sample B1", "medium", (short) 1, 'B', (short) 3, (short) 1, 'B',
+							(short) 1, 30, 78, 0.5, 120, (float) 22.0);
+					TitrationBean tibi3 = new TitrationBean();
+					initialiseTitrationBean(tibi3, "Sample C1", "medium", (short) 1, 'C', (short) 3, (short) 1, 'C',
+							(short) 1, 300, 340, 2.0, 30, (float) 22.0);
+					TitrationBean tibi4 = new TitrationBean();
+					initialiseTitrationBean(tibi4, "Sample C2", "medium", (short) 1, 'C', (short) 3, (short) 2, 'C',
+							(short) 1, 150, 340, 2.0, 30, (float) 22.0);
+					measurements.add(tibi1);
+					measurements.add(tibi2);
+					measurements.add(tibi3);
+					measurements.add(tibi4);
+				} catch (Exception e) {
+					logger.error("Exception ", e);
+				}
+
+				sessionBean.setMeasurements(measurements);
+				try {
+					XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSFile);
+				} catch (Exception e) {
+					logger.error("Exception writing bean to XML", e);
+				}
+
+				new BSSCSessionBeanUIEditor(defaultFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
+						sessionBean);
 			}
-
-			sessionBean = new BSSCSessionBean();
-			measurements = new ArrayList<TitrationBean>();
-
-			try {
-				TitrationBean tibi1 = new TitrationBean();
-				initialiseTitrationBean(tibi1, "Sample A1", "low", (short) 1, 'A', (short) 3, (short) 1, 'A',
-						(short) 1, 10, 560, 0.5, 120, (float) 22.0);
-				TitrationBean tibi2 = new TitrationBean();
-				initialiseTitrationBean(tibi2, "Sample B1", "medium", (short) 1, 'B', (short) 3, (short) 1, 'B',
-						(short) 1, 30, 78, 0.5, 120, (float) 22.0);
-				TitrationBean tibi3 = new TitrationBean();
-				initialiseTitrationBean(tibi3, "Sample C1", "medium", (short) 1, 'C', (short) 3, (short) 1, 'C',
-						(short) 1, 300, 340, 2.0, 30, (float) 22.0);
-				TitrationBean tibi4 = new TitrationBean();
-				initialiseTitrationBean(tibi4, "Sample C2", "medium", (short) 1, 'C', (short) 3, (short) 2, 'C',
-						(short) 1, 150, 340, 2.0, 30, (float) 22.0);
-				measurements.add(tibi1);
-				measurements.add(tibi2);
-				measurements.add(tibi3);
-				measurements.add(tibi4);
-			} catch (Exception e) {
-				logger.error("Exception ", e);
-			}
-
-			sessionBean.setMeasurements(measurements);
-			try {
-				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSFile);
-			} catch (Exception e) {
-				logger.error("Exception writing bean to XML", e);
-			}
-
-			new BSSCSessionBeanUIEditor(bioSAXSFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
-					sessionBean);
 
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSFile.toURI());
