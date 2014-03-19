@@ -25,7 +25,7 @@ def getLastFolderCreated(outputFolderName):
 	newestFolder = ""
 	for directory in directoryList:
 		newDirectory = os.path.join(outputFolderName, directory)
-		if os.path.isdir(newDirectory) and newDirectory.count("mostRecentEDNASasDirectory")==0:
+		if os.path.isdir(newDirectory) and newDirectory.count("mostRecentEDNASasDirectory")==0 and newDirectory.count("extractData") == 0:
 			newTime = os.stat(newDirectory).st_mtime
 			if newestTime < newTime:
 				newestTime = newTime
@@ -119,7 +119,7 @@ def createModels(outputFolderName,results):
 
 def storeAnalysis(client, filename, outputFolderName, detector, results):
 	import extractDataFromNexus
-	filenames = extractDataFromNexus.directCall(filename, outputFolderName + os.sep + "extractData", detector, True)
+	filenames = extractDataFromNexus.directCall(filename, outputFolderName + os.sep + "extractData_"+str(results["dataCollectionId"]), detector, True)
 	curvesFiles = ",".join(filenames)
 
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
