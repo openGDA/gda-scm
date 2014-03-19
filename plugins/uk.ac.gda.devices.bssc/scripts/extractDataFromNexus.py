@@ -14,11 +14,12 @@ def setupPathNames(fileIn, detectorName):
 	qPath = detectorPrefix+"_result/q"
 	qErrorsPath = qPath+"_errors"
 	backgroundPath = detectorPrefix+"_processing/BackgroundSubtraction/background"
+	backgroundErrorsPath = backgroundPath + "_errors"
 	normalizationPath = detectorPrefix+"_processing/Normalisation/data"
 	normalizationErrorsPath = detectorPrefix+"_processing/Normalisation/errors"
-	return (dataPath, dataErrorsPath), (qPath, qErrorsPath), (normalizationPath, normalizationErrorsPath), backgroundPath
+	return (dataPath, dataErrorsPath), (qPath, qErrorsPath), (normalizationPath, normalizationErrorsPath), (backgroundPath, backgroundErrorsPath)
 
-def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPath):
+def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPaths):
 	import h5py
 	f=h5py.File(fileIn)
 
@@ -30,8 +31,12 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 	else:
 		dataErrors = numpy.multiply(data, defaultErrorRatio)
 
+	backgroundPath = backgroundPaths[0]
+	backgroundErrorsPath = backgroundPaths[1]
 	if backgroundPath[1:] in f:
 		backgroundData = f[backgroundPath][0][0]
+	if backgroundErrorsPath[1:] in f:
+		backgroundErrors = numpy.multiply(backgroundData, defaultErrorRatio)
 
 	normalizationPath = normalizationPaths[0]
 	normalizationErrorsPath = normalizationPaths[1]
@@ -49,9 +54,9 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 		qErrors = f[qErrorsPath]
 	else:
 		qErrors = numpy.multiply(q, defaultErrorRatio)
-	return (data, dataErrors), (q, qErrors), (normalizationData, normalizationErrors), backgroundData
+	return (data, dataErrors), (q, qErrors), (normalizationData, normalizationErrors), (backgroundData, backgroundErrors)
 
-def writeOutData(outputDir, datas, qs, normalizations, backgroundData):
+def writeOutData(outputDir, datas, qs, normalizations, backgrounds):
 	curveFiles = []
 	data = datas[0]
 	dataErrors = datas[1]
@@ -67,8 +72,10 @@ def writeOutData(outputDir, datas, qs, normalizations, backgroundData):
 	numpy.savetxt(sampleAverageFilename,numpy.column_stack((q,data, dataErrors))) #TODO filename
 	curveFiles.append(sampleAverageFilename)
 
+	backgroundData = backgrounds[0]
+	backgroundErrors = backgrounds[1]
 	backgroundAverageFilename = outputDir + "background_averbuffer.dat"
-	numpy.savetxt(backgroundAverageFilename,numpy.column_stack((q,backgroundData))) #TODO filename
+	numpy.savetxt(backgroundAverageFilename,numpy.column_stack((q,backgroundData, backgroundErrors))) #TODO filename
 	curveFiles.append(backgroundAverageFilename)
 
 	normalizationData = normalizations[0]
@@ -80,9 +87,9 @@ def writeOutData(outputDir, datas, qs, normalizations, backgroundData):
 	return curveFiles
 
 def directCall(filename, outputFolderName, detector, returnFilenames):
-	(dataPaths, qPaths, normalizationPaths, backgroundPath) = setupPathNames(filename, detector)
-	(datas, qs, normalizations, backgroundData) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPath)
-	curveFiles = writeOutData(outputFolderName, datas, qs, normalizations, backgroundData)
+	(dataPaths, qPaths, normalizationPaths, backgroundPaths) = setupPathNames(filename, detector)
+	(datas, qs, normalizations, backgrounds) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPaths)
+	curveFiles = writeOutData(outputFolderName, datas, qs, normalizations, backgrounds)
 	if returnFilenames:
 		return curveFiles
 
