@@ -52,6 +52,7 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 	return (data, dataErrors), (q, qErrors), (normalizationData, normalizationErrors), backgroundData
 
 def writeOutData(outputDir, datas, qs, normalizations, backgroundData):
+	curveFiles = []
 	data = datas[0]
 	dataErrors = datas[1]
 	q = qs[0]
@@ -62,14 +63,28 @@ def writeOutData(outputDir, datas, qs, normalizations, backgroundData):
 	if not outputDir.endswith(os.sep):
 		outputDir += os.sep
 	#check that outputDir ends with file separator
-	numpy.savetxt(outputDir + "dataq.dat",numpy.column_stack((q,data, dataErrors))) #TODO filename
+	sampleAverageFilename = outputDir + "dataq_ave.dat"
+	numpy.savetxt(sampleAverageFilename,numpy.column_stack((q,data, dataErrors))) #TODO filename
+	curveFiles.append(sampleAverageFilename)
 
-	numpy.savetxt(outputDir + "background.dat",numpy.column_stack((q,backgroundData))) #TODO filename
+	backgroundAverageFilename = outputDir + "background_averbuffer.dat"
+	numpy.savetxt(backgroundAverageFilename,numpy.column_stack((q,backgroundData))) #TODO filename
+	curveFiles.append(backgroundAverageFilename)
 
 	normalizationData = normalizations[0]
 	normalizationErrors = normalizations[1]
 	for i in xrange(0,normalizationData.shape[0]):
-		numpy.savetxt(outputDir + "frame"+str(i).zfill(4)+".dat",numpy.column_stack((q,normalizationData[i], normalizationErrors[i])))
+		frameFilename = outputDir + "frame"+str(i).zfill(4)+".dat"
+		numpy.savetxt(frameFilename,numpy.column_stack((q,normalizationData[i], normalizationErrors[i])))
+		curveFiles.append(frameFilename)
+	return curveFiles
+
+def directCall(filename, outputFolderName, detector, returnFilenames):
+	(dataPaths, qPaths, normalizationPaths, backgroundPath) = setupPathNames(filename, detector)
+	(datas, qs, normalizations, backgroundData) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPath)
+	curveFiles = writeOutData(outputFolderName, datas, qs, normalizations, backgroundData)
+	if returnFilenames:
+		return curveFiles
 
 if __name__ == '__main__':
 
@@ -102,7 +117,4 @@ if __name__ == '__main__':
 		print "filename must be defined"
 		sys.exit(1)
 
-	(dataPaths, qPaths, normalizationPaths, backgroundPath) = setupPathNames(filename, detector)
-	(datas, qs, normalizations, backgroundData) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPath)
-	writeOutData(outputFolderName, datas, qs, normalizations, backgroundData)
-
+	directCall(filename, outputFolderName, detector, False)
