@@ -169,9 +169,8 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		IProject dataProject = DataProject.getDataProjectIfExists();
 
 		if (dataProject != null) {
-			String defaultFolderPath = dataProject.getFolder("data/xml").getFullPath().toString();
-			IFolder defaultFolder = dataProject.getFolder("data/xml");
-			IFile defaultWorkSpaceFile = defaultFolder.getFile("default.biosaxs");
+			IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
+			IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile("default.biosaxs");
 			String defaultFilePath = defaultWorkSpaceFile.getFullPath().toString();
 			File bioSAXSFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
 
@@ -206,9 +205,6 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 				} catch (Exception e) {
 					logger.error("Exception writing bean to XML", e);
 				}
-
-				new BSSCSessionBeanUIEditor(defaultFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
-						sessionBean);
 			}
 
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
