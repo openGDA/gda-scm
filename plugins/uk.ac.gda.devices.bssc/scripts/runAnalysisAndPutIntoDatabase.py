@@ -117,7 +117,11 @@ def createModels(outputFolderName,results):
 	damaverResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Damaverv0_1","damaver.pdb")
 	return modelList, dammifResultsModel, damaverResultsModel, damminResultsModel
 
-def storeAnalysis(client, results):
+def storeAnalysis(client, filename, outputFolderName, detector, results):
+	import extractDataFromNexus
+	filenames = extractDataFromNexus.directCall(filename, outputFolderName + os.sep + "extractData", detector, True)
+	curvesFiles = ",".join(filenames)
+
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
 	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
@@ -190,7 +194,7 @@ if __name__ == '__main__':
 		results, folder = parseResults(outputFolderName, dataCollectionId)
 		client = createWebService()
 		(model, dammifModel, damaverModel, damminModel) = createModels(folder, results)
-		storeAnalysis(client, results)
+		storeAnalysis(client, filename, outputFolderName, detector, results)
 		storeModels(client, model, dammifModel, damaverModel, damminModel, results)
 
 		os.chdir(originalDirectory)
