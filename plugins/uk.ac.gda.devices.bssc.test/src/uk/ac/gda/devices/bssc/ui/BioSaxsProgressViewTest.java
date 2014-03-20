@@ -70,7 +70,7 @@ public class BioSaxsProgressViewTest {
 			analysisStatusDetails.setStatus(ISpyBStatus.NOT_STARTED);
 			analysisStatusDetails.setProgress(0);
 
-			ISAXSProgress progress = new BioSAXSProgress(i, "Sample " + i,
+			ISAXSProgress progress = new BioSAXSProgress(i, i, "Sample " + i,
 					collectionStatusDetails, reductionStatusDetails,
 					analysisStatusDetails);;
 
@@ -133,7 +133,7 @@ public class BioSaxsProgressViewTest {
 		ISpyBStatusInfo analysisStatusInfo = new ISpyBStatusInfo();
 		collectionStatusInfo.setProgress(0);
 
-		ISAXSProgress newProgress = new BioSAXSProgress(
+		ISAXSProgress newProgress = new BioSAXSProgress(model.size() + 1, 
 				model.size() + 1, "New Sample "
 						+ model.size() + 1, collectionStatusInfo,
 				reductionStatusInfo, analysisStatusInfo);
