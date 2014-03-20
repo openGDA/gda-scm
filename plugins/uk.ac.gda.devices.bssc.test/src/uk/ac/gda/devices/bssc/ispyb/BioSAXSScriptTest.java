@@ -42,33 +42,33 @@ public class BioSAXSScriptTest {
 		// create 5 data collections
 		long dataCollectionId1 = bioSAXSISPyB.createSaxsDataCollection(
 				experimentId, (short) 1, (short) 1, (short) 1, "Test Sample 1",
-				(short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
+				5.0, 10.0, (short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0, 2.0,
+				5.0, 10.0, "viscosity");
 		dataCollectionCount++;
 
 		long dataCollectionId2 = bioSAXSISPyB.createSaxsDataCollection(
 				experimentId, (short) 1, (short) 1, (short) 2, "Test Sample 2",
-				(short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
+				6.0, 11.0, (short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0,
+				2.0, 5.0, 10.0, "viscosity");
 		dataCollectionCount++;
-		
+
 		long dataCollectionId3 = bioSAXSISPyB.createSaxsDataCollection(
 				experimentId, (short) 1, (short) 1, (short) 3, "Test Sample 3",
-				(short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
+				7.0, 12.0, (short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0,
+				2.0, 5.0, 10.0, "viscosity");
 		dataCollectionCount++;
 
 		long dataCollectionId4 = bioSAXSISPyB.createSaxsDataCollection(
 				experimentId, (short) 1, (short) 1, (short) 4, "Test Sample 4",
-				(short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0, 2.0, 5.0,
-				10.0, "viscosity");
+				8.0, 13.0, (short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0,
+				2.0, 5.0, 10.0, "viscosity");
 		dataCollectionCount++;
-		
+
 		long dataCollectionId5 = bioSAXSISPyB
 				.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
-						(short) 1, (short) 1, (short) 5, "Test Sample 5",
-						(short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
-						"viscosity", dataCollectionId4);
+						(short) 1, (short) 1, (short) 5, "Test Sample 5", 9.0,
+						14.0, (short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0,
+						2.0, 5.0, 10.0, "viscosity", dataCollectionId4);
 		dataCollectionCount++;
 		
 		//************Run data collection 1 **********************

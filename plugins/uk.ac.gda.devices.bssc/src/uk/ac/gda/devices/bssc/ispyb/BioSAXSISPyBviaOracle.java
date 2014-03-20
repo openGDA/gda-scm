@@ -1264,19 +1264,19 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	@Override
-	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName,
-			short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature, int numFrames,
-			double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
-		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, bufferPlate,
-				bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume, energyInkeV,
-				viscosity, INVALID_VALUE);
+	public long createSaxsDataCollection(long experimentID, short plate, short row, short column, String sampleName, 
+			double sampleConcentrationMgMl, double molecularMassKda,short bufferPlate, short bufferRow, short bufferColumn,
+			float exposureTemperature, int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity) throws SQLException {
+		return createSaxsDataCollectionUsingPreviousBuffer(experimentID, plate, row, column, sampleName, sampleConcentrationMgMl,
+				molecularMassKda, bufferPlate, bufferRow, bufferColumn, exposureTemperature, numFrames, timePerFrame, flow, volume,
+				energyInkeV, viscosity, INVALID_VALUE);
 	}
 
 	@Override
 	public long createSaxsDataCollectionUsingPreviousBuffer(long experimentID, short plate, short row, short column,
-			String sampleName, short bufferPlate, short bufferRow, short bufferColumn, float exposureTemperature,
-			int numFrames, double timePerFrame, double flow, double volume, double energyInkeV, String viscosity,
-			long previousDataCollectionId) throws SQLException {
+			String sampleName, double sampleConcentrationMgMl, double molecularMassKda, short bufferPlate, short bufferRow,
+			short bufferColumn, float exposureTemperature, int numFrames, double timePerFrame, double flow, double volume,
+			double energyInkeV, String viscosity, long previousDataCollectionId) throws SQLException {
 		long bufferBeforeMeasurementId;
 		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
 		if (previousDataCollectionId == INVALID_VALUE) {

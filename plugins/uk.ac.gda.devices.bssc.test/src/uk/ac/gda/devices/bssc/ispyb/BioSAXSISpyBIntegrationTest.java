@@ -356,7 +356,7 @@ public class BioSAXSISpyBIntegrationTest {
 					// long dataCollectionId =
 					long newDataCollectionId = bioSAXSISPyB
 							.createSaxsDataCollection(experimentId, (short) 0,
-									(short) 1, (short) 1, "Sample1", (short) 0,
+									(short) 1, (short) 1, "Sample1", 5.0, 10., (short) 0,
 									(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0,
 									5.0, 10.0, "viscosity");
 				} catch (SQLException e1) {
