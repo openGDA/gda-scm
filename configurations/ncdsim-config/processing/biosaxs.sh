@@ -120,7 +120,7 @@ $ISPYBUPDATE analysis $DATACOLLID STARTED \"\"
 #module load edna/sas-local  ## we are on the cluster
 module load python/2.7
 mkdir $ANALYSISOUTPUT
-$ISPYBUPDATE analysis $DATACOLLID STARTED ""
+$ISPYBUPDATE analysis $DATACOLLID STARTED \"\"
 python $EDNAPYSCRIPT --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
 $ISPYBUPDATE analysis $DATACOLLID COMPLETE $ANALYSISOUTPUT
 
