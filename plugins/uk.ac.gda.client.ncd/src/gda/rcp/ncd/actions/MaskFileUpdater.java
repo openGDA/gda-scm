@@ -18,13 +18,11 @@
 
 package gda.rcp.ncd.actions;
 
-import gda.data.PathConstructor;
-import gda.data.metadata.GDAMetadataProvider;
+import gda.configuration.properties.LocalProperties;
 import gda.factory.Finder;
 
-import java.text.SimpleDateFormat;
+import java.io.File;
 import java.util.Collection;
-import java.util.Date;
 
 import org.dawb.common.services.IPersistenceService;
 import org.dawb.common.services.IPersistentFile;
@@ -37,16 +35,20 @@ import org.dawnsci.plotting.api.trace.ITrace;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.diamond.scisoft.analysis.dataset.IDataset;
 import uk.ac.diamond.scisoft.analysis.io.IDiffractionMetadata;
 import uk.ac.diamond.scisoft.analysis.io.IMetaData;
 import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
 
 public class MaskFileUpdater extends AbstractHandler {
-	private static Logger logger = LoggerFactory.getLogger(MaskFileUpdater.class);
+	private static final Logger logger = LoggerFactory.getLogger(MaskFileUpdater.class);
 	private StoredDetectorInfo fileLocation;
 	private IPersistentFile file;
 	
@@ -55,35 +57,41 @@ public class MaskFileUpdater extends AbstractHandler {
 	}
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		logger.debug("metadata: {}, {}", GDAMetadataProvider.getInstance(), GDAMetadataProvider.getInstance().getName());
-		String newFile = PathConstructor.createFromDefaultProperty() + "/" + newFileName();
-		saveMaskFile(newFile);
-		fileLocation.setSaxsDetectorInfoPath(newFile);
-		return true;
-	}
-	
-	private void saveMaskFile(String newFile) {
+		String newFile = LocalProperties.getVarDir() + "temporaryMaskFileForMaskFileUpdater.hdf5";
 		try {
-			logger.debug("Saving mask file to {}", newFile);
-			createMaskFile(newFile);
-			addMaskToFile();
-			addRegionsToFile();
-			addDiffractionMetadataToFile();
+			saveMaskFile(newFile);
+			if (fileLocation.setSaxsDetectorInfoPath(newFile)) {
+				MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_INFORMATION | SWT.OK);
+				dialog.setText("Mask and Profiles Saved");
+				dialog.setMessage("The mask and any profiles selected have been saved to " + fileLocation.getSaxsDetectorInfoPath());
+				dialog.open();
+			} else {
+				throw new Exception("File not created successfully");
+			}
 		} catch (Exception e) {
 			logger.error("Could not save mask file", e);
+			MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_ERROR| SWT.OK);
+			dialog.setText("Error saving file");
+			dialog.setMessage("The mask/profile file could not be saved (existing file will continue to be used). If problem continues please contact support");
+			dialog.open();
 		} finally {
 			if (file != null) {
 				file.close();
 			}
+			File newF = new File(newFile);
+			if (newF.exists()) {
+				newF.delete();
+			}
 		}
-		
+		return true;
 	}
-
-	private static String newFileName() {
-		Date now = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
-		String timeStamp = sdf.format(now);
-		return String.format("detectorMask-%s.h5", timeStamp);
+	
+	private void saveMaskFile(String newFile) throws Exception {
+		logger.debug("Saving mask file to {}", newFile);
+		createMaskFile(newFile);
+		addMaskToFile();
+		addRegionsToFile();
+		addDiffractionMetadataToFile();
 	}
 	
 	private void createMaskFile(String newFile) throws Exception {
@@ -93,7 +101,12 @@ public class MaskFileUpdater extends AbstractHandler {
 	
 	private void addMaskToFile() throws Exception {
 		IImageTrace image = getImage();
-		file.addMask("mask", image.getMask(), null);
+		IDataset mask = image.getMask();
+		if (mask != null) {
+			file.addMask("mask", image.getMask(), null);
+		} else {
+			logger.debug("No mask to save");
+		}
 	}
 
 	private IImageTrace getImage() throws Exception {
@@ -112,6 +125,8 @@ public class MaskFileUpdater extends AbstractHandler {
 			for (IRegion iRegion : regions) {
 				addRegionToFile(iRegion);
 			}
+		} else {
+			logger.debug("No regions to add to file");
 		}
 	}
 	
@@ -122,6 +137,8 @@ public class MaskFileUpdater extends AbstractHandler {
 			if (meta == null || meta instanceof IDiffractionMetadata) {
 				file.setDiffractionMetadata((IDiffractionMetadata) meta);
 			}
+		} else {
+			logger.debug("No diffractionMetadata to save to file");
 		}
 	}
 	
