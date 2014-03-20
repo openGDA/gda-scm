@@ -26,13 +26,16 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -58,9 +61,10 @@ import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
-
+	private long lastExperimentId;
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
+	private Color lastBackground;
 
 	public BioSAXSProgressComposite(Composite parent, final IObservableList input, int style) {
 		super(parent, style);
@@ -71,8 +75,9 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		bioSaxsTable = bioSaxsProgressViewer.getTable();
 
 		bioSaxsTable.setHeaderVisible(true);
-		bioSaxsTable.setLinesVisible(true);
-
+		bioSaxsTable.setLinesVisible(false);
+		lastBackground = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+		
 		final TableViewerColumn viewerColumn1 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
 		TableColumn column1 = viewerColumn1.getColumn();
 		column1.setWidth(120);
@@ -189,13 +194,35 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		final IObservableMap sampleName = BeanProperties.value(ISAXSProgress.class, ISAXSProgress.SAMPLE_NAME)
 				.observeDetail(knownElements);
 
-		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName));
+		viewerColumn1.setLabelProvider(new ObservableMapColumnLabelProvider(sampleName) {
+			org.eclipse.swt.graphics.Color white = null;
+			org.eclipse.swt.graphics.Color grey = null;
+
+			@Override
+			public void update(ViewerCell cell) {
+				white = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+				grey = Display.getDefault().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
+
+				super.update(cell);
+				ISAXSProgress progress = (ISAXSProgress) cell.getElement();
+				long experimentId = progress.getExperimentId();
+				if (lastExperimentId != experimentId) {
+					lastExperimentId = experimentId;
+					lastBackground = lastBackground.equals(grey) ? white : grey;
+					cell.setBackground(lastBackground);
+				}
+				else
+				{
+					cell.setBackground(lastBackground);
+				}
+			}
+		});
 
 		final IObservableMap collectionProgressValues = BeanProperties.value(ISAXSProgress.class,
 				ISAXSProgress.COLLECTION_STATUS_INFO).observeDetail(knownElements);
 
 		viewerColumn2.setLabelProvider(new ObservableMapOwnerDrawProvider(collectionProgressValues) {
-			org.eclipse.swt.graphics.Color original = null;
+			org.eclipse.swt.graphics.Color white = null;
 			org.eclipse.swt.graphics.Color green = null;
 			org.eclipse.swt.graphics.Color red = null;
 
@@ -206,8 +233,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 			@Override
 			protected void erase(Event event, Object element) {
-				if (original != null) {
-					event.gc.setBackground(original);
+				if (white != null) {
+					event.gc.setBackground(white);
 					event.gc.fillRectangle(event.getBounds());
 				}
 				super.erase(event, element);
@@ -215,7 +242,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 			@Override
 			protected void paint(Event event, Object element) {
-				original = event.display.getSystemColor(SWT.COLOR_WHITE);
+				white = event.display.getSystemColor(SWT.COLOR_WHITE);
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 
@@ -243,7 +270,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				ISAXSProgress.REDUCTION_STATUS_INFO).observeDetail(knownElements);
 
 		viewerColumn3.setLabelProvider(new ObservableMapOwnerDrawProvider(reductionProgressValues) {
-			org.eclipse.swt.graphics.Color original = null;
+			org.eclipse.swt.graphics.Color white = null;
 			org.eclipse.swt.graphics.Color green = null;
 			org.eclipse.swt.graphics.Color red = null;
 			org.eclipse.swt.graphics.Color yellow = null;
@@ -255,8 +282,8 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 			@Override
 			protected void erase(Event event, Object element) {
-				if (original != null) {
-					event.gc.setBackground(original);
+				if (white != null) {
+					event.gc.setBackground(white);
 					event.gc.fillRectangle(event.getBounds());
 				}
 				super.erase(event, element);
@@ -264,7 +291,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 			@Override
 			protected void paint(Event event, Object element) {
-				original = event.display.getSystemColor(SWT.COLOR_WHITE);
+				white = event.display.getSystemColor(SWT.COLOR_WHITE);
 				green = event.display.getSystemColor(SWT.COLOR_GREEN);
 				red = event.display.getSystemColor(SWT.COLOR_RED);
 				yellow = event.display.getSystemColor(SWT.COLOR_YELLOW);
