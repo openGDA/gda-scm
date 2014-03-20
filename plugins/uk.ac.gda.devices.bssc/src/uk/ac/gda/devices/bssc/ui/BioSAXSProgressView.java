@@ -151,10 +151,12 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 	public void reveal() {
 		TableViewer bioSAXSTableViewer = (TableViewer) bioSAXSComposite.getViewer();
 
-		if (bioSAXSTableViewer.getControl().isVisible()) {
-			if (!scrollLockAction.isChecked()) {
-				if (!model.isEmpty()) {
-					bioSAXSTableViewer.reveal(model.get(model.size() - 1));
+		if (!bioSAXSTableViewer.getControl().isDisposed()) {
+			if (bioSAXSTableViewer.getControl().isVisible()) {
+				if (!scrollLockAction.isChecked()) {
+					if (!model.isEmpty()) {
+						bioSAXSTableViewer.reveal(model.get(model.size() - 1));
+					}
 				}
 			}
 		}
