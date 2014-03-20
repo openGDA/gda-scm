@@ -240,12 +240,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	}
 
 	private long createSpecimen(long blsessionId, long experimentId, Long bufferId, Long macromoleculeId,
-			Long samplePlatePositionId, Long stockSolutionId, Double volume) throws SQLException {
+			double sampleConcentrationMgMl, Long samplePlatePositionId, Long stockSolutionId, Double volume) throws SQLException {
 		long specimenId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Specimen ("
-				+ "specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, volume, code) "
-				+ "VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?, ' ') RETURNING specimenId INTO ?; END;";
+				+ "specimenId, experimentId, blsessionId, bufferId, macromoleculeId, samplePlatePositionId, stockSolutionId, volume, code, concentration) "
+				+ "VALUES (ispyb4a_db.s_Specimen.nextval, ?, ?, ?, ?, ?, ?, ?, ' ', ?) RETURNING specimenId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		stmt.setLong(1, experimentId);
 
@@ -276,9 +276,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		else
 			stmt.setDouble(7, volume);
 
-		stmt.registerOutParameter(8, java.sql.Types.VARCHAR);
+		stmt.setDouble(8, sampleConcentrationMgMl);
+
+		stmt.registerOutParameter(9, java.sql.Types.VARCHAR);
 		stmt.execute();
-		specimenId = stmt.getLong(8);
+		specimenId = stmt.getLong(9);
 		stmt.close();
 		return specimenId;
 	}
@@ -395,18 +397,19 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return success1;
 	}
 
-	protected long createMacromolecule(long proposalId, String name, String acronym) throws SQLException {
+	protected long createMacromolecule(long proposalId, String name, String acronym, double molecularMassKda) throws SQLException {
 		long macromoleculeId = -1;
 		connectIfNotConnected();
 
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Macromolecule ("
-				+ "macromoleculeId, proposalId, name, acronym) "
-				+ "VALUES (ispyb4a_db.s_Macromolecule.nextval, ?, ?, ?) RETURNING macromoleculeId INTO ?; END;";
+				+ "macromoleculeId, proposalId, name, acronym, molecularMass) "
+				+ "VALUES (ispyb4a_db.s_Macromolecule.nextval, ?, ?, ?, ?) RETURNING macromoleculeId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setLong(index++, proposalId);
 		stmt.setString(index++, name);
 		stmt.setString(index++, acronym);
+		stmt.setString(index++, Double.toString(molecularMassKda));
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
 		stmt.execute();
@@ -1225,7 +1228,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	 * @throws SQLException
 	 */
 	private long createMeasurementAndAssociatedItems(long blsessionId, long experimentId, short plate, short row,
-			short column, String sampleName, float exposureTemperature, double flow, double volume, String viscosity)
+			short column, String sampleName, double sampleConcentrationMgMl, double molecularMassKda, float exposureTemperature, double flow, double volume, String viscosity)
 			throws SQLException {
 		Long macromoleculeId = null;
 
@@ -1237,9 +1240,10 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			bufferId = createBuffer(blsessionId, bufferName, bufferAcronym, bufferComposition);
 		}
 
-		if (sampleName != null && sampleName.isEmpty() == false) { // if this is a sample, name and concentration are
+		boolean isSample = sampleName != null && sampleName.isEmpty() == false; //sample has a defined, non-null name, buffer does not
+		if (isSample) { // if this is a sample, name and concentration are
 																	// defined
-			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName);
+			macromoleculeId = createMacromolecule(getProposalFromSession(blsessionId), sampleName, sampleName, molecularMassKda);
 		}
 
 		long samplePlateId = getSamplePlate(blsessionId, experimentId, plate);
@@ -1256,8 +1260,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 		long sampleId = getSpecimen(blsessionId, experimentId, bufferId, samplePlatePositionId, volume);
 		if (sampleId == INVALID_VALUE) {
-			sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, samplePlatePositionId,
-					null, volume);
+			double concentrationToUse = 0; //for buffer, we want 0 concentration
+			if (isSample) {
+				concentrationToUse = sampleConcentrationMgMl; //for sample, we want to use the declared concentration
+			}
+			sampleId = createSpecimen(blsessionId, experimentId, bufferId, macromoleculeId, concentrationToUse,
+					samplePlatePositionId, null, volume);
 		}
 		long measurementId = createMeasurement(sampleId, exposureTemperature, flow, viscosity);
 		return measurementId;
@@ -1281,14 +1289,16 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long saxsDataCollectionId = createSaxsDataCollection(blsessionId, experimentID);
 		if (previousDataCollectionId == INVALID_VALUE) {
 			bufferBeforeMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate,
-					bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
+					bufferRow, bufferColumn, null, sampleConcentrationMgMl, molecularMassKda, exposureTemperature,
+					flow, volume, viscosity);
 		} else {
 			bufferBeforeMeasurementId = retrievePreviousMeasurement(previousDataCollectionId, BUFFER_AFTER_MEASUREMENT);
 		}
-		long sampleMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, plate,
-				row, column, sampleName, exposureTemperature, flow, volume, viscosity);
+		long sampleMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, plate, row, column,
+				sampleName, sampleConcentrationMgMl, molecularMassKda, exposureTemperature, flow, volume, viscosity);
 		long bufferAfterMeasurementId = createMeasurementAndAssociatedItems(blsessionId, experimentID, bufferPlate,
-				bufferRow, bufferColumn, null, exposureTemperature, flow, volume, viscosity);
+				bufferRow, bufferColumn, null, sampleConcentrationMgMl, molecularMassKda, exposureTemperature, flow,
+				volume, viscosity);
 		// now we must relate the Measurements to the SaxsDataCollection
 		createMeasurementToDataCollection(saxsDataCollectionId, bufferBeforeMeasurementId);
 		createMeasurementToDataCollection(saxsDataCollectionId, sampleMeasurementId);
