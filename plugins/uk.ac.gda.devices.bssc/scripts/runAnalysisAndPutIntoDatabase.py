@@ -25,7 +25,7 @@ def getLastFolderCreated(outputFolderName):
 	newestFolder = ""
 	for directory in directoryList:
 		newDirectory = os.path.join(outputFolderName, directory)
-		if os.path.isdir(newDirectory) and newDirectory.count("mostRecentEDNASasDirectory")==0:
+		if os.path.isdir(newDirectory) and newDirectory.count("mostRecentEDNASasDirectory")==0 and newDirectory.count("extractData") == 0:
 			newTime = os.stat(newDirectory).st_mtime
 			if newestTime < newTime:
 				newestTime = newTime
@@ -117,13 +117,22 @@ def createModels(outputFolderName,results):
 	damaverResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Damaverv0_1","damaver.pdb")
 	return modelList, dammifResultsModel, damaverResultsModel, damminResultsModel
 
-def storeAnalysis(client, results):
-	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 0, "", "", "", "", None)
+def storeAnalysis(client, filename, backgroundFilename, outputFolderName, detector, results):
+	import extractDataFromNexus
+	filenames = extractDataFromNexus.directCall(filename, outputFolderName + os.sep + "extractData_"+str(results["dataCollectionId"]), detector, True)
+	curvesFiles = ",".join(filenames)
+	numFiles = len(filenames) #TODO assuming all files are merged
+
+	if backgroundFilename != None:
+		backgroundFilenames = extractDataFromNexus.directCall(backgroundFilename, outputFolderName + os.sep + "extractData_" + str(results["dataCollectionId"]), detector, True)
+		backgroundCurveFiles = ",".join(backgroundFilenames)
+		numBackgroundFiles = len(backgroundFilenames)
+		client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, numBackgroundFiles, numBackgroundFiles, backgroundCurveFiles, 0, "", "", "", "", None)
 	#client.service.storeDataAnalysisResultByMeasurementId(None, None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, 0, 0, "", 1, "", "", "", "", None)
 	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
 		None, None, None, None, 0, 0,
 		None, results["isagregated"], "", 0, results["gnomFile"], None, float(results["rgGnom"])/10, float(results["dmax"])/10, results["total"],
-		results["volume"], 0, 0, "", 2, "", "", "", "", results["densityPlot"])
+		results["volume"], numFiles, numFiles, curvesFiles, 2, "", "", "", "", results["densityPlot"])
 
 def storeModels(client, model, dammifModel, damaverModel, damminModel, results):
 	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damaverModel),
@@ -137,6 +146,7 @@ if __name__ == '__main__':
 	import argparse
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--filename", type=str, help="input filename after data reduction")
+	parser.add_argument("--backgroundFilename", type=str, help="input filename of background after data reduction")
 	parser.add_argument("--outputFolderName", type=str, help="output folder location")
 	parser.add_argument("--detector", type=str, help="detector name")
 	parser.add_argument("--dataCollectionId", type=int, help="dataCollectionId")
@@ -150,6 +160,10 @@ if __name__ == '__main__':
 	else:
 		print "filename must be defined"
 		sys.exit(1)
+	if args.backgroundFilename:
+		backgroundFilename = args.backgroundFilename
+	else:
+		backgroundFilename = None
 	if args.outputFolderName:
 		outputFolderName = args.outputFolderName
 	else:
@@ -190,7 +204,7 @@ if __name__ == '__main__':
 		results, folder = parseResults(outputFolderName, dataCollectionId)
 		client = createWebService()
 		(model, dammifModel, damaverModel, damminModel) = createModels(folder, results)
-		storeAnalysis(client, results)
+		storeAnalysis(client, filename, backgroundFilename, outputFolderName, detector, results)
 		storeModels(client, model, dammifModel, damaverModel, damminModel, results)
 
 		os.chdir(originalDirectory)

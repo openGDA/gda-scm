@@ -34,7 +34,7 @@ public class BioSAXSISPyBTest {
 
 		ISpyBStatusInfo collectionStatus;
 		long collection1 = bioSAXSISPyB.createSaxsDataCollection(experimentId,
-				(short) 0, (short) 1, (short) 1, "Sample1", (short) 0,
+				(short) 0, (short) 1, (short) 1, "Sample1", 5.0, 10.0, (short) 0,
 				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
 				"viscosity");
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection1);
@@ -74,15 +74,12 @@ public class BioSAXSISPyBTest {
 		// previous data collection
 		long collection2 = bioSAXSISPyB
 				.createSaxsDataCollectionUsingPreviousBuffer(experimentId,
-						(short) 0, (short) 1, (short) 1, "Sample2", (short) 0,
-						(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
-						"viscosity", collection1); // or could replace this last
-													// argument with
-													// bufferAfter1 - use the
-													// measurementId explicitly
-													// instead of searching
-													// through the data
-													// collection
+						(short) 0, (short) 1, (short) 1, "Sample2", 6.0, 11.0,
+						(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0,
+						5.0, 10.0, "viscosity", collection1); // or could replace 
+							// this last argument with bufferAfter1 - use the
+							// measurementId explicitly instead of searching
+							// through the data collection
 
 		collectionStatus = bioSAXSISPyB.getDataCollectionStatus(collection2);
 		assertEquals(collectionStatus.getProgress(), 33);
@@ -112,9 +109,9 @@ public class BioSAXSISPyBTest {
 		// create a data collection gets updated with a FAILED status if any of
 		// the measurements for that data collection fail
 		long collection3 = bioSAXSISPyB.createSaxsDataCollection(experimentId,
-				(short) 0, (short) 1, (short) 1, "Sample3", (short) 0,
-				(short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0, 10.0,
-				"viscosity");
+				(short) 0, (short) 1, (short) 1, "Sample3", 7.0, 12.0, 
+				(short) 0, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0, 5.0,
+				10.0, "viscosity");
 
 		assertEquals(bioSAXSISPyB.getDataCollectionStatus(collection3).getStatus(),
 				ISpyBStatus.NOT_STARTED);

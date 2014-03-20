@@ -118,10 +118,10 @@ $ISPYBUPDATE analysis $DATACOLLID STARTED \"\"
 ## update ispyb
 
 #module load edna/sas-local  ## we are on the cluster
-module load python/2.7
+module load numpy/1.6.1
 mkdir $ANALYSISOUTPUT
 $ISPYBUPDATE analysis $DATACOLLID STARTED \"\"
-python $EDNAPYSCRIPT --filename \$REDUCEDFILE -- detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
+python $EDNAPYSCRIPT --filename \$REDUCEDFILE --backgroundFilename \$BACKGROUNDFILE --detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
 $ISPYBUPDATE analysis $DATACOLLID COMPLETE $ANALYSISOUTPUT
 
 EOF
