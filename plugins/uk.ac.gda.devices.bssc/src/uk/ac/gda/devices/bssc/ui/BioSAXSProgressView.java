@@ -154,8 +154,9 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 		if (!bioSAXSTableViewer.getControl().isDisposed()) {
 			if (bioSAXSTableViewer.getControl().isVisible()) {
 				if (!scrollLockAction.isChecked()) {
+					int lastItemIndex = model.size() - 1;
 					if (!model.isEmpty()) {
-						bioSAXSTableViewer.reveal(model.get(model.size() - 1));
+						bioSAXSTableViewer.getTable().setTopIndex(lastItemIndex);
 					}
 				}
 			}

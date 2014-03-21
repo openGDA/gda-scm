@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -65,6 +66,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
 	private Color lastBackground;
+	private BioSAXSViewerComparator comparator;
 
 	public BioSAXSProgressComposite(Composite parent, final IObservableList input, int style) {
 		super(parent, style);
@@ -77,7 +79,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		bioSaxsTable.setHeaderVisible(true);
 		bioSaxsTable.setLinesVisible(false);
 		lastBackground = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
-		
+
 		final TableViewerColumn viewerColumn1 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
 		TableColumn column1 = viewerColumn1.getColumn();
 		column1.setWidth(120);
@@ -104,7 +106,10 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		bioSaxsProgressViewer.setContentProvider(contentProvider);
-
+		
+		comparator = new BioSAXSViewerComparator();
+		bioSaxsProgressViewer.setComparator(comparator);
+		
 		// Create the label provider including monitoring of the changes of the
 		// labels
 		IObservableSet knownElements = contentProvider.getKnownElements();
@@ -210,9 +215,7 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					lastExperimentId = experimentId;
 					lastBackground = lastBackground.equals(grey) ? white : grey;
 					cell.setBackground(lastBackground);
-				}
-				else
-				{
+				} else {
 					cell.setBackground(lastBackground);
 				}
 			}
@@ -389,4 +392,17 @@ public class BioSAXSProgressComposite extends FieldComposite {
 	public void setValue(Object value) {
 
 	}
+}
+
+class BioSAXSViewerComparator extends ViewerComparator {
+	@Override
+	public int compare(Viewer viewer, Object e1, Object e2) {
+		ISAXSProgress p1 = (ISAXSProgress) e1;
+		ISAXSProgress p2 = (ISAXSProgress) e2;
+
+		if (p1.getDataCollectionId() > p2.getDataCollectionId())
+			return 1;
+		return 0;
+	}
+
 }
