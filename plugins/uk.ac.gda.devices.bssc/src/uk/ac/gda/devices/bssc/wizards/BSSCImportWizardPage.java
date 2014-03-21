@@ -171,12 +171,8 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 
 			String xmlFilePath = newFileName.substring(0, newFileName.lastIndexOf("."));
 			String bioSAXSFilePath = xmlFilePath + ".biosaxs";
-
 			File bioSAXSfile = new File(bioSAXSFilePath);
 			XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSfile);
-			new BSSCSessionBeanUIEditor(bioSAXSFilePath, BSSCSessionBean.mappingURL, new BSSCSessionBeanEditor(),
-					sessionBean);
-
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSfile.toURI());
 			IDE.openEditorOnFileStore(page, biosaxsFileStore);
