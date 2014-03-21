@@ -33,6 +33,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -110,7 +111,10 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		dialog.setText("Save as BIOSAXS Experiment");
 		dialog.setFilterExtensions(new String[] { "*.biosaxs", "*.xml" });
 		final File currentFile = new File(this.path);
-		dialog.setFilterPath(currentFile.getParentFile().getAbsolutePath());
+		IProject dataProject = DataProject.getDataProjectIfExists();
+		IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
+		IPath defaultPath = defaultWorkspaceFolder.getRawLocation().makeAbsolute();
+		dialog.setFilterPath(defaultPath.toString());
 
 		String newFile = dialog.open();
 		if (newFile != null) {
