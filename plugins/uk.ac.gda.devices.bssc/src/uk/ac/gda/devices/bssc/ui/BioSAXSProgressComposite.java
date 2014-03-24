@@ -22,6 +22,7 @@ import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -37,7 +38,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -63,11 +63,14 @@ import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
-	private static final Color white = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
-	private static final Color green = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
-	private static final Color red = Display.getDefault().getSystemColor(SWT.COLOR_RED);
-	private static final Color listBackGround = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
-	private static final Color lightGrey = Display.getDefault().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
+
+	private static final Color white = ColorConstants.white;
+	private static final Color green = ColorConstants.green;
+	private static final Color lightgreen = new Color(null, 170, 255, 170);
+	private static final Color red = ColorConstants.red;
+	private static final Color listBackGround = white;
+	private static final Color lightGrey = ColorConstants.lightGray;
+	
 	private long lastExperimentId;
 	private TableViewer bioSaxsProgressViewer;
 	private Table bioSaxsTable;
@@ -78,13 +81,13 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		super(parent, style);
 
 		setLayout(new FillLayout());
-
+		
 		bioSaxsProgressViewer = new TableViewer(this, SWT.NONE);
 		bioSaxsTable = bioSaxsProgressViewer.getTable();
 
 		bioSaxsTable.setHeaderVisible(true);
 		bioSaxsTable.setLinesVisible(false);
-		lastBackground = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+		lastBackground = white;
 
 		final TableViewerColumn viewerColumn1 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
 		TableColumn column1 = viewerColumn1.getColumn();
@@ -255,13 +258,12 @@ public class BioSAXSProgressComposite extends FieldComposite {
 					event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
 					gc.fillRectangle(event.getBounds());
 				} else if (status == ISpyBStatus.RUNNING) {
-					gc.setForeground(green);
-					gc.setBackground(listBackGround);
-					int gradientWidth = (int) ((columnWidth * 0.01) * 100);
-					gc.fillGradientRectangle(event.x, event.y, gradientWidth, event.height, true);
+					gc.setBackground(lightgreen);
+					int width = (int) ((columnWidth * 0.01) * 100);
+					gc.fillRectangle(event.x, event.y, width, event.height);
 
 					if (percentage > 0) {
-						int width = (int) ((columnWidth * 0.01) * percentage);
+						width = (int) ((columnWidth * 0.01) * percentage);
 						gc.setBackground(green);
 						event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
 						gc.fillRectangle(event.getBounds());
