@@ -57,6 +57,7 @@ import uk.ac.gda.common.rcp.jface.viewers.ObservableMapColumnLabelProvider;
 import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
+import uk.ac.gda.devices.bssc.ispyb.ISpyBStatusInfo;
 import uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView;
 import uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView;
 import uk.ac.gda.richbeans.components.FieldComposite;
@@ -235,50 +236,15 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 			@Override
 			protected void erase(Event event, Object element) {
-				if (white != null) {
-					event.gc.setBackground(white);
-					event.gc.fillRectangle(event.getBounds());
-				}
+				eraseTableCell(event);
 				super.erase(event, element);
 			}
 
 			@Override
 			protected void paint(Event event, Object element) {
-				GC gc = event.gc;
-
 				ISAXSProgress progress = (ISAXSProgress) element;
-				ISpyBStatus status = progress.getCollectionStatusInfo().getStatus();
-				double progressValue = progress.getCollectionStatusInfo().getProgress();
-				int percentage = ((Double) progressValue).intValue();
-				int columnWidth = viewerColumn2.getColumn().getWidth();
-
-				if (status == ISpyBStatus.NOT_STARTED) {
-					gc.setBackground(listBackGround);
-					int width = (int) ((columnWidth * 0.01) * 100);
-					event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
-					gc.fillRectangle(event.getBounds());
-				} else if (status == ISpyBStatus.RUNNING) {
-					gc.setBackground(lightgreen);
-					int width = (int) ((columnWidth * 0.01) * 100);
-					gc.fillRectangle(event.x, event.y, width, event.height);
-
-					if (percentage > 0) {
-						width = (int) ((columnWidth * 0.01) * percentage);
-						gc.setBackground(green);
-						event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
-						gc.fillRectangle(event.getBounds());
-					}
-				} else if (status == ISpyBStatus.COMPLETE) {
-					gc.setBackground(green);
-					int width = (int) ((columnWidth * 0.01) * 100);
-					event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
-					gc.fillRectangle(event.getBounds());
-				} else if (status == ISpyBStatus.FAILED) {
-					gc.setBackground(red);
-					int width = (int) ((columnWidth * 0.01) * 100);
-					event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
-					gc.fillRectangle(event.getBounds());
-				}
+				ISpyBStatusInfo statusInfo = progress.getCollectionStatusInfo();
+				paintTableCell(event, viewerColumn2, statusInfo);
 			}
 		});
 
@@ -293,41 +259,15 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 			@Override
 			protected void erase(Event event, Object element) {
-				if (white != null) {
-					event.gc.setBackground(white);
-					event.gc.fillRectangle(event.getBounds());
-				}
+				eraseTableCell(event);
 				super.erase(event, element);
 			}
 
 			@Override
 			protected void paint(Event event, Object element) {
-				GC gc = event.gc;
-
 				ISAXSProgress progress = (ISAXSProgress) element;
-				ISpyBStatus status = progress.getReductionStatusInfo().getStatus();
-				double progressValue = progress.getReductionStatusInfo().getProgress();
-				int percentage = ((Double) progressValue).intValue();
-				int columnWidth = viewerColumn2.getColumn().getWidth();
-				int columnPercentage;
-
-				if (status == ISpyBStatus.RUNNING) {
-					gc.setForeground(green);
-					gc.setBackground(listBackGround);
-					columnPercentage = (int) ((columnWidth * 0.01) * 100);
-					gc.fillGradientRectangle(event.x, event.y, columnPercentage, (event.height - 1), true);
-				} else if (status == ISpyBStatus.FAILED) {
-					gc.setBackground(red);
-					columnPercentage = (int) ((columnWidth * 0.01) * 100);
-					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-					gc.fillRectangle(event.getBounds());
-				} else if (status == ISpyBStatus.COMPLETE) {
-					gc.setBackground(green);
-					columnPercentage = (int) ((columnWidth * 0.01) * percentage);
-					event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-					gc.fillRectangle(event.getBounds());
-				}
-
+				ISpyBStatusInfo statusInfo = progress.getReductionStatusInfo();
+				paintTableCell(event, viewerColumn3, statusInfo);
 			}
 		});
 
@@ -342,42 +282,64 @@ public class BioSAXSProgressComposite extends FieldComposite {
 
 			@Override
 			protected void erase(Event event, Object element) {
-				if (white != null) {
-					event.gc.setBackground(white);
-					event.gc.fillRectangle(event.getBounds());
-				}
+				eraseTableCell(event);
 				super.erase(event, element);
 			}
 
 			@Override
 			protected void paint(Event event, Object element) {
-				GC gc = event.gc;
 				ISAXSProgress progress = (ISAXSProgress) element;
-				ISpyBStatus status = progress.getAnalysisStatusInfo().getStatus();
-				double progressValue = progress.getAnalysisStatusInfo().getProgress();
-				int percentage = ((Double) progressValue).intValue();
-				int columnWidth = viewerColumn2.getColumn().getWidth();
-				int columnPercentage;
-
-				if (status == ISpyBStatus.FAILED) {
-					event.gc.setBackground(red);
-					columnPercentage = (int) ((columnWidth * 0.01) * 100);
-				} else if (status == ISpyBStatus.RUNNING) {
-					gc.setForeground(green);
-					gc.setBackground(listBackGround);
-					columnPercentage = (int) ((columnWidth * 0.01) * 100);
-					gc.fillGradientRectangle(event.x, event.y, columnPercentage, (event.height - 1), false);
-				} else {
-					event.gc.setBackground(green);
-					columnPercentage = (int) ((columnWidth * 0.01) * percentage);
-				}
-
-				event.setBounds(new Rectangle(event.x, event.y, columnPercentage, (event.height - 1)));
-				event.gc.fillRectangle(event.getBounds());
+				ISpyBStatusInfo statusInfo = progress.getAnalysisStatusInfo();
+				paintTableCell(event, viewerColumn4, statusInfo);
 			}
 		});
 
 		bioSaxsProgressViewer.setInput(input);
+	}
+
+	private void paintTableCell(Event event, TableViewerColumn column, ISpyBStatusInfo statusInfo) {
+		GC gc = event.gc;
+
+		ISpyBStatus status = statusInfo.getStatus();
+		double progressValue = statusInfo.getProgress();
+		
+		int percentage = ((Double) progressValue).intValue();
+		int columnWidth = column.getColumn().getWidth();
+
+		if (status == ISpyBStatus.NOT_STARTED) {
+			gc.setBackground(listBackGround);
+			int width = (int) ((columnWidth * 0.01) * 100);
+			event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
+			gc.fillRectangle(event.getBounds());
+		} else if (status == ISpyBStatus.RUNNING) {
+			gc.setBackground(lightgreen);
+			int width = (int) ((columnWidth * 0.01) * 100);
+			gc.fillRectangle(event.x, event.y, width, event.height);
+
+			if (percentage > 0) {
+				width = (int) ((columnWidth * 0.01) * percentage);
+				gc.setBackground(green);
+				event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
+				gc.fillRectangle(event.getBounds());
+			}
+		} else if (status == ISpyBStatus.COMPLETE) {
+			gc.setBackground(green);
+			int width = (int) ((columnWidth * 0.01) * 100);
+			event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
+			gc.fillRectangle(event.getBounds());
+		} else if (status == ISpyBStatus.FAILED) {
+			gc.setBackground(red);
+			int width = (int) ((columnWidth * 0.01) * 100);
+			event.setBounds(new Rectangle(event.x, event.y, width, (event.height - 1)));
+			gc.fillRectangle(event.getBounds());
+		}
+	}
+
+	private void eraseTableCell(Event event) {
+		if (white != null) {
+			event.gc.setBackground(white);
+			event.gc.fillRectangle(event.getBounds());
+		}
 	}
 
 	public Viewer getViewer() {
