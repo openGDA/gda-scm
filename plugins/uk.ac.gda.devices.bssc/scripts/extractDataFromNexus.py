@@ -17,9 +17,14 @@ def setupPathNames(fileIn, detectorName):
 	backgroundErrorsPath = backgroundPath + "_errors"
 	normalizationPath = detectorPrefix+"_processing/Normalisation/data"
 	normalizationErrorsPath = detectorPrefix+"_processing/Normalisation/errors"
-	return (dataPath, dataErrorsPath), (qPath, qErrorsPath), (normalizationPath, normalizationErrorsPath), (backgroundPath, backgroundErrorsPath)
+	guinierPath = detectorPrefix+"_processing/GuinierPlot/data"
+	guinierErrorsPath = detectorPrefix+"_processing/GuinierPlot/errors"
+	kratkyPath = detectorPrefix+"_processing/KratkyPlot/data"
+	kratkyErrorsPath = detectorPrefix+"_processing/KratkyPlot/errors"
+	return (dataPath, dataErrorsPath), (qPath, qErrorsPath), (normalizationPath, normalizationErrorsPath), \
+		(backgroundPath, backgroundErrorsPath), (guinierPath, guinierErrorsPath), (kratkyPath, kratkyErrorsPath)
 
-def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPaths):
+def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPaths, guinierPaths, kratkyPaths):
 	import h5py
 	f=h5py.File(fileIn)
 
@@ -58,7 +63,27 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 		qErrors = f[qErrorsPath]
 	else:
 		qErrors = numpy.multiply(q, defaultErrorRatio)
-	return (data, dataErrors), (q, qErrors), (normalizationData, normalizationErrors), (backgroundData, backgroundErrors)
+
+	guinierPath = guinierPaths[0]
+	guinierErrorsPath = guinierPaths[1]
+	if guinierPath[1:] in f:
+		guinierData = f[guinierPath][0]
+	if guinierErrorsPath[1:] in f:
+		guinierErrors = f[guinierErrorsPath][0]
+	else:
+		guinierErrors = numpy.multiply(guinierData, defaultErrorRatio)
+
+	kratkyPath = kratkyPaths[0]
+	kratkyErrorsPath = kratkyPaths[1]
+	if kratkyPath[1:] in f:
+		kratkyData = f[kratkyPath][0]
+	if kratkyErrorsPath[1:] in f:
+		kratkyErrors = f[kratkyErrorsPath][0]
+	else:
+		kratkyErrors = numpy.multiply(kratkyData, defaultErrorRatio)
+
+	return (data, dataErrors), (q, qErrors), (normalizationData, normalizationErrors), \
+		(backgroundData, backgroundErrors), (guinierData, guinierErrors), (kratkyData, kratkyErrors)
 
 def writeOutData(outputDir, datas, qs, normalizations, backgrounds, results): #results: if true, results. if false, background
 	curveFiles = []
@@ -94,14 +119,18 @@ def writeOutData(outputDir, datas, qs, normalizations, backgrounds, results): #r
 		curveFiles.append(frameFilename)
 	return curveFiles
 
+def plotData(outputFolderName, qs, guinierDatas, kratkyDatas):
+	pass
+
 def directCall(filename, outputFolderName, detector, returnFilenames):
-	(dataPaths, qPaths, normalizationPaths, backgroundPaths) = setupPathNames(filename, detector)
-	(datas, qs, normalizations, backgrounds) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPaths)
+	(dataPaths, qPaths, normalizationPaths, backgroundPaths, guinierPaths, kratkyPaths) = setupPathNames(filename, detector)
+	(datas, qs, normalizations, backgrounds, guinierDatas, kratkyDatas) = getDataAndErrors(filename, dataPaths, qPaths, normalizationPaths, backgroundPaths, guinierPaths, kratkyPaths)
 	if os.path.basename(filename).startswith("results"):
 		results = True
 	else:
 		results = False
 	curveFiles = writeOutData(outputFolderName, datas, qs, normalizations, backgrounds, results)
+	plotData(outputFolderName, qs, guinierDatas, kratkyDatas)
 	if returnFilenames:
 		return curveFiles
 
