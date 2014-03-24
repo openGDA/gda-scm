@@ -953,7 +953,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			} catch (SQLException e) {
 				logger.error("Exception while retrieving data collection status", e);
 			}
-		} else {
+		} 
+		else {
 			logger.error("Not expecting to be able to set data collection status");
 		}
 	}
@@ -1407,14 +1408,24 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
 		setDataCollectionStatusInDatabase(dataCollectionId, status);
 
 		sendISpyBUpdate(dataCollectionId);
+		
+		System.out.println("Sending UDP update for dataCollectionId : " + dataCollectionId);
+		System.out.println("Collection Status is : " + status.getStatus());
+		System.out.println("Collection Progress is : " + status.getProgress());
 	}
 
+	@Override
+	public void setDataCollectionStarted(long dataCollectionId) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
 		return getSAXSDataCollection(dataCollectionId).getCollectionStatus();
