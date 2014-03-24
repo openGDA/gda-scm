@@ -119,9 +119,13 @@ def createModels(outputFolderName,results):
 
 def storeAnalysis(client, filename, backgroundFilename, outputFolderName, detector, results):
 	import extractDataFromNexus
-	filenames = extractDataFromNexus.directCall(filename, outputFolderName + os.sep + "extractData_"+str(results["dataCollectionId"]), detector, True)
+	extractFolderName = outputFolderName + os.sep + "extractData_"+str(results["dataCollectionId"])
+	filenames = extractDataFromNexus.directCall(filename, extractFolderName, detector, True)
 	curvesFiles = ",".join(filenames)
 	numFiles = len(filenames) #TODO assuming all files are merged
+
+	results["guinierPlotPath"] = os.path.join(extractFolderName, "guinierPlot.png")
+	results["kratkyPlotPath"] = os.path.join(extractFolderName, "kratkyPlot.png")
 
 	if backgroundFilename != None:
 		backgroundFilenames = extractDataFromNexus.directCall(backgroundFilename, outputFolderName + os.sep + "extractData_" + str(results["dataCollectionId"]), detector, True)
@@ -132,7 +136,7 @@ def storeAnalysis(client, filename, backgroundFilename, outputFolderName, detect
 	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
 		None, None, None, None, 0, 0,
 		None, results["isagregated"], "", 0, results["gnomFile"], None, float(results["rgGnom"])/10, float(results["dmax"])/10, results["total"],
-		results["volume"], numFiles, numFiles, curvesFiles, 2, "", "", "", "", results["densityPlot"])
+		results["volume"], numFiles, numFiles, curvesFiles, 2, "", results["scatteringFilePath"], results["guinierPlotPath"], results["kratkyPlotPath"], results["densityPlot"])
 
 def storeModels(client, model, dammifModel, damaverModel, damminModel, results):
 	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damaverModel),
