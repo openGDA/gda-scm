@@ -62,6 +62,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.part.EditorActionBarContributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -914,6 +915,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		for (int i = selectionIndices.length - 1; i >= 0; i--) {
 			getList().remove(selectionIndices[i]);
 		}
+		rbeditor.valueChangePerformed(new ValueEvent("", ""));
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.refresh();
 	}
@@ -944,5 +946,6 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		}
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.refresh();
+		rbeditor.valueChangePerformed(new ValueEvent("", ""));
 	}
 }
