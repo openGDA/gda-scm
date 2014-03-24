@@ -45,9 +45,9 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 	else:
 		backgroundData = None
 	if backgroundErrorsPath[1:] in f:
-		backgroundErrors = numpy.multiply(backgroundData, defaultErrorRatio)
+		backgroundErrors = f[backgroundErrorsPath][0][0]
 	else:
-		backgroundErrors = None
+		backgroundErrors = numpy.multiply(backgroundData, defaultErrorRatio)
 
 	normalizationPath = normalizationPaths[0]
 	normalizationErrorsPath = normalizationPaths[1]
