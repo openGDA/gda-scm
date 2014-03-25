@@ -663,14 +663,15 @@ public class BioSAXSScriptTest {
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
 
-		// Set the collection status to RUNNING with 0 progress prior to creating the buffers
+		// Set the collection status to RUNNING with 33 progress prior to creating the buffers.
+		// 33 for this collection as we are using a previous buffer
 		bioSAXSISPyB.setDataCollectionStarted(dataCollectionId5);
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
-		expectedCollectionStatusInfo.setProgress(0);
+		expectedCollectionStatusInfo.setProgress(33);
 		expectedCollectionStatusInfo.setMessage("");
 
 		ispyBStatusInfo = bioSAXSISPyB
-				.getDataCollectionStatus(dataCollectionId4);
+				.getDataCollectionStatus(dataCollectionId5);
 		assertEquals(expectedCollectionStatusInfo.getStatus(),
 				ispyBStatusInfo.getStatus());
 		assertEquals(expectedCollectionStatusInfo.getProgress(),
