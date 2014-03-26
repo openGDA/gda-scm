@@ -176,7 +176,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 			IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile("default.biosaxs");
 			File nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
 
-			if (!defaultWorkSpaceFile.exists()) {
+			if (!nativeFile.exists()) {
 				sessionBean = new BSSCSessionBean();
 				measurements = new ArrayList<TitrationBean>();
 
