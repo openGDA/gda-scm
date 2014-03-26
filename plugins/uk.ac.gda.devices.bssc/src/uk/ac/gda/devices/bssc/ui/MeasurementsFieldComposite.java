@@ -348,7 +348,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%5.5f", tb.getConcentration());
+				return String.format("%5.5f mg/ml", tb.getConcentration());
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -396,7 +396,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.valueOf(tb.getMolecularWeight());
+				return String.valueOf(tb.getMolecularWeight() + " kDa");
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -683,7 +683,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%5.3f", tb.getTimePerFrame());
+				return String.format("%5.3f s", tb.getTimePerFrame());
 			}
 		}, new OurEditingSupport() {
 			@Override
