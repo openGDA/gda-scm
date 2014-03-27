@@ -1516,7 +1516,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
-			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId);
+			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId, e);
 		}
 		return null;
 	}
