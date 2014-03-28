@@ -168,7 +168,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		}
 	}
 
-	public void openDefaultEditor() {
+	public void openEditorWithDefaultSamples() {
 		IProject dataProject = DataProject.getDataProjectIfExists();
 
 		if (dataProject != null) {
