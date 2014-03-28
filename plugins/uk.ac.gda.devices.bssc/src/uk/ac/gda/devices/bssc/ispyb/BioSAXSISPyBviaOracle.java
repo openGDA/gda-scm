@@ -1299,7 +1299,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 
 		long sampleId = getSpecimen(blsessionId, experimentId, bufferId, samplePlatePositionId, volume);
-		if (sampleId == INVALID_VALUE) {
+		if (sampleId == INVALID_VALUE || isSample) {
 			double concentrationToUse = 0; //for buffer, we want 0 concentration
 			if (isSample) {
 				concentrationToUse = sampleConcentrationMgMl; //for sample, we want to use the declared concentration
