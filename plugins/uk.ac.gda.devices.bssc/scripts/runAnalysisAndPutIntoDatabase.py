@@ -13,9 +13,15 @@ import os, sys, json
 additionalPath = "ControlSolutionScatteringv0_3"
 def createWebService():
 	from suds.client import Client
+	from suds.transport.http import HttpAuthenticated
 	host = "ispybb-test.diamond.ac.uk"
 	URL = "http://"+host+":8080/ispyb-ejb3/ispybWS/ToolsForBiosaxsWebService?wsdl"
-	client = Client(URL)
+	sys.path.append("/dls_sw/dasc/important")
+	from ispybbUserInfo import ispybbUser, ispybbPassword
+	username = ispybbUser()
+	userPassword = ispybbPassword()
+	httpAuthenticatedWebService = HttpAuthenticated(username=username, password=userPassword)
+	client = Client(URL, transport=httpAuthenticatedWebService)
 	client.options.cache.clear() #TODO prevent caching while testing. remove when deployed
 	return client
 
