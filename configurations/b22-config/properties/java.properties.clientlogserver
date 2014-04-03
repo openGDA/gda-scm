@@ -1,5 +1,0 @@
-#  The Factory name MUST MATCH the name at top of the Instance XML files 
-gda.factory.factoryName 	= b22
-gda.server.logging.port = 6789
-gda.logserver.xml = ${gda.config}/xml/b22_logServerClient.xml 
-gda.logs.dir = /dls/b22/logs/
