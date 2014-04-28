@@ -3,6 +3,7 @@
 #
 
 . /usr/share/Modules/init/bash
-module load java/gda
+
+. /scratch/gda/workspace_git/gda-diamond.git/dls-config/bin/loadjava.sh
 
 exec /scratch/gda/bin/gda logpanel
