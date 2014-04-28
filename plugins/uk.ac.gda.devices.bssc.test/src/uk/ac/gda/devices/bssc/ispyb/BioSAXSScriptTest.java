@@ -71,6 +71,12 @@ public class BioSAXSScriptTest {
 						2.0, 5.0, 10.0, "viscosity", dataCollectionId4);
 		dataCollectionCount++;
 		
+		long dataCollectionId6 = bioSAXSISPyB.createSaxsDataCollection(
+				experimentId, (short) 1, (short) 1, (short) 1, "Test Sample 6",
+				10.0, 15.0, (short) 1, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0,
+				5.0, 10.0, "viscosity");
+		dataCollectionCount++;
+
 		//************Run data collection 1 **********************
 		// Check status values are correct on data collection creation
 		ISpyBStatusInfo expectedCollectionStatusInfo = new ISpyBStatusInfo();
@@ -734,6 +740,8 @@ public class BioSAXSScriptTest {
 		assertEquals(dataCollectionId2, iSDCIterator.next().getId());
 		assertEquals(dataCollectionId3, iSDCIterator.next().getId());
 		assertEquals(dataCollectionId4, iSDCIterator.next().getId());
+		assertEquals(dataCollectionId5, iSDCIterator.next().getId());
+		assertEquals(dataCollectionId6, iSDCIterator.next().getId());
 
 		// Test correct experiment ids are returned for a session
 		List<Long> experimentIds = bioSAXSISPyB
@@ -749,6 +757,8 @@ public class BioSAXSScriptTest {
 		assertEquals(dataCollectionId2, dataCollectionIds.get(1).longValue());
 		assertEquals(dataCollectionId3, dataCollectionIds.get(2).longValue());
 		assertEquals(dataCollectionId4, dataCollectionIds.get(3).longValue());
+		assertEquals(dataCollectionId5, dataCollectionIds.get(4).longValue());
+		assertEquals(dataCollectionId6, dataCollectionIds.get(5).longValue());
 
 		// Test the correct number of measurement files are returned for a
 		// SAXSDATACOLLECTION

@@ -31,8 +31,6 @@ import org.eclipse.ui.intro.config.IIntroAction;
 public class SwitchToBSSCPerspectiveAction implements IIntroAction {
 
 	public SwitchToBSSCPerspectiveAction() {
-		System.out.println("SwitchPerspective");
-
 		IWorkbench workbench = PlatformUI.getWorkbench();
 
 		// open the BBSSC setup perspective

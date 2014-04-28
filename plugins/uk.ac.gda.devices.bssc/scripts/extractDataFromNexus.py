@@ -73,22 +73,31 @@ def getDataAndErrors(fileIn, dataPaths, qPaths, normalizationPaths, backgroundPa
 	if guinierXPath[1:] in f:
 		guinierXData = f[guinierXPath]
 	if guinierPath[1:] in f:
+		guinierPlotAvailable = True
 		guinierData = f[guinierPath][0]
-	if guinierErrorsPath[1:] in f:
-		guinierErrors = f[guinierErrorsPath][0]
+		if guinierErrorsPath[1:] in f:
+			guinierErrors = f[guinierErrorsPath][0]
+		else:
+			guinierErrors = numpy.multiply(guinierData, defaultErrorRatio)
+		if guinierRgPath[1:] in f:
+			guinierRgs = f[guinierRgPath]
 	else:
-		guinierErrors = numpy.multiply(guinierData, defaultErrorRatio)
-	if guinierRgPath[1:] in f:
-		guinierRgs = f[guinierRgPath]
+		guinierErrors = []
+		guinierData = []
+		guinierRgs = []
+		guinierXData = []
 
 	kratkyPath = kratkyPaths[0]
 	kratkyErrorsPath = kratkyPaths[1]
 	if kratkyPath[1:] in f:
 		kratkyData = f[kratkyPath][0]
-	if kratkyErrorsPath[1:] in f:
-		kratkyErrors = f[kratkyErrorsPath][0]
+		if kratkyErrorsPath[1:] in f:
+			kratkyErrors = f[kratkyErrorsPath][0]
+		else:
+			kratkyErrors = numpy.multiply(kratkyData, defaultErrorRatio)
 	else:
-		kratkyErrors = numpy.multiply(kratkyData, defaultErrorRatio)
+		kratkyData = []
+		kratkyErrors = []
 
 	return (data, dataErrors), (q, qErrors), (normalizationData, normalizationErrors), \
 		(backgroundData, backgroundErrors), (guinierXData, guinierData, guinierErrors, guinierRgs), (kratkyData, kratkyErrors)
@@ -130,36 +139,42 @@ def writeOutData(outputDir, datas, qs, normalizations, backgrounds, results): #r
 def plotData(outputFolderName, qs, guinierDatas, kratkyDatas):
 	import matplotlib.pyplot as plt
 	import math
-	fig1 = plt.figure(figsize=(6, 5))
-	fig2 = plt.figure(figsize=(8, 5))
-	ax1 = fig1.add_subplot(1, 1, 1)
-	guinierRg = guinierDatas[3][0]
-	addMoreGuinier = True
-	g = []
-	gx = []
-	gerr = []
-	index = 0
-	while addMoreGuinier and index < len(guinierDatas[0]):
-		qRg = math.sqrt(guinierDatas[0][index]) * guinierRg[0]
-		if qRg < 1.3:
-			gx.append(guinierDatas[0][index])
-			g.append(guinierDatas[1][0][index])
-			gerr.append(guinierDatas[2][0][index])
-		else:
-			addMoreGuinier = False
-		index+=1
-	ax1.errorbar(gx, g, yerr=gerr, linestyle='-', marker='o', markersize=2, label="Guinier plot for dataset 0")
-	ax1.set_xlabel(u"q$^{2}$ (A$^{-2}$)")
-	ax1.set_ylabel('log I')
-	fig1.savefig(os.path.join(outputFolderName, "guinierPlot.png"))
-	fig1.clf()
-
-	ax2 = fig2.add_subplot(1,1,1)
-	ax2.errorbar(qs[0], kratkyDatas[0][0], yerr=kratkyDatas[1][0], linestyle='-', marker='o', markersize=2, label="Kratky plot for dataset 0")
-	ax2.set_xlabel(u"q (nm$^{-1}$)")
-	ax2.set_ylabel('q$^{2}$I(q)')
-	fig2.savefig(os.path.join(outputFolderName, "kratkyPlot.png"))
-	fig2.clf()
+	if len(guinierDatas[0])>0 and len(guinierDatas[1])>0 and len(guinierDatas[2])>0 and len(guinierDatas[3])>0:
+		fig1 = plt.figure(figsize=(6, 5))
+		ax1 = fig1.add_subplot(1, 1, 1)
+		guinierRg = guinierDatas[3][0]
+		addMoreGuinier = True
+		g = []
+		gx = []
+		gerr = []
+		index = 0
+		while addMoreGuinier and index < len(guinierDatas[0]):
+			qRg = math.sqrt(guinierDatas[0][index]) * guinierRg[0]
+			if qRg < 1.3:
+				gx.append(guinierDatas[0][index])
+				g.append(guinierDatas[1][0][index])
+				gerr.append(guinierDatas[2][0][index])
+			else:
+				addMoreGuinier = False
+			index+=1
+		ax1.errorbar(gx, g, yerr=gerr, linestyle='-', marker='o', markersize=2, label="Guinier plot for dataset 0")
+		ax1.set_xlabel(u"q$^{2}$ (A$^{-2}$)")
+		ax1.set_ylabel('log I')
+		fig1.savefig(os.path.join(outputFolderName, "guinierPlot.png"))
+		fig1.clf()
+	else:
+		print "no Guinier plot as no data available"
+	
+	if len(kratkyDatas[0])>0 and len(kratkyDatas[1])>0:
+		fig2 = plt.figure(figsize=(8, 5))
+		ax2 = fig2.add_subplot(1,1,1)
+		ax2.errorbar(qs[0], kratkyDatas[0][0], yerr=kratkyDatas[1][0], linestyle='-', marker='o', markersize=2, label="Kratky plot for dataset 0")
+		ax2.set_xlabel(u"q (nm$^{-1}$)")
+		ax2.set_ylabel('q$^{2}$I(q)')
+		fig2.savefig(os.path.join(outputFolderName, "kratkyPlot.png"))
+		fig2.clf()
+	else:
+		print "no Kratky plot as no data available"
 
 def directCall(filename, outputFolderName, detector, returnFilenames):
 	(dataPaths, qPaths, normalizationPaths, backgroundPaths, guinierPaths, kratkyPaths) = setupPathNames(filename, detector)

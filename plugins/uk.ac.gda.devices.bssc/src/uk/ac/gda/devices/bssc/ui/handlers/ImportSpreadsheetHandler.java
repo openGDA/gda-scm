@@ -61,7 +61,7 @@ import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanUIEditor;
 import uk.ac.gda.devices.bssc.wizards.BSSCImportWizardPage;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
-public class LoadExperimentHandler implements IHandler {
+public class ImportSpreadsheetHandler implements IHandler {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCImportWizardPage.class);
 	private static final int PLATE_COL_NO = 0;
 	private static final int PLATE_ROW_COL_NO = 1;

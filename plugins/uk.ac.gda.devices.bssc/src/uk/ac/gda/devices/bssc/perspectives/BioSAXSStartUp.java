@@ -61,7 +61,7 @@ public class BioSAXSStartUp implements IStartup {
 					public void partClosed(IWorkbenchPart part) {
 						if (activePerspectiveID.equals(BioSAXSSetupPerspective.ID)) {
 							if (page.getEditorReferences().length == 0) {
-								openDefaultEditor();
+								openEditorWithDefaultSamples();
 							}
 						}
 					}
@@ -83,7 +83,7 @@ public class BioSAXSStartUp implements IStartup {
 						
 						if (perspective.getId().equals(BioSAXSSetupPerspective.ID)) {
 							if (page.getEditorReferences().length == 0) {
-								openDefaultEditor();
+								openEditorWithDefaultSamples();
 							}
 						}
 					}
@@ -103,8 +103,8 @@ public class BioSAXSStartUp implements IStartup {
 
 	}
 
-	private void openDefaultEditor() {
+	private void openEditorWithDefaultSamples() {
 		BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
-		editor.openDefaultEditor();
+		editor.openEditorWithDefaultSamples();
 	}
 }
