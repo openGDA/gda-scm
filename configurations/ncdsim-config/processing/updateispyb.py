@@ -2,6 +2,7 @@
 
 import sys
 from suds.client import Client
+from suds.transport.http import HttpAuthenticated
 from socket import *
 
 host = "cs04r-sc-vserv-49"
@@ -13,7 +14,12 @@ udpport=9877
 prefix="biosaxs"
 
 URL="http://"+host+":8080/ispyb-ejb3/ispybWS/ToolsForBiosaxsWebService?wsdl"
-client = Client(URL)
+sys.path.append("/dls_sw/dasc/important")
+from ispybbUserInfo import ispybbUser, ispybbPassword
+username = ispybbUser()
+userPassword = ispybbPassword()
+httpAuthenticatedWebService = HttpAuthenticated(username=username, password=userPassword)
+client = Client(URL, transport=httpAuthenticatedWebService)
 
 redana=sys.argv[1]
 collid=sys.argv[2]
