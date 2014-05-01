@@ -23,6 +23,7 @@ def setupPathNames(fileIn, detectorName):
 	guinierRgPath = detectorPrefix+"_processing/Guinier Plot/Rg"
 	kratkyPath = detectorPrefix+"_processing/Kratky Plot/data"
 	kratkyErrorsPath = detectorPrefix+"_processing/Kratky Plot/errors"
+	backgroundFilePath = detectorPrefix+"_processing/BackgroundSubtraction/background_filename"
 	return (dataPath, dataErrorsPath), (qPath, qErrorsPath), (normalizationPath, normalizationErrorsPath), \
 		(backgroundPath, backgroundErrorsPath), (guinierXPath, guinierPath, guinierErrorsPath, guinierRgPath), (kratkyPath, kratkyErrorsPath), \
 		backgroundFilePath
