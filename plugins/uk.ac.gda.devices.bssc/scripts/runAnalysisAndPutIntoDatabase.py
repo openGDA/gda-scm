@@ -219,4 +219,6 @@ if __name__ == '__main__':
 
 		os.chdir(originalDirectory)
 	except Exception as e:
-		print "exception during the pipeline run or results insertion into database: ", e
+		info = sys.exc_info()
+		import traceback
+		print "exception during the pipeline run or results insertion into database: ", e, info[0], info[1], traceback.print_exception(info[0], info[1], info[2])
