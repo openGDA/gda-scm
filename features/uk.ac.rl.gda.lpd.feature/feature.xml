@@ -2,7 +2,7 @@
 <feature
       id="uk.ac.rl.gda.lpd.feature"
       label="LPD Feature"
-      version="8.38.0.qualifier"
+      version="8.39.0.qualifier"
       provider-name="STFC Daresbury &amp; Rutherford Laboratories">
 
    <description url="http://www.example.com/description">
