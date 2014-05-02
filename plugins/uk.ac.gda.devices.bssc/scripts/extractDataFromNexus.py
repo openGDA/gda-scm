@@ -146,6 +146,8 @@ def writeOutData(outputDir, datas, qs, normalizations, backgrounds, results): #r
 	return curveFiles
 
 def plotData(outputFolderName, qs, guinierDatas, kratkyDatas):
+	import matplotlib
+	matplotlib.use('Agg')
 	import matplotlib.pyplot as plt
 	import math
 	if len(guinierDatas[0])>0 and len(guinierDatas[1])>0 and len(guinierDatas[2])>0 and len(guinierDatas[3])>0:
