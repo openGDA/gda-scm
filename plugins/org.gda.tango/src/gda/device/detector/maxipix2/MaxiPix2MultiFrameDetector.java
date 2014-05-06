@@ -39,7 +39,6 @@ import gda.device.scannable.PositionInputStream;
 import gda.device.scannable.PositionStreamIndexer;
 import gda.factory.FactoryException;
 import gda.jython.InterfaceProvider;
-import gda.scan.ScanBase;
 import gda.scan.ScanInformation;
 
 import java.io.File;
@@ -642,7 +641,6 @@ class LastImagedPositionInputStreamImpl implements PositionInputStream<Integer> 
 					long startTime = System.nanoTime();
 					while( maxTimeToWaitForImage_ms < 0 || (System.nanoTime()-startTime) < maxTimeToWaitForImage_ms*1000000 ){
 						Thread.sleep(timeIntervalWhilstWaiting_ms);
-						ScanBase.checkForInterrupts();
 						currentSavingNextNumber = getSavingNextNumber();
 						if (currentSavingNextNumber != lastSavingNextNumber)
 							break;
