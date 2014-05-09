@@ -13,9 +13,15 @@ import os, sys, json
 additionalPath = "ControlSolutionScatteringv0_3"
 def createWebService():
 	from suds.client import Client
+	from suds.transport.http import HttpAuthenticated
 	host = "ispybb-test.diamond.ac.uk"
 	URL = "http://"+host+":8080/ispyb-ejb3/ispybWS/ToolsForBiosaxsWebService?wsdl"
-	client = Client(URL)
+	sys.path.append("/dls_sw/dasc/important")
+	from ispybbUserInfo import ispybbUser, ispybbPassword
+	username = ispybbUser()
+	userPassword = ispybbPassword()
+	httpAuthenticatedWebService = HttpAuthenticated(username=username, password=userPassword)
+	client = Client(URL, transport=httpAuthenticatedWebService)
 	client.options.cache.clear() #TODO prevent caching while testing. remove when deployed
 	return client
 
@@ -117,14 +123,17 @@ def createModels(outputFolderName,results):
 	damaverResultsModel["pdbFile"] = os.path.join(outputFolderName,additionalPath, "Damaverv0_1","damaver.pdb")
 	return modelList, dammifResultsModel, damaverResultsModel, damminResultsModel
 
-def storeAnalysis(client, filename, backgroundFilename, outputFolderName, detector, results):
+def storeAnalysis(client, filename, outputFolderName, detector, results):
 	import extractDataFromNexus
-	filenames = extractDataFromNexus.directCall(filename, outputFolderName + os.sep + "extractData_"+str(results["dataCollectionId"]), detector, True)
-	curvesFiles = ",".join(filenames)
-	numFiles = len(filenames) #TODO assuming all files are merged
+	extractFolderName = outputFolderName + os.sep + "extractData_"+str(results["dataCollectionId"])
+	(curveFilenames, backgroundFilenames) = extractDataFromNexus.directCall(filename, extractFolderName, detector, True)
+	curvesFiles = ",".join(curveFilenames)
+	numFiles = len(curveFilenames) #TODO assuming all files are merged
 
-	if backgroundFilename != None:
-		backgroundFilenames = extractDataFromNexus.directCall(backgroundFilename, outputFolderName + os.sep + "extractData_" + str(results["dataCollectionId"]), detector, True)
+	results["guinierPlotPath"] = os.path.join(extractFolderName, "guinierPlot.png")
+	results["kratkyPlotPath"] = os.path.join(extractFolderName, "kratkyPlot.png")
+
+	if backgroundFilenames != None:
 		backgroundCurveFiles = ",".join(backgroundFilenames)
 		numBackgroundFiles = len(backgroundFilenames)
 		client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], None, None, None, None, None, 0, 0, None, None, "", 0, None, None, None, None, "", None, numBackgroundFiles, numBackgroundFiles, backgroundCurveFiles, 0, "", "", "", "", None)
@@ -132,7 +141,7 @@ def storeAnalysis(client, filename, backgroundFilename, outputFolderName, detect
 	client.service.storeDataAnalysisResultByDataCollectionId(results["dataCollectionId"], results["filename"],
 		None, None, None, None, 0, 0,
 		None, results["isagregated"], "", 0, results["gnomFile"], None, float(results["rgGnom"])/10, float(results["dmax"])/10, results["total"],
-		results["volume"], numFiles, numFiles, curvesFiles, 2, "", "", "", "", results["densityPlot"])
+		results["volume"], numFiles, numFiles, curvesFiles, 2, "", results["scatteringFilePath"], results["guinierPlotPath"], results["kratkyPlotPath"], results["densityPlot"])
 
 def storeModels(client, model, dammifModel, damaverModel, damminModel, results):
 	client.service.storeAbInitioModelsByDataCollectionId(json.dumps([results["dataCollectionId"]]), json.dumps(model), json.dumps(damaverModel),
@@ -146,7 +155,6 @@ if __name__ == '__main__':
 	import argparse
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--filename", type=str, help="input filename after data reduction")
-	parser.add_argument("--backgroundFilename", type=str, help="input filename of background after data reduction")
 	parser.add_argument("--outputFolderName", type=str, help="output folder location")
 	parser.add_argument("--detector", type=str, help="detector name")
 	parser.add_argument("--dataCollectionId", type=int, help="dataCollectionId")
@@ -160,10 +168,6 @@ if __name__ == '__main__':
 	else:
 		print "filename must be defined"
 		sys.exit(1)
-	if args.backgroundFilename:
-		backgroundFilename = args.backgroundFilename
-	else:
-		backgroundFilename = None
 	if args.outputFolderName:
 		outputFolderName = args.outputFolderName
 	else:
@@ -204,9 +208,11 @@ if __name__ == '__main__':
 		results, folder = parseResults(outputFolderName, dataCollectionId)
 		client = createWebService()
 		(model, dammifModel, damaverModel, damminModel) = createModels(folder, results)
-		storeAnalysis(client, filename, backgroundFilename, outputFolderName, detector, results)
+		storeAnalysis(client, filename, outputFolderName, detector, results)
 		storeModels(client, model, dammifModel, damaverModel, damminModel, results)
 
 		os.chdir(originalDirectory)
 	except Exception as e:
-		print "exception during the pipeline run or results insertion into database: ", e
+		info = sys.exc_info()
+		import traceback
+		print "exception during the pipeline run or results insertion into database: ", e, info[0], info[1], traceback.print_exception(info[0], info[1], info[2])

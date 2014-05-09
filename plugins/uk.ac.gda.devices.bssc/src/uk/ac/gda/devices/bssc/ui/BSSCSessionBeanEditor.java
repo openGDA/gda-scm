@@ -33,6 +33,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -59,7 +60,6 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanEditor.class);
 	private BSSCSessionBean sessionBean;
 	private ArrayList<TitrationBean> measurements;
-	private File bioSAXSFile;
 
 	public BSSCSessionBeanEditor() {
 		super();
@@ -111,7 +111,10 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		dialog.setText("Save as BIOSAXS Experiment");
 		dialog.setFilterExtensions(new String[] { "*.biosaxs", "*.xml" });
 		final File currentFile = new File(this.path);
-		dialog.setFilterPath(currentFile.getParentFile().getAbsolutePath());
+		IProject dataProject = DataProject.getDataProjectIfExists();
+		IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
+		IPath defaultPath = defaultWorkspaceFolder.getRawLocation().makeAbsolute();
+		dialog.setFilterPath(defaultPath.toString());
 
 		String newFile = dialog.open();
 		if (newFile != null) {
@@ -165,16 +168,15 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		}
 	}
 
-	public void openDefaultEditor() {
+	public void openEditorWithDefaultSamples() {
 		IProject dataProject = DataProject.getDataProjectIfExists();
 
 		if (dataProject != null) {
 			IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
 			IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile("default.biosaxs");
-			String defaultFilePath = defaultWorkSpaceFile.getFullPath().toString();
-			File bioSAXSFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+			File nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
 
-			if (!defaultWorkSpaceFile.exists()) {
+			if (!nativeFile.exists()) {
 				sessionBean = new BSSCSessionBean();
 				measurements = new ArrayList<TitrationBean>();
 
@@ -201,14 +203,14 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 
 				sessionBean.setMeasurements(measurements);
 				try {
-					XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSFile);
+					XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, nativeFile);
 				} catch (Exception e) {
 					logger.error("Exception writing bean to XML", e);
 				}
 			}
 
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSFile.toURI());
+			IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(nativeFile.toURI());
 			try {
 				if (page != null) {
 					IDE.openEditorOnFileStore(page, biosaxsFileStore);

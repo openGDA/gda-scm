@@ -62,6 +62,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.part.EditorActionBarContributor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -347,7 +348,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%5.5f", tb.getConcentration());
+				return String.format("%5.5f mg/ml", tb.getConcentration());
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -395,7 +396,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.valueOf(tb.getMolecularWeight());
+				return String.valueOf(tb.getMolecularWeight() + " kDa");
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -682,7 +683,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public String getText(Object element) {
 				TitrationBean tb = (TitrationBean) element;
-				return String.format("%5.3f", tb.getTimePerFrame());
+				return String.format("%5.3f s", tb.getTimePerFrame());
 			}
 		}, new OurEditingSupport() {
 			@Override
@@ -914,6 +915,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		for (int i = selectionIndices.length - 1; i >= 0; i--) {
 			getList().remove(selectionIndices[i]);
 		}
+		rbeditor.valueChangePerformed(new ValueEvent("", ""));
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.refresh();
 	}
@@ -944,5 +946,6 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		}
 		sampleCount.setText(String.valueOf(getList().size()));
 		tableViewer.refresh();
+		rbeditor.valueChangePerformed(new ValueEvent("", ""));
 	}
 }

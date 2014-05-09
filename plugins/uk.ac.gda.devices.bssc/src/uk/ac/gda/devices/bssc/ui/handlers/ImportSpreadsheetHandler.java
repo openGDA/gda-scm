@@ -61,7 +61,7 @@ import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanUIEditor;
 import uk.ac.gda.devices.bssc.wizards.BSSCImportWizardPage;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
-public class LoadExperimentHandler implements IHandler {
+public class ImportSpreadsheetHandler implements IHandler {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCImportWizardPage.class);
 	private static final int PLATE_COL_NO = 0;
 	private static final int PLATE_ROW_COL_NO = 1;
@@ -106,9 +106,8 @@ public class LoadExperimentHandler implements IHandler {
 		if (fileToOpen.exists() && fileToOpen.isFile()) {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
-			Workbook wb;
 			try {
-				wb = WorkbookFactory.create(fileToOpen);
+				Workbook wb = WorkbookFactory.create(fileToOpen);
 				Sheet sheet = wb.getSheetAt(0);
 
 				BSSCSessionBean sessionBean = new BSSCSessionBean();
@@ -118,37 +117,37 @@ public class LoadExperimentHandler implements IHandler {
 
 					try {
 						TitrationBean tibi = new TitrationBean();
-
-						LocationBean location = locationFromCells(row.getCell(PLATE_COL_NO),
-								row.getCell(PLATE_ROW_COL_NO), row.getCell(PLATE_COLUMN_COL_NO));
+		
+						LocationBean location = locationFromCells(row.getCell(PLATE_COL_NO), row.getCell(PLATE_ROW_COL_NO), row.getCell(PLATE_COLUMN_COL_NO));
 						if (!location.isValid())
 							throw new Exception("invalid sample location");
 						tibi.setLocation(location);
-
+					
 						tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
-
-						location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO),
-								row.getCell(BUFFER_COLUMN_COL_NO));
+		
+						location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
 						if (!location.isValid())
 							throw new Exception("invalid buffer location");
 						tibi.setBufferLocation(location);
-
-						location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO),
-								row.getCell(RECOUP_COLUMN_COL_NO));
-						if (!location.isValid())
+		
+						try {
+							location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO), row.getCell(RECOUP_COLUMN_COL_NO));
+							if (!location.isValid())
+								location = null;
+						} catch (Exception e) {
 							location = null;
-
+						}
 						tibi.setRecouperateLocation(location);
-						tibi.setConcentration(row.getCell(CONCENTRATION_COL_NO).getNumericCellValue());
+						tibi.setConcentration(row.getCell(CONCENTRATION_COL_NO).getNumericCellValue()); 
 						tibi.setViscosity(row.getCell(VISCOSITY_COL_NO).getStringCellValue());
 						tibi.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL_NO).getNumericCellValue());
 						tibi.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL_NO).getNumericCellValue());
-						tibi.setFrames((int) row.getCell(FRAMES_COL_NO).getNumericCellValue());
-						tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue());
-
+						tibi.setFrames((int) row.getCell(FRAMES_COL_NO).getNumericCellValue()); 
+						tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue()); 
+		
 						measurements.add(tibi);
 					} catch (Exception e) {
-						logger.debug("row rejected" + row.toString());
+						logger.debug("row rejected"+row.toString());
 					}
 				}
 
@@ -160,6 +159,16 @@ public class LoadExperimentHandler implements IHandler {
 				IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
 				IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile(spreadSheetFileName + ".biosaxs");
 				File nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+				
+				// if file exists then create a new instance of it with an increment (i.e. TestTemplate.biosaxs will be opened as TestTemplate-1.biosaxs)
+				int fileIndex = 0;
+				while (nativeFile.exists())
+				{
+					fileIndex++;
+					defaultWorkSpaceFile = defaultWorkspaceFolder.getFile(spreadSheetFileName + "-" + fileIndex + ".biosaxs");
+					nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+				}
+				
 				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, nativeFile);
 				IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(nativeFile.toURI());
 				IDE.openEditorOnFileStore(page, biosaxsFileStore);

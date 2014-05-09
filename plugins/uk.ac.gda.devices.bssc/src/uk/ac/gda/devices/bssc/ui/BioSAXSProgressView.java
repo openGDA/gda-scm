@@ -85,7 +85,7 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 		createActions();
 		createToolbar();
 
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = getSite().getPage();
 		page.addPartListener(this);
 	}
 
@@ -151,10 +151,13 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 	public void reveal() {
 		TableViewer bioSAXSTableViewer = (TableViewer) bioSAXSComposite.getViewer();
 
-		if (bioSAXSTableViewer.getControl().isVisible()) {
-			if (!scrollLockAction.isChecked()) {
-				if (!model.isEmpty()) {
-					bioSAXSTableViewer.reveal(model.get(model.size() - 1));
+		if (!bioSAXSTableViewer.getControl().isDisposed()) {
+			if (bioSAXSTableViewer.getControl().isVisible()) {
+				if (!scrollLockAction.isChecked()) {
+					int lastItemIndex = model.size() - 1;
+					if (!model.isEmpty()) {
+						bioSAXSTableViewer.getTable().setTopIndex(lastItemIndex);
+					}
 				}
 			}
 		}
