@@ -18,11 +18,8 @@
 
 package uk.ac.gda.devices.bssc.ui.handlers;
 
-import gda.rcp.DataProject;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,14 +35,11 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -53,15 +47,14 @@ import org.eclipse.ui.ide.IDE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.BioSaxsUtils;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanUIEditor;
 import uk.ac.gda.devices.bssc.wizards.BSSCImportWizardPage;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
-public class LoadExperimentHandler implements IHandler {
+public class ImportSpreadsheetHandler implements IHandler {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCImportWizardPage.class);
 	private static final int PLATE_COL_NO = 0;
 	private static final int PLATE_ROW_COL_NO = 1;
@@ -96,11 +89,13 @@ public class LoadExperimentHandler implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		FileDialog fd = new FileDialog(Display.getCurrent().getActiveShell(), SWT.OPEN);
 		fd.setText("Open");
-		fd.setFilterPath(System.getProperty("user.home") + "//experiments");
+		fd.setFilterPath(System.getProperty("user.home"));
 		String[] filterExt = { "*.xls" };
 		fd.setFilterExtensions(filterExt);
 		String selected = fd.open();
-
+		
+		if (selected == null) return null; //user chose to cancel
+		
 		File fileToOpen = new File(selected);
 
 		if (fileToOpen.exists() && fileToOpen.isFile()) {
@@ -153,20 +148,16 @@ public class LoadExperimentHandler implements IHandler {
 
 				sessionBean.setMeasurements(measurements);
 
-				// Need to convert file to .biosaxs and put in default location in workspace (<project>/data/xml
-				String spreadSheetFileName = selected.substring(selected.lastIndexOf("/")+1, selected.lastIndexOf("."));
-				IProject dataProject = DataProject.getDataProjectIfExists();
-				IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
-				IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile(spreadSheetFileName + ".biosaxs");
-				File nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+				// Need to convert file to .biosaxs and put in default location in the visit directory
+				String spreadSheetFileName = fileToOpen.getName().substring(0, fileToOpen.getName().lastIndexOf('.'));
+				File nativeFile = BioSaxsUtils.getNewFileFromName(spreadSheetFileName);
 				
 				// if file exists then create a new instance of it with an increment (i.e. TestTemplate.biosaxs will be opened as TestTemplate-1.biosaxs)
 				int fileIndex = 0;
 				while (nativeFile.exists())
 				{
 					fileIndex++;
-					defaultWorkSpaceFile = defaultWorkspaceFolder.getFile(spreadSheetFileName + "-" + fileIndex + ".biosaxs");
-					nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+					nativeFile = BioSaxsUtils.getNewFileFromName(spreadSheetFileName + "-" + fileIndex); 
 				}
 				
 				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, nativeFile);
@@ -177,7 +168,11 @@ public class LoadExperimentHandler implements IHandler {
 			} catch (InvalidFormatException e1) {
 				logger.error("InvalidFormatException creating Workbook", e1);
 			} catch (IOException e1) {
-				logger.error("IOException creating Workbook", e1);
+				MessageDialog.openError(
+						new Shell(Display.getCurrent()),
+						"Could not read .xls file",
+						"Is the file valid?");
+				logger.error("Could not read workbook", e1);
 			} catch (Exception e) {
 				logger.error("Exception writing to xml", e);
 			}

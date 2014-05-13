@@ -8,7 +8,7 @@ from socket import *
 host = "cs04r-sc-vserv-49"
 # this needs to be set to the machine running GDA server
 # since it is evaluated on the cluster, "localhost" WILL NOT WORK
-controlserver = "localhost"
+controlserver = "b21-control.diamond.ac.uk"
 
 udpport=9877
 prefix="biosaxs"

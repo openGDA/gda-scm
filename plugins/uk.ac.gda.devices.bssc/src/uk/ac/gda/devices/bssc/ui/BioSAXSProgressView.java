@@ -85,7 +85,7 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 		createActions();
 		createToolbar();
 
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = getSite().getPage();
 		page.addPartListener(this);
 	}
 

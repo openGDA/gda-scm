@@ -34,8 +34,6 @@ import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
 
 public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxssetupperspective";
-	private IWorkbenchWindow window;
-	private IWorkbenchPage page;
 	protected String activePerspectiveID;
 
 	@Override
@@ -44,69 +42,5 @@ public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 				IPageLayout.ID_EDITOR_AREA);
 
 		folderLayout.addView("uk.ac.gda.client.CommandQueueViewFactory");
-
-		window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		page = window.getActivePage();
-
-		// Need add listener to workbench to always have at least one editor available
-		IPartService service = (IPartService) window.getService(IPartService.class);
-		service.addPartListener(new IPartListener() {
-
-			@Override
-			public void partActivated(IWorkbenchPart part) {
-
-			}
-
-			@Override
-			public void partBroughtToTop(IWorkbenchPart part) {
-			}
-
-			@Override
-			public void partClosed(IWorkbenchPart part) {
-				if (activePerspectiveID.equals(ID)) {
-					if (page.getEditorReferences().length == 0) {
-						openDefaultEditor();
-					}
-				}
-			}
-
-			@Override
-			public void partDeactivated(IWorkbenchPart part) {
-			}
-
-			@Override
-			public void partOpened(IWorkbenchPart part) {
-
-			}
-		});
-
-		window.addPerspectiveListener(new PerspectiveAdapter() {
-			@Override
-			public void perspectiveActivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
-				activePerspectiveID = perspective.getId();
-				
-				if (perspective.getId().equals(ID)) {
-					if (page.getEditorReferences().length == 0) {
-						openDefaultEditor();
-					}
-				}
-			}
-
-			@Override
-			public void perspectiveSavedAs(IWorkbenchPage page, IPerspectiveDescriptor oldPerspective,
-					IPerspectiveDescriptor newPerspective) {
-
-			}
-
-			@Override
-			public void perspectiveDeactivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
-
-			}
-		});
-	}
-
-	private void openDefaultEditor() {
-		BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
-		editor.openDefaultEditor();
 	}
 }

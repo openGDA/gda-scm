@@ -55,7 +55,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 	private static final String DATA_REDUCTION_FAILED = "DatRedFai";
 	private static final String DATA_REDUCTION_RUNNING = "DatRedRun";
 
-	private static final String DATA_COLLECTION_FAILED = "DataReductionFailed";
+	private static final String DATA_COLLECTION_FAILED = "DataCollectionFailed";
+	private static final String DATA_COLLECTION_RUNNING = "DataCollectionRunning";
 
 	// the following are values of MeasurementToDataCollection datacollectionorder for the named measurements
 	private static final int BUFFER_BEFORE_MEASUREMENT = 1;
@@ -144,8 +145,8 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		long measurementId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.Measurement ("
-				+ "measurementId, specimenId, exposureTemperature, flow, viscosity) "
-				+ "VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?) RETURNING measurementId INTO ?; END;";
+				+ "measurementId, specimenId, exposureTemperature, flow, viscosity, priorityLevelId) "
+				+ "VALUES (ispyb4a_db.s_Measurement.nextval, ?, ?, ?, ?, 1) RETURNING measurementId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setLong(index++, sampleId);
@@ -953,9 +954,48 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			} catch (SQLException e) {
 				logger.error("Exception while retrieving data collection status", e);
 			}
-		} else {
+		} else if (status.getStatus() == ISpyBStatus.RUNNING) {
+			try {
+				setDataCollectionStarted(dataCollectionId);
+			} catch (SQLException e) {
+				logger.error("Exception while attempting to set data collection started", e);
+			}
+		}
+		else {
 			logger.error("Not expecting to be able to set data collection status");
 		}
+	}
+
+	@Override
+	public void setDataCollectionStarted(long dataCollectionId) throws SQLException {
+		connectIfNotConnected();
+
+		long measurementId = retrievePreviousMeasurement(dataCollectionId, 3);
+		String insertSql = "UPDATE ispyb4a_db.Measurement m SET m.comments = ? WHERE m.measurementId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(insertSql);
+		stmt1.setString(1, DATA_COLLECTION_RUNNING);
+		stmt1.setLong(2, measurementId);
+		stmt1.execute();
+	}
+
+	private boolean isDataCollectionRunning(long dataCollectionId) throws SQLException {
+		String status = null;
+		connectIfNotConnected();
+		long measurementId = retrievePreviousMeasurement(dataCollectionId, 3);
+		String selectSql1 = "SELECT m.comments FROM ispyb4a_db.Measurement m WHERE m.measurementId = ?";
+		PreparedStatement stmt1 = conn.prepareStatement(selectSql1);
+		stmt1.setLong(1, measurementId);
+		boolean success = stmt1.execute();
+		if (success) {
+			ResultSet rs = stmt1.getResultSet();
+			if (rs.next()) {
+				status = rs.getString(1);
+			}
+
+			rs.close();
+		}
+		stmt1.close();
+		return (status != null && status.equals(DATA_COLLECTION_RUNNING));
 	}
 
 	private void setOrUpdateDataReductionStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
@@ -1259,7 +1299,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		}
 
 		long sampleId = getSpecimen(blsessionId, experimentId, bufferId, samplePlatePositionId, volume);
-		if (sampleId == INVALID_VALUE) {
+		if (sampleId == INVALID_VALUE || isSample) {
 			double concentrationToUse = 0; //for buffer, we want 0 concentration
 			if (isSample) {
 				concentrationToUse = sampleConcentrationMgMl; //for sample, we want to use the declared concentration
@@ -1318,10 +1358,9 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		try {
 			long bufferMeasurementId = 0;
 			ISpyBStatusInfo currentStatus = getDataCollectionStatus(currentDataCollectionId);
-			if (currentStatus.getStatus() == ISpyBStatus.NOT_STARTED && currentStatus.getProgress() == 0) { // must be
+			if (currentStatus.getStatus() == ISpyBStatus.RUNNING && currentStatus.getProgress() == 0) { // must be
 																											// buffer
 																											// before
-				currentStatus.setStatus(ISpyBStatus.RUNNING);
 				currentStatus.setProgress(33);
 				currentStatus.addFileName(filename);
 				bufferMeasurementId = retrievePreviousMeasurement(currentDataCollectionId, BUFFER_BEFORE_MEASUREMENT);
@@ -1407,14 +1446,18 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
 	public void setDataCollectionStatus(long dataCollectionId, ISpyBStatusInfo status) {
 		setDataCollectionStatusInDatabase(dataCollectionId, status);
 
 		sendISpyBUpdate(dataCollectionId);
+		
+		System.out.println("Sending UDP update for dataCollectionId : " + dataCollectionId);
+		System.out.println("Collection Status is : " + status.getStatus());
+		System.out.println("Collection Progress is : " + status.getProgress());
 	}
-
+	
 	@Override
 	public ISpyBStatusInfo getDataCollectionStatus(long dataCollectionId) throws SQLException {
 		return getSAXSDataCollection(dataCollectionId).getCollectionStatus();
@@ -1473,7 +1516,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 			return bioSaxsDataCollection;
 		} catch (Exception e) {
-			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId);
+			logger.error("Could not create SAXS data collection object for data collection id " + dataCollectionId, e);
 		}
 		return null;
 	}
@@ -1500,6 +1543,11 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			status.setProgress(0);
 		}
 
+		else if (runs.size() == 0 && isDataCollectionRunning(dataCollectionId)) {
+			status.setProgress(0);
+			status.setStatus(ISpyBStatus.RUNNING);
+		}
+
 		else if (runs.size() == 0) {
 			status.setProgress(0);
 			status.setStatus(ISpyBStatus.NOT_STARTED);
@@ -1509,7 +1557,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			status.setProgress(33);
 			// if using previous data collection buffer after, then status is NOT_STARTED
 			if (isRunInMultipleMeasurementToDataCollection(runs.get(0))) {
-				status.setStatus(ISpyBStatus.NOT_STARTED);
+				if (isDataCollectionRunning(dataCollectionId)) {
+					status.setStatus(ISpyBStatus.RUNNING);
+				}
+				else {
+					status.setStatus(ISpyBStatus.NOT_STARTED);
+				}
 			} else {
 				status.setStatus(ISpyBStatus.RUNNING);
 			}
