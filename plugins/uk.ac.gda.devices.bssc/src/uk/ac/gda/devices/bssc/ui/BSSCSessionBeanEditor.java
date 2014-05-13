@@ -27,13 +27,11 @@ import java.util.ArrayList;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -49,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.common.rcp.util.EclipseUtils;
+import uk.ac.gda.devices.bssc.BioSaxsUtils;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
@@ -90,10 +89,24 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	public void setInput(final IEditorInput input) {
 		try {
 			assignInput(input);
+		} catch (Exception e) {
+		}
+		try {
 			createBean();
-			linkUI();
 		} catch (Throwable th) {
-			logger.error("Error setting input for editor from input " + input.getName(), th);
+			try {
+				editingBean = getBeanClass().newInstance();
+				setDirty(true);
+				logger.debug("Failed to read beans from file, using empty bean");
+			} catch (InstantiationException | IllegalAccessException e) {
+				logger.error("Failed to read beans from file and could not create empty bean");
+			}
+			
+		}
+		try {
+			linkUI();
+		} catch (Exception e) {
+			logger.error("Error setting input for editor from input " + input.getName(), e);
 		}
 	}
 
@@ -111,10 +124,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		dialog.setText("Save as BIOSAXS Experiment");
 		dialog.setFilterExtensions(new String[] { "*.biosaxs", "*.xml" });
 		final File currentFile = new File(this.path);
-		IProject dataProject = DataProject.getDataProjectIfExists();
-		IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
-		IPath defaultPath = defaultWorkspaceFolder.getRawLocation().makeAbsolute();
-		dialog.setFilterPath(defaultPath.toString());
+		dialog.setFilterPath(BioSaxsUtils.getXmlDirectory());
 
 		String newFile = dialog.open();
 		if (newFile != null) {
@@ -172,9 +182,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		IProject dataProject = DataProject.getDataProjectIfExists();
 
 		if (dataProject != null) {
-			IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
-			IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile("default.biosaxs");
-			File nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+			File nativeFile = BioSaxsUtils.getDefaultFile();
 
 			if (!nativeFile.exists()) {
 				sessionBean = new BSSCSessionBean();
