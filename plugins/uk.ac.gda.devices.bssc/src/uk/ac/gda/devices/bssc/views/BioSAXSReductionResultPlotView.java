@@ -73,11 +73,12 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private String filePath;
 	private String xAxisPath;
 	private String dataSetPath;
-	private String resultDataSetPath = "/entry1/detector_result/data";
-	private String qDataSetPath = "/entry1/detector_result/q";
-	private String bGroundDataSetPath = "/entry1/detector_processing/BackgroundSubtraction/background";
-	private String sampleDataSetPath = "/entry1/detector_processing/Normalisation/data";
-	private String rgPath = "/entry1/detector_processing/GuinierPlot/Rg";
+	private final String resultDataSetPath = "/entry1/detector_result/data";
+	private final String qDataSetPath = "/entry1/detector_result/q";
+	private final String bGroundDataSetPath = "/entry1/detector_processing/BackgroundSubtraction/background";
+	private final String sampleDataSetPath = "/entry1/detector_processing/Normalisation/data";
+	private final String rgPath = "/entry1/detector_processing/guinierTestData/Rg";
+	private final String invPath = "/entry1/detector_processing/Invariant/data";
 	private IDataHolder dh;
 	private int frame;
 	private SliceObject sliceObject;
@@ -421,9 +422,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		invariant.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (rg.getSelection()) {
+				if (invariant.getSelection()) {
 					enablePlotGroup(false);
-					dataSetPath = rgPath;
+					dataSetPath = invPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
 				}
