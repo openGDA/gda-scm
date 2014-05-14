@@ -454,7 +454,7 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 		firstFrameOfScan=true;
 		ScanInformation currentScanInformation = InterfaceProvider.getCurrentScanInformationHolder().getCurrentScanInformation();
 		if( (currentScanInformation!=null) && useScanSpecificFolder  ){
-			Long scanNumber = currentScanInformation.getScanNumber();
+			int scanNumber = currentScanInformation.getScanNumber();
 			String dataDir = PathConstructor.createFromDefaultProperty();
 			dataDir = dataDir + File.separator + Long.toString(scanNumber) + File.separator + "mpx" + File.separator ;
 			File f = new File(dataDir);
