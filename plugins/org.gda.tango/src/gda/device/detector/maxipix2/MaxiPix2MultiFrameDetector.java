@@ -24,7 +24,11 @@ import gda.data.PathConstructor;
 import gda.device.DeviceException;
 import gda.device.Scannable;
 import gda.device.TangoUtils;
+import gda.device.continuouscontroller.HardwareTriggerProvider;
 import gda.device.detector.DetectorBase;
+import gda.device.detector.hardwaretriggerable.HardwareTriggerableDetector;
+import gda.device.detectorfilemonitor.HighestExistingFileMonitor;
+import gda.device.detectorfilemonitor.HighestExitingFileMonitorSettings;
 import gda.device.lima.LimaCCD;
 import gda.device.lima.LimaCCD.AcqTriggerMode;
 import gda.device.lima.LimaCCD.SavingMode;
@@ -35,10 +39,7 @@ import gda.device.scannable.PositionInputStream;
 import gda.device.scannable.PositionStreamIndexer;
 import gda.factory.FactoryException;
 import gda.jython.InterfaceProvider;
-import gda.scan.ScanBase;
 import gda.scan.ScanInformation;
-import gda.device.detectorfilemonitor.HighestExistingFileMonitor;
-import gda.device.detectorfilemonitor.HighestExitingFileMonitorSettings;
 
 import java.io.File;
 import java.util.NoSuchElementException;
@@ -84,7 +85,7 @@ import org.slf4j.LoggerFactory;
  *                         acqusition to end. 
  * 
  */
-public class MaxiPix2MultiFrameDetector extends DetectorBase implements PositionCallableProvider<String>  {
+public class MaxiPix2MultiFrameDetector extends DetectorBase implements PositionCallableProvider<String>, HardwareTriggerableDetector  {
 	private static final Logger logger = LoggerFactory.getLogger(MaxiPix2MultiFrameDetector.class);
 
 	private MaxiPix2 maxiPix2;
@@ -142,40 +143,9 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 	public void collectData() throws DeviceException {
 		try {
 			if( !isFastMode() || ( fastModeFramesStarted== 0)){
-				long maxTimeToWaitForImage_ms=0;
-				long timeIntervalWhilstWaiting_ms=50;
-				getLimaCCD().setAcqExpoTime(getCollectionTime());
-				AcqTriggerMode acqTriggerMode = getLimaCCD().getAcqTriggerMode();
-				if( acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_TRIGGER_MULTI) ||
-						acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_GATE) ||	
-						acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_START_STOP) ||	
-						acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_TRIGGER )){
-					startAcqPerFrame= fastMode ? false : true;
-					
-					maxTimeToWaitForImage_ms=-1; //wait for ever or until the scan is interruped
-				} else {
-					if(fastMode)
-						getLimaCCD().setAcqTriggerMode(LimaCCD.AcqTriggerMode.INTERNAL_TRIGGER_MULTI);
-					else
-						getLimaCCD().setAcqTriggerMode(LimaCCD.AcqTriggerMode.INTERNAL_TRIGGER);
-						
-					maxTimeToWaitForImage_ms = Math.max(50,  (long)(1.5 * 1000. *	getCollectionTime()));
-					timeIntervalWhilstWaiting_ms = maxTimeToWaitForImage_ms/2;
-					startAcqPerFrame= true;
-				}
-				int acqNbFrames = isFastMode() ? fastModeFramesRequired:numberOfFrames;
-				int savingFramePerFile = getLimaCCD().getSavingFramePerFile();
-				getLimaCCD().setAcqNbFrames(acqNbFrames);
-				if( (savingFramePerFile != 1) && (acqNbFrames != savingFramePerFile)){
-					throw new DeviceException("(savingFramePerFile != 1) && (acqNbFrames != savingFramePerFile)");
-				}
-				//if using external trigger then we do not know the collectionTime so wait 
-				savingNextNumberStartAcq = getLimaCCD().getSavingNextNumber(); 
-				lastImageNumberPositionInputStream = new LastImagedPositionInputStreamImpl(getLimaCCD(), savingNextNumberStartAcq,numberOfFrames,
-						maxTimeToWaitForImage_ms, timeIntervalWhilstWaiting_ms, getName());
+				if(!hardwareTriggering)
+					prepareForAcquire();
 				getLimaCCD().prepareAcq();
-				lastImageNumberStreamIndexer = new PositionStreamIndexer<Integer>(lastImageNumberPositionInputStream);
-				fileTemplateForCurrentAcq = getFullSavingFileTemplate();
 				
 			}
 			if( firstFrameOfScan || startAcqPerFrame){
@@ -189,6 +159,42 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 		} catch (DevFailed e1) {
 			throw new DeviceException(" collectData failed ", TangoUtils.createDeviceExceptionStack(e1));
 		}
+	}
+
+	public void prepareForAcquire() throws DevFailed, DeviceException {
+		long maxTimeToWaitForImage_ms=0;
+		long timeIntervalWhilstWaiting_ms=50;
+		getLimaCCD().setAcqExpoTime(getCollectionTime()-.005);
+		AcqTriggerMode acqTriggerMode = getLimaCCD().getAcqTriggerMode();
+		if( acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_TRIGGER_MULTI) ||
+				acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_GATE) ||	
+				acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_START_STOP) ||	
+				acqTriggerMode.equals(LimaCCD.AcqTriggerMode.EXTERNAL_TRIGGER )){
+			startAcqPerFrame= fastMode ? false : true;
+			
+			maxTimeToWaitForImage_ms=-1; //wait for ever or until the scan is interruped
+		} else {
+			if(fastMode)
+				getLimaCCD().setAcqTriggerMode(LimaCCD.AcqTriggerMode.INTERNAL_TRIGGER_MULTI);
+			else
+				getLimaCCD().setAcqTriggerMode(LimaCCD.AcqTriggerMode.INTERNAL_TRIGGER);
+				
+			maxTimeToWaitForImage_ms = Math.max(50,  (long)(1.5 * 1000. *	getCollectionTime()));
+			timeIntervalWhilstWaiting_ms = maxTimeToWaitForImage_ms/2;
+			startAcqPerFrame= true;
+		}
+		int acqNbFrames = isFastMode() ? fastModeFramesRequired:numberOfFrames;
+		int savingFramePerFile = getLimaCCD().getSavingFramePerFile();
+		getLimaCCD().setAcqNbFrames(acqNbFrames);
+		if( (savingFramePerFile != 1) && (acqNbFrames != savingFramePerFile)){
+			throw new DeviceException("(savingFramePerFile != 1) && (acqNbFrames != savingFramePerFile)");
+		}
+		//if using external trigger then we do not know the collectionTime so wait 
+		savingNextNumberStartAcq = getLimaCCD().getSavingNextNumber(); 
+		lastImageNumberPositionInputStream = new LastImagedPositionInputStreamImpl(getLimaCCD(), savingNextNumberStartAcq, isHardwareTriggering() ? acqNbFrames : numberOfFrames,
+				maxTimeToWaitForImage_ms, timeIntervalWhilstWaiting_ms, getName());
+		lastImageNumberStreamIndexer = new PositionStreamIndexer<Integer>(lastImageNumberPositionInputStream);
+		fileTemplateForCurrentAcq = getFullSavingFileTemplate();
 	}	
 	
 	void checkNotInFault(String methodName) throws DeviceException {
@@ -291,7 +297,7 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 
 	/*
 	 * The callable simply returns an array of FilePathNumber. 1 item for each frame in current acquisition
-	 * The acqusition has finished so we just use the lastSavedNumber - having check it is as expected
+	 * The acquisition has finished so we just use the lastSavedNumber - having check it is as expected
 	 */
 	FilePathNumber[] getFilePathNumberArray() throws DeviceException {
 		int savingNextNumber;
@@ -346,6 +352,12 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 
 	private boolean useScanSpecificFolder=true;
 
+	private HardwareTriggerProvider hardwareTriggerProvider;
+
+	private int numberImagesToCollect;
+
+	private boolean hardwareTriggering;
+
 	public boolean isUseScanSpecificFolder() {
 		return useScanSpecificFolder;
 	}
@@ -383,13 +395,40 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 		return getSavingDirectory() + getSavingFileTemplate();
 	}
 
+	void reset() throws DevFailed{
+		limaCCD.setAcqTriggerMode(LimaCCD.AcqTriggerMode.INTERNAL_TRIGGER);
+		limaCCD.setAcqMode( LimaCCD.AcqMode.ACCUMULATION);
+	}
+
 	@Override
 	public void stop() throws DeviceException {
 		super.stop();
 		try {
 			limaCCD.stopAcq();
+			reset();
 		} catch (DevFailed e) {
 			throw new DeviceException(getName() + " stop failed ", TangoUtils.createDeviceExceptionStack(e));
+		}
+	}
+
+	@Override
+	public void atScanEnd() throws DeviceException {
+		super.atScanEnd();
+		try {
+			reset();
+		} catch (DevFailed e) {
+			throw new DeviceException(getName() + " atScanEnd failed ", TangoUtils.createDeviceExceptionStack(e));
+		}
+	}
+
+	@Override
+	public void atCommandFailure() throws DeviceException {
+		super.atCommandFailure();
+		try {
+			limaCCD.stopAcq();
+			reset();
+		} catch (DevFailed e) {
+			throw new DeviceException(getName() + " atCommandFailure failed ", TangoUtils.createDeviceExceptionStack(e));
 		}
 	}
 
@@ -479,11 +518,7 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 				throw new DeviceException("Interrupted exception ",e);
 			}
 		}
-
 		if( fastMode ){
-			if (numberOfFrames > 1)
-				throw new DeviceException("fastMode and numberOfFrames per acquisition > 1 are incompatible at the moment");
-
 			if( currentScanInformation==null)
 				throw new DeviceException("Error - no currentScanInformation");
 
@@ -498,9 +533,59 @@ public class MaxiPix2MultiFrameDetector extends DetectorBase implements Position
 			}
 			if( fastModeFramesRequired <1)
 				throw new DeviceException("Error - scan dimensions are invalid");
+			
+			if( hardwareTriggering){
+				try {
+					//TODO reset on stop/failure
+//			        mpx_limaCCD.setAcqTriggerMode(LimaCCD.AcqTriggerMode.INTERNAL_TRIGGER)
+//			        mpx_limaCCD.setAcqMode( LimaCCD.AcqMode.ACCUMULATION)
+					
+					getLimaCCD().setAcqMode( LimaCCD.AcqMode.SINGLE);
+					getLimaCCD().setAcqNbFrames(1); 
+					getLimaCCD().setAcqTriggerMode(LimaCCD.AcqTriggerMode.EXTERNAL_TRIGGER_MULTI);
+					prepareForAcquire();
+				} catch (DevFailed e) {
+					throw new DeviceException(" Error setting up maxipix", TangoUtils.createDeviceExceptionStack(e));
+				}
+				setNumberOfFrames(1);
+			}
+			if (numberOfFrames > 1)
+				throw new DeviceException("fastMode and numberOfFrames per acquisition > 1 are incompatible at the moment");
+
 		}
 	}
 	
+
+	@Override
+	public HardwareTriggerProvider getHardwareTriggerProvider() {
+		return hardwareTriggerProvider;
+	}
+
+	public void setHardwareTriggerProvider(HardwareTriggerProvider hardwareTriggerProvider) {
+		this.hardwareTriggerProvider = hardwareTriggerProvider;
+	}
+
+	@Override
+	public void setNumberImagesToCollect(int numberImagesToCollect) {
+		this.numberImagesToCollect = numberImagesToCollect;
+		
+	}
+
+	@Override
+	public boolean integratesBetweenPoints() {
+		return true;
+	}
+
+	@Override
+	public void setHardwareTriggering(boolean b) throws DeviceException {
+		hardwareTriggering = b;
+		fastMode = b;
+	}
+
+	@Override
+	public boolean isHardwareTriggering() {
+		return hardwareTriggering;
+	}		
 }
 
 class Utils {
@@ -556,7 +641,6 @@ class LastImagedPositionInputStreamImpl implements PositionInputStream<Integer> 
 					long startTime = System.nanoTime();
 					while( maxTimeToWaitForImage_ms < 0 || (System.nanoTime()-startTime) < maxTimeToWaitForImage_ms*1000000 ){
 						Thread.sleep(timeIntervalWhilstWaiting_ms);
-						ScanBase.checkForInterrupts();
 						currentSavingNextNumber = getSavingNextNumber();
 						if (currentSavingNextNumber != lastSavingNextNumber)
 							break;
@@ -579,6 +663,8 @@ class LastImagedPositionInputStreamImpl implements PositionInputStream<Integer> 
 			throw new DeviceException(" getSavingNextNumber failed ", TangoUtils.createDeviceExceptionStack(e1));
 		}
 	}
+	
+
 }
 
 class FilePathCallable implements Callable<String> {

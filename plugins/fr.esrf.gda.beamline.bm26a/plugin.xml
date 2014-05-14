@@ -461,10 +461,6 @@
             class="uk.ac.gda.beans.exafs.SampleElements">
       </bean>
       <bean
-            class="uk.ac.gda.beans.vortex.VortexParameters"
-            describer="uk.ac.gda.exafs.ui.describers.VortexDescriber">
-      </bean>
-      <bean
             class="uk.ac.gda.beans.exafs.XasScanParameters"
             describer="uk.ac.gda.exafs.ui.describers.XasDescriber">
       </bean>
@@ -542,14 +538,6 @@
             name="Output"
             template="Output_Parameters"
             type="Output">
-      </describer>
-      <describer
-            bean="uk.ac.gda.beans.vortex.VortexParameters"
-            contentType="uk.ac.diamond.gda.client.exafs.getVortexContent"
-            includeInNew="false"
-            name="Vortex"
-            template="Vortex_Parameters"
-            type="UNREGISTERED">
       </describer>
       <describer
             bean="uk.ac.gda.beans.exafs.SampleElements"

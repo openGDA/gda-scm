@@ -21,12 +21,13 @@ package uk.ac.gda.devices.bssc.ispyb;
 public class BioSAXSDBFactory {
 	
 	private static String jdbcURL;
+	private static NotifyISpyBObserversObject notifyObject;
 	
 	public static BioSAXSISPyB makeAPI() {
 		if (jdbcURL == null) {
 			throw new IllegalArgumentException("jdbcURL unspecified");
 		}
-		return new BioSAXSISPyBviaOracle(jdbcURL);
+		return new BioSAXSISPyBviaOracle(jdbcURL, notifyObject);
 	}
 
 	public String getJdbcURL() {
@@ -35,5 +36,13 @@ public class BioSAXSDBFactory {
 
 	public void setJdbcURL(String jdbcURL) {
 		BioSAXSDBFactory.jdbcURL = jdbcURL;
+	}
+
+	public static NotifyISpyBObserversObject getNotifyObject() {
+		return notifyObject;
+	}
+
+	public static void setNotifyObject(NotifyISpyBObserversObject notifyObject) {
+		BioSAXSDBFactory.notifyObject = notifyObject;
 	}
 }

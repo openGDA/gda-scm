@@ -70,7 +70,7 @@ public class BioSaxsProgressViewTest {
 			analysisStatusDetails.setStatus(ISpyBStatus.NOT_STARTED);
 			analysisStatusDetails.setProgress(0);
 
-			ISAXSProgress progress = new BioSAXSProgress(i, "Sample " + i,
+			ISAXSProgress progress = new BioSAXSProgress(i, i, "Sample " + i,
 					collectionStatusDetails, reductionStatusDetails,
 					analysisStatusDetails);;
 
@@ -89,28 +89,28 @@ public class BioSaxsProgressViewTest {
 			ISpyBStatusInfo collectionStatusDetails = new ISpyBStatusInfo();
 			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			collectionStatusDetails.setProgress(33);
-			progress.setCollectionProgress(collectionStatusDetails);
+			progress.setCollectionStatusInfo(collectionStatusDetails);
 			delay(1000);
 
 			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			collectionStatusDetails.setProgress(66);
-			progress.setCollectionProgress(collectionStatusDetails);
+			progress.setCollectionStatusInfo(collectionStatusDetails);
 			delay(1000);
 
 			collectionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			collectionStatusDetails.setProgress(100);
-			progress.setCollectionProgress(collectionStatusDetails);
+			progress.setCollectionStatusInfo(collectionStatusDetails);
 			delay(1000);
 
 			ISpyBStatusInfo reductionStatusDetails = new ISpyBStatusInfo();
 			reductionStatusDetails.setStatus(ISpyBStatus.RUNNING);
 			reductionStatusDetails.setProgress(100);
-			progress.setReductionProgress(reductionStatusDetails);
+			progress.setReductionStatusInfo(reductionStatusDetails);
 
 			ISpyBStatusInfo analysisStatusDetails = new ISpyBStatusInfo();
 			analysisStatusDetails.setStatus(ISpyBStatus.COMPLETE);
 			analysisStatusDetails.setProgress(100);
-			progress.setAnalysisProgress(analysisStatusDetails);
+			progress.setAnalysisStatusInfo(analysisStatusDetails);
 		}
 		delay(1000);
 	}
@@ -133,15 +133,15 @@ public class BioSaxsProgressViewTest {
 		ISpyBStatusInfo analysisStatusInfo = new ISpyBStatusInfo();
 		collectionStatusInfo.setProgress(0);
 
-		ISAXSProgress newProgress = new BioSAXSProgress(
+		ISAXSProgress newProgress = new BioSAXSProgress(model.size() + 1, 
 				model.size() + 1, "New Sample "
 						+ model.size() + 1, collectionStatusInfo,
 				reductionStatusInfo, analysisStatusInfo);
 		;
 
-		newProgress.setCollectionProgress(collectionStatusInfo);
-		newProgress.setReductionProgress(reductionStatusInfo);
-		newProgress.setAnalysisProgress(analysisStatusInfo);
+		newProgress.setCollectionStatusInfo(collectionStatusInfo);
+		newProgress.setAnalysisStatusInfo(reductionStatusInfo);
+		newProgress.setAnalysisStatusInfo(analysisStatusInfo);
 
 		items.add(newProgress);
 	}

@@ -10,6 +10,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -22,13 +24,19 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.eclipse.ui.ide.IDE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
+import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
+import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanUIEditor;
+import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 
@@ -52,6 +60,7 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 	private static final int EXPOSURE_TEMP_COL_NO = 15;
 
 	protected FileFieldEditor editor;
+	protected String newFileName;
 
 	public BSSCImportWizardPage(String pageName, IStructuredSelection selection) {
 		super(pageName, selection);
@@ -77,7 +86,7 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				IPath path = new Path(BSSCImportWizardPage.this.editor.getStringValue());
-				String newFileName = path.removeFileExtension().addFileExtension("biosaxs").lastSegment();
+				newFileName = path.removeFileExtension().addFileExtension("biosaxs").lastSegment();
 				setFileName(newFileName);
 			}
 		});
@@ -160,6 +169,14 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 
 			sessionBean.setMeasurements(measurements);
 
+			String xmlFilePath = newFileName.substring(0, newFileName.lastIndexOf("."));
+			String bioSAXSFilePath = xmlFilePath + ".biosaxs";
+			File bioSAXSfile = new File(bioSAXSFilePath);
+			XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, bioSAXSfile);
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(bioSAXSfile.toURI());
+			IDE.openEditorOnFileStore(page, biosaxsFileStore);
+			
 			return BSSCWizardUtils.sessionBeanToStream(sessionBean);
 		} catch (Exception e) {
 			return null;

@@ -18,32 +18,48 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import gda.rcp.DataProject;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.common.rcp.util.EclipseUtils;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
+import uk.ac.gda.devices.bssc.beans.LocationBean;
+import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
+import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	private static final Logger logger = LoggerFactory.getLogger(BSSCSessionBeanEditor.class);
+	private BSSCSessionBean sessionBean;
+	private ArrayList<TitrationBean> measurements;
 
 	public BSSCSessionBeanEditor() {
 		super();
@@ -95,7 +111,10 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		dialog.setText("Save as BIOSAXS Experiment");
 		dialog.setFilterExtensions(new String[] { "*.biosaxs", "*.xml" });
 		final File currentFile = new File(this.path);
-		dialog.setFilterPath(currentFile.getParentFile().getAbsolutePath());
+		IProject dataProject = DataProject.getDataProjectIfExists();
+		IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
+		IPath defaultPath = defaultWorkspaceFolder.getRawLocation().makeAbsolute();
+		dialog.setFilterPath(defaultPath.toString());
 
 		String newFile = dialog.open();
 		if (newFile != null) {
@@ -147,5 +166,89 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 			doSave(new NullProgressMonitor());
 			setDirty(false);
 		}
+	}
+
+	public void openEditorWithDefaultSamples() {
+		IProject dataProject = DataProject.getDataProjectIfExists();
+
+		if (dataProject != null) {
+			IFolder defaultWorkspaceFolder = dataProject.getFolder("data/xml");
+			IFile defaultWorkSpaceFile = defaultWorkspaceFolder.getFile("default.biosaxs");
+			File nativeFile = defaultWorkSpaceFile.getRawLocation().makeAbsolute().toFile();
+
+			if (!nativeFile.exists()) {
+				sessionBean = new BSSCSessionBean();
+				measurements = new ArrayList<TitrationBean>();
+
+				try {
+					TitrationBean tibi1 = new TitrationBean();
+					initialiseTitrationBean(tibi1, "Sample A1", "low", (short) 1, 'A', (short) 3, (short) 1, 'A',
+							(short) 1, 10, 560, 0.5, 120, (float) 22.0);
+					TitrationBean tibi2 = new TitrationBean();
+					initialiseTitrationBean(tibi2, "Sample B1", "medium", (short) 1, 'B', (short) 3, (short) 1, 'B',
+							(short) 1, 30, 78, 0.5, 120, (float) 22.0);
+					TitrationBean tibi3 = new TitrationBean();
+					initialiseTitrationBean(tibi3, "Sample C1", "medium", (short) 1, 'C', (short) 3, (short) 1, 'C',
+							(short) 1, 300, 340, 2.0, 30, (float) 22.0);
+					TitrationBean tibi4 = new TitrationBean();
+					initialiseTitrationBean(tibi4, "Sample C2", "medium", (short) 1, 'C', (short) 3, (short) 2, 'C',
+							(short) 1, 150, 340, 2.0, 30, (float) 22.0);
+					measurements.add(tibi1);
+					measurements.add(tibi2);
+					measurements.add(tibi3);
+					measurements.add(tibi4);
+				} catch (Exception e) {
+					logger.error("Exception ", e);
+				}
+
+				sessionBean.setMeasurements(measurements);
+				try {
+					XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, nativeFile);
+				} catch (Exception e) {
+					logger.error("Exception writing bean to XML", e);
+				}
+			}
+
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			IFileStore biosaxsFileStore = EFS.getLocalFileSystem().getStore(nativeFile.toURI());
+			try {
+				if (page != null) {
+					IDE.openEditorOnFileStore(page, biosaxsFileStore);
+				}
+			} catch (PartInitException e) {
+				logger.error("PartInitException opening editor", e);
+			}
+		}
+	}
+
+	private void initialiseTitrationBean(TitrationBean titrationBean, String name, String viscosity, short bufferCol,
+			char bufferRow, short bufferPlate, short col, char row, short plate, double concentration,
+			double molecularWeight, double timePerFrame, int noOfFrames, float exposureTemp) throws Exception {
+		LocationBean bufferLocation = new LocationBean();
+		LocationBean location = new LocationBean();
+		titrationBean.setSampleName(name);
+		titrationBean.setViscosity(viscosity);
+		bufferLocation.setColumn(bufferCol);
+		bufferLocation.setRow(bufferRow);
+		bufferLocation.setPlate(bufferPlate);
+		location.setColumn(col);
+		location.setRow(row);
+		location.setPlate(plate);
+		if (!location.isValid()) {
+			location = null;
+			throw new Exception("invalid sample location");
+		}
+		if (!bufferLocation.isValid()) {
+			bufferLocation = null;
+			throw new Exception("invalid buffer location");
+		}
+		titrationBean.setLocation(location);
+		titrationBean.setBufferLocation(bufferLocation);
+		titrationBean.setRecouperateLocation(null);
+		titrationBean.setConcentration(concentration);
+		titrationBean.setMolecularWeight(molecularWeight);
+		titrationBean.setTimePerFrame(timePerFrame);
+		titrationBean.setFrames(noOfFrames);
+		titrationBean.setExposureTemperature(exposureTemp);
 	}
 }
