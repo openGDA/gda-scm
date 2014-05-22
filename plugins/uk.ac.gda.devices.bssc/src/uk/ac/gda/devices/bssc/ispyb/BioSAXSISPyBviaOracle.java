@@ -202,15 +202,30 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	protected long createSamplePlate(long blsessionId, long experimentId, String name, long plateGroupId, short plate) throws SQLException {
 		long samplePlateId = -1;
+		short plateTypeId = -1;
 		connectIfNotConnected();
 		String insertSql = "BEGIN INSERT INTO ispyb4a_db.SamplePlate (samplePlateId, experimentId, blsessionId, name, plateGroupId, plateTypeId, slotPositionColumn) "
-				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?, 2, ?) RETURNING samplePlateId INTO ?; END;";
+				+ "VALUES (ispyb4a_db.s_SamplePlate.nextval, ?, ?, ?, ?, ?, ?) RETURNING samplePlateId INTO ?; END;";
 		CallableStatement stmt = conn.prepareCall(insertSql);
 		int index = 1;
 		stmt.setLong(index++, experimentId);
 		stmt.setLong(index++, blsessionId);
 		stmt.setString(index++, name);
 		stmt.setLong(index++, plateGroupId);
+		
+		//TODO use some beamline-staff changeable method instead of hard-coding
+		//the plateTypeIds are from ISPyBB table PlateType
+		if (plate == 1) {
+			plateTypeId = 4; //96-well plate
+		}
+		else if (plate == 2) {
+			plateTypeId = 1; //deep 96-well plate
+		}
+		else if (plate == 3) {
+			plateTypeId = 2; // 4 x (8+3) plate
+		}
+		
+		stmt.setShort(index++, plateTypeId);
 		stmt.setShort(index++, plate);
 
 		stmt.registerOutParameter(index, java.sql.Types.VARCHAR);
