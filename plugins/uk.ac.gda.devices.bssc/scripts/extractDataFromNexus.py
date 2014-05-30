@@ -17,12 +17,12 @@ def setupPathNames(fileIn, detectorName):
 	backgroundErrorsPath = backgroundPath + "_errors"
 	normalizationPath = detectorPrefix+"_processing/Normalisation/data"
 	normalizationErrorsPath = detectorPrefix+"_processing/Normalisation/errors"
-	guinierPath = detectorPrefix+"_processing/GuinierPlot/data"
-	guinierErrorsPath = detectorPrefix+"_processing/GuinierPlot/errors"
-	guinierXPath = detectorPrefix+"_processing/GuinierPlot/variable"
-	guinierRgPath = detectorPrefix+"_processing/GuinierPlot/Rg"
-	kratkyPath = detectorPrefix+"_processing/KratkyPlot/data"
-	kratkyErrorsPath = detectorPrefix+"_processing/KratkyPlot/errors"
+	guinierPath = detectorPrefix+"_processing/Guinier Plot/data"
+	guinierErrorsPath = detectorPrefix+"_processing/Guinier Plot/errors"
+	guinierXPath = detectorPrefix+"_processing/Guinier Plot/variable"
+	guinierRgPath = detectorPrefix+"_processing/Guinier Plot/Rg"
+	kratkyPath = detectorPrefix+"_processing/Kratky Plot/data"
+	kratkyErrorsPath = detectorPrefix+"_processing/Kratky Plot/errors"
 	backgroundFilePath = detectorPrefix+"_processing/BackgroundSubtraction/background_filename"
 	return (dataPath, dataErrorsPath), (qPath, qErrorsPath), (normalizationPath, normalizationErrorsPath), \
 		(backgroundPath, backgroundErrorsPath), (guinierXPath, guinierPath, guinierErrorsPath, guinierRgPath), (kratkyPath, kratkyErrorsPath), \
@@ -146,6 +146,8 @@ def writeOutData(outputDir, datas, qs, normalizations, backgrounds, results): #r
 	return curveFiles
 
 def plotData(outputFolderName, qs, guinierDatas, kratkyDatas):
+	import matplotlib
+	matplotlib.use('Agg')
 	import matplotlib.pyplot as plt
 	import math
 	if len(guinierDatas[0])>0 and len(guinierDatas[1])>0 and len(guinierDatas[2])>0 and len(guinierDatas[3])>0:
