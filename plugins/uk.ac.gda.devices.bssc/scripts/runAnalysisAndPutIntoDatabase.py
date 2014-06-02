@@ -14,7 +14,7 @@ additionalPath = "ControlSolutionScatteringv0_3"
 def createWebService():
 	from suds.client import Client
 	from suds.transport.http import HttpAuthenticated
-	host = "ispybb-test.diamond.ac.uk"
+	host = "ispybb.diamond.ac.uk"
 	URL = "http://"+host+":8080/ispyb-ejb3/ispybWS/ToolsForBiosaxsWebService?wsdl"
 	sys.path.append("/dls_sw/dasc/important")
 	from ispybbUserInfo import ispybbUser, ispybbPassword
