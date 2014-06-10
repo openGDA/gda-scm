@@ -138,6 +138,10 @@ public class BioSAXSProgressComposite extends FieldComposite {
 			public void handleEvent(Event event) {
 				Point pt = new Point(event.x, event.y);
 				TableItem tableItem = table.getItem(pt);
+				if (tableItem == null) {
+					logger.trace("No item selected on table");
+					return;
+				}
 				ISAXSProgress sampleProgress = (ISAXSProgress) tableItem.getData();
 
 				IWorkbench workBench = PlatformUI.getWorkbench();
