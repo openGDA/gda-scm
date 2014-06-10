@@ -409,6 +409,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
 					enablePlotGroup(false);
+					slider.setEnabled(false);
 					dataSetPath = rgPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
@@ -429,6 +430,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (invariant.getSelection()) {
 					enablePlotGroup(false);
+					slider.setEnabled(false);
 					dataSetPath = invPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
