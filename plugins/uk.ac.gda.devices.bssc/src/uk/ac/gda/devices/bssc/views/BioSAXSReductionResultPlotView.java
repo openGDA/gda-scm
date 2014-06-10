@@ -353,8 +353,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		slider.setIncrements(1, 1);
 		slider.setToolTipText("Starting position");
 
-		GridData gd_slider = new GridData(SWT.NONE);
-		gd_slider.widthHint = 178;
+		GridData gd_slider = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		slider.setLayoutData(gd_slider);
 
 		grpData = new Group(sliderComposite, SWT.NONE);

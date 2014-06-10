@@ -29,13 +29,10 @@ import org.eclipse.swt.widgets.Slider;
  */
 public class LabelledSlider extends Composite {
 	Slider slider = null;
-	private Label leftLabel = null;
-	private Label rightLabel = null;
+	private Label leftLabel;
+	private Label rightLabel;
+	private Label currentLabel;
 
-	/**
-	 * @param parent
-	 * @param style
-	 */
 	public LabelledSlider(Composite parent, int style) {
 		super(parent, SWT.NONE);
 
@@ -47,67 +44,46 @@ public class LabelledSlider extends Composite {
 		slider.setLayoutData(gd);
 
 		leftLabel = new Label(this, SWT.NONE);
-		gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-		gd.widthHint = 80;
+		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 		leftLabel.setLayoutData(gd);
 		leftLabel.setToolTipText("Start value");
-
-		Label l = new Label(this, SWT.RIGHT);
-		l.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		
+		currentLabel = new Label(this, SWT.CENTER);
+		gd = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+		currentLabel.setLayoutData(gd);
+		currentLabel.setToolTipText("Current Frame");
 
 		rightLabel = new Label(this, SWT.RIGHT);
-		gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-		gd.widthHint = 80;
+		gd = new GridData(SWT.RIGHT, SWT.CENTER, true, false);
 		rightLabel.setLayoutData(gd);
 		rightLabel.setToolTipText("End value");
+		getValue();
 	}
 
-	/**
-	 * @param label
-	 */
 	public void setLeftLabel(String label) {
 		leftLabel.setText(label);
 	}
 
-	/**
-	 * @param label
-	 */
 	public void setRightLabel(String label) {
 		rightLabel.setText(label);
 	}
 
-	/**
-	 * @param sListener
-	 */
 	public void addSelectionListener(SelectionListener sListener) {
 		slider.addSelectionListener(sListener);
 	}
 
-	/**
-	 * @param minimum
-	 * @param maximum
-	 * @param minText
-	 * @param maxText
-	 */
 	public void setMinMax(int minimum, int maximum, String minText, String maxText) {
 		slider.setMinimum(minimum);
-		slider.setMaximum(maximum);
+		slider.setMaximum(maximum + slider.getThumb());
 		leftLabel.setText(minText);
 		rightLabel.setText(maxText);
 		this.pack();
 	}
 
-	/**
-	 * @param i
-	 */
 	public void setThumb(int i) {
 		slider.setThumb(i);
 	}
 
-	/**
-	 * @param inc
-	 * @param pageInc
-	 */
 	public void setIncrements(int inc, int pageInc) {
 		slider.setIncrement(inc);
 		slider.setPageIncrement(pageInc);
@@ -118,28 +94,20 @@ public class LabelledSlider extends Composite {
 		slider.setEnabled(enabled);
 	}
 
-	/**
-	 * @param s
-	 * @return true if s is the same as slider 
-	 */
 	public boolean equals(Slider s) {
 		return slider.equals(s);
 	}
 
-	/**
-	 * Set slider to given value
-	 * @param value
-	 */
 	public void setValue(int value) {
 		if (value < 0 || value >= slider.getMaximum())
 			value = 0;
 		slider.setSelection(value);
+		currentLabel.setText(String.valueOf(value));
 	}
 
-	/**
-	 * @return slider value
-	 */
 	public int getValue() {
-		return slider.getSelection();
+		int val = slider.getSelection();
+		currentLabel.setText(String.valueOf(val));
+		return val;
 	}
 }
