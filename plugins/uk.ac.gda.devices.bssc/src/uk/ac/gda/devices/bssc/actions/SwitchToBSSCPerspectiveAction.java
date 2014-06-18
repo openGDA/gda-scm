@@ -35,9 +35,11 @@ public class SwitchToBSSCPerspectiveAction implements IIntroAction {
 
 		// open the BBSSC setup perspective
 		for (String id : new String[] { "uk.ac.gda.client.scripting.JythonPerspective",
-				"gda.rcp.ncd.perspectives.WaxsPerspective", "gda.rcp.ncd.perspectives.SaxsProcessingPerspective",
-				"gda.rcp.ncd.perspectives.SaxsPerspective", "gda.rcp.ncd.perspectives.NcdDetectorPerspective",
-				"gda.rcp.ncd.perspectives.SetupPerspective" }) {
+						"gda.rcp.ncd.perspectives.SaxsProcessingPerspective",  // must precede the Saxs & Waxs Perspectives to avoid NPE error in [S|W]axs Data Source View 
+						"gda.rcp.ncd.perspectives.SaxsPerspective",                                        
+						"gda.rcp.ncd.perspectives.WaxsPerspective",
+						"gda.rcp.ncd.perspectives.NcdDetectorPerspective",
+						"gda.rcp.ncd.perspectives.SetupPerspective" }) 		{
 			try {
 				PlatformUI.getWorkbench().showPerspective(id, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
 			} catch (WorkbenchException e) {
