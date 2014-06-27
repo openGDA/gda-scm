@@ -303,6 +303,9 @@
 		<property name="name" value="FileRegistrar" />
 		<property name="directory" value="/tmp/ncdsim-" />
 	</bean>
+	<bean id="twodscan" class="gda.data.scan.TwoDPlotListener">
+		<property name="plotPanel" value="Plot 2D" />
+	</bean>
 	<bean id="scan2elog" class="gda.data.ScanToElogExtender">
 		<property name="logID" value="DAG" />
 		<property name="groupID" value="SCAN" />
@@ -317,6 +320,7 @@
 		<property name="dataWriterExtenders">
 			<list>
 				<ref bean="FileRegistrar" />
+				<ref bean="twodscan"/>
 				<!-- <ref bean="scan2elog" /> -->
 			</list>
 		</property>
