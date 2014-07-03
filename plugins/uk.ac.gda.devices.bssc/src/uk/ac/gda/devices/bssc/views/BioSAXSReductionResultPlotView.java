@@ -352,9 +352,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		slider.setIncrements(1, 1);
 		slider.setToolTipText("Starting position");
+		slider.setEnabled(false);
 
-		GridData gd_slider = new GridData(SWT.NONE);
-		gd_slider.widthHint = 178;
+		GridData gd_slider = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		slider.setLayoutData(gd_slider);
 
 		grpData = new Group(sliderComposite, SWT.NONE);
@@ -410,6 +410,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
 					enablePlotGroup(false);
+					slider.setEnabled(false);
 					dataSetPath = rgPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
@@ -430,6 +431,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (invariant.getSelection()) {
 					enablePlotGroup(false);
+					slider.setEnabled(false);
 					dataSetPath = invPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
