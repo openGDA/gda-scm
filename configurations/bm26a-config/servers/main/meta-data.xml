@@ -1,14 +1,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-<!--
-	<bean id="tango1" class="gda.device.DummyTangoDeviceProxy">
-		<property name="local" value="true" />
-		<property name="deviceName" value="tango://gmvig1:12345/test/tango/1#dbase=no" />
-	</bean>
--->				
 	<bean id="GDAMetadata" class="gda.data.metadata.GdaMetadata">
 		<property name="metadataEntries">
 			<list>
@@ -28,15 +22,17 @@
 					<property name="name" value="probe" />
 					<property name="propertyName" value="gda.facility.probe" />
 				</bean>
-<!--
 				<bean class="gda.data.metadata.TangoMetadataEntry">
 					<property name="name" value="instrument.source.current" />
-					<property name="tangoDeviceProxy" ref="tango1" />
-					<property name="attributeName" value="double_scalar_w" />
+					<property name="tangoDeviceProxy" ref="machineDeviceProxy" />
+					<property name="attributeName" value="SR_Current" />
 				</bean>
--->
+				<bean class="gda.data.metadata.TangoMetadataEntry">
+					<property name="name" value="instrument.source.fill.mode" />
+					<property name="tangoDeviceProxy" ref="machineDeviceProxy" />
+					<property name="attributeName" value="SR_Filling_Mode" />
+				</bean>
 			</list>
 		</property>
 	</bean>
-
 </beans>

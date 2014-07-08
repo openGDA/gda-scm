@@ -145,6 +145,10 @@ public class TangoScannable extends ScannableBase {
 				value = devattr.extractUShort();
 			} else if (devattrDataType == TangoConst.Tango_DEV_ULONG) {
 				value = devattr.extractULong();
+			} else if (devattrDataType == TangoConst.Tango_DEV_STRING) {
+				value = devattr.extractString();
+			} else {
+				throw new DeviceException("Attribute type " + devattrDataType + " is not implemented yet");
 			}
 		} catch (DevFailed e) {
 			logger.error(e.errors[0].desc);

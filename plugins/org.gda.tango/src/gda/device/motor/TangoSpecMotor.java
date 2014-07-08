@@ -21,11 +21,16 @@ package gda.device.motor;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoApi.DeviceAttribute;
+import fr.esrf.TangoApi.events.ITangoChangeListener;
+import fr.esrf.TangoApi.events.TangoChangeEvent;
+import fr.esrf.TangoApi.events.TangoEventsAdapter;
+import gda.device.DeviceException;
 import gda.device.Motor;
 import gda.device.MotorException;
 import gda.device.MotorStatus;
 import gda.device.TangoDeviceProxy;
 import gda.factory.FactoryException;
+import gda.device.spec.TangoSpecCmd;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +43,16 @@ public class TangoSpecMotor extends MotorBase implements Motor {
 
 	private volatile MotorStatus motorStatus = MotorStatus.UNKNOWN;
 	private DevState state;
-	private TangoDeviceProxy dev;
-
+	private TangoDeviceProxy tangoDeviceProxy;
+	private TangoSpecCmd tangoSpecCmd;
+	private String specMotorName;
+	
 	@Override
 	public void configure() throws FactoryException {
 		try {
 			isAvailable();
 			motorStatus = MotorStatus.READY;
-			state = dev.state();
+			state = tangoDeviceProxy.state();
 		} catch (Exception e) {
 			logger.error("TangoMotor configure: {}", e);
 			logger.error("TangoMotor configure {}", e.getMessage());
@@ -54,18 +61,34 @@ public class TangoSpecMotor extends MotorBase implements Motor {
 	}
 
 	public TangoDeviceProxy getTangoDeviceProxy() {
-		return dev;
+		return tangoDeviceProxy;
 	}
 
-	public void setTangoDeviceProxy(TangoDeviceProxy dev) {
-		this.dev = dev;
+	public void setTangoDeviceProxy(TangoDeviceProxy tangoDeviceProxy) {
+		this.tangoDeviceProxy = tangoDeviceProxy;
+	}
+
+	public TangoSpecCmd getTangoSpecCmd() {
+		return tangoSpecCmd;
+	}
+
+	public void setTangoSpecCmd(TangoSpecCmd tangoSpecCmd) {
+		this.tangoSpecCmd = tangoSpecCmd;
+	}
+
+	public String getSpecMotorName() {
+		return specMotorName;
+	}
+
+	public void setSpecMotorName(String specMotorName) {
+		this.specMotorName = specMotorName;
 	}
 
 	@Override
 	public double getPosition() throws MotorException {
 		isAvailable();
 		try {
-			return dev.read_attribute("Position").extractDouble();
+			return tangoDeviceProxy.read_attribute("Position").extractDouble();
 		} catch (DevFailed e) {
 			logger.error(e.errors[0].desc);
 			throw new MotorException(getStatus(), "failed to get position" + e.errors[0].desc);
@@ -76,7 +99,7 @@ public class TangoSpecMotor extends MotorBase implements Motor {
 	public void moveTo(double position) throws MotorException {
 		isAvailable();
 		try {
-			dev.write_attribute(new DeviceAttribute("Position", position));
+			tangoDeviceProxy.write_attribute(new DeviceAttribute("Position", position));
 			state = DevState.MOVING;
 		} catch (DevFailed e) {
 			logger.error(e.errors[0].desc);
@@ -93,7 +116,7 @@ public class TangoSpecMotor extends MotorBase implements Motor {
 	public void stop() throws MotorException {
 		isAvailable();
 		try {
-			dev.command_inout("Abort");
+			tangoDeviceProxy.command_inout("Abort");
 		} catch (DevFailed e) {
 			logger.error(e.errors[0].desc);
 			throw new MotorException(getStatus(), "failed to stop " + e.errors[0].desc);
@@ -110,11 +133,11 @@ public class TangoSpecMotor extends MotorBase implements Motor {
 		MotorStatus motorStatus;
 		isAvailable();
 		try {
-//			try {
-//				Thread.sleep(100); // Give spec time to change device server state!
-//			} catch (InterruptedException e) {
-//			}
-			state = dev.state();
+			//try {
+			//	Thread.sleep(500); // Give spec time to change device server state!
+			//} catch (InterruptedException e) {
+			//}
+			state = tangoDeviceProxy.state();
 			switch (state.value()) {
 			case DevState._ON:
 				motorStatus = MotorStatus.READY;
@@ -144,27 +167,35 @@ public class TangoSpecMotor extends MotorBase implements Motor {
 	private void isAvailable() throws MotorException {
 		try {
 			// Is the device still connected or just started
-			dev.status();
+			tangoDeviceProxy.status();
 		} catch (DevFailed e) {
 			// device has lost connection
 			configured = false;
-			throw new MotorException(MotorStatus.UNKNOWN, "Tango device server " + dev.get_name() + " failed");
+			throw new MotorException(MotorStatus.UNKNOWN, "Tango device server " + tangoDeviceProxy.get_name() + " failed");
 		} catch (Exception e) {
 			throw new MotorException(MotorStatus.UNKNOWN, "Tango device server stuffed");			
 		}
 	}
 
+	@Override
+	public void setPosition(double position) throws MotorException {
+		logger.info("setPosition() to " + position);
+		try {
+			String cmd = "eval(\"set " + specMotorName + " " + position + "\")";
+			tangoSpecCmd.executeCmd(cmd);
+		} catch (DeviceException e) {
+			logger.error(e.getMessage());
+			throw new MotorException(motorStatus, "failed to set new position" + e.getMessage());
+		}
+	}
+
+
 // Methods not implemented below here
 	
 	@Override
 	public double getSpeed() throws MotorException {
-		logger.error("getSpeed() is not implemented");
-		return 0.0;
-	}
-
-	@Override
-	public void setPosition(double position) throws MotorException {
 		logger.error("setPosition() is not implemented");
+		return 0.0;
 	}
 
 	@Override

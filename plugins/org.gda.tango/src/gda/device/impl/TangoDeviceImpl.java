@@ -103,4 +103,9 @@ public class TangoDeviceImpl implements TangoDevice {
 	public void put_property(DbDatum property) throws DevFailed {
 		deviceProxy.put_property(property);
 	}
+
+	@Override
+	public void set_timeout_millis(int millis) throws DevFailed {
+		deviceProxy.set_timeout_millis(millis);
+	}
 }

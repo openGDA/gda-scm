@@ -102,6 +102,10 @@ public class TangoDeviceProxy {
 		tangoDevice.put_property(property);
 	}
 
+	public void set_timeout_millis(int millis) throws DevFailed {
+		tangoDevice.set_timeout_millis(millis);
+	}
+
 	public void isAvailable() throws DeviceException {
 		try {
 			// Is the device still connected or just started

@@ -39,4 +39,5 @@ public interface TangoDevice {
 	public boolean use_db();
 	public DbDatum get_property(String propertyName) throws DevFailed;
 	public void put_property(DbDatum property) throws DevFailed;
+	public void set_timeout_millis(int millis) throws DevFailed;
 }

@@ -132,6 +132,12 @@ public class TangoDeviceLogger implements TangoDevice{
 	}
 
 	@Override
+	public void set_timeout_millis(int millis) throws DevFailed {
+		logger.info("set_timeout_millis: milliseconds:[" + millis +"]");
+		device.set_timeout_millis(millis);
+	}
+
+	@Override
 	public String get_name() {
 		logger.info("get_name");
 		String res = device.get_name();

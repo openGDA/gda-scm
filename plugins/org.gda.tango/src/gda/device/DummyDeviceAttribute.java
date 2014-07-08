@@ -18,7 +18,6 @@
 
 package gda.device;
 
-import fr.esrf.Tango.DevFailed;
 import fr.esrf.TangoApi.DeviceAttribute;
 import fr.esrf.TangoDs.TangoConst;
 
@@ -83,14 +82,6 @@ public class DummyDeviceAttribute {
 
 	public void setattributeValue(String attributeValue) {
 		this.attributeValue = attributeValue;
-	}
-
-	public void setAttributeValue(String attributeValue) {
-		this.attributeValue = attributeValue;
-	}
-
-	public String getAttributeValue() {
-		return attributeValue;
 	}
 
 	public int getAttributeDataType() {

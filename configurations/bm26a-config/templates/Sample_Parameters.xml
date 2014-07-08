@@ -3,7 +3,7 @@
     <shouldValidate>true</shouldValidate>
     <name>Please set a sample name...</name>
     <description>Please add a description...</description>
-    <sampleWheelPosition>1</sampleWheelPosition>
+<!--     <sampleWheelPosition>1</sampleWheelPosition> -->
     <sampleEnvironment>None</sampleEnvironment>
     <roomTemperature>
         <x>0.0</x>
@@ -35,18 +35,6 @@
         <y>4.7</y>
         <z>2.5</z>
     </furnace>
-<!--     <microreactor> -->
-<!--         <gas0Rate>20</gas0Rate> -->
-<!--         <gas1Rate>0</gas1Rate> -->
-<!--         <gas2Rate>0</gas2Rate> -->
-<!--         <gas3Rate>20</gas3Rate> -->
-<!--         <gas4Rate>0</gas4Rate> -->
-<!--         <gas5Rate>0</gas5Rate> -->
-<!--         <gas6Rate>0</gas6Rate> -->
-<!--         <gas7Rate>0</gas7Rate> -->
-<!--         <temperature>150</temperature> -->
-<!--         <masses>2,32</masses> -->
-<!--     </microreactor> -->
     <custom_xyz>
         <deviceName>customxyz</deviceName>
         <x>0.0</x>

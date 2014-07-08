@@ -1,0 +1,84 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.diamond.ac.uk/schema/gda/corba
+        http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
+
+	<bean id="datawriterconfig" class="gda.data.scan.datawriter.AsciiDataWriterConfiguration">
+		<property name="commentMarker" value="#"></property>
+		<property name="controllerName" value="ExafsScriptObserver"></property>
+		<property name="header">
+			<list>
+				<bean id="machine1" class="gda.data.scan.datawriter.AsciiMetadataConfig">
+					<property name="label" value="ESRF DUBBLE" />
+				</bean>
+				<bean id="inst1" class="gda.data.scan.datawriter.AsciiMetadataConfig">
+					<property name="label" value="Instrument: BM26a-XAS Date: %s" />
+					<property name="labelValues">
+						<list>
+							<bean id="date1" class="gda.device.scannable.TimeScannable" />
+						</list>
+					</property>
+				</bean>
+				<bean id="ringenergy" class="gda.data.scan.datawriter.AsciiMetadataConfig">
+					<property name="label" value="Ring energy: 6 GeV" />
+				</bean>
+				<bean id="ringcurrentstart" class="gda.data.scan.datawriter.AsciiMetadataConfig">
+					<property name="label" value="Starting ring current: %5.5f" />
+					<property name="labelValues">
+						<list>
+							<ref bean="ringCurrent" />
+						</list>
+					</property>
+				</bean>
+				<bean id="ringfillmode" class="gda.data.scan.datawriter.AsciiMetadataConfig">
+					<property name="label" value="Ring fill mode: %s" />
+					<property name="labelValues">
+						<list>
+							<ref bean="fillMode" />
+						</list>
+					</property>
+				</bean>
+				<bean id="newLine1" class="gda.data.scan.datawriter.AsciiMetadataConfig">
+					<property name="label" value=" " />
+				</bean>
+			</list>
+		</property>
+<!-- 		<property name="footer"> -->
+<!-- 			<list> -->
+<!-- 				<bean id="inst2" class="gda.data.scan.datawriter.AsciiMetadataConfig"> -->
+<!-- 					<property name="label" value="Instrument: BM26a-XAS Date: %s" /> -->
+<!-- 					<property name="labelValues"> -->
+<!-- 						<list> -->
+<!-- 							<bean id="date2" class="gda.device.scannable.TimeScannable" /> -->
+<!-- 						</list> -->
+<!-- 					</property> -->
+<!-- 				</bean> -->
+<!-- 				<bean id="ringcurrentend" class="gda.data.scan.datawriter.AsciiMetadataConfig"> -->
+<!-- 					<property name="label" value="Final ring current: %5.5f" /> -->
+<!-- 					<property name="labelValues"> -->
+<!-- 						<list> -->
+<!-- 							<ref bean="ringCurrent" /> -->
+<!-- 						</list> -->
+<!-- 					</property> -->
+<!-- 				</bean> -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+
+	</bean>
+
+	<bean id="ringCurrent" class="gda.device.monitor.TangoMonitor">
+		<property name="TangoDeviceProxy" ref="machineDeviceProxy"/>
+		<property name="attributeName" value="SR_Current" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="fillMode" class="gda.device.monitor.TangoMonitor">
+		<property name="TangoDeviceProxy" ref="machineDeviceProxy"/>
+		<property name="attributeName" value="SR_Filling_Mode" />
+		<property name="local" value="true" />
+	</bean>
+
+</beans>

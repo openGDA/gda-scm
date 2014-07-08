@@ -182,6 +182,11 @@ public class DummyTangoDeviceImpl implements TangoDevice {
 		logger.debug("Property {} written", key);
 	}
 
+	@Override
+	public void set_timeout_millis(int millis) throws DevFailed {
+		logger.debug("set_timeout_millis: {}ms", millis);
+	}
+
 /*	@Override
 	public void isAvailable() throws DeviceException {
 	}
