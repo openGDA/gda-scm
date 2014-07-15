@@ -26,7 +26,7 @@ import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.PlotType;
 import org.eclipse.dawnsci.plotting.api.PlottingFactory;
 import org.eclipse.dawnsci.plotting.api.tool.IToolPageSystem;
-import org.dawnsci.slicing.api.util.SliceUtils;
+import org.eclipse.dawnsci.slicing.api.util.SliceUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

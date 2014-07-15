@@ -29,7 +29,7 @@ import org.eclipse.dawnsci.plotting.api.axis.IAxis;
 import org.eclipse.dawnsci.plotting.api.filter.AbstractPlottingFilter;
 import org.eclipse.dawnsci.plotting.api.filter.IFilterDecorator;
 import org.eclipse.dawnsci.plotting.api.tool.IToolPageSystem;
-import org.dawnsci.slicing.api.util.SliceUtils;
+import org.eclipse.dawnsci.slicing.api.util.SliceUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
