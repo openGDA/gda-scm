@@ -16,10 +16,6 @@
 	<import resource="file:${gda.config}/servers/main/${gda.mode}/meta-data.xml"/>
 	<import resource="file:${gda.config}/servers/main/${gda.mode}/detectors.xml"/>
 	
-<!-- 	GDA-5573 remove use of AdapterObjectCreators -->
-<!-- 	<bean class="gda.factory.AdapterObjectCreator"> -->
-<!-- 		<property name="name" value="${gda.factory.factoryName}"/> -->
-<!-- 	</bean> -->
 	<corba:adapterfactory namespace="${gda.factory.factoryName}" />
 
 	<import resource="file:${gda.config}/servers/main/${gda.mode}/command-server.xml"/>
