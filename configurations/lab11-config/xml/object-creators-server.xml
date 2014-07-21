@@ -1,28 +1,38 @@
+<!-- <beans xmlns="http://www.springframework.org/schema/beans" -->
+<!-- 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" -->
+<!-- 	xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba" -->
+<!-- 	xsi:schemaLocation="http://www.springframework.org/schema/beans -->
+<!-- 	http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.1.xsd -->
+<!-- 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd" > -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gda="http://www.diamond.ac.uk/schema/gda/gda"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.1.xsd
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd" >
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-2.0.xsd
+	http://www.diamond.ac.uk/schema/gda/gda http://www.diamond.ac.uk/schema/gda/gda/gda-gda-1.1.xsd
+	http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.1.xsd">
 	
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
 		<property name="location" value="file:${gda.config}/properties/java.properties" />
 	</bean>
 	
-	<corba:adapterfactory namespace="${gda.factory.factoryName}" />
+<!-- 	<corba:adapterfactory namespace="${gda.factory.factoryName}" /> -->
+	<corba:export namespace="lab11" />
 
 	<import resource="lab11_beans_server.xml" />
 
 	<bean id="jythonServerFacade" class="gda.jython.JythonServerFacade">
 		<constructor-arg ref="command_server" />
 	</bean>
-	<bean id="plot_server"
-		class="uk.ac.diamond.scisoft.analysis.plotserver.PlotServerBase" />
 	<bean id="bcm"
 		class="gda.server.beamlineConfigurationManager.BeamlineConfigurationManager" />
 	<bean id="FileRegistrar" class="gda.data.fileregistrar.FileRegistrar">
 		<property name="name" value="FileRegistrar" />
 		<property name="directory" value="/tmp/lab11-" />
+	</bean>
+	<bean id="twodscan" class="gda.data.scan.TwoDPlotListener">
+		<property name="plotPanel" value="Plot 2D" />
 	</bean>
 	<bean id="scan2elog" class="gda.data.ScanToElogExtender">
 		<property name="logID" value="DAG" />
@@ -38,6 +48,7 @@
 		<property name="dataWriterExtenders">
 			<list>
 				<ref bean="FileRegistrar" />
+				<ref bean="twodscan" />
 				<!-- <ref bean="scan2elog" /> -->
 			</list>
 		</property>
