@@ -9,7 +9,7 @@
     <!-- enable this if you want log message appear on local console -->
    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%r  %-5level [%logger{36}] - %m%n</pattern>
+            <pattern>%d  %-5level [%logger{36}] - %m%n</pattern>
         </layout>
     </appender>
     <appender name="LogPanel" class="gda.util.LogPanelAppender">
@@ -29,9 +29,9 @@
         </layout>
     </appender>
     <appender name="DebugFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>${gda.logs.dir}/gda_client.log</File>
+        <File>${gda.logs.dir}/client.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${gda.logs.dir}/gda_client.%d{yyyy-MM-dd}.log.zip</FileNamePattern>
+            <FileNamePattern>${gda.logs.dir}/client.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d %-5level [%logger] %ex - %m%n</pattern>
