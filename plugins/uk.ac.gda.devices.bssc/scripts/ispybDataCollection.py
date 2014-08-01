@@ -4,6 +4,7 @@ class ispybDataCollection:
 		host = "ispybb-test.diamond.ac.uk"
 		webServiceName = "ToolsForCollectionWebService"
 		self.createWebServiceClient(host, webServiceName)
+		self.createDataCollection()
 
 	def createWebServiceClient(self, host, webServiceName):
 		from suds.client import Client
