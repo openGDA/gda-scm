@@ -1,7 +1,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.diamond.ac.uk/schema/gda/corba
+	http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd
+		">
 
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -16,9 +19,7 @@
 	<import resource="file:${gda.config}/xml/server/id18-dummy-epics.xml"/>
 	<import resource="file:${gda.config}/xml/server/id18-scannables.xml"/>
 	
-	<bean class="gda.factory.AdapterObjectCreator">
-		<property name="name" value="${gda.factory.factoryName}"/>
-	</bean>
+	<corba:adapterfactory namespace="${gda.factory.factoryName}" />
 
 	<!-- The ScanDataStore is required for the communication of ScanDataPoints -->
 	<bean id="ScanDataStore" class="gda.util.simpleServlet.FindableSimpleServlet" />

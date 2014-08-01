@@ -18,9 +18,7 @@
 	<import resource="file:${gda.config}/xml/server/bm26-scannables.xml"/>
 	<import resource="file:${gda.config}/xml/server/bm26-samplestages.xml"/>
 	
-	<bean class="gda.factory.AdapterObjectCreator">
-		<property name="name" value="${gda.factory.factoryName}"/>
-	</bean>
+	<corba:adapterfactory namespace="${gda.factory.factoryName}" />
 
 	<!-- The ScanDataStore is required for the communication of ScanDataPoints -->
 	<bean id="ScanDataStore" class="gda.util.simpleServlet.FindableSimpleServlet" />

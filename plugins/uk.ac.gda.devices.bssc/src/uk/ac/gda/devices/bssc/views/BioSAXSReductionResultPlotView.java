@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dawb.common.services.ServiceManager;
-import org.dawnsci.plotting.api.IPlottingSystem;
-import org.dawnsci.plotting.api.PlotType;
-import org.dawnsci.plotting.api.PlottingFactory;
-import org.dawnsci.plotting.api.axis.IAxis;
-import org.dawnsci.plotting.api.filter.AbstractPlottingFilter;
-import org.dawnsci.plotting.api.filter.IFilterDecorator;
-import org.dawnsci.plotting.api.tool.IToolPageSystem;
-import org.dawnsci.slicing.api.util.SliceUtils;
+import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
+import org.eclipse.dawnsci.plotting.api.PlotType;
+import org.eclipse.dawnsci.plotting.api.PlottingFactory;
+import org.eclipse.dawnsci.plotting.api.axis.IAxis;
+import org.eclipse.dawnsci.plotting.api.filter.AbstractPlottingFilter;
+import org.eclipse.dawnsci.plotting.api.filter.IFilterDecorator;
+import org.eclipse.dawnsci.plotting.api.tool.IToolPageSystem;
+import org.eclipse.dawnsci.slicing.api.util.SliceUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -352,9 +352,9 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 		});
 		slider.setIncrements(1, 1);
 		slider.setToolTipText("Starting position");
+		slider.setEnabled(false);
 
-		GridData gd_slider = new GridData(SWT.NONE);
-		gd_slider.widthHint = 178;
+		GridData gd_slider = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		slider.setLayoutData(gd_slider);
 
 		grpData = new Group(sliderComposite, SWT.NONE);
@@ -410,6 +410,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (rg.getSelection()) {
 					enablePlotGroup(false);
+					slider.setEnabled(false);
 					dataSetPath = rgPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();
@@ -430,6 +431,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (invariant.getSelection()) {
 					enablePlotGroup(false);
+					slider.setEnabled(false);
 					dataSetPath = invPath;
 					xAxisPath = null;
 					loadRgPlotJob.schedule();

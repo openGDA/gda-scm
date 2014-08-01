@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dawb.common.services.ServiceManager;
-import org.dawnsci.plotting.api.IPlottingSystem;
-import org.dawnsci.plotting.api.PlotType;
-import org.dawnsci.plotting.api.PlottingFactory;
-import org.dawnsci.plotting.api.tool.IToolPageSystem;
-import org.dawnsci.slicing.api.util.SliceUtils;
+import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
+import org.eclipse.dawnsci.plotting.api.PlotType;
+import org.eclipse.dawnsci.plotting.api.PlottingFactory;
+import org.eclipse.dawnsci.plotting.api.tool.IToolPageSystem;
+import org.eclipse.dawnsci.slicing.api.util.SliceUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -83,13 +83,12 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 				lz = dh.getLazyDataset(dataSetPath);
 				int[] shape = lz.getShape();
 
-				final int maxframes = shape[1];
+				final int maxframes = shape[1] - 1;
 				
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
 						slider.setMinMax(0, maxframes, "0", String.valueOf(maxframes));
-						frame = 0;
 						slider.slider.setToolTipText(String.valueOf(frame));
 						slider.setValue(frame);
 					}
@@ -178,7 +177,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		sliderCompositeGL.marginWidth = 10;
 		sliderCompositeGL.marginHeight = 10;
 		sliderCompositeGL.horizontalSpacing = 10;
-		sliderCompositeGL.numColumns = 8;
+		sliderCompositeGL.numColumns = 6;
 
 		Label lblFrames = new Label(sliderComposite, SWT.NONE);
 		sliderComposite.setLayout(sliderCompositeGL);
@@ -186,6 +185,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		lblFrames.setLayoutData(new GridData(SWT.NONE));
 
 		slider = new LabelledSlider(sliderComposite, SWT.HORIZONTAL);
+		slider.setValue(frame);
 		slider.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -196,12 +196,8 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		slider.setIncrements(1, 1);
 		slider.setToolTipText("Starting position");
 
-		GridData gd_slider = new GridData(SWT.NONE);
-		gd_slider.widthHint = 222;
+		GridData gd_slider = new GridData(SWT.FILL, SWT.CENTER, true, true);
 		slider.setLayoutData(gd_slider);
-		new Label(sliderComposite, SWT.NONE);
-		new Label(sliderComposite, SWT.NONE);
-		new Label(sliderComposite, SWT.NONE);
 
 		for (int i = 0; i < 3; i++) {
 			Button button = new Button(sliderComposite, SWT.RADIO);
