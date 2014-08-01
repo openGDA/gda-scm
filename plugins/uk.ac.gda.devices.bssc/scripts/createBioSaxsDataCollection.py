@@ -62,7 +62,7 @@ def setCollectionValues(dataCollection, collectionValues):
 
 def storeCollection(dataCollection, client):
 	returned = client.service.storeOrUpdateDataCollection(dataCollection)
-	return
+	return returned
 
 #main body
 sys.exit(1)
@@ -74,4 +74,4 @@ fileIn="/dls/b21/data/2014/cm4976-3/b21-12433.nxs"
 h5File = getH5File(fileIn)
 values = getDataFromH5File(h5File)
 collection = setCollectionValues(collection, values)
-storeCollection(collection, client)
+print storeCollection(collection, client)
