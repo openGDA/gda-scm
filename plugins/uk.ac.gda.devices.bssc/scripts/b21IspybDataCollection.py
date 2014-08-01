@@ -34,7 +34,19 @@ def getDataFromH5File(h5In):
 	#TODO need blsessionid
 	map["sessionId"] = 18881
 	
-	map["comments"] = "juntestblahblah"
+	map["comments"] = "no comment"
+
+	map["xtalSnapshotFullPath1"] = "/dls/b21/data/2014/cm4962-3/.ispyb/testDir/testPrefix/ispybb_multiple_curves_20140731_5_crop.png"
+	map["xtalSnapshotFullPath2"] = "/dls/b21/data/2014/cm4962-3/.ispyb/testDir/testPrefix/ispybb_multiple_curves_20140731_4_crop.png"
+	map["xtalSnapshotFullPath3"] = "/dls/b21/data/2014/cm4962-3/.ispyb/testDir/testPrefix/ispybb_multiple_curves_20140731_1_crop.png"
+	map["xtalSnapshotFullPath4"] = "/dls/b21/data/2014/cm4962-3/.ispyb/testDir/testPrefix/ispybb_multiple_curves_20140731_3_crop.png"
+
+	#TODO need some explanation on what the following fields are for	
+	map["dataCollectionNumber"] = 12433
+	map["imageDirectory"] = "/dls/b21/data/2014/cm4962-3/.ispyb/testDir/"
+	map["imagePrefix"] = "testPrefix"
+	map["fileTemplate"] = "12433.dat"
+
 	return map
 
 import h5py

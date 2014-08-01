@@ -5,6 +5,8 @@ class ispybDataCollection:
 		webServiceName = "ToolsForCollectionWebService"
 		self.createWebServiceClient(host, webServiceName)
 		self.createDataCollection()
+		self.collectionValuesStored = False
+		self.collectionIncomplete = False
 
 	def createWebServiceClient(self, host, webServiceName):
 		from suds.client import Client
@@ -22,12 +24,32 @@ class ispybDataCollection:
 	def setCollectionValues(self, collectionValues):
 		for (key,value) in collectionValues.items():
 			self.collection.__setattr__(key,value)
-		return self.collection
+		self.checkCollectionValues(collectionValues)
 	
+	def checkCollectionValues(self, collectionValues):
+		#check that all required fields for data collection creation exist in self.collection
+		self.collectionValuesStored = True
+		keys_to_check = ["sessionId", "dataCollectionGroupId", "exposureTime", "numberOfImages", "wavelength", 
+						"transmission", "beamSizeAtSampleX", "beamSizeAtSampleY", "resolution", "dataCollectionNumber",
+						"imageDirectory", "imagePrefix", "fileTemplate", "xtalSnapshotFullPath1", "xtalSnapshotFullPath2",
+						"xtalSnapshotFullPath3","xtalSnapshotFullPath4"]
+		for key in keys_to_check:
+			if not collectionValues.has_key(key):
+				self.collectionIncomplete = True
+				print "expect key '" + key + "' to be in collection values"
+
 	def createDataCollection(self):
 		self.collection = self.client.factory.create('dataCollectionWS3VO')
 
 	def storeCollection(self):
+		#make sure collection items and client are there already!
+		assert self.client != None
+		if not self.collectionValuesStored:
+			print "DataCollection values not stored, aborting"
+			sys.exit(1)
+		if self.collectionIncomplete:
+			print "not all required fields in DataCollection were specified, aborting"
+			sys.exit(1)
 		returned = self.client.service.storeOrUpdateDataCollection(self.collection)
 		return returned
 
