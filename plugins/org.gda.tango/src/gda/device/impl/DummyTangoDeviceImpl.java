@@ -71,7 +71,18 @@ public class DummyTangoDeviceImpl implements TangoDevice {
 			DeviceData image = new DeviceData();
 			image.insert(generateImage(width, height));
 			return image;
-		}			
+		} else if ("ReadScalers".equals(cmd)) {
+			int[] args = new int[6];
+			args = argin.extractLongArray();
+			int size = args[3] * args[4] * args[5];
+			int[] rawData = new int[size];
+			for (int i = 0; i< size; i++) {
+				rawData[i] = (int) ((Math.random() + 1)*10);
+			}
+			DeviceData data = new DeviceData();
+			data.insert(rawData);
+			return data;
+		}
 		logger.info("Command {} executed", cmd);
 		return null;
 		
