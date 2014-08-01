@@ -33,7 +33,15 @@ def getDataFromH5File(h5In):
 
 	#TODO need blsessionid
 	map["sessionId"] = 18881
+	
+	map["comments"] = "juntestblahblah"
 	return map
 
+import h5py
 fileIn="/dls/b21/data/2014/cm4976-3/b21-12433.nxs"
+h5File = h5py.File(fileIn,'r')
 values = getDataFromH5File(h5File)
+import ispybDataCollection
+dc=ispybDataCollection.ispybDataCollection()
+dc.setCollectionValues(values)
+dc.storeCollection()
