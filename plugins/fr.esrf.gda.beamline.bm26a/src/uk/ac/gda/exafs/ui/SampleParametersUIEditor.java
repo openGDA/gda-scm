@@ -19,18 +19,10 @@
 package uk.ac.gda.exafs.ui;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -38,470 +30,275 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.slf4j.Logger;
+import org.eclipse.ui.forms.events.ExpansionAdapter;
+import org.eclipse.ui.forms.events.ExpansionEvent;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
 
-import uk.ac.gda.ClientManager;
-import uk.ac.gda.beans.exafs.ElementPosition;
-import uk.ac.gda.beans.exafs.SampleElements;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
-import uk.ac.gda.beans.exafs.bm26a.CryostatParameters;
-import uk.ac.gda.beans.exafs.bm26a.CustomParameter;
-import uk.ac.gda.beans.exafs.bm26a.CustomXYZParameter;
-import uk.ac.gda.beans.exafs.bm26a.FurnaceParameters;
-import uk.ac.gda.beans.exafs.bm26a.SampleStageParameters;
-import uk.ac.gda.client.experimentdefinition.ExperimentBeanManager;
-import uk.ac.gda.client.experimentdefinition.ui.handlers.XMLCommandHandler;
-import uk.ac.gda.exafs.ExafsActivator;
-import uk.ac.gda.exafs.ui.composites.CryostatComposite;
-import uk.ac.gda.exafs.ui.composites.CustomParameterComposite;
-import uk.ac.gda.exafs.ui.composites.CustomXYZParameterComposite;
-import uk.ac.gda.exafs.ui.composites.FurnaceComposite;
-import uk.ac.gda.exafs.ui.composites.RoomTemperatureComposite;
-import uk.ac.gda.exafs.ui.data.ScanObjectManager;
-import uk.ac.gda.exafs.ui.microreactor.MicroreactorParametersComposite;
-import uk.ac.gda.exafs.ui.preferences.ExafsPreferenceConstants;
-import uk.ac.gda.exafs.ui.preferences.SampleElementPreferencePage;
-import uk.ac.gda.richbeans.components.FieldComposite.NOTIFY_TYPE;
-import uk.ac.gda.richbeans.components.selector.VerticalListEditor;
+import uk.ac.gda.beans.exafs.bm26a.XYZStageParameters;
+import uk.ac.gda.common.rcp.util.GridUtils;
+import uk.ac.gda.exafs.ui.composites.XYZStageComposite;
+import uk.ac.gda.richbeans.ACTIVE_MODE;
+import uk.ac.gda.richbeans.beans.BeanUI;
+import uk.ac.gda.richbeans.components.FieldBeanComposite;
+import uk.ac.gda.richbeans.components.FieldComposite;
+import uk.ac.gda.richbeans.components.scalebox.ScaleBox;
 import uk.ac.gda.richbeans.components.wrappers.ComboWrapper;
-import uk.ac.gda.richbeans.components.wrappers.SpinnerWrapper;
 import uk.ac.gda.richbeans.components.wrappers.TextWrapper;
 import uk.ac.gda.richbeans.editors.DirtyContainer;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
-import uk.ac.gda.richbeans.event.ValueAdapter;
 import uk.ac.gda.richbeans.event.ValueEvent;
+import uk.ac.gda.richbeans.event.ValueListener;
 
-import com.swtdesigner.SWTResourceManager;
+public class SampleParametersUIEditor extends RichBeanEditorPart {
 
-public class SampleParametersUIEditor extends RichBeanEditorPart implements IPropertyChangeListener {
-
-	private static final Logger logger = org.slf4j.LoggerFactory.getLogger(SampleParametersUIEditor.class);
-
-	private Composite mainComp;
-	private ComboWrapper temperatureControl;
-	private ScrolledComposite scrolledComposite;
-	private SpinnerWrapper sampleWheelPosition;
-	private TextWrapper descriptions;
-	private TextWrapper name;
-	private RoomTemperatureComposite sampleStageParameters;
-	private CryostatComposite cryostatParameters;
-	private FurnaceComposite furnaceParameters;
-	private MicroreactorParametersComposite microreactorParameters;
-	private VerticalListEditor customParameters;
-	private VerticalListEditor customXYZParameters;
-
-	private CLabel elementName;
-
-	private SampleElements sampleElements;
-
-	private SelectionAdapter selectionListener;
-
-	private Link elementLabel;
-
-	private Composite complexTypesTemp;
-
-	private StackLayout stackLayoutTemp;
-
-	private Composite blankTempComposite;
+	private ScrolledComposite topComposite;
+	private FieldComposite description1;
+	private FieldComposite description2;
+	private FieldComposite name;
+	private XYZStageComposite xyzStageComposite;
+	private XYZStageComposite cryoStageComposite;
+	private Composite blankStageComposite;
+	private Composite composite;
+	private StackLayout stageLayout;
+	private ComboWrapper stage;
+	private SampleParameters bean;
+	private ExpandableComposite sampleStageExpandableComposite;
+	private Composite stageComp;
+	private Group grpStage;
+	private Group grpStageParameters;
 
 	public SampleParametersUIEditor(String path, URL mappingURL, DirtyContainer dirtyContainer, Object editingBean) {
 		super(path, mappingURL, dirtyContainer, editingBean);
-
-		ExafsActivator.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+		bean = (SampleParameters) editingBean;
 	}
 
 	@Override
 	protected String getRichEditorTabText() {
-		return "Sample";
+		return "SampleParametersEditor";
 	}
 
 	@Override
 	public void createPartControl(final Composite parent) {
 
 		parent.setLayout(new FillLayout());
+		topComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+		topComposite.setExpandHorizontal(true);
+		topComposite.setExpandVertical(true);
 
-		this.scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-		scrolledComposite.setExpandHorizontal(true);
-		scrolledComposite.setExpandVertical(true);
+		Composite container = new Composite(topComposite, SWT.NONE);
+		container.setLayout(new GridLayout(2, false));
 
-		this.mainComp = new Composite(scrolledComposite, SWT.NONE);
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		mainComp.setLayout(gridLayout);
+		composite = new Composite(container, SWT.NONE);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+		composite.setLayout(new GridLayout(3, false));
 
-		final Composite composite = new Composite(mainComp, SWT.NONE);
-		gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		composite.setLayout(gridLayout);
+		topComposite.setContent(container);
+		topComposite.setMinSize(container.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
-		final Group experimentSample = new Group(composite, SWT.NONE);
-		experimentSample.setText("Sample Details");
-		GridData experimentSampleGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		experimentSampleGridData.minimumWidth = 350;
-		experimentSample.setLayoutData(experimentSampleGridData);
-		gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
-		experimentSample.setLayout(gridLayout);
+		Label label = new Label(composite, SWT.NONE);
+		label.setSize(37, 17);
+		label.setText("Filename");
 
-		final Label sampleNameLabel = new Label(experimentSample, SWT.NONE);
-		sampleNameLabel.setText("Sample name");
+		name = new TextWrapper(composite, SWT.NONE);
+		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		name.setSize(234, 21);
 
-		name = new TextWrapper(experimentSample, SWT.BORDER);
-		name.setTextLimit(5000);
-		final GridData gd_name = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		name.setLayoutData(gd_name);	
+		new Label(composite, SWT.NONE);
 
-		final Label descriptionLabel = new Label(experimentSample, SWT.NONE);
-		descriptionLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
-		descriptionLabel.setText("Description");
+		label = new Label(composite, SWT.NONE);
+		label.setSize(72, 17);
+		label.setText("Sample description");
+		description1 = new TextWrapper(composite, SWT.NONE);
+		description1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		description1.setSize(234, 21);
 
-		descriptions = new TextWrapper(experimentSample, SWT.WRAP | SWT.V_SCROLL | SWT.MULTI | SWT.BORDER);
-		final GridData gd_descriptions = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		gd_descriptions.heightHint = 73;
-		descriptions.setLayoutData(gd_descriptions);
+		new Label(composite, SWT.NONE);
 
-		final Group temperatureChoice = new Group(composite, SWT.NONE);
-		temperatureChoice.setText("Sample Environment");
-		final GridData gd_tempControl = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		temperatureChoice.setLayoutData(gd_tempControl);
-		gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		temperatureChoice.setLayout(gridLayout);
+		label = new Label(composite, SWT.NONE);
+		label.setSize(72, 17);
+		label.setText("Additional comments");
 
-		temperatureControl = new ComboWrapper(temperatureChoice, SWT.READ_ONLY);
-		temperatureControl.select(0);
-		if (ScanObjectManager.isXESOnlyMode()) {
-			temperatureControl.setItems(SampleParameters.SAMPLE_ENV_XES);
-		} else {
-			temperatureControl.setItems(SampleParameters.SAMPLE_ENV);
-		}
-		final GridData gd_tempType = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		temperatureControl.setLayoutData(gd_tempType);
+		description2 = new TextWrapper(composite, SWT.NONE);
+		description2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		description2.setSize(234, 21);
 
-		this.complexTypesTemp = new Composite(temperatureChoice, SWT.NONE);
-		this.stackLayoutTemp = new StackLayout();
-		complexTypesTemp.setLayout(stackLayoutTemp);
-		complexTypesTemp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		new Label(composite, SWT.NONE);
 
-		blankTempComposite = new Composite(complexTypesTemp, SWT.NONE);
+		sampleStageExpandableComposite = new ExpandableComposite(composite, SWT.NONE);
+		sampleStageExpandableComposite.setText("Sample Stage");
+		sampleStageExpandableComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-		if (!ScanObjectManager.isXESOnlyMode()) {
-			this.sampleStageParameters = new RoomTemperatureComposite(complexTypesTemp, SWT.NONE);
-			sampleStageParameters.setEditorClass(SampleStageParameters.class);
+		createStage();
+		// stage
+		ExpansionAdapter stageExpansionListener = new ExpansionAdapter() {
+			@Override
+			public void expansionStateChanged(ExpansionEvent e) {
+				if (!stage.getValue().toString().equals("none"))
+					sampleStageExpandableComposite.setExpanded(true);
+				GridUtils.layoutFull(sampleStageExpandableComposite);
+				linkuiForDynamicLoading(false);
+			}
+		};
+		sampleStageExpandableComposite.addExpansionListener(stageExpansionListener);
 
-			this.cryostatParameters = new CryostatComposite(complexTypesTemp, SWT.NONE);
-			cryostatParameters.setEditorClass(CryostatParameters.class);
-
-			this.furnaceParameters = new FurnaceComposite(complexTypesTemp, SWT.NONE);
-			furnaceParameters.setEditorClass(FurnaceParameters.class);
-			
-//			this.microreactorParameters = new MicroreactorParametersComposite(complexTypesTemp, SWT.NONE);
-//			microreactorParameters.setEditorClass(MicroreactorParameters.class);
+		if (!bean.getStage().toString().equals("none")) {
+			sampleStageExpandableComposite.setExpanded(true);
+			linkuiForDynamicLoading(false);
+			updateStageType();
 		}
 
-		this.customXYZParameters = new VerticalListEditor(complexTypesTemp, SWT.NONE);
-		customXYZParameters.setNameField("deviceName");
-		customXYZParameters.setEditorClass(CustomXYZParameter.class);
-		customXYZParameters.setEditorUI(new CustomXYZParameterComposite(customXYZParameters, SWT.NONE));
-		customXYZParameters.setTemplateName("Custom XYZ Parameter");
-
-		this.customParameters = new VerticalListEditor(complexTypesTemp, SWT.NONE);
-		customParameters.setNameField("deviceName");
-		customParameters.setEditorClass(CustomParameter.class);
-		customParameters.setEditorUI(new CustomParameterComposite(customParameters, SWT.NONE));
-		customParameters.setTemplateName("Custom Parameter");
-
-		if (!ScanObjectManager.isXESOnlyMode()) {
-			final Group wheelPos = new Group(composite, SWT.NONE);
-			wheelPos.setText("Reference Sample");
-			wheelPos.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			final GridLayout wheelPosLay = new GridLayout();
-			wheelPosLay.numColumns = 3;
-			wheelPos.setLayout(wheelPosLay);
-
-			final Composite left = new Composite(wheelPos, SWT.NONE);
-			left.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-			final GridLayout leftLay = new GridLayout();
-			leftLay.numColumns = 4;
-			left.setLayout(leftLay);
-
-			final Label wheelPositionLabel = new Label(left, SWT.NONE);
-			wheelPositionLabel.setText("Position");
-
-			sampleWheelPosition = new SpinnerWrapper(left, SWT.BORDER);
-			sampleWheelPosition.setMinimum(1);
-			sampleWheelPosition.setMaximum(24);
-			sampleWheelPosition.setNotifyType(NOTIFY_TYPE.ALWAYS);
-
-			this.elementLabel = new Link(left, SWT.NONE);
-			elementLabel.setText("  <a>Name</a> ");
-			elementLabel.setToolTipText("Open the preferences to edit the sample elements.");
-			this.selectionListener = new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					openPreferences();
-				}
-			};
-			elementLabel.addSelectionListener(selectionListener);
-
-			this.elementName = new CLabel(left, SWT.NONE);
-			elementName.setFont(SWTResourceManager.getFont("Sans", 10, SWT.BOLD | SWT.ITALIC));
-			elementName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			elementName.setText("                            ");
-
-			sampleWheelPosition.addValueListener(new ValueAdapter("sampleWheelPositionListener") {
-
-				@Override
-				public void valueChangePerformed(final ValueEvent e) {
-
-					if (ClientManager.isTestingMode()) {
-						updateElementLabel();
-					} else {
-						// Having some issues with executing updaing the element label straight away so shunted to
-						// invoke later.
-						getSite().getShell().getDisplay().asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								updateElementLabel();
-							}
-						});
-					}
-				}
-
-			});
-		}
-
-		scrolledComposite.setContent(mainComp);
-		mainComp.layout();
-		scrolledComposite.setMinSize(mainComp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
-	protected void openPreferences() {
-		PreferenceDialog pref = PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
-				SampleElementPreferencePage.ID, null, null);
-		if (pref != null)
-			pref.open();
-	}
-
-	private SampleElements getDefaultWheelPositions() {
-		// We take the element positions from the default sample params.
+	public void linkuiForDynamicLoading(@SuppressWarnings("unused") final boolean isPageChange) {
 		try {
-			XMLCommandHandler xmlCommandHandler = ExperimentBeanManager.INSTANCE
-					.getXmlCommandHandler(SampleElements.class);
-			return (SampleElements) xmlCommandHandler.getTemplateParameters();
-		} catch (Throwable ne) {
-			logger.error("Cannot read sample elements", ne);
-			return null;
+			BeanUI.switchState(editingBean, this, false);
+			BeanUI.beanToUI(editingBean, this);
+			BeanUI.switchState(editingBean, this, true);
+		} catch (Exception e) {
 		}
 	}
 
+	public void createStage() {
+		if (stageComp == null) {
+
+			stageComp = new Composite(sampleStageExpandableComposite, SWT.NONE);
+			GridLayout gridLayout_2 = new GridLayout();
+			gridLayout_2.numColumns = 2;
+			stageComp.setLayout(gridLayout_2);
+
+			grpStage = new Group(stageComp, SWT.NONE);
+			grpStage.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+			GridLayout gridLayout = new GridLayout();
+			gridLayout.numColumns = 2;
+			grpStage.setLayout(gridLayout);
+
+			Label label = new Label(grpStage, SWT.NONE);
+			label.setSize(37, 17);
+			label.setText("Stage");
+
+			stage = new ComboWrapper(grpStage, SWT.READ_ONLY);
+			stage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+			stage.setSize(234, 27);
+			stage.setItems(new String[] { "none", "xyzStage", "cryoStage"});
+
+			grpStageParameters = new Group(grpStage, SWT.NONE);
+			stageLayout = new StackLayout();
+			grpStageParameters.setLayout(stageLayout);
+			grpStageParameters.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
+			blankStageComposite = new Composite(grpStageParameters, SWT.NONE);
+
+			xyzStageComposite = new XYZStageComposite(grpStageParameters, SWT.NONE, "samplex", "sampley", "samplez");
+			xyzStageComposite.setVisible(true);
+			xyzStageComposite.setEditorClass(XYZStageParameters.class);
+			xyzStageComposite.setActiveMode(ACTIVE_MODE.ACTIVE_ONLY);
+
+			cryoStageComposite = new XYZStageComposite(grpStageParameters, SWT.NONE, "cryox", "cryoy", "cryoz");
+			cryoStageComposite.setVisible(true);
+			cryoStageComposite.setEditorClass(XYZStageParameters.class);
+			cryoStageComposite.setActiveMode(ACTIVE_MODE.ACTIVE_ONLY);
+
+
+			Control[] children = grpStageParameters.getChildren();
+			for (int i = 0; i < children.length; i++) {
+				Control control = children[i];
+				if (control instanceof FieldBeanComposite) {
+					((FieldBeanComposite) control).addValueListener(new ValueListener() {
+						@Override
+						public void valueChangePerformed(ValueEvent e) {
+							Object source = e.getSource();
+							if (!(source instanceof ScaleBox)) {
+								bean.setStage(stage.getItem(stage.getSelectionIndex()));
+								updateStageType();
+								linkUI(false);
+							}
+						}
+
+						@Override
+						public String getValueListenerName() {
+							return null;
+						}
+					});
+				}
+			}
+
+			stage.addValueListener(new ValueListener() {
+				@Override
+				public void valueChangePerformed(ValueEvent e) {
+					bean.setStage(stage.getItem(stage.getSelectionIndex()));
+					updateStageType();
+					linkUI(false);
+				}
+
+				@Override
+				public String getValueListenerName() {
+					return "stage";
+				}
+			});
+
+			sampleStageExpandableComposite.setClient(stageComp);
+		}
+	}
+	
 	@Override
 	public void linkUI(final boolean isPageChange) {
-		temperatureControl.addValueListener(new ValueAdapter("sampleEnvironmentListener") {
-			@Override
-			public void valueChangePerformed(ValueEvent e) {
-				updateTemperatureType(temperatureControl.getSelectionIndex());
-			}
-		});
-
-		super.linkUI(isPageChange);
-
-		getSite().getShell().getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				updateElementLabel();
-			}
-		});
-
-		// Now the data will have one of the complex types so we can init the envType
-		int index = initTempType();
-		temperatureControl.select(index);
-	}
-
-	public void updateElementLabel() {
-
-		if (sampleElements == null)
-			this.sampleElements = getDefaultWheelPositions();
-		if (sampleElements == null)
-			return;
-		final int index = (Integer) sampleWheelPosition.getValue();
-		final List<ElementPosition> pos = sampleElements.getElementPositions();
-		for (ElementPosition elementPosition : pos) {
-			if (elementPosition.getWheelPosition() == index) {
-				elementName.setText(elementPosition.getName());
-				return;
-			}
+		try {
+			GridUtils.startMultiLayout(topComposite);
+			super.linkUI(isPageChange);
+		} finally {
+			GridUtils.endMultiLayout();
 		}
-		elementName.setText("<No element>");
 	}
 
-	private int initTempType() {
-		final SampleParameters params = (SampleParameters) editingBean;
-		final List<String> items = Arrays.asList(temperatureControl.getItems());
-		final int index = items.indexOf(params.getSampleEnvironment());
-		updateTemperatureType(index);
-		return index;
-	}
-
-	private void updateTemperatureType(final int index) {
-
-		final SampleParameters params = (SampleParameters) editingBean;
-		Control control = null;
-
-		if (ScanObjectManager.isXESOnlyMode()) {
-			switch (index) {
-			case 0:
-				control = blankTempComposite;
-				break;
-			case 1:
-				control = customXYZParameters;
-				break;
-			case 2:
-				control = customParameters;
-				break;
-			default:
-				break;
-			}
-		} else {
-			Object val = null;
-
-			switch (index) {
-			case 0:
-				control = blankTempComposite;
-				val = "none";
-				break;
-			case 1:
-				control = sampleStageParameters;
-				val = getRoomTemperatureParameters().getValue();
-				if (val == null) {
-					params.getRoomTemperatureParameters();
-				}
-				if (val == null) {
-					val = new SampleStageParameters();
-				}
-				if (params.getRoomTemperatureParameters() == null) {
-					params.setRoomTemperatureParameters((SampleStageParameters) val);
-				}
-				if (getRoomTemperatureParameters().getValue() == null) {
-					getRoomTemperatureParameters().setEditingBean(val);
-				}
-				break;
-			case 2:
-				control = cryostatParameters;
-				val = getCryostatParameters().getValue();
-				if (val == null)
-					params.getCryostatParameters();
-				if (val == null)
-					val = new CryostatParameters();
-				if (params.getCryostatParameters() == null)
-					params.setCryostatParameters((CryostatParameters) val);
-				if (getCryostatParameters().getValue() == null)
-					getCryostatParameters().setEditingBean(val);
-
-				break;
-			case 3:
-				control = furnaceParameters;
-				val = getFurnaceParameters().getValue();
-				if (val == null)
-					params.getFurnaceParameters();
-				if (val == null)
-					val = new FurnaceParameters();
-				if (params.getFurnaceParameters() == null)
-					params.setFurnaceParameters((FurnaceParameters) val);
-				if (getFurnaceParameters().getValue() == null)
-					getFurnaceParameters().setEditingBean(val);
-				break;
-//			case 4:
-//				control = microreactorParameters;
-//				val = getMicroreactorParameters().getValue();
-//				if (val == null)
-//					params.getMicroreactorParameters();
-//				if (val == null)
-//					val = new MicroreactorParameters();
-//				if (params.getMicroreactorParameters() == null)
-//					params.setMicroreactorParameters((MicroreactorParameters) val);
-//				if (getMicroreactorParameters().getValue() == null)
-//					getMicroreactorParameters().setEditingBean(val);
-//				break;
-				
-			case 5:
-				control = customXYZParameters;
-				break;
-			case 6:
-				control = customParameters;
-				break;
-			default:
-				break;
-			}
+	private void updateStageType() {
+		switch (stage.getSelectionIndex()) {
+		case 0:
+			stageLayout.topControl = blankStageComposite;
+			break;
+		case 1:
+			stageLayout.topControl = xyzStageComposite;
+			break;
+		case 2:
+			stageLayout.topControl = cryoStageComposite;
+			break;
 		}
-
-		stackLayoutTemp.topControl = control;
-		complexTypesTemp.layout();
+		GridUtils.layoutFull(grpStageParameters);
 	}
 
 	@Override
 	public void setFocus() {
 	}
 
-	public TextWrapper getDescriptions() {
-		return descriptions;
-	}
-
-	public TextWrapper getName() {
+	public FieldComposite getName() {
 		return name;
 	}
 
-	public SpinnerWrapper getSampleWheelPosition() {
-		return sampleWheelPosition;
+	public FieldComposite getDescription1() {
+		return description1;
 	}
 
-	public RoomTemperatureComposite getRoomTemperatureParameters() {
-		return sampleStageParameters;
+	public FieldComposite getDescription2() {
+		return description2;
 	}
 
-	public CryostatComposite getCryostatParameters() {
-		return cryostatParameters;
+	public FieldComposite getStage() {
+		return stage;
 	}
 
-	public FurnaceComposite getFurnaceParameters() {
-		return furnaceParameters;
-	}
-	
-	public MicroreactorParametersComposite getMicroreactorParameters(){
-		return microreactorParameters;
+	public XYZStageComposite getXyzStageParameters() {
+		return xyzStageComposite;
 	}
 
-	public VerticalListEditor getCustomParameters() {
-		return customParameters;
+	public XYZStageComposite getCryoStageParameters() {
+		return cryoStageComposite;
 	}
 
-	public VerticalListEditor getCustomXYZParameters() {
-		return customXYZParameters;
-	}
-
-	public ComboWrapper getSampleEnvironment() {
-		return temperatureControl;
-	}
-
-	public String _testGetElementName() {
-		return this.elementName.getText();
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-		if (ExafsPreferenceConstants.SAMPLE_ELEMENTS.equals(event.getProperty())) {
-			sampleElements = getDefaultWheelPositions();
-		}
-	}
-
-	@Override
-	public void dispose() {
-		ExafsActivator.getDefault().getPreferenceStore().removePropertyChangeListener(this);
-		if (elementLabel != null && !elementLabel.isDisposed())
-			this.elementLabel.removeSelectionListener(selectionListener);
-		super.dispose();
-	}
-
+//	public XYZStageComposite getXYZStageComposite() {
+//		return xyzStageComposite;
+//	}
+//
+//	public XYZStageComposite getCryoStageComposite() {
+//		return cryoStageComposite;
+//	}
 }

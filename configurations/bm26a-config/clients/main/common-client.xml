@@ -27,6 +27,10 @@
 	<import resource="classpath:gda/spring/propertyeditors/registration.xml" />
 
 	<corba:import namespace="bm26a" names="plot_server" />
+	<corba:import namespace="bm26a" names="counterTimer01" />
+	<corba:import namespace="bm26a" names="xspress1system" />
+
+
 	<bean class="gda.rcp.util.OSGIServiceRegister">
 		<property name="class" value="uk.ac.diamond.scisoft.analysis.PlotServer" />
 		<property name="service" ref="plot_server" />

@@ -22,15 +22,8 @@ package uk.ac.gda.exafs.ui.describers;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
 import uk.ac.gda.richbeans.xml.XMLBeanContentDescriber;
 
-/**
- * @author fcp94556
- *
- */
 public class SampleDescriber extends XMLBeanContentDescriber {
 
-	/**
-	 * 
-	 */
 	public static final String ID = "uk.ac.gda.exafs.ui.SampleParametersEditor";
 	
 	@Override

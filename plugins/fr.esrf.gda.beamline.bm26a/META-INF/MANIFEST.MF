@@ -19,13 +19,18 @@ Require-Bundle: org.eclipse.ui,
  uk.ac.gda.devices.xmap;bundle-version="1.0.0",
  uk.ac.gda.client.xspress2;bundle-version="1.0.0",
  uk.ac.gda.devices.xspress2;bundle-version="1.0.0",
- uk.ac.gda.beans.vortex;bundle-version="1.0.0"
+ uk.ac.gda.beans.vortex;bundle-version="1.0.0",
+ org.dawnsci.plotting.jreality;bundle-version="1.0.0",
+ org.dawb.common.ui;bundle-version="1.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: fr.esrf.gda.beamline.bm26a,
  gda.device.scannable
 Bundle-Vendor: Daresbury Laboratory
 Import-Package: Jama,
+ org.dawnsci.plotting.jreality.impl,
+ org.eclipse.ui.forms.events,
+ org.eclipse.ui.forms.widgets,
  org.eclipse.ui.intro.config,
  org.eclipse.ui.texteditor,
  org.slf4j;version="[1.7.6,1.7.7)"

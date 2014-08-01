@@ -26,9 +26,9 @@ original_header = datawriterconfig.getHeader()[:]
 
 
 detectorPreparer = BM26aDetectorPreparer()
-samplePreparer = BM26aSamplePreparer()
+samplePreparer = BM26aSamplePreparer(sampleStage, cryoStage)
 outputPreparer = BM26aOutputPreparer(datawriterconfig)
-xas = XasScan(detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, ExafsScriptObserver, XASLoggingScriptController, datawriterconfig, original_header, bragg1, counterTimer01)
+xas = XasScan(detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, ExafsScriptObserver, XASLoggingScriptController, datawriterconfig, original_header, bragg1, counterTimer01, False, False, False, False, False)
 xanes = xas
 
 alias("xas")

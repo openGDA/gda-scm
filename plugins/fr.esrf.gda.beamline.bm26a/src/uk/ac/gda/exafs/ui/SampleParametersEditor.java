@@ -24,10 +24,6 @@ import java.net.URL;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 
-/**
- * @author fcp94556
- *
- */
 public class SampleParametersEditor extends ExafsBeanFileSelectionEditor {
 
 	@Override
@@ -49,7 +45,6 @@ public class SampleParametersEditor extends ExafsBeanFileSelectionEditor {
 	public URL getSchemaUrl() {
 		return SampleParameters.schemaURL;
 	}
-
 }
 
 	

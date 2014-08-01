@@ -30,14 +30,13 @@ import gda.observable.ObservableComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.beans.exafs.bm26a.CryostatParameters;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
-import uk.ac.gda.beans.exafs.bm26a.SampleStageParameters;
+import uk.ac.gda.beans.exafs.bm26a.XYZStageParameters;
 
 /**
  * Sets up Sample Parameters for BM26a. Talks to hardware with hard coded parameter names.
  * <p>
- * Every piece fo hardware should also add its parameters to the nexus file header.
+ * Every piece of hardware should also add its parameters to the nexus file header.
  */
 public class SampleParametersManager extends ParametersManager {
 
@@ -71,69 +70,38 @@ public class SampleParametersManager extends ParametersManager {
 
 	private void createSampleEnvironment() throws Exception {
 
-		NexusExtraMetadataDataWriter.removeAllMetadataEntries();
-
-		final String sampleEnv = sampleParameters.getSampleEnvironment();
-
-		if (SampleParameters.SAMPLE_ENV[1].equals(sampleEnv)) { // Room
-			log("Moving Sample Table");
-			final SampleStageParameters roomTemp = sampleParameters.getRoomTemperatureParameters();
-			setScannable("sample_x", roomTemp.getX());
-			setScannable("sample_y", roomTemp.getY());
-			setScannable("sample_z", roomTemp.getZ());
-			setScannable("sample_rot", roomTemp.getRotation());
-			setScannable("sample_pitch", roomTemp.getRoll());
-			setScannable("sample_roll", roomTemp.getYaw());
-
-			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("x", roomTemp.getX(),
-					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
-					"sampletable"));
-			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("y", roomTemp.getY(),
-					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
-					"sampletable"));
-			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("z", roomTemp.getZ(),
-					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
-					"sampletable"));
-			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("rot", roomTemp.getRotation(),
-					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
-					"sampletable"));
-			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("yaw", roomTemp.getYaw(),
-					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
-					"sampletable"));
-			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("roll", roomTemp.getRoll(),
-					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
-					"sampletable"));
-		} else if (SampleParameters.SAMPLE_ENV[2].equals(sampleEnv)) {
-			log("Preparing cryostat for experiment");
-
-			final CryostatParameters cryo = sampleParameters.getCryostatParameters();
-			final Temperature temp = (Temperature) Finder.getInstance().find("Clake");
-			if (temp != null) {
-				temp.setTargetTemperature(Double.parseDouble(cryo.getTemperature()));
-				scannables.add(temp);
-			} else {
-				log("Clake could not be found in Jython namespace- cryostat not configured");
-			}
-		}
+//		NexusExtraMetadataDataWriter.removeAllMetadataEntries();
+//
+//		final String stage = sampleParameters.getStage();
+//
+//		if (SampleParameters.SAMPLE_ENV[1].equals(stage)) { // Room
+//			log("Moving Sample Table");
+//			final XYZStageParameters roomTemp = sampleParameters.getRoomTemperatureParameters();
+//			setScannable("sample_x", roomTemp.getX());
+//			setScannable("sample_y", roomTemp.getY());
+//			setScannable("sample_z", roomTemp.getZ());
+//
+//			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("x", roomTemp.getX(),
+//					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
+//					"sampletable"));
+//			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("y", roomTemp.getY(),
+//					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
+//					"sampletable"));
+//			NexusExtraMetadataDataWriter.addMetadataEntry(new NexusFileMetadata("z", roomTemp.getZ(),
+//					NexusFileMetadata.EntryTypes.NXinstrument, NexusFileMetadata.NXinstrumentSubTypes.NXpositioner,
+//					"sampletable"));
+//		} else if (SampleParameters.SAMPLE_ENV[2].equals(stage)) {
+//			log("Preparing cryostat for experiment");
+//
+//			final CryostatParameters cryo = sampleParameters.getCryostatParameters();
+//			final Temperature temp = (Temperature) Finder.getInstance().find("Clake");
+//			if (temp != null) {
+//				temp.setTargetTemperature(Double.parseDouble(cryo.getTemperature()));
+//				scannables.add(temp);
+//			} else {
+//				log("Clake could not be found in Jython namespace- cryostat not configured");
+//			}
+//		}
 	}
 
-	/**
-	 * @return - The temperature of the sample in K
-	 * @throws DeviceException
-	 */
-	public double getTemperature() throws DeviceException {
-
-		final String sampleEnv = sampleParameters.getSampleEnvironment();
-		if (SampleParameters.SAMPLE_ENV[2].equals(sampleEnv)) { // Cryo
-			final Temperature temp = Finder.getInstance().find("Clake");
-			return temp.getCurrentTemperature();
-
-		} else if (SampleParameters.SAMPLE_ENV[3].equals(sampleEnv)) { // Furnace
-			// TODO
-			return 300d;
-
-		}
-
-		return -1d;
-	}
 }

@@ -72,6 +72,16 @@
 		</property>
 	</bean>
 
+	<bean id="sampleStage" class="gda.device.scannable.scannablegroup.ScannableGroup">
+		<property name="groupMembers">
+			<list>
+				<ref bean="samplex" />
+				<ref bean="sampley" />
+				<ref bean="samplez" />
+			</list>
+		</property>
+	</bean>
+
 	<bean id="cryox" class="gda.device.scannable.ScannableMotor">
 		<property name="protectionLevel" value="3" />
 		<property name="userUnits" value="mm" />
@@ -107,4 +117,15 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="cryoStage" class="gda.device.scannable.scannablegroup.ScannableGroup">
+		<property name="groupMembers">
+			<list>
+				<ref bean="cryox" />
+				<ref bean="cryoy" />
+				<ref bean="cryoz" />
+			</list>
+		</property>
+	</bean>
+
 </beans>

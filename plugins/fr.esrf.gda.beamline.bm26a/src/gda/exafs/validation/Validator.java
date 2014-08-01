@@ -18,18 +18,17 @@
 
 package gda.exafs.validation;
 
-import gda.device.Scannable;
 import gda.exafs.scan.ExafsValidator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import uk.ac.gda.beans.exafs.ISampleParameters;
 import uk.ac.gda.beans.exafs.IScanParameters;
 import uk.ac.gda.beans.exafs.XanesScanParameters;
 import uk.ac.gda.beans.exafs.XasScanParameters;
-import uk.ac.gda.beans.exafs.bm26a.CustomParameter;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
-import uk.ac.gda.beans.exafs.bm26a.SampleStageParameters;
 import uk.ac.gda.beans.validation.InvalidBeanException;
 import uk.ac.gda.beans.validation.InvalidBeanMessage;
 import uk.ac.gda.client.experimentdefinition.IExperimentObject;
@@ -53,7 +52,7 @@ public class Validator extends ExafsValidator {
 
 		try {
 			errors.addAll(validateIScanParameters(bean.getScanParameters()));
-			errors.addAll(validateSampleParameters((SampleParameters) bean.getSampleParameters()));
+			errors.addAll(validateISampleParameters(bean.getSampleParameters()));
 			errors.addAll(validateIDetectorParameters(bean.getDetectorParameters()));
 			errors.addAll(validateIOutputParameters(bean.getOutputParameters()));
 		} catch (Exception e) {
@@ -85,38 +84,64 @@ public class Validator extends ExafsValidator {
 		return errors;
 	}
 
-	public List<InvalidBeanMessage> validateSampleParameters(SampleParameters s) {
+	protected List<InvalidBeanMessage> validateISampleParameters(ISampleParameters sampleParameters) {
 
+		if (sampleParameters instanceof SampleParameters) {
+			return validateSampleParameters((SampleParameters)sampleParameters);
+		}
+		InvalidBeanMessage invalidBeanMessage;
+		if (sampleParameters == null) {
+			try {
+				if (bean != null && bean.isMicroFocus()) {
+					// do not have a sample file for microfocus scans
+					return Collections.emptyList();
+				}
+				// else its missing
+				invalidBeanMessage = new InvalidBeanMessage("Missing or Invalid Sample Parameters");
+			} catch (Exception e) {
+				invalidBeanMessage = new InvalidBeanMessage(
+						"Error testing if bean is a microfocus scan when testing Scan parameters from bean");
+			}
+		} else {
+			invalidBeanMessage = new InvalidBeanMessage("Unknown Sample Type " + sampleParameters.getClass().getName());
+		}
+		if (bean != null) {
+			invalidBeanMessage.setFileName(bean.getSampleFileName());
+		}
+		ArrayList<InvalidBeanMessage> errors = new ArrayList<InvalidBeanMessage>();
+		errors.add(invalidBeanMessage);
+		return errors;
+	}
+
+	public List<InvalidBeanMessage> validateSampleParameters(uk.ac.gda.beans.exafs.bm26a.SampleParameters s) {
+
+		if (s == null) {
+			return Collections.emptyList();
+		}
+		
 		final List<InvalidBeanMessage> errors = new ArrayList<InvalidBeanMessage>(31);
 		if (!s.isShouldValidate()) {
 			return errors;
 		}
 
-		final String environment = s.getSampleEnvironment();
-		if (environment.equalsIgnoreCase(SampleParameters.SAMPLE_ENV[1])) {
-
-			final SampleStageParameters p = s.getRoomTemperatureParameters();
-			final String message = "The sample stage parameters are out of bounds.";
-			checkRangeBounds("x", p.getX(), -15d, 15d, errors, message);
-			checkRangeBounds("y", p.getY(), -20.1d, 20.1d, errors, message);
-			checkRangeBounds("z", p.getZ(), -15d, 15d, errors, message);
-
-			checkRangeBounds("Rotation", p.getRotation(), 0d, 360d, errors, message);
-			checkRangeBounds("Roll", p.getRoll(), -5d, 5d, errors, message);
-			checkRangeBounds("Yaw", p.getYaw(), -5d, 5d, errors, message);
-
+		if (s.getName() == null) {
+			errors.add(new InvalidBeanMessage("Please set a sample name."));
 		}
-		
-		else if (environment.equalsIgnoreCase(SampleParameters.SAMPLE_ENV[5])) {
-			final List<CustomParameter> c = s.getCustomParameters();
-			for (CustomParameter cp : c) {
-				checkFindable("Device Name", cp.getDeviceName(), Scannable.class, errors);
-			}
+		if (s.getDescription1() == null) {
+			errors.add(new InvalidBeanMessage("Please set a sample description."));
+		}
+
+		if (s.getName().compareTo("default") == 0) {
+			errors.add(new InvalidBeanMessage("Sample Name has not been set in " + bean.getSampleFileName()));
+		} else if (!stringCouldBeConvertedToValidUnixFilename(s.getName())) {
+			errors.add(new InvalidBeanMessage("The given Sample Name in " + bean.getSampleFileName()
+					+ " cannot be converted into a valid file prefix.\nPlease remove invalid characters."));
 		}
 
 		if (bean != null) {
 			setFileName(errors, bean.getSampleFileName());
 		}
+		
 		return errors;
 	}
 }

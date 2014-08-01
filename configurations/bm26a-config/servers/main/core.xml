@@ -30,10 +30,8 @@
 	           <value>uk.ac.gda.beans.exafs.XanesScanParameters</value>
 	           <value>uk.ac.gda.beans.exafs.XesScanParameters</value>
 	           <value>uk.ac.gda.beans.exafs.bm26a.SampleParameters</value>
-	           <value>uk.ac.gda.beans.exafs.SampleElements</value>
 	           <value>uk.ac.gda.beans.exafs.DetectorParameters</value>
 	           <value>uk.ac.gda.beans.exafs.OutputParameters</value>
-	           <value>uk.ac.gda.beans.vortex.VortexParameters</value>
 	           <value>uk.ac.gda.beans.xspress.XspressParameters</value>
 	        </list>
 	    </property>
@@ -65,7 +63,6 @@
 	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
 		<property name="serviceName" value="gda/XASLoggingScriptController" />
 		<property name="service" ref="XASLoggingScriptController" />
-		<property name="serviceInterface"
-			value="gda.jython.scriptcontroller.logging.ILoggingScriptController" />
+		<property name="serviceInterface" value="gda.jython.scriptcontroller.logging.ILoggingScriptController" />
 	</bean>
 </beans>
