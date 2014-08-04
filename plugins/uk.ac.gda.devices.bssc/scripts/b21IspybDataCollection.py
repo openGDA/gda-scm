@@ -1,4 +1,4 @@
-def getDataFromH5File(h5In):
+def getDataFromH5File(h5In, reducedFile):
 	map = {}
 	exposureTimePath = "/entry1/instrument/detector/count_time"
 	map["exposureTime"]= h5In[exposureTimePath][0][0]
@@ -25,8 +25,15 @@ def getDataFromH5File(h5In):
 	map["beamSizeAtSampleX"] = beamSizeX
 	map["beamSizeAtSampleY"] = beamSizeY
 
-	#TODO resolution - get from reduced qmin/max values of reduced data Nexus file
-	map["resolution"] = 4
+	qPath = "/entry1/detector_result/q"
+	qDataInvNm = reducedFile[qPath]
+	assert reducedFile[qPath].attrs["units"]=="Angstrom^-1"
+	import numpy
+	qSize = len(qDataInvNm)
+	qArray = numpy.zeros((qSize,),dtype='float32')
+	qDataInvNm.read_direct(qArray,numpy.s_[0:qSize])
+	qData = 1. / qArray.max()
+	map["resolution"] = qData #this value will be Angstrom for now - need to discuss whether to change to nm for SAXS
 
 	#TODO not sure what to put in here - null causes a silent failure in the web service
 	map["dataCollectionGroupId"] = 158801
@@ -51,8 +58,10 @@ def getDataFromH5File(h5In):
 
 import h5py
 fileIn="/dls/b21/data/2014/cm4976-3/b21-12433.nxs"
+reducedFileIn="/dls/b21/data/2014/cm4976-3/b21-12434.nxs.22967.reduction/output/background_b21-12433_detector_260614_132314.nxs"
 h5File = h5py.File(fileIn,'r')
-values = getDataFromH5File(h5File)
+reducedFile = h5py.File(reducedFileIn, 'r')
+values = getDataFromH5File(h5File, reducedFile)
 import ispybDataCollection
 dc=ispybDataCollection.ispybDataCollection()
 dc.setCollectionValues(values)
