@@ -1,5 +1,5 @@
 import h5py, sys
-class ispybDataCollection:
+class ispybDataCollection(object):
 	def __init__(self):
 		host = "ispybb-test.diamond.ac.uk"
 		webServiceName = "ToolsForCollectionWebService"
@@ -29,14 +29,18 @@ class ispybDataCollection:
 	def checkCollectionValues(self, collectionValues):
 		#check that all required fields for data collection creation exist in self.collection
 		self.collectionValuesStored = True
-		keys_to_check = ["sessionId", "dataCollectionGroupId", "exposureTime", "numberOfImages", "wavelength", 
-						"transmission", "beamSizeAtSampleX", "beamSizeAtSampleY", "resolution", "dataCollectionNumber",
-						"imageDirectory", "imagePrefix", "fileTemplate", "xtalSnapshotFullPath1", "xtalSnapshotFullPath2",
-						"xtalSnapshotFullPath3","xtalSnapshotFullPath4"]
+		keys_to_check = getKeysToCheck()
 		for key in keys_to_check:
 			if not collectionValues.has_key(key):
 				self.collectionIncomplete = True
 				print "expect key '" + key + "' to be in collection values"
+
+	def getKeysToCheck(self):
+		#override this method to ensure that you have a complete set of keys before storing the data collection
+		return ["sessionId", "dataCollectionGroupId", "exposureTime", "numberOfImages", "wavelength", 
+						"transmission", "beamSizeAtSampleX", "beamSizeAtSampleY", "resolution", "dataCollectionNumber",
+						"imageDirectory", "imagePrefix", "fileTemplate", "xtalSnapshotFullPath1", "xtalSnapshotFullPath2",
+						"xtalSnapshotFullPath3","xtalSnapshotFullPath4"]
 
 	def createDataCollection(self):
 		self.collection = self.client.factory.create('dataCollectionWS3VO')
