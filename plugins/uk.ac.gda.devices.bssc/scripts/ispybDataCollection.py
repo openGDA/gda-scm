@@ -29,7 +29,7 @@ class ispybDataCollection(object):
 	def checkCollectionValues(self, collectionValues):
 		#check that all required fields for data collection creation exist in self.collection
 		self.collectionValuesStored = True
-		keys_to_check = getKeysToCheck()
+		keys_to_check = self.getKeysToCheck()
 		for key in keys_to_check:
 			if not collectionValues.has_key(key):
 				self.collectionIncomplete = True
