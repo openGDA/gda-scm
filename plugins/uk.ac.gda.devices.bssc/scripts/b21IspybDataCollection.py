@@ -1,3 +1,13 @@
+def retrieveVisitInfo(h5In):
+	visitNumberPath = "/entry1/experiment_identifier"
+	beamlineNamePath = "/entry1/instrument/name"
+	visitName = h5In[visitNumberPath][0]
+	proposalCode = visitName[0:2]
+	proposalNumber = visitName.split("-")[0][2:]
+	visitNumber = visitName.split("-")[1]
+	beamlineName = h5In[beamlineNamePath][0]
+	return proposalCode, proposalNumber, beamlineName, visitNumber
+
 def getDataFromH5File(h5In, reducedFile):
 	map = {}
 	exposureTimePath = "/entry1/instrument/detector/count_time"
@@ -25,19 +35,16 @@ def getDataFromH5File(h5In, reducedFile):
 	qData = 1. / qArray.max()
 	map["resolution"] = qData #this value will be Angstrom for now - need to discuss whether to change to nm for SAXS
 
-	#TODO not sure what to put in here - null causes a silent failure in the web service
+	#TODO the following value works for both dummy and real databases - null causes a silent failure in the web service
 	map["dataCollectionGroupId"] = 158801
 
-	#TODO need blsessionid
-	map["sessionId"] = 18881
-	
 	map["comments"] = "no comment"
 
-	#TODO need some explanation on what the following fields are for	
-	map["dataCollectionNumber"] = 12433
+	scanNumber = h5in["/entry1/entry_identifier"][0]
+	map["dataCollectionNumber"] = scanNumber
 	map["imageDirectory"] = "/dls/b21/data/2014/cm4962-3/.ispyb/testDir/"
-	map["imagePrefix"] = "testPrefix"
-	map["fileTemplate"] = "12433.dat"
+	map["imagePrefix"] = "testPrefix"+scanNumber
+	map["fileTemplate"] = scanNumber+".dat"
 
 	return map
 
@@ -63,7 +70,7 @@ def storeImages(map, summaryImageFile1, snapshotImageFile1, snapshotImageFile2, 
 
 if __name__ == '__main__':
 
-	import argparse
+	import argparse, sys
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--rawfile", type=str, help="scanned data Nexus file")
 	parser.add_argument("--reducedfile", type=str, help="reduced data Nexus file")
@@ -85,12 +92,20 @@ if __name__ == '__main__':
 	if args.summaryimage:
 		summaryImage = args.summaryimage
 
+	#set up data collection class
+	import ispybDataCollection
+	dc=ispybDataCollection.ispybDataCollection()
+
 	import h5py
 	fileIn=rawFilename
 	reducedFilename=reducedFilename
 	h5File = h5py.File(fileIn,'r')
 	reducedFile = h5py.File(reducedFilename, 'r')
 	values = getDataFromH5File(h5File, reducedFile)
+	
+	proposalCode, proposalNumber, beamlineName, visitNumber = retrieveVisitInfo(h5File)
+	sessionId = dc.getSessionId(proposalCode, proposalNumber, beamlineName, visitNumber)
+	values["sessionId"] = sessionId
 	values = storeTransmission(values, "Scatter Diode") #actual value as of 2014-07-31
 	values = storeBeamSize(values, 4.0925, 0.8195) #actual values (in MM) as of 2014-07-31
 	
@@ -101,7 +116,6 @@ if __name__ == '__main__':
 	from create3Plots import create3Plots
 	filenames = create3Plots(reducedFilename, summaryImage)
 	values = storeImages(values, summaryImage, filenames[0], filenames[1], filenames[2])
-	import ispybDataCollection
-	dc=ispybDataCollection.ispybDataCollection()
+
 	dc.setCollectionValues(values)
 	dc.storeCollection()
