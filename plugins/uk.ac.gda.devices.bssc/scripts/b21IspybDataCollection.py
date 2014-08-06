@@ -68,9 +68,6 @@ if __name__ == '__main__':
 	parser.add_argument("--rawfile", type=str, help="scanned data Nexus file")
 	parser.add_argument("--reducedfile", type=str, help="reduced data Nexus file")
 	parser.add_argument("--summaryimage", type=str, help="summary image name (first panel in ISPyB)")
-	parser.add_argument("--image1", type=str, help="first image in second panel of ISPyB")
-	parser.add_argument("--image2", type=str, help="second image in second panel of ISPyB")
-	parser.add_argument("--image3", type=str, help="third image in second panel of ISPyB")
 
 	args = parser.parse_args()
 
@@ -87,18 +84,6 @@ if __name__ == '__main__':
 
 	if args.summaryimage:
 		summaryImage = args.summaryimage
-	if args.image1:
-		image1 = args.image1
-	else:
-		image1 = ""
-	if args.image2:
-		image2 = args.image2
-	else:
-		image2 = ""
-	if args.image3:
-		image3 = args.image3
-	else:
-		image3 = ""
 
 	import h5py
 	fileIn=rawFilename
@@ -108,7 +93,14 @@ if __name__ == '__main__':
 	values = getDataFromH5File(h5File, reducedFile)
 	values = storeTransmission(values, "Scatter Diode") #actual value as of 2014-07-31
 	values = storeBeamSize(values, 4.0925, 0.8195) #actual values (in MM) as of 2014-07-31
-	values = storeImages(values, summaryImage, image1, image2, image3)
+	
+	#create summary 3d surface plot
+	from create3dPlotIvsQ import createPlot
+	createPlot(reducedFilename, "/entry1/detector_processing/Normalisation/data", "/entry1/detector_result/q", summaryImage, False)
+	#create 3 snapshots from beginning, middle, end of data collection
+	from create3Plots import create3Plots
+	filenames = create3Plots(reducedFilename, summaryImage)
+	values = storeImages(values, summaryImage, filenames[0], filenames[1], filenames[2])
 	import ispybDataCollection
 	dc=ispybDataCollection.ispybDataCollection()
 	dc.setCollectionValues(values)
