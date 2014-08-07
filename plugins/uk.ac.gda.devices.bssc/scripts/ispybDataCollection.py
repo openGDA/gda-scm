@@ -1,7 +1,7 @@
 import h5py, sys
 class ispybDataCollection(object):
 	def __init__(self):
-		host = "ispybb-test.diamond.ac.uk"
+		host = "ispybb.diamond.ac.uk"
 		webServiceName = "ToolsForCollectionWebService"
 		self.createWebServiceClient(host, webServiceName)
 		self.createDataCollection()
