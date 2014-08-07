@@ -40,10 +40,13 @@ def getDataFromH5File(h5In, reducedFile):
 
 	map["comments"] = "no comment"
 
-	scanNumber = h5in["/entry1/entry_identifier"][0]
+	scanNumber = h5In["/entry1/entry_identifier"][0]
 	map["dataCollectionNumber"] = scanNumber
-	map["imageDirectory"] = "/dls/b21/data/2014/cm4962-3/.ispyb/testDir/"
-	map["imagePrefix"] = "testPrefix"+scanNumber
+	visitPathSplit = (str(h5In.filename)).split("/")
+	import os
+	visitPath = os.path.sep + os.path.join(visitPathSplit[0], visitPathSplit[1], visitPathSplit[2], visitPathSplit[3], visitPathSplit[4], visitPathSplit[5])
+	map["imageDirectory"] = os.path.join(visitPath , ".ispyb")
+	map["imagePrefix"] = scanNumber
 	map["fileTemplate"] = scanNumber+".dat"
 
 	return map
@@ -67,6 +70,17 @@ def storeImages(map, summaryImageFile1, snapshotImageFile1, snapshotImageFile2, 
 	map["xtalSnapshotFullPath3"] = snapshotImageFile2
 	map["xtalSnapshotFullPath4"] = snapshotImageFile3
 	return map
+
+def createZipFile(baseDirectory, rawFile, reducedFile):
+	import zipfile
+	downloadDirectoryName = os.path.join(baseDirectory, "download")
+	print baseDirectory, downloadDirectoryName
+	if not os.path.exists(downloadDirectoryName):
+		os.makedirs(downloadDirectoryName)
+	z=zipfile.ZipFile(os.path.join(downloadDirectoryName, "download.zip"),'w')
+	z.write(rawFile)
+	z.write(reducedFile)
+	z.close()
 
 if __name__ == '__main__':
 
@@ -105,6 +119,8 @@ if __name__ == '__main__':
 	
 	proposalCode, proposalNumber, beamlineName, visitNumber = retrieveVisitInfo(h5File)
 	sessionId = dc.getSessionId(proposalCode, proposalNumber, beamlineName, visitNumber)
+	if sessionId == 0:
+		print "warning, the data collection may not be stored correctly because the sessionId was not found"
 	values["sessionId"] = sessionId
 	values = storeTransmission(values, "Scatter Diode") #actual value as of 2014-07-31
 	values = storeBeamSize(values, 4.0925, 0.8195) #actual values (in MM) as of 2014-07-31
@@ -117,5 +133,9 @@ if __name__ == '__main__':
 	filenames = create3Plots(reducedFilename, summaryImage)
 	values = storeImages(values, summaryImage, filenames[0], filenames[1], filenames[2])
 
+	import os
+	baseDirectory = os.path.join(values["imageDirectory"], values["imagePrefix"])
+	createZipFile(baseDirectory, rawFilename, reducedFilename)
+	
 	dc.setCollectionValues(values)
 	dc.storeCollection()
