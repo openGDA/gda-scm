@@ -1,7 +1,7 @@
 import h5py, sys
 class ispybDataCollection(object):
 	def __init__(self):
-		host = "ispybb-test.diamond.ac.uk"
+		host = "ispybb.diamond.ac.uk"
 		webServiceName = "ToolsForCollectionWebService"
 		self.createWebServiceClient(host, webServiceName)
 		self.createDataCollection()
@@ -57,6 +57,14 @@ class ispybDataCollection(object):
 		returned = self.client.service.storeOrUpdateDataCollection(self.collection)
 		return returned
 
+	#return sessionId of the specified visit or 0
+	def getSessionId(self, proposalCode, proposalNumber, beamlineName, visitNumber):
+		sessions = self.client.service.findSessionsByCodeAndNumberAndBeamLine(proposalCode, proposalNumber, beamlineName)
+		for session in sessions:
+			if session.sessionId == visitNumber:
+				return session.sessionId
+		return 0
+	
 if __name__ == '__main__':
 	print "this is not meant to be run standalone, exiting"
 	sys.exit(1)
