@@ -1,8 +1,9 @@
+from gdascripts.messages.handle_messages import simpleLog
 
 class BM26aSamplePreparer:
-    def __init__(self, samplestage_scannable, cryostage_scannable):
-        self.samplestage_scannable = samplestage_scannable
-        self.cryostage_scannable = cryostage_scannable
+    def __init__(self, xyzStage_scannable, cryoStage_scannable):
+        self.xyzStage_scannable = xyzStage_scannable
+        self.cryoStage_scannable = cryoStage_scannable
         self.logging_enabled = True
     
     def setLoggingEnabled(self, enabled):
@@ -15,20 +16,20 @@ class BM26aSamplePreparer:
             print msg
     
     def prepare(self, sampleParameters):
-        if sampleParameters.getStage() == "sampleStage":
+        if sampleParameters.getStage() == "xyzStage":
             self._control_sample_stage(sampleParameters.getXyzStageParameters()) 
         elif sampleParameters.getStage() == "cryoStage":
             self._control_cryo_stage(sampleParameters.getCryoStageParameters())
      
     def _control_sample_stage(self, bean):
         targetPosition = [bean.getX(), bean.getY(), bean.getZ()]
-        self.log( "moving sampleStage (" + self.samplestage_scannable.name + ") to " + str(targetPosition))
-        self.samplestage_scannable(targetPosition);
-        self.log(  "sampleStage move complete.")
+        self.log( "moving xyzStage (" + self.xyzStage_scannable.name + ") to " + str(targetPosition))
+        self.xyzStage_scannable(targetPosition);
+        self.log(  "xyzStage move complete.")
 
     def _control_cryo_stage(self, bean):
         targetPosition = [bean.getX(), bean.getY(), bean.getZ()]
-        self.log( "moving cryoStage (" + self.cryostage_scannable.name + ") to " + str(targetPosition))
-        self.cryostage_scannable(targetPosition);
+        self.log( "moving cryoStage (" + self.cryoStage_scannable.name + ") to " + str(targetPosition))
+        self.cryoStage_scannable(targetPosition);
         self.log(  "cryoStage move complete.")
     
