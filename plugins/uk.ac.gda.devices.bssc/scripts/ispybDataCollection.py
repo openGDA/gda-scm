@@ -61,7 +61,7 @@ class ispybDataCollection(object):
 	def getSessionId(self, proposalCode, proposalNumber, beamlineName, visitNumber):
 		sessions = self.client.service.findSessionsByCodeAndNumberAndBeamLineNoEndDateLimit(proposalCode, proposalNumber, beamlineName)
 		for session in sessions:
-			if session.sessionId == visitNumber:
+			if int(session.visit_number) == int(visitNumber):
 				return session.sessionId
 		return 0
 	
