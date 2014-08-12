@@ -1,3 +1,5 @@
+import numpy
+
 def retrieveVisitInfo(h5In):
 	visitNumberPath = "/entry1/experiment_identifier"
 	beamlineNamePath = "/entry1/instrument/name"
@@ -28,7 +30,6 @@ def getDataFromH5File(h5In, reducedFile):
 	qPath = "/entry1/detector_result/q"
 	qDataInvNm = reducedFile[qPath]
 	assert reducedFile[qPath].attrs["units"]=="Angstrom^-1"
-	import numpy
 	qSize = len(qDataInvNm)
 	qArray = numpy.zeros((qSize,),dtype='float32')
 	qDataInvNm.read_direct(qArray,numpy.s_[0:qSize])
@@ -81,6 +82,16 @@ def createZipFile(baseDirectory, rawFile, reducedFile):
 	z.write(rawFile)
 	z.write(reducedFile)
 	z.close()
+
+#TODO this is essentially identical to part of what is done in extractDataFromNexus. would be nice to do it in only one place
+def createDatFile(reducedFile, filename):
+	qPath = "/entry1/detector_result/q"
+	qDataInvNm = reducedFile[qPath]
+	dataPath = "/entry1/detector_result/data"
+	dataInvNm = reducedFile[dataPath][0][0]
+	errorsPath = "/entry1/detector_result/errors"
+	errors = reducedFile[errorsPath][0][0]
+	numpy.savetxt(filename,numpy.column_stack((qDataInvNm,dataInvNm, errors)))
 
 if __name__ == '__main__':
 
@@ -136,6 +147,8 @@ if __name__ == '__main__':
 	import os
 	baseDirectory = os.path.join(values["imageDirectory"], values["imagePrefix"])
 	createZipFile(baseDirectory, rawFilename, reducedFilename)
+	
+	createDatFile(reducedFile, os.path.join(baseDirectory, values["dataCollectionNumber"]+".dat"))
 	
 	dc.setCollectionValues(values)
 	dc.storeCollection()
