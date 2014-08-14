@@ -11,7 +11,7 @@
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location"
-			value="file:${gda.config}/properties/dummy/java.properties" />
+			value="file:${gda.config}/properties/${gda.mode}/java.properties" />
 	</bean>
 	<bean class="gda.spring.FindableNameSetterPostProcessor" />
 

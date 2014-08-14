@@ -11,10 +11,19 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>
+      <vmArgs>-Declipse.pluginCustomization=/home/ppc/gda_git/gda-scm.git/plugins/fr.esrf.gda.beamline.bm26a/plugin_customization.ini
+-Dgda.mode=live
+-Dosgi.locking=none
+-Dgda.install.workspace.loc=/home/ppc/gda
+-Dgda.install.git.loc=/home/ppc/gda_git
+-Dgda.config=/home/ppc/gda_git/gda-scm.git/configurations/bm26a-config
+-Djava.library.path=/home/ppc/gda_git/gda-nexus.git/uk.ac.gda.nexus/lib/linux-x86_64
+-Dgda.propertiesFile=/home/ppc/gda_git/gda-scm.git/configurations/bm26a-config/properties/live/java.properties
+-Djacorb.config.dir=/home/ppc/gda_git/gda-scm.git/configurations/bm26a-config/jacorb/live
 -Xms512m
 -Xmx1024m
--XX:MaxPermSize=1024m</vmArgs>
+-XX:MaxPermSize=1024m
+-XX:+DisableExplicitGC</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
