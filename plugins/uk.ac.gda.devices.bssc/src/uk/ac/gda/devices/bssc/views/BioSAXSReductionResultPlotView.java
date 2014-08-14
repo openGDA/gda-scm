@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dawb.common.services.ServiceManager;
-import org.dawnsci.plotting.api.IPlottingSystem;
-import org.dawnsci.plotting.api.PlotType;
-import org.dawnsci.plotting.api.PlottingFactory;
-import org.dawnsci.plotting.api.axis.IAxis;
-import org.dawnsci.plotting.api.filter.AbstractPlottingFilter;
-import org.dawnsci.plotting.api.filter.IFilterDecorator;
-import org.dawnsci.plotting.api.tool.IToolPageSystem;
-import org.dawnsci.slicing.api.util.SliceUtils;
+import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
+import org.eclipse.dawnsci.plotting.api.PlotType;
+import org.eclipse.dawnsci.plotting.api.PlottingFactory;
+import org.eclipse.dawnsci.plotting.api.axis.IAxis;
+import org.eclipse.dawnsci.plotting.api.filter.AbstractPlottingFilter;
+import org.eclipse.dawnsci.plotting.api.filter.IFilterDecorator;
+import org.eclipse.dawnsci.plotting.api.tool.IToolPageSystem;
+import org.eclipse.dawnsci.slicing.api.util.SliceUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -49,7 +49,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.diamond.scisoft.analysis.dataset.AbstractDataset;
+import uk.ac.diamond.scisoft.analysis.dataset.Dataset;
 import uk.ac.diamond.scisoft.analysis.dataset.IDataset;
 import uk.ac.diamond.scisoft.analysis.dataset.ILazyDataset;
 import uk.ac.diamond.scisoft.analysis.io.IDataHolder;
@@ -458,7 +458,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    public int getRank() { return 1; }
 	    @Override
 	    protected IDataset[] filter(IDataset x, IDataset y) {
-	    	return SaxsAnalysisPlotType.LOGNORM_PLOT.process((AbstractDataset) x, (AbstractDataset) y);
+	    	return SaxsAnalysisPlotType.LOGNORM_PLOT.process((Dataset) x, (Dataset) y);
 	    }
 	};		
 
@@ -467,7 +467,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    public int getRank() { return 1; }
 	    @Override
 	    protected IDataset[] filter(IDataset x, IDataset y) {
-	    	return SaxsAnalysisPlotType.LOGLOG_PLOT.process((AbstractDataset) x, (AbstractDataset) y);
+	    	return SaxsAnalysisPlotType.LOGLOG_PLOT.process((Dataset) x, (Dataset) y);
 	    }
 	};		
 
@@ -476,7 +476,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    public int getRank() { return 1; }
 	    @Override
 	    protected IDataset[] filter(IDataset x, IDataset y) {
-	    	return SaxsAnalysisPlotType.GUINIER_PLOT.process((AbstractDataset) x, (AbstractDataset) y);
+	    	return SaxsAnalysisPlotType.GUINIER_PLOT.process((Dataset) x, (Dataset) y);
 	    }
 	};		
 	
@@ -485,7 +485,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    public int getRank() { return 1; }
 	    @Override
 	    protected IDataset[] filter(IDataset x, IDataset y) {
-	    	return SaxsAnalysisPlotType.POROD_PLOT.process((AbstractDataset) x, (AbstractDataset) y);
+	    	return SaxsAnalysisPlotType.POROD_PLOT.process((Dataset) x, (Dataset) y);
 	    }
 	};		
 	
@@ -494,7 +494,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    public int getRank() { return 1; }
 	    @Override
 	    protected IDataset[] filter(IDataset x, IDataset y) {
-	    	return SaxsAnalysisPlotType.KRATKY_PLOT.process((AbstractDataset) x, (AbstractDataset) y);
+	    	return SaxsAnalysisPlotType.KRATKY_PLOT.process((Dataset) x, (Dataset) y);
 	    }
 	};		
 	
@@ -503,7 +503,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    public int getRank() { return 1; }
 	    @Override
 	    protected IDataset[] filter(IDataset x, IDataset y) {
-	    	return SaxsAnalysisPlotType.ZIMM_PLOT.process((AbstractDataset) x, (AbstractDataset) y);
+	    	return SaxsAnalysisPlotType.ZIMM_PLOT.process((Dataset) x, (Dataset) y);
 	    }
 	};	
 	
@@ -512,7 +512,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    public int getRank() { return 1; }
 	    @Override
 	    protected IDataset[] filter(IDataset x, IDataset y) {
-	    	return SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT.process((AbstractDataset) x, (AbstractDataset) y);
+	    	return SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT.process((Dataset) x, (Dataset) y);
 	    }
 	};		
 	
