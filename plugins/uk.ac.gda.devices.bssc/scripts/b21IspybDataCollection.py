@@ -60,7 +60,7 @@ def storeTransmission(map, d3FilterPositioner):
 	return map
 
 def storeBeamSize(map, beamSizeXMM, beamSizeYMM):
-	#TODO these values should be from S5 X and Y sizes in EPICS. beam is assumed to be parallel from there
+	#beam is assumed to be parallel
 	map["beamSizeAtSampleX"] = beamSizeXMM
 	map["beamSizeAtSampleY"] = beamSizeYMM
 	return map
@@ -92,6 +92,17 @@ def createDatFile(reducedFile, filename):
 	errorsPath = "/entry1/detector_result/errors"
 	errors = reducedFile[errorsPath][0][0]
 	numpy.savetxt(filename,numpy.column_stack((qDataInvNm,dataInvNm, errors)))
+
+def getB21Pvs():
+	from pkg_resources import require
+	require('cothread')
+	import cothread
+	from cothread.catools import caget, DBR_STRING
+	
+	beamSizeXMM = caget('BL21B-AL-SLITS-05:X:SIZE.VAL')
+	beamSizeYMM = caget('BL21B-AL-SLITS-05:Y:SIZE.VAL')
+	d3Positioner = caget('BL21B-DI-PHDGN-03:MP:SELECT',datatype=DBR_STRING)
+	return (beamSizeXMM, beamSizeYMM, d3Positioner)
 
 if __name__ == '__main__':
 
@@ -133,8 +144,10 @@ if __name__ == '__main__':
 	if sessionId == 0:
 		print "warning, the data collection may not be stored correctly because the sessionId was not found"
 	values["sessionId"] = sessionId
-	values = storeTransmission(values, "Scatter Diode") #actual value as of 2014-07-31
-	values = storeBeamSize(values, 4.0925, 0.8195) #actual values (in MM) as of 2014-07-31
+	
+	(beamSizeXMM, beamSizeYMM, d3Positioner) = getB21Pvs()
+	values = storeTransmission(values, d3Positioner)
+	values = storeBeamSize(values, beamSizeXMM, beamSizeYMM)
 	
 	#create summary 3d surface plot
 	from create3dPlotIvsQ import createPlot
