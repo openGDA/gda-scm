@@ -69,7 +69,7 @@
 		<property name="inputNames"><list><value>"sample_concentration"</value></list></property>
 		<property name="outputFormat"><list><value>%5.5g</value></list></property>
 		<property name="protectionLevel" value="1" />
-		<property name="userUnits" value="mg/mL" />
+		<!--  Throws error: <property name="userUnits" value="mg/ml" /> -->
 	</bean>
 	
 	<bean class="uk.ac.gda.server.ncd.beans.StoredDetectorInfoImpl" id="detectorInfoPath">
@@ -505,12 +505,29 @@
 				<entry key="sample_concentration">
 					<bean
 						class="gda.data.scan.datawriter.scannablewriter.SingleScannableWriter">
-						<property name="paths" value="sample:NXsample/concentration	" />
+						<property name="paths" value="sample:NXsample/concentration" />
 						<property name="prerequisiteScannableNames">
 							<list>
 								<!-- <value>cff</value> -->
 							</list>
 						</property>
+					</bean>
+				</entry>
+				<entry key="motor">
+					<bean
+						class="gda.data.scan.datawriter.scannablewriter.TransformationWriter">
+						<property name="paths" value="sample:NXsample/motor" />
+						<property name="prerequisiteScannableNames">
+							<list>
+								<!-- <value>cff</value> -->
+							</list>
+						</property>
+						<property name="offset"><list><list><value>0.0</value><value>0.0</value><value>0.0</value></list></list></property>
+						<property name="offset_units"><list><value>mm</value></list></property>
+						<property name="vector"><list><list><value>0.6</value><value>0.4</value><value>0.0</value></list></list></property>
+						<property name="transformation"><list><value>translation</value></list></property>
+						<property name="units"><list><value>mm</value></list></property>
+						<property name="depends_on"><value>/entry1/nothing/in/particular/which/should/be/an/error</value></property>
 					</bean>
 				</entry>
 			</map>
@@ -525,6 +542,7 @@
 				<value>energy</value>
 				<value>sample_name</value>
 				<value>sample_thickness</value>
+				<value>motor</value>
 			</set>
 		</property>
 	</bean>
