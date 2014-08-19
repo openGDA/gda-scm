@@ -29,13 +29,13 @@ import java.util.List;
 
 public class BioSAXSISPyBUtils {
 
-	public static void dumpCollectionReport(long collectionid) throws SQLException, IOException {
+	public static void dumpExperimentReport(long experimentid) throws SQLException, IOException {
 		BioSAXSISPyB api = BioSAXSDBFactory.makeAPI();
-		List<SampleInfo> collectionInfo = api.getSaxsDataCollectionInfo(collectionid);
+		List<SampleInfo> collectionInfo = api.getExperimentInfo(experimentid);
 		api.disconnect();
 		if (collectionInfo.isEmpty()) 
 			return;
-		String filename = PathConstructor.createFromDefaultProperty() + String.format("bssc-collection-%d.dat", collectionid);
+		String filename = PathConstructor.createFromDefaultProperty() + String.format("bssc-experiment-%d.dat", experimentid);
 		File file = new File(filename);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 		try {

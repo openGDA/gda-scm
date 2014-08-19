@@ -1685,8 +1685,12 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 
 	@Override
 	public List<SampleInfo> getExperimentInfo(long experimentId) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		List<Long> collections = getDataCollectionsForExperiments(experimentId);
+		List<SampleInfo> toReturn = new ArrayList<SampleInfo>();
+		for (Long collectionId : collections) {
+			toReturn.addAll(getSaxsDataCollectionInfo(collectionId));
+		}
+		return toReturn;
 	}
 	
 	@Override
