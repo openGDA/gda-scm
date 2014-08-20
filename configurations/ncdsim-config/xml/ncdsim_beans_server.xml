@@ -37,6 +37,14 @@
 	<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
 		<property name="value" value="" />
 	</bean>
+	
+	<bean id="backgroundDataFile" class="gda.data.metadata.StoredScanMetadataEntry">
+		<property name="value" value="" />
+	</bean>
+	
+	<bean id="dataCollectionId" class="gda.data.metadata.StoredScanMetadataEntry">
+		<property name="value" value="" />
+	</bean>
 
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSubdirectory">
 		<property name="storedMetadataEntry" ref="subdirectory" />
@@ -306,6 +314,12 @@
 	<bean id="twodscan" class="gda.data.scan.TwoDPlotListener">
 		<property name="plotPanel" value="Plot 2D" />
 	</bean>
+	<bean id="ncddetectorsProcessingListener" class="uk.ac.gda.server.ncd.data.scan.DataProcessingScanListener" >
+		<property name="detector" ref="ncddetectors"/>
+		<property name="runner" ref="biosaxsprocessingrunner" />
+		<property name="background" ref="backgroundDataFile" />
+		<property name="collectionId" ref="dataCollectionId" />
+	</bean>
 	<bean id="scan2elog" class="gda.data.ScanToElogExtender">
 		<property name="logID" value="DAG" />
 		<property name="groupID" value="SCAN" />
@@ -321,6 +335,7 @@
 			<list>
 				<ref bean="FileRegistrar" />
 				<ref bean="twodscan"/>
+				<ref bean="ncddetectorsProcessingListener" />
 				<!-- <ref bean="scan2elog" /> -->
 			</list>
 		</property>

@@ -18,15 +18,19 @@
 				<bean id="instrument" class="gda.data.metadata.PropertyMetadataEntry">
 					<property name="propertyName" value="gda.instrument" />
 				</bean>
-				<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
-					<property name="value" value="undefined" />
-				</bean>
 				<bean id="visit" class="gda.data.metadata.StoredMetadataEntry">
 					<property name="value" value="sm0" />
 				</bean>
+				<ref bean="title" />
 				<ref bean="subdirectory" />
 			</list>
 		</property>
+	</bean>
+	<bean id="title" class="gda.data.metadata.StoredScanMetadataEntry">
+					<property name="value" value="" />
+	</bean>
+	<bean class="gda.data.metadata.MetadataBlaster" id="observableScanTitle">
+		<property name="storedMetadataEntry" ref="title" />
 	</bean>
 	<bean id="subdirectory" class="gda.data.metadata.SubdirectoryMetadataEntry" />
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSubdirectory">
