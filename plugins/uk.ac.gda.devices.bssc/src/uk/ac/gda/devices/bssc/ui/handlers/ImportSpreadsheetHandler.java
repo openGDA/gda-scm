@@ -194,7 +194,7 @@ public class ImportSpreadsheetHandler implements IHandler {
 	}
 
 	private LocationBean locationFromCells(Cell platec, Cell rowc, Cell columnc) {
-		LocationBean location = new LocationBean();
+		LocationBean location = new LocationBean(BSSCSessionBean.BSSC_PLATES);
 		location.setPlate(parsePlateCell(platec));
 		location.setRow(rowc.getStringCellValue().charAt(0));
 		location.setColumn((short) columnc.getNumericCellValue());

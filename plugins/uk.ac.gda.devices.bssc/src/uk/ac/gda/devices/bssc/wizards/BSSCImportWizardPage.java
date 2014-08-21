@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanUIEditor;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class BSSCImportWizardPage extends WizardNewFileCreationPage {
@@ -113,7 +111,7 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 	}
 	
 	private LocationBean locationFromCells(Cell platec, Cell rowc, Cell columnc) {
-		LocationBean location = new LocationBean();
+		LocationBean location = new LocationBean(BSSCSessionBean.BSSC_PLATES);
 		location.setPlate(parsePlateCell(platec));
 		location.setRow(rowc.getStringCellValue().charAt(0));
 		location.setColumn((short) columnc.getNumericCellValue());

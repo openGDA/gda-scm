@@ -139,7 +139,7 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 		for(short plate: new short[]{1,2,3}) {
 			for(char row: new char[] {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'}) {
 				for (short column = 1; column < 8; column++) {
-					LocationBean location = new LocationBean();
+					LocationBean location = new LocationBean(BSSCSessionBean.BSSC_PLATES);
 					location.setPlate(plate);
 					location.setRow(row);
 					location.setColumn(column);

@@ -35,6 +35,7 @@ import oracle.jdbc.OracleConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollectionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 
@@ -546,7 +547,7 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 						} else { // sample collection
 							sinfo.setName(name);
 							sinfo.setSampleFileName(filename);
-							LocationBean loc = new LocationBean();
+							LocationBean loc = new LocationBean(BSSCSessionBean.BSSC_PLATES);
 							loc.setPlate(Short.parseShort(rs.getString(1)));
 							loc.setRow((char) ('A' + rs.getInt(2) - 1));
 							loc.setColumn(rs.getShort(3));

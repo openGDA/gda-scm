@@ -232,8 +232,8 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 	private void initialiseTitrationBean(TitrationBean titrationBean, String name, String viscosity, short bufferCol,
 			char bufferRow, short bufferPlate, short col, char row, short plate, double concentration,
 			double molecularWeight, double timePerFrame, int noOfFrames, float exposureTemp) throws Exception {
-		LocationBean bufferLocation = new LocationBean();
-		LocationBean location = new LocationBean();
+		LocationBean bufferLocation = new LocationBean(BSSCSessionBean.BSSC_PLATES);
+		LocationBean location = new LocationBean(BSSCSessionBean.BSSC_PLATES);
 		titrationBean.setSampleName(name);
 		titrationBean.setViscosity(viscosity);
 		bufferLocation.setColumn(bufferCol);
