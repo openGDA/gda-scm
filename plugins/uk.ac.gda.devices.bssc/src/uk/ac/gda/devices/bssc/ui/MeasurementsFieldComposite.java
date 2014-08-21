@@ -144,15 +144,15 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		columns = new LinkedHashMap<>();
 		columns.putAll(getLocationColumns("", new ColumnHelper<TitrationBean, LocationBean>() {
 			@Override
-			LocationBean getValue(TitrationBean target) {
+			public LocationBean getValue(TitrationBean target) {
 				return target.getLocation();
 			}
 			@Override
-			void setValue(TitrationBean target, LocationBean value) {
+			public void setValue(TitrationBean target, LocationBean value) {
 				target.setLocation(value);
 			}
 			@Override
-			Color bGColor(TitrationBean element) {
+			public Color bGColor(TitrationBean element) {
 				if (!getValue(element).isValid()) {
 					return warning;
 				}
@@ -161,21 +161,21 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		}));
 		columns.put("Sample Name",new Column<TitrationBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
-			String getRealValue(TitrationBean element) {
+			public String getRealValue(TitrationBean element) {
 				return element.getSampleName();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				element.setSampleName(value);
 			}
 		});
 		columns.put("Concentration", new Column<TitrationBean, Double>(100, tableViewer, rbeditor,ColumnType.DOUBLE) {
 			@Override
-			Double getRealValue(TitrationBean element) {
+			public Double getRealValue(TitrationBean element) {
 				return element.getConcentration();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				double conc = Double.valueOf(value);
 				element.setConcentration(conc);
 			}
@@ -183,21 +183,21 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		columns.get("Concentration").setOutputFormat("%5.5f mg/ml");
 		columns.put("Viscosity", new Column<TitrationBean, String>(100, tableViewer, rbeditor, "low", "medium", "high") {
 			@Override
-			String getRealValue(TitrationBean element) {
+			public String getRealValue(TitrationBean element) {
 				return element.getViscosity();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				element.setViscosity(value);
 			}
 		});
 		columns.put("Molecular Weight", new Column<TitrationBean, Double>(100, tableViewer, rbeditor, ColumnType.DOUBLE) {
 			@Override
-			Double getRealValue(TitrationBean element) {
+			public Double getRealValue(TitrationBean element) {
 				return element.getMolecularWeight();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				double weight = Double.valueOf(value);
 				element.setMolecularWeight(weight);
 			}
@@ -205,15 +205,15 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		columns.get("Molecular Weight").setOutputFormat("%s kDa");
 		columns.putAll(getLocationColumns("Buffer\n", new ColumnHelper<TitrationBean, LocationBean>() {
 			@Override
-			LocationBean getValue(TitrationBean target) {
+			public LocationBean getValue(TitrationBean target) {
 				return target.getBufferLocation();
 			}
 			@Override
-			void setValue(TitrationBean target, LocationBean value) {
+			public void setValue(TitrationBean target, LocationBean value) {
 				target.setBufferLocation(value);
 			}
 			@Override
-			Color bGColor(TitrationBean element) {
+			public Color bGColor(TitrationBean element) {
 				if (!getValue(element).isValid()) {
 					return warning;
 				}
@@ -222,11 +222,11 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		}));
 		columns.put("Recoup", new Column<TitrationBean, Boolean>(50, tableViewer, rbeditor, ColumnType.BOOL) {
 			@Override
-			Boolean getRealValue(TitrationBean element) {
+			public Boolean getRealValue(TitrationBean element) {
 				return element.getRecouperateLocation() != null;
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				boolean rec = Boolean.valueOf(value);
 				if (rec) {
 					element.setRecouperateLocation(new LocationBean(BSSCSessionBean.BSSC_PLATES));
@@ -237,15 +237,15 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		});
 		Map<String, Column<TitrationBean,?>> recoup = getLocationColumns("Recoup\n", new ColumnHelper<TitrationBean, LocationBean>() {
 			@Override
-			LocationBean getValue(TitrationBean target) {
+			public LocationBean getValue(TitrationBean target) {
 				return target.getRecouperateLocation();
 			}
 			@Override
-			void setValue(TitrationBean target, LocationBean value) {
+			public void setValue(TitrationBean target, LocationBean value) {
 				target.setRecouperateLocation(value);
 			}
 			@Override
-			Color bGColor(TitrationBean element) {
+			public Color bGColor(TitrationBean element) {
 				if (element.getLocation().equals(element.getRecouperateLocation())) {
 					return warning;
 				} else if (getValue(element) != null && !getValue(element).isValid()) {
@@ -254,7 +254,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				return okay;
 			}
 			@Override
-			String toolTip(TitrationBean element) {
+			public String toolTip(TitrationBean element) {
 				if (element.getLocation().equals(element.getRecouperateLocation())) {
 					return "Recoup location can't be the same as sample location";
 				} else if (!getValue(element).isValid()) {
@@ -267,11 +267,11 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 		columns.put("Time per\nFrame", new Column<TitrationBean, Double>(40, tableViewer, rbeditor, ColumnType.DOUBLE) {
 			@Override
-			Double getRealValue(TitrationBean element) {
+			public Double getRealValue(TitrationBean element) {
 				return element.getTimePerFrame();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				try {
 					double time = Double.valueOf(value);
 					element.setTimePerFrame(time);
@@ -282,11 +282,11 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		columns.get("Time per\nFrame").setOutputFormat("%5.3f s");
 		columns.put("Frames", new Column<TitrationBean, Integer>(40, tableViewer, rbeditor, ColumnType.INTEGER) {
 			@Override
-			Integer getRealValue(TitrationBean element) {
+			public Integer getRealValue(TitrationBean element) {
 				return element.getFrames();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				try {
 					Integer frames = Integer.valueOf(value);
 					element.setFrames(frames);
@@ -296,11 +296,11 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		});
 		columns.put("Exposure\nTemperature", new Column<TitrationBean, Float>(40, tableViewer, rbeditor, ColumnType.DOUBLE) {
 			@Override
-			Float getRealValue(TitrationBean element) {
+			public Float getRealValue(TitrationBean element) {
 				return element.getExposureTemperature();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				try {
 					Float temp = Float.valueOf(value);
 					element.setExposureTemperature(temp);
@@ -512,12 +512,12 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		Column<TitrationBean, String> plateColumn = new Column<TitrationBean, String>(40, tableViewer, rbeditor, Column.ColumnType.CHOICE) {
 			private ColumnHelper<TitrationBean, LocationBean> help = helper;
 			@Override
-			String getRealValue(TitrationBean element) {
+			public String getRealValue(TitrationBean element) {
 				LocationBean loc = help.getValue(element);
 				return loc == null ? "--" : LocationBean.getPlateText(loc.getPlate());
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
 					loc = new LocationBean(BSSCSessionBean.BSSC_PLATES);
@@ -544,7 +544,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		columns.put(prefix + "Plate", plateColumn);
 		columns.put(prefix + "Row", new Column<TitrationBean,Character>(40, tableViewer, rbeditor, Column.ColumnType.CHOICE ) {
 			@Override
-			Character getRealValue(TitrationBean element) {
+			public Character getRealValue(TitrationBean element) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
 					return null;
@@ -555,7 +555,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				return loc.getRow();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
 					loc = new LocationBean(BSSCSessionBean.BSSC_PLATES);
@@ -581,7 +581,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		});
 		columns.put(prefix + "Column", new Column<TitrationBean,Integer>(40,tableViewer, rbeditor, Column.ColumnType.CHOICE) {
 			@Override
-			Integer getRealValue(TitrationBean element) {
+			public Integer getRealValue(TitrationBean element) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
 					return null;
@@ -592,7 +592,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				return (int) loc.getColumn();
 			}
 			@Override
-			void setNewValue(TitrationBean element, String value) {
+			public void setNewValue(TitrationBean element, String value) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
 					loc = new LocationBean(BSSCSessionBean.BSSC_PLATES);

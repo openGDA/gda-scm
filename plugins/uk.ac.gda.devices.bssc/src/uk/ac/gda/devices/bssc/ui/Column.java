@@ -70,12 +70,12 @@ public abstract class Column<T,V> {
 		public abstract <E> CellEditor getCellEditor(Composite parent, @SuppressWarnings("unchecked") E... options);
 	}
 	public static abstract class ColumnHelper<T,V> {
-		abstract V getValue(T target);
-		abstract void setValue(T target, V value);
-		Color bGColor(@SuppressWarnings("unused") T element) {
+		public abstract V getValue(T target);
+		public abstract void setValue(T target, V value);
+		public Color bGColor(@SuppressWarnings("unused") T element) {
 			return null;
 		}
-		String toolTip(@SuppressWarnings("unused") T element) {
+		public String toolTip(@SuppressWarnings("unused") T element) {
 			return null;
 		}
 	}
@@ -252,8 +252,8 @@ public abstract class Column<T,V> {
 			return String.format(outputFormat, String.valueOf(getRealValue((T)element)));
 		}
 	}
-	abstract V getRealValue(T element);
-	abstract void setNewValue(T element, String value);
+	public abstract V getRealValue(T element);
+	public abstract void setNewValue(T element, String value);
 	public int getWidth() {
 		return this.width;
 	}
@@ -281,7 +281,7 @@ public abstract class Column<T,V> {
 	protected String getToolTip(@SuppressWarnings("unused") T element) {
 		return null;
 	}
-	protected <E> void setInput(E[] options) {
+	public <E> void setInput(E[] options) {
 		if (cellEditor instanceof EditableComboBox<?>) {
 			((EditableComboBox<?>) cellEditor).setInput(options);
 		}
