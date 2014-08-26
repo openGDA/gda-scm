@@ -51,11 +51,10 @@ import uk.ac.gda.devices.bssc.BioSaxsUtils;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
-import uk.ac.gda.devices.bssc.wizards.BSSCImportWizardPage;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class ImportSpreadsheetHandler implements IHandler {
-	private static final Logger logger = LoggerFactory.getLogger(BSSCImportWizardPage.class);
+	private static final Logger logger = LoggerFactory.getLogger(ImportSpreadsheetHandler.class);
 	private static final int PLATE_COL_NO = 0;
 	private static final int PLATE_ROW_COL_NO = 1;
 	private static final int PLATE_COLUMN_COL_NO = 2;
@@ -63,26 +62,26 @@ public class ImportSpreadsheetHandler implements IHandler {
 	private static final int CONCENTRATION_COL_NO = 4;
 	private static final int VISCOSITY_COL_NO = 5;
 	private static final int MOLECULAR_WEIGHT_COL_NO = 6;
-	private static final int BUFFER_PLATE_COL_NO = 7;
-	private static final int BUFFER_ROW_COL_NO = 8;
-	private static final int BUFFER_COLUMN_COL_NO = 9;
-	private static final int RECOUP_PLATE_COL_NO = 10;
-	private static final int RECOUP_ROW_COL_NO = 11;
-	private static final int RECOUP_COLUMN_COL_NO = 12;
-	private static final int TIME_PER_FRAME_COL_NO = 13;
-	private static final int FRAMES_COL_NO = 14;
-	private static final int EXPOSURE_TEMP_COL_NO = 15;
+	private static final int BUFFER_COL = 7;
+	private static final int BUFFERS_COL = 8;
+//	private static final int BUFFER_PLATE_COL_NO = 7;
+//	private static final int BUFFER_ROW_COL_NO = 8;
+//	private static final int BUFFER_COLUMN_COL_NO = 9;
+	private static final int RECOUP_PLATE_COL_NO = 9;
+	private static final int RECOUP_ROW_COL_NO = 10;
+	private static final int RECOUP_COLUMN_COL_NO = 11;
+	private static final int TIME_PER_FRAME_COL_NO = 12;
+	private static final int FRAMES_COL_NO = 13;
+	private static final int EXPOSURE_TEMP_COL_NO = 14;
+	private static final int MODE_COL = 15;
+	private static final int KEY_COL = 16;
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -109,7 +108,6 @@ public class ImportSpreadsheetHandler implements IHandler {
 				List<TitrationBean> measurements = new ArrayList<TitrationBean>();
 
 				for (Row row : sheet) {
-
 					try {
 						TitrationBean tibi = new TitrationBean();
 		
@@ -120,10 +118,10 @@ public class ImportSpreadsheetHandler implements IHandler {
 					
 						tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
 		
-						location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
-						if (!location.isValid())
-							throw new Exception("invalid buffer location");
-						tibi.setBufferLocation(location);
+//						location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
+//						if (!location.isValid())
+//							throw new Exception("invalid buffer location");
+//						tibi.setBufferLocation(location);
 		
 						try {
 							location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO), row.getCell(RECOUP_COLUMN_COL_NO));
@@ -138,11 +136,15 @@ public class ImportSpreadsheetHandler implements IHandler {
 						tibi.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL_NO).getNumericCellValue());
 						tibi.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL_NO).getNumericCellValue());
 						tibi.setFrames((int) row.getCell(FRAMES_COL_NO).getNumericCellValue()); 
-						tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue()); 
+						tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue());
+						tibi.setBuffer(row.getCell(BUFFER_COL).getBooleanCellValue());
+						tibi.setBuffers(row.getCell(BUFFERS_COL, Row.CREATE_NULL_AS_BLANK).getStringCellValue());
+						tibi.setKey(row.getCell(KEY_COL).getStringCellValue());
+						tibi.setMode(row.getCell(MODE_COL).getStringCellValue());
 		
 						measurements.add(tibi);
 					} catch (Exception e) {
-						logger.debug("row rejected"+row.toString());
+						logger.debug("row rejected: "+e.getMessage(), e);
 					}
 				}
 
@@ -213,8 +215,6 @@ public class ImportSpreadsheetHandler implements IHandler {
 
 	@Override
 	public void removeHandlerListener(IHandlerListener handlerListener) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

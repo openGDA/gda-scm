@@ -203,23 +203,52 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			}
 		});
 		columns.get("Molecular Weight").setOutputFormat("%s kDa");
-		columns.putAll(getLocationColumns("Buffer\n", new ColumnHelper<TitrationBean, LocationBean>() {
+		columns.put("isBuffer", new Column<TitrationBean, Boolean>(40, tableViewer, rbeditor, ColumnType.BOOL) {
 			@Override
-			public LocationBean getValue(TitrationBean target) {
-				return target.getBufferLocation();
+			public Boolean getRealValue(TitrationBean element) {
+				return element.isBuffer();
+			}
+
+			@Override
+			public void setNewValue(TitrationBean element, String value) {
+				boolean isBuffer = Boolean.valueOf(value);
+				element.setBuffer(isBuffer);
+			}
+			
+		});
+		columns.put("Buffers", new Column<TitrationBean, String>(40, tableViewer, rbeditor, ColumnType.TEXT) {
+			@Override
+			public String getRealValue(TitrationBean element) {
+				return element.getBuffers();
 			}
 			@Override
-			public void setValue(TitrationBean target, LocationBean value) {
-				target.setBufferLocation(value);
+			public void setNewValue(TitrationBean element, String value) {
+				element.setBuffers(value);
 			}
 			@Override
-			public Color bGColor(TitrationBean element) {
-				if (!getValue(element).isValid()) {
-					return warning;
-				}
-				return okay;
+			protected String getStringValue(Object element) {
+				String value = getRealValue((TitrationBean)element);
+				boolean buf = ((TitrationBean)element).isBuffer();
+				return buf ? "--" : value;
 			}
-		}));
+		});
+//		columns.putAll(getLocationColumns("Buffer\n", new ColumnHelper<TitrationBean, LocationBean>() {
+//			@Override
+//			public LocationBean getValue(TitrationBean target) {
+//				return target.getBufferLocation();
+//			}
+//			@Override
+//			public void setValue(TitrationBean target, LocationBean value) {
+//				target.setBufferLocation(value);
+//			}
+//			@Override
+//			public Color bGColor(TitrationBean element) {
+//				if (!getValue(element).isValid()) {
+//					return warning;
+//				}
+//				return okay;
+//			}
+//		}));
 		columns.put("Recoup", new Column<TitrationBean, Boolean>(50, tableViewer, rbeditor, ColumnType.BOOL) {
 			@Override
 			public Boolean getRealValue(TitrationBean element) {
@@ -309,6 +338,30 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			}
 		});
 		columns.get("Exposure\nTemperature").setOutputFormat("%4.1f \u00B0C");
+		
+		columns.put("Mode", new Column<TitrationBean, String>(40, tableViewer, rbeditor, "Normal", "SM", "None") {
+			@Override
+			public String getRealValue(TitrationBean element) {
+				return element.getMode();
+			}
+			@Override
+			public void setNewValue(TitrationBean element, String value) {
+				element.setMode(value);
+			}
+		});
+		columns.put("Key", new Column<TitrationBean, String>(40, tableViewer, rbeditor, ColumnType.TEXT) {
+
+			@Override
+			public String getRealValue(TitrationBean element) {
+				return element.getKey();
+			}
+
+			@Override
+			public void setNewValue(TitrationBean element, String value) {
+				element.setKey(value);
+			}
+			
+		});
 
 		for (Entry<String, Column<TitrationBean,?>> column : columns.entrySet()) {
 			TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.CENTER);
@@ -340,7 +393,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 							TitrationBean oldBean = (TitrationBean) element.getData();
 							TitrationBean copiedBean = (TitrationBean) BeanUtils.cloneBean(oldBean);
 							copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
-							copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
+//							copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
 							data.add(copiedBean);
 						}
 					} catch (Exception e) {
@@ -427,7 +480,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 //
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
-		composite_1 = new Composite(this, SWT.NONE);
+		composite_1 = new Composite(this, SWT.FILL);
 		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
 		rowLayout.marginWidth = 0;
 		rowLayout.marginTop = 0;
@@ -439,8 +492,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 
 		Label label = new Label(composite_1, SWT.NONE);
 		label.setText("Number of Samples:");
-
 		sampleCount = new Label(composite_1, SWT.NONE);
+		sampleCount.setText("000000000000");//ensures label is long enough
 		sampleCount.setText("0");
 	}
 
@@ -488,8 +541,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 					TitrationBean oldBean = getList().get(i);
 					TitrationBean copiedBean = (TitrationBean) BeanUtils.cloneBean(oldBean);
 					copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
-					copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
-					
+//					copiedBean.setBufferLocation((LocationBean) BeanUtils.cloneBean(oldBean.getBufferLocation()));
+					copiedBean.setBuffers(oldBean.getBuffers());
 					if (oldBean.getRecouperateLocation() != null) {
 						copiedBean.setRecouperateLocation((LocationBean) BeanUtils.cloneBean(oldBean
 								.getRecouperateLocation()));

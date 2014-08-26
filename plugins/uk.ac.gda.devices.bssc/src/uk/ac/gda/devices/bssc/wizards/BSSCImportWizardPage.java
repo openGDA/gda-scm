@@ -46,9 +46,9 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 	private static final int CONCENTRATION_COL_NO = 4;
 	private static final int VISCOSITY_COL_NO = 5;
 	private static final int MOLECULAR_WEIGHT_COL_NO = 6;
-	private static final int BUFFER_PLATE_COL_NO = 7;
-	private static final int BUFFER_ROW_COL_NO = 8;
-	private static final int BUFFER_COLUMN_COL_NO = 9;
+//	private static final int BUFFER_PLATE_COL_NO = 7;
+//	private static final int BUFFER_ROW_COL_NO = 8;
+//	private static final int BUFFER_COLUMN_COL_NO = 9;
 //	private static final int RECOUP_COL_NO = 10;
 	private static final int RECOUP_PLATE_COL_NO = 10;
 	private static final int RECOUP_ROW_COL_NO = 11;
@@ -139,10 +139,10 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 				
 					tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
 	
-					location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
-					if (!location.isValid())
-						throw new Exception("invalid buffer location");
-					tibi.setBufferLocation(location);
+//					location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
+//					if (!location.isValid())
+//						throw new Exception("invalid buffer location");
+//					tibi.setBufferLocation(location);
 	
 					try {
 						location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO), row.getCell(RECOUP_COLUMN_COL_NO));

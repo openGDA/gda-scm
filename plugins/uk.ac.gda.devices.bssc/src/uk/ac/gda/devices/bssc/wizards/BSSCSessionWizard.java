@@ -37,7 +37,7 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 	private BSSCSessionWizardPage page;
 	private ISelection selection;
 	private double concentration = 0.1;
-	private float exposureTemperature = 20;
+//	private float exposureTemperature = 20;
 	private int frames = 10;
 	private double timePerFrame = 0.2;
 	private String viscosity = "medium";
@@ -134,35 +134,24 @@ public class BSSCSessionWizard extends Wizard implements INewWizard {
 	private InputStream getContentStream() {
 		BSSCSessionBean sessionBean = new BSSCSessionBean();
 		List<TitrationBean> measurements = new ArrayList<TitrationBean>();
-		int i = 0;
-		LocationBean bufferLocation = null;
-		for(short plate: new short[]{1,2,3}) {
-			for(char row: new char[] {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'}) {
-				for (short column = 1; column < 8; column++) {
-					LocationBean location = new LocationBean(BSSCSessionBean.BSSC_PLATES);
-					location.setPlate(plate);
-					location.setRow(row);
-					location.setColumn(column);
-					if (column == 1) {
-						bufferLocation = location;
-						continue;
-					}
-					i++;
-					TitrationBean tibi = new TitrationBean();
-					tibi.setLocation(location);
-					tibi.setBufferLocation(bufferLocation);
-					tibi.setConcentration(concentration);
-					tibi.setExposureTemperature(exposureTemperature);
-					tibi.setFrames(frames);
-					tibi.setRecouperateLocation(null);
-					tibi.setTimePerFrame(timePerFrame);
-					tibi.setViscosity(viscosity);
-					tibi.setYellowSample(yellowsample);
-					tibi.setSampleName(String.format("Sample %d", i));
-					measurements.add(tibi);
-				}
-			}
-		}
+		LocationBean location = new LocationBean(BSSCSessionBean.BSSC_PLATES);
+		location.setPlate((short) 1);
+		location.setRow('A');
+		location.setColumn((short) 1);
+		LocationBean bufferLocation = new LocationBean(BSSCSessionBean.BSSC_PLATES);
+		bufferLocation.setPlate((short) 1);
+		bufferLocation.setRow('A');
+		bufferLocation.setColumn((short) 1);
+		TitrationBean tb = new TitrationBean();
+		tb.setLocation(location);
+//		tb.setBufferLocation(bufferLocation);
+		tb.setConcentration(concentration);
+		tb.setMolecularWeight(0);
+		tb.setFrames(frames);
+		tb.setTimePerFrame(timePerFrame);
+		tb.setViscosity(viscosity);
+		tb.setYellowSample(yellowsample);
+		measurements.add(tb);
 		sessionBean.setMeasurements(measurements);
 		
 		return BSSCWizardUtils.sessionBeanToStream(sessionBean);

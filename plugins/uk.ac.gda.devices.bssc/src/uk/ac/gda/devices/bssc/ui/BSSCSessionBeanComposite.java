@@ -49,16 +49,16 @@ public final class BSSCSessionBeanComposite extends Composite {
 	public BSSCSessionBeanComposite(Composite parent, int style, final RichBeanEditorPart editor) {
 		super(parent, style);
 		GridLayout layout = new GridLayout(2, false);
-		layout.marginWidth=5;
+		layout.marginWidth = 5;
 		setLayout(layout);
 		Composite composite = new Composite(this, SWT.NONE);
 		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
-		rowLayout.marginWidth=0;
-		rowLayout.marginTop=0;
-		rowLayout.marginBottom=0;
-		rowLayout.marginLeft=0;
-		rowLayout.marginRight=0;
-		rowLayout.spacing=5;
+		rowLayout.marginWidth = 0;
+		rowLayout.marginTop = 0;
+		rowLayout.marginBottom = 0;
+		rowLayout.marginLeft = 0;
+		rowLayout.marginRight = 0;
+		rowLayout.spacing = 5;
 		composite.setLayout(rowLayout);
 		
 		Button btnNewSample = new Button(composite, SWT.NONE);
@@ -69,9 +69,8 @@ public final class BSSCSessionBeanComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				// TODO
 				if (measurements != null)
-					measurements.addSample();		
+					measurements.addSample();
 			}
 		});
 		
@@ -84,7 +83,7 @@ public final class BSSCSessionBeanComposite extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				if (measurements != null)
-					measurements.deleteSelection();			
+					measurements.deleteSelection();
 			}
 		});
 		

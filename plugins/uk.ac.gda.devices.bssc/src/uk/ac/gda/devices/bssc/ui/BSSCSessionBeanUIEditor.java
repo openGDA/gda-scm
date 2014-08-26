@@ -79,7 +79,6 @@ public final class BSSCSessionBeanUIEditor extends RichBeanEditorPart {
 	
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		
 		super.doSave(monitor);
 	}
 }
