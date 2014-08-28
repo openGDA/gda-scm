@@ -51,9 +51,10 @@ public class ImportSpreadsheetHandler implements IHandler {
 	private static final int BUFFERS_COL = 5;
 	private static final int TIME_PER_FRAME_COL = 6;
 	private static final int FRAMES_COL = 7;
-	private static final int VISIT_COL = 8;
-	private static final int USERNAME_COL = 9;
-	private static final int COMMENT_COL = 10;
+	private static final int COMMENT_COL = 8;
+	private static final int VISIT_COL = 9;
+	private static final int USERNAME_COL = 10;
+
 	private static final int DEFAULT_PLATE = 1;
 	
 	@Override
@@ -77,41 +78,41 @@ public class ImportSpreadsheetHandler implements IHandler {
 		File fileToOpen = new File(selected);
 		if (fileToOpen.exists() && fileToOpen.isFile()) {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			int i = 0;
 			try {
-//				InvalidFormatException ife = new InvalidFormatException("stuff");
 				Workbook wb = WorkbookFactory.create(fileToOpen);
 				Sheet sheet = wb.getSheetAt(0);
-//				if (ife.equals(null)) {
-//					throw ife;
-//				}
 
 				HPLCSessionBean sessionBean = new HPLCSessionBean();	
 				List<HPLCBean> measurements = new ArrayList<HPLCBean>();
 
-				for (Row row : sheet) {
-					try {
-						HPLCBean hb = new HPLCBean();
-		
-						LocationBean location = locationFromCells(DEFAULT_PLATE, row.getCell(ROW_COL), row.getCell(COLUMN_COL));
-						if (!location.isValid())
-							throw new Exception("invalid sample location");
-						hb.setLocation(location);
-						hb.setSampleName(row.getCell(SAMPLE_NAME_COL).getStringCellValue());
-						hb.setBuffers(row.getCell(BUFFERS_COL).getStringCellValue());
-						hb.setComment(row.getCell(COMMENT_COL).getStringCellValue());
-						hb.setVisit(row.getCell(VISIT_COL).getStringCellValue());
-						hb.setUsername(row.getCell(USERNAME_COL).getStringCellValue());
-						hb.setConcentration(row.getCell(CONCENTRATION_COL).getNumericCellValue()); 
-						hb.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL).getNumericCellValue());
-						hb.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL).getNumericCellValue());
-						hb.setFrames((int) row.getCell(FRAMES_COL).getNumericCellValue()); 
-		
-						measurements.add(hb);
-					} catch (IllegalArgumentException iae) {
-						logger.debug("row rejected: {}", iae.getMessage());
-					} catch (Exception e) {
-						logger.debug("row rejected"+row.toString(), e);
+				for (i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+					Row row = sheet.getRow(i);
+					HPLCBean hb = new HPLCBean();
+	
+					LocationBean location = locationFromCells(DEFAULT_PLATE, row.getCell(ROW_COL), row.getCell(COLUMN_COL));
+					if (!location.isValid())
+						throw new Exception("invalid sample location");
+					hb.setLocation(location);
+					hb.setSampleName(row.getCell(SAMPLE_NAME_COL).getStringCellValue());
+					hb.setBuffers(row.getCell(BUFFERS_COL).getStringCellValue());
+					hb.setComment(row.getCell(COMMENT_COL).getStringCellValue());
+					hb.setConcentration(row.getCell(CONCENTRATION_COL).getNumericCellValue()); 
+					hb.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL).getNumericCellValue());
+					hb.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL).getNumericCellValue());
+					hb.setFrames((int) row.getCell(FRAMES_COL).getNumericCellValue()); 
+					
+					Cell visit = row.getCell(VISIT_COL, Row.RETURN_BLANK_AS_NULL);
+					if (visit != null) {
+						hb.setVisit(visit.getStringCellValue());
 					}
+					
+					Cell username = row.getCell(USERNAME_COL, Row.RETURN_BLANK_AS_NULL);
+					if (username != null) {
+						hb.setUsername(username.getStringCellValue());
+					}
+	
+					measurements.add(hb);
 				}
 
 				sessionBean.setMeasurements(measurements);
@@ -141,6 +142,9 @@ public class ImportSpreadsheetHandler implements IHandler {
 						"Could not read .xls file",
 						"Is the file valid?");
 				logger.error("Could not read workbook", e1);
+			} catch (IllegalArgumentException iae) {
+				logger.debug("Row rejected", iae);
+				MessageDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Could not import spreadsheet", String.format("Error on row %d\n%s",i-1, iae.getMessage()));
 			} catch (Exception e) {
 				logger.error("Exception writing to xml", e);
 			}

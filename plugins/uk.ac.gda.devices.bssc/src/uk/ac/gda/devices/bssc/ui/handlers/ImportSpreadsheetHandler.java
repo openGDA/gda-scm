@@ -75,6 +75,8 @@ public class ImportSpreadsheetHandler implements IHandler {
 	private static final int EXPOSURE_TEMP_COL_NO = 14;
 	private static final int MODE_COL = 15;
 	private static final int KEY_COL = 16;
+	private static final int VISIT_COL = 17;
+	private static final int USER_COL = 18;
 
 	@Override
 	public void addHandlerListener(IHandlerListener handlerListener) {
@@ -99,7 +101,7 @@ public class ImportSpreadsheetHandler implements IHandler {
 
 		if (fileToOpen.exists() && fileToOpen.isFile()) {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-
+			int i = 0; //used for to report error row
 			try {
 				Workbook wb = WorkbookFactory.create(fileToOpen);
 				Sheet sheet = wb.getSheetAt(0);
@@ -107,45 +109,47 @@ public class ImportSpreadsheetHandler implements IHandler {
 				BSSCSessionBean sessionBean = new BSSCSessionBean();
 				List<TitrationBean> measurements = new ArrayList<TitrationBean>();
 
-				for (Row row : sheet) {
+				for (i = 1; i < sheet.getPhysicalNumberOfRows(); i++) { //Row row : sheet) {
+					Row row = sheet.getRow(i);
+					TitrationBean tibi = new TitrationBean();
+	
+					LocationBean location = locationFromCells(row.getCell(PLATE_COL_NO), row.getCell(PLATE_ROW_COL_NO), row.getCell(PLATE_COLUMN_COL_NO));
+					if (!location.isValid())
+						throw new Exception("invalid sample location");
+					tibi.setLocation(location);
+				
+					tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
+	
 					try {
-						TitrationBean tibi = new TitrationBean();
-		
-						LocationBean location = locationFromCells(row.getCell(PLATE_COL_NO), row.getCell(PLATE_ROW_COL_NO), row.getCell(PLATE_COLUMN_COL_NO));
+						location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO), row.getCell(RECOUP_COLUMN_COL_NO));
 						if (!location.isValid())
-							throw new Exception("invalid sample location");
-						tibi.setLocation(location);
-					
-						tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
-		
-//						location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
-//						if (!location.isValid())
-//							throw new Exception("invalid buffer location");
-//						tibi.setBufferLocation(location);
-		
-						try {
-							location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO), row.getCell(RECOUP_COLUMN_COL_NO));
-							if (!location.isValid())
-								location = null;
-						} catch (Exception e) {
 							location = null;
-						}
-						tibi.setRecouperateLocation(location);
-						tibi.setConcentration(row.getCell(CONCENTRATION_COL_NO).getNumericCellValue()); 
-						tibi.setViscosity(row.getCell(VISCOSITY_COL_NO).getStringCellValue());
-						tibi.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL_NO).getNumericCellValue());
-						tibi.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL_NO).getNumericCellValue());
-						tibi.setFrames((int) row.getCell(FRAMES_COL_NO).getNumericCellValue()); 
-						tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue());
-						tibi.setBuffer(row.getCell(BUFFER_COL).getBooleanCellValue());
-						tibi.setBuffers(row.getCell(BUFFERS_COL, Row.CREATE_NULL_AS_BLANK).getStringCellValue());
-						tibi.setKey(row.getCell(KEY_COL).getStringCellValue());
-						tibi.setMode(row.getCell(MODE_COL).getStringCellValue());
-		
-						measurements.add(tibi);
 					} catch (Exception e) {
-						logger.debug("row rejected: "+e.getMessage(), e);
+						location = null;
 					}
+					tibi.setRecouperateLocation(location);
+					tibi.setConcentration(row.getCell(CONCENTRATION_COL_NO).getNumericCellValue()); 
+					tibi.setViscosity(row.getCell(VISCOSITY_COL_NO).getStringCellValue());
+					tibi.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL_NO).getNumericCellValue());
+					tibi.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL_NO).getNumericCellValue());
+					tibi.setFrames((int) row.getCell(FRAMES_COL_NO).getNumericCellValue()); 
+					tibi.setExposureTemperature((float) row.getCell(EXPOSURE_TEMP_COL_NO).getNumericCellValue());
+					tibi.setBuffer(row.getCell(BUFFER_COL).getBooleanCellValue());
+					tibi.setBuffers(row.getCell(BUFFERS_COL, Row.CREATE_NULL_AS_BLANK).getStringCellValue());
+					tibi.setKey(row.getCell(KEY_COL).getStringCellValue());
+					tibi.setMode(row.getCell(MODE_COL).getStringCellValue());
+					
+					Cell visit = row.getCell(VISIT_COL, Row.RETURN_BLANK_AS_NULL);
+					if (visit != null) {
+						tibi.setVisit(visit.getStringCellValue());
+					}
+					
+					Cell username = row.getCell(USER_COL, Row.RETURN_BLANK_AS_NULL);
+					if (username != null) {
+						tibi.setUsername(username.getStringCellValue());
+					}
+	
+					measurements.add(tibi);
 				}
 
 				sessionBean.setMeasurements(measurements);
@@ -175,6 +179,9 @@ public class ImportSpreadsheetHandler implements IHandler {
 						"Could not read .xls file",
 						"Is the file valid?");
 				logger.error("Could not read workbook", e1);
+			} catch (IllegalArgumentException iae) {
+				logger.debug("Row rejected", iae);
+				MessageDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Could not import spreadsheet", String.format("Error on row %d\n%s",i-1, iae.getMessage()));
 			} catch (Exception e) {
 				logger.error("Exception writing to xml", e);
 			}
@@ -182,22 +189,9 @@ public class ImportSpreadsheetHandler implements IHandler {
 		return null;
 	}
 
-	private short parsePlateCell(Cell cell) {
-		if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-			return (short) cell.getNumericCellValue();
-		}
-		short result = 0;
-		String str = cell.getStringCellValue();
-		for (int i = 0; i < str.length(); i++) {
-			if ("I".equalsIgnoreCase(str.substring(i, i + 1)))
-				result++;
-		}
-		return result;
-	}
-
 	private LocationBean locationFromCells(Cell platec, Cell rowc, Cell columnc) {
 		LocationBean location = new LocationBean(BSSCSessionBean.BSSC_PLATES);
-		location.setPlate(parsePlateCell(platec));
+		location.setPlate(platec.getStringCellValue());
 		location.setRow(rowc.getStringCellValue().charAt(0));
 		location.setColumn((short) columnc.getNumericCellValue());
 		return location;
