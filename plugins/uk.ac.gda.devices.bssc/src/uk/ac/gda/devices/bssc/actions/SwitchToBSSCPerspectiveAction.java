@@ -20,8 +20,6 @@ package uk.ac.gda.devices.bssc.actions;
 
 import java.util.Properties;
 
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.intro.IIntroPart;
@@ -31,8 +29,6 @@ import org.eclipse.ui.intro.config.IIntroAction;
 public class SwitchToBSSCPerspectiveAction implements IIntroAction {
 
 	public SwitchToBSSCPerspectiveAction() {
-		IWorkbench workbench = PlatformUI.getWorkbench();
-
 		// open the BBSSC setup perspective
 		for (String id : new String[] { "uk.ac.gda.client.scripting.JythonPerspective",
 						"gda.rcp.ncd.perspectives.SaxsProcessingPerspective",  // must precede the Saxs & Waxs Perspectives to avoid NPE error in [S|W]axs Data Source View 

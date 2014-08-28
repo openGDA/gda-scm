@@ -339,7 +339,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		});
 		columns.get("Exposure\nTemperature").setOutputFormat("%4.1f \u00B0C");
 		
-		columns.put("Mode", new Column<TitrationBean, String>(40, tableViewer, rbeditor, "Normal", "SM", "None") {
+		columns.put("Mode", new Column<TitrationBean, String>(40, tableViewer, rbeditor, "NORMAL", "SM", "NONE") {
 			@Override
 			public String getRealValue(TitrationBean element) {
 				return element.getMode();

@@ -29,7 +29,6 @@ public class HplcUtils {
 	
 	private static final String DEFAULT_FILE_NAME = "default";
 	private static final String HPLC_EXTENSION = "hplc";
-//	public static final PlateConfig PLATE_SETUP = Finder.getInstance().find("bsscPlates");
 	
 	public static String getXmlDirectory() {
 		return PathConstructor.createFromTemplate(LocalProperties.get(VISIT_DIRECTORY_PROPERTY) + "/xml/");

@@ -395,7 +395,8 @@ public class HplcSampleFieldComposite extends FieldComposite {
 		label.setText("Number of Samples:");
 
 		sampleCount = new Label(composite_1, SWT.NONE);
-		sampleCount.setText("00000000");
+		sampleCount.setText("00000000");//ensure label is long enough
+		sampleCount.setText("0");
 	}
 
 	@Override

@@ -18,6 +18,7 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -31,6 +32,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
 
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.richbeans.event.ValueEvent;
@@ -189,7 +191,6 @@ public abstract class Column<T,V> {
 	private CellEditor cellEditor;
 	private CellLabelProvider labelProvider;
 	private String outputFormat = "%s";
-//	private TableViewer table;
 
 	public void setOutputFormat(String outputFormat) {
 		this.outputFormat = outputFormat;
@@ -201,7 +202,6 @@ public abstract class Column<T,V> {
 		this(width, table,rbEditor,type.getCellEditor(table.getTable()));
 	}
 	private Column(int width, TableViewer table, RichBeanEditorPart rbEditor, CellEditor editor) {
-//		this.table = table;
 		this.width = width;
 		this.cellEditor = editor;
 		setLabelProvider(new ColumnLabelProvider() {
@@ -239,7 +239,7 @@ public abstract class Column<T,V> {
 					setNewValue((T)element, String.valueOf(value));
 					super.setValue(element, value);
 				} catch (IllegalArgumentException iae) {
-					//ignore invalid entries - revert to previous value
+					MessageDialog.openError(PlatformUI.getWorkbench().getDisplay().getActiveShell(), "Invalid value", String.format("Value %s is not valid", String.valueOf(value)));
 				}
 			}
 		});
@@ -285,9 +285,5 @@ public abstract class Column<T,V> {
 		if (cellEditor instanceof EditableComboBox<?>) {
 			((EditableComboBox<?>) cellEditor).setInput(options);
 		}
-//		cellEditor = ColumnType.CHOICE.getCellEditor(table.getTable(), options);
 	}
-//	protected <E> void setInput(E[] options) {
-//		
-//	}
 }

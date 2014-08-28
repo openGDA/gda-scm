@@ -16,32 +16,27 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.devices.bssc.perspectives;
+package uk.ac.gda.devices.hplc.perspectives;
 
-import gda.jython.JythonServerFacade;
 
-import org.dawnsci.plotting.tools.profile.RadialProfileTool;
-import org.dawnsci.plotting.views.ToolPageView;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IStartup;
-import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PerspectiveAdapter;
 import org.eclipse.ui.PlatformUI;
 
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
+import uk.ac.gda.devices.hplc.ui.HPLCSessionBeanEditor;
 
-public class BioSAXSStartUp implements IStartup {
+public class HplcStartUp implements IStartup {
 
 	private IWorkbenchWindow window;
 	private IWorkbenchPage page;
-	private String activePerspectiveID = BioSAXSSetupPerspective.ID;
+	private String activePerspectiveID = HplcSetupPerspective.ID;
 	
 	@Override
 	public void earlyStartup() {
@@ -64,7 +59,7 @@ public class BioSAXSStartUp implements IStartup {
 
 					@Override
 					public void partClosed(IWorkbenchPart part) {
-						if (activePerspectiveID.equals(BioSAXSSetupPerspective.ID)) {
+						if (activePerspectiveID.equals(HplcSetupPerspective.ID)) {
 							if (page.getEditorReferences().length == 0) {
 								openEditorWithDefaultSamples();
 							}
@@ -85,28 +80,18 @@ public class BioSAXSStartUp implements IStartup {
 					public void perspectiveActivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
 						activePerspectiveID = perspective.getId();
 						
-						if (activePerspectiveID.equals(BioSAXSSetupPerspective.ID)) {
+						if (activePerspectiveID.equals(HplcSetupPerspective.ID)) {
 							if (page.getEditorReferences().length == 0) {
 								openEditorWithDefaultSamples();
 							}
-						} else if (activePerspectiveID.equals(BioSAXSProgressPerspective.ID)) {
-							try {
-								page.showView("uk.ac.gda.client.ncd.saxsview");
-								IViewReference radialProfileView = page.findViewReference("org.dawb.workbench.plotting.views.toolPageView.fixed", "org.dawb.workbench.plotting.tools.radialProfileTool");
-								ToolPageView radialProfile = (ToolPageView)radialProfileView.getPart(true);
-								((RadialProfileTool)radialProfile.getActiveTool()).getToolPlottingSystem().getAxes().get(1).setLog10(true);
-								JythonServerFacade.getInstance().runCommand("import loadProfiles\nloadProfiles.load()");
-							} catch (PartInitException e) {
-								//worse things have happened
-							}
 						}
 					}
-					
+
 					@Override
 					public void perspectiveSavedAs(IWorkbenchPage page, IPerspectiveDescriptor oldPerspective,
 							IPerspectiveDescriptor newPerspective) {
 					}
-					
+
 					@Override
 					public void perspectiveDeactivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
 					}
@@ -115,7 +100,7 @@ public class BioSAXSStartUp implements IStartup {
 	}
 
 	private void openEditorWithDefaultSamples() {
-		BSSCSessionBeanEditor editor = new BSSCSessionBeanEditor();
+		HPLCSessionBeanEditor editor = new HPLCSessionBeanEditor();
 		editor.openEditorWithDefaultSamples();
 	}
 }
