@@ -18,6 +18,8 @@
 
 package uk.ac.gda.devices.hplc.ui;
 
+import gda.jython.InterfaceProvider;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -66,8 +68,8 @@ import uk.ac.gda.devices.bssc.beans.Plate;
 import uk.ac.gda.devices.bssc.ui.Column;
 import uk.ac.gda.devices.bssc.ui.Column.ColumnHelper;
 import uk.ac.gda.devices.bssc.ui.Column.ColumnType;
-import uk.ac.gda.devices.hplc.beans.HPLCBean;
-import uk.ac.gda.devices.hplc.beans.HPLCSessionBean;
+import uk.ac.gda.devices.hplc.beans.HplcBean;
+import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.richbeans.event.ValueEvent;
@@ -83,9 +85,11 @@ public class HplcSampleFieldComposite extends FieldComposite {
 	private Composite composite_1;
 	private final RichBeanEditorPart rbeditor;
 
-	private Map<String, Column<HPLCBean,?>> columns;
+	private Map<String, Column<HplcBean,?>> columns;
 
 	Color okay, warning;
+
+	private boolean isStaff;
 
 	private static final SimpleObjectTransfer TRANSFER = new SimpleObjectTransfer() {
 		private final String TYPE_NAME = "uk.ac.gda.devices.hplc.ui.HplcBeanTransfer" + System.currentTimeMillis(); //$NON-NLS-1$
@@ -109,6 +113,7 @@ public class HplcSampleFieldComposite extends FieldComposite {
 		final Display display = Display.getCurrent();
 		okay = null;
 		warning = new Color(display, 255, 160, 30);
+		this.isStaff = InterfaceProvider.getBatonStateProvider().getMyDetails().getAuthorisationLevel() >= 3;
 
 		GridLayout gridLayout = new GridLayout(1, false);
 		gridLayout.marginWidth = 0;
@@ -143,65 +148,65 @@ public class HplcSampleFieldComposite extends FieldComposite {
 
 
 		columns = new LinkedHashMap<>();
-		columns.putAll(getLocationColumns("", new ColumnHelper<HPLCBean, LocationBean>() {
+		columns.putAll(getLocationColumns("", new ColumnHelper<HplcBean, LocationBean>() {
 			@Override
-			public LocationBean getValue(HPLCBean target) {
+			public LocationBean getValue(HplcBean target) {
 				return target.getLocation();
 			}
 			@Override
-			public void setValue(HPLCBean target, LocationBean value) {
+			public void setValue(HplcBean target, LocationBean value) {
 				target.setLocation(value);
 			}
 			@Override
-			public Color bGColor(HPLCBean element) {
+			public Color bGColor(HplcBean element) {
 				if (!getValue(element).isValid()) {
 					return warning;
 				}
 				return okay;
 			}
 		}));
-		columns.put("Sample Name",new Column<HPLCBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
+		columns.put("Sample Name",new Column<HplcBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
-			public String getRealValue(HPLCBean element) {
+			public String getRealValue(HplcBean element) {
 				return element.getSampleName();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				element.setSampleName(value);
 			}
 		});
-		columns.put("Concentration", new Column<HPLCBean, Double>(70, tableViewer, rbeditor,ColumnType.DOUBLE) {
+		columns.put("Concentration", new Column<HplcBean, Double>(70, tableViewer, rbeditor,ColumnType.DOUBLE) {
 			@Override
-			public Double getRealValue(HPLCBean element) {
+			public Double getRealValue(HplcBean element) {
 				return element.getConcentration();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				double conc = Double.valueOf(value);
 				element.setConcentration(conc);
 			}
 		});
 		columns.get("Concentration").setOutputFormat("%5.5f mg/ml");
-		columns.put("Molecular\n  Weight", new Column<HPLCBean, Double>(50, tableViewer, rbeditor, ColumnType.DOUBLE) {
+		columns.put("Molecular\n  Weight", new Column<HplcBean, Double>(50, tableViewer, rbeditor, ColumnType.DOUBLE) {
 			@Override
-			public Double getRealValue(HPLCBean element) {
+			public Double getRealValue(HplcBean element) {
 				return element.getMolecularWeight();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				double weight = Double.valueOf(value);
 				element.setMolecularWeight(weight);
 			}
 		});
 		columns.get("Molecular\n  Weight").setOutputFormat("%s kDa");
 
-		columns.put("Time per\n  Frame", new Column<HPLCBean, Double>(50, tableViewer, rbeditor, ColumnType.DOUBLE) {
+		columns.put("Time per\n  Frame", new Column<HplcBean, Double>(50, tableViewer, rbeditor, ColumnType.DOUBLE) {
 			@Override
-			public Double getRealValue(HPLCBean element) {
+			public Double getRealValue(HplcBean element) {
 				return element.getTimePerFrame();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				try {
 					double time = Double.valueOf(value);
 					element.setTimePerFrame(time);
@@ -210,13 +215,13 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			}
 		});
 		columns.get("Time per\n  Frame").setOutputFormat("%5.3f s");
-		columns.put("Frames", new Column<HPLCBean, Integer>(40, tableViewer, rbeditor, ColumnType.INTEGER) {
+		columns.put("Frames", new Column<HplcBean, Integer>(40, tableViewer, rbeditor, ColumnType.INTEGER) {
 			@Override
-			public Integer getRealValue(HPLCBean element) {
+			public Integer getRealValue(HplcBean element) {
 				return element.getFrames();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				try {
 					Integer frames = Integer.valueOf(value);
 					element.setFrames(frames);
@@ -224,48 +229,50 @@ public class HplcSampleFieldComposite extends FieldComposite {
 				}
 			}
 		});
-		columns.put("Buffers", new Column<HPLCBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
+		columns.put("Buffers", new Column<HplcBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
-			public String getRealValue(HPLCBean element) {
+			public String getRealValue(HplcBean element) {
 				return element.getBuffers();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				element.setBuffers(value);
 			}
 		});
-		columns.put("Visit", new Column<HPLCBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
+		columns.put("Comment", new Column<HplcBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
-			public String getRealValue(HPLCBean element) {
-				return element.getVisit();
-			}
-			@Override
-			public void setNewValue(HPLCBean element, String value) {
-				element.setVisit(value);
-			}
-		});
-		columns.put("Username", new Column<HPLCBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
-			@Override
-			public String getRealValue(HPLCBean element) {
-				return element.getUsername();
-			}
-			@Override
-			public void setNewValue(HPLCBean element, String value) {
-				element.setUsername(value);
-			}
-		});
-		columns.put("Comment", new Column<HPLCBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
-			@Override
-			public String getRealValue(HPLCBean element) {
+			public String getRealValue(HplcBean element) {
 				return element.getComment();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				element.setComment(value);
 			}
 		});
+		if (isStaff) {
+			columns.put("Visit", new Column<HplcBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
+				@Override
+				public String getRealValue(HplcBean element) {
+					return element.getVisit();
+				}
+				@Override
+				public void setNewValue(HplcBean element, String value) {
+					element.setVisit(value);
+				}
+			});
+			columns.put("Username", new Column<HplcBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
+				@Override
+				public String getRealValue(HplcBean element) {
+					return element.getUsername();
+				}
+				@Override
+				public void setNewValue(HplcBean element, String value) {
+					element.setUsername(value);
+				}
+			});
+		}
 
-		for (Entry<String, Column<HPLCBean,?>> column : columns.entrySet()) {
+		for (Entry<String, Column<HplcBean,?>> column : columns.entrySet()) {
 			TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.CENTER);
 			int width = column.getValue().getWidth();
 			col.getColumn().setWidth(width);
@@ -289,11 +296,11 @@ public class HplcSampleFieldComposite extends FieldComposite {
 				TableItem[] selection = table.getSelection();
 
 				if (TRANSFER.isSupportedType(event.dataType)) {
-					List<HPLCBean> data = new ArrayList<HPLCBean>();
+					List<HplcBean> data = new ArrayList<HplcBean>();
 					try {
 						for (TableItem element : selection) {
-							HPLCBean oldBean = (HPLCBean) element.getData();
-							HPLCBean copiedBean = (HPLCBean) BeanUtils.cloneBean(oldBean);
+							HplcBean oldBean = (HplcBean) element.getData();
+							HplcBean copiedBean = (HplcBean) BeanUtils.cloneBean(oldBean);
 							copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
 							data.add(copiedBean);
 						}
@@ -304,7 +311,7 @@ public class HplcSampleFieldComposite extends FieldComposite {
 				} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 					StringBuffer buff = new StringBuffer();
 					for (TableItem element : selection) {
-						buff.append(((HPLCBean) element.getData()).getSampleName());
+						buff.append(((HplcBean) element.getData()).getSampleName());
 					}
 					event.data = buff.toString();
 				}
@@ -359,8 +366,8 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			public void drop(DropTargetEvent event) {
 				if (TRANSFER.isSupportedType(event.currentDataType)) {
 					@SuppressWarnings("unchecked")
-					List<HPLCBean> data = (List<HPLCBean>) event.data;
-					List<HPLCBean> list = getList();
+					List<HplcBean> data = (List<HplcBean>) event.data;
+					List<HplcBean> list = getList();
 
 					int before = 0;
 
@@ -412,10 +419,10 @@ public class HplcSampleFieldComposite extends FieldComposite {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<HPLCBean> getList() {
+	private List<HplcBean> getList() {
 		if (value == null)
-			setValue(new ArrayList<HPLCBean>());
-		return (List<HPLCBean>) value;
+			setValue(new ArrayList<HplcBean>());
+		return (List<HplcBean>) value;
 	}
 
 	public void deleteSelection() {
@@ -434,14 +441,14 @@ public class HplcSampleFieldComposite extends FieldComposite {
 
 	public void addSample() {
 		if (table.getSelectionIndices().length == 0) {
-			getList().add(new HPLCBean());
+			getList().add(new HplcBean());
 		} else {
 			int[] selectionIndices = table.getSelectionIndices();
-			List<HPLCBean> toadd = new ArrayList<HPLCBean>(table.getSelectionIndices().length);
+			List<HplcBean> toadd = new ArrayList<HplcBean>(table.getSelectionIndices().length);
 			for (int i : selectionIndices) {
 				try {
-					HPLCBean oldBean = getList().get(i);
-					HPLCBean copiedBean = (HPLCBean) BeanUtils.cloneBean(oldBean);
+					HplcBean oldBean = getList().get(i);
+					HplcBean copiedBean = (HplcBean) BeanUtils.cloneBean(oldBean);
 					copiedBean.setLocation((LocationBean) BeanUtils.cloneBean(oldBean.getLocation()));
 					toadd.add(copiedBean);
 				} catch (Exception e) {
@@ -454,60 +461,60 @@ public class HplcSampleFieldComposite extends FieldComposite {
 		rbeditor.valueChangePerformed(new ValueEvent("", ""));
 	}
 	
-	private Map<String,Column<HPLCBean,?>> getLocationColumns(final String prefix, final ColumnHelper<HPLCBean, LocationBean> helper) {
-		Map<String,Column<HPLCBean,?>> columns = new LinkedHashMap<>();
-		if (HPLCSessionBean.HPLC_PLATES.getPlates().size() != 1) {
-			Column<HPLCBean, String> plateColumn = new Column<HPLCBean, String>(40, tableViewer, rbeditor, Column.ColumnType.CHOICE) {
-				private ColumnHelper<HPLCBean, LocationBean> help = helper;
+	private Map<String,Column<HplcBean,?>> getLocationColumns(final String prefix, final ColumnHelper<HplcBean, LocationBean> helper) {
+		Map<String,Column<HplcBean,?>> columns = new LinkedHashMap<>();
+		if (HplcSessionBean.HPLC_PLATES.getPlates().size() != 1) {
+			Column<HplcBean, String> plateColumn = new Column<HplcBean, String>(40, tableViewer, rbeditor, Column.ColumnType.CHOICE) {
+				private ColumnHelper<HplcBean, LocationBean> help = helper;
 				@Override
-				public String getRealValue(HPLCBean element) {
+				public String getRealValue(HplcBean element) {
 					LocationBean loc = help.getValue(element);
 					return loc == null ? "--" : LocationBean.getPlateText(loc.getPlate());
 				}
 				@Override
-				public void setNewValue(HPLCBean element, String value) {
+				public void setNewValue(HplcBean element, String value) {
 					LocationBean loc = helper.getValue(element);
 					if (loc == null) {
-						loc = new LocationBean(HPLCSessionBean.HPLC_PLATES);
+						loc = new LocationBean(HplcSessionBean.HPLC_PLATES);
 						helper.setValue(element,loc);
 					}
 					loc.setPlate(value);
 				}
 				@Override
 				protected String getStringValue(Object element) {
-					String value = getRealValue((HPLCBean)element);
+					String value = getRealValue((HplcBean)element);
 					return value;
 				}
 				@Override
-				protected Color getColour(HPLCBean tb) {
+				protected Color getColour(HplcBean tb) {
 					return helper.bGColor(tb);
 				}
 				@Override
-				protected String getToolTip(HPLCBean tb) {
+				protected String getToolTip(HplcBean tb) {
 					return helper.toolTip(tb);
 				}
 			};
-			String[] plateArray = HPLCSessionBean.HPLC_PLATES.getAvailablePlates();
+			String[] plateArray = HplcSessionBean.HPLC_PLATES.getAvailablePlates();
 			plateColumn.setInput(plateArray);
 			columns.put(prefix + "Plate", plateColumn);
 		}
-		columns.put(prefix + "Row", new Column<HPLCBean,Character>(30, tableViewer, rbeditor, Column.ColumnType.CHOICE ) {
+		columns.put(prefix + "Row", new Column<HplcBean,Character>(30, tableViewer, rbeditor, Column.ColumnType.CHOICE ) {
 			@Override
-			public Character getRealValue(HPLCBean element) {
+			public Character getRealValue(HplcBean element) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
 					return null;
 				}
 				short currentPlate = loc.getPlate();
-				Plate plate = HPLCSessionBean.HPLC_PLATES.getPlate(currentPlate);
+				Plate plate = HplcSessionBean.HPLC_PLATES.getPlate(currentPlate);
 				setInput(plate.getRows());
 				return loc.getRow();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
-					loc = new LocationBean(HPLCSessionBean.HPLC_PLATES);
+					loc = new LocationBean(HplcSessionBean.HPLC_PLATES);
 					helper.setValue(element, loc);
 				}
 				if (value.length() == 1) {
@@ -516,35 +523,35 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			}
 			@Override
 			protected String getStringValue(Object element) {
-				Character row = getRealValue((HPLCBean)element);
+				Character row = getRealValue((HplcBean)element);
 				return row == null ? "--" : String.valueOf(row);
 			}
 			@Override
-			protected Color getColour(HPLCBean tb) {
+			protected Color getColour(HplcBean tb) {
 				return helper.bGColor(tb);
 			}
 			@Override
-			protected String getToolTip(HPLCBean tb) {
+			protected String getToolTip(HplcBean tb) {
 				return helper.toolTip(tb);
 			}
 		});
-		columns.put(prefix + "Column", new Column<HPLCBean,Integer>(50,tableViewer, rbeditor, Column.ColumnType.CHOICE) {
+		columns.put(prefix + "Column", new Column<HplcBean,Integer>(50,tableViewer, rbeditor, Column.ColumnType.CHOICE) {
 			@Override
-			public Integer getRealValue(HPLCBean element) {
+			public Integer getRealValue(HplcBean element) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
 					return null;
 				}
 				short currentPlate = loc.getPlate();
-				Plate plate = HPLCSessionBean.HPLC_PLATES.getPlate(currentPlate);
+				Plate plate = HplcSessionBean.HPLC_PLATES.getPlate(currentPlate);
 				setInput(plate.getColumns());
 				return (int) loc.getColumn();
 			}
 			@Override
-			public void setNewValue(HPLCBean element, String value) {
+			public void setNewValue(HplcBean element, String value) {
 				LocationBean loc = helper.getValue(element);
 				if (loc == null) {
-					loc = new LocationBean(HPLCSessionBean.HPLC_PLATES);
+					loc = new LocationBean(HplcSessionBean.HPLC_PLATES);
 					helper.setValue(element,loc);
 				}
 				short col = Short.valueOf(value);
@@ -552,15 +559,15 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			}
 			@Override
 			protected String getStringValue(Object element) {
-				Integer plate = getRealValue((HPLCBean)element);
+				Integer plate = getRealValue((HplcBean)element);
 				return plate == null ? "--" : String.valueOf(plate);
 			}
 			@Override
-			protected Color getColour(HPLCBean tb) {
+			protected Color getColour(HplcBean tb) {
 				return helper.bGColor(tb);
 			}
 			@Override
-			protected String getToolTip(HPLCBean tb) {
+			protected String getToolTip(HplcBean tb) {
 				return helper.toolTip(tb);
 			}
 		});

@@ -105,7 +105,7 @@ public final class HplcSessionBeanComposite extends Composite {
 						return;
 					Queue queue = CommandQueueViewFactory.getQueue();
 					if (queue != null) {
-						queue.addToTail(new JythonCommandCommandProvider(String.format("print 'HPLC process'", editor.getPath()), editor.getTitle(), editor.getPath()));
+						queue.addToTail(new JythonCommandCommandProvider(String.format("import HPLC;HPLC.HPLC('%s').run()", editor.getPath()), editor.getTitle(), editor.getPath()));
 					} else {
 						logger.warn("No queue received from CommandQueueViewFactory");
 					}

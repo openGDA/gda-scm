@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.hplc.HplcUtils;
-import uk.ac.gda.devices.hplc.beans.HPLCBean;
-import uk.ac.gda.devices.hplc.beans.HPLCSessionBean;
+import uk.ac.gda.devices.hplc.beans.HplcBean;
+import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class ImportSpreadsheetHandler implements IHandler {
@@ -83,12 +83,12 @@ public class ImportSpreadsheetHandler implements IHandler {
 				Workbook wb = WorkbookFactory.create(fileToOpen);
 				Sheet sheet = wb.getSheetAt(0);
 
-				HPLCSessionBean sessionBean = new HPLCSessionBean();	
-				List<HPLCBean> measurements = new ArrayList<HPLCBean>();
+				HplcSessionBean sessionBean = new HplcSessionBean();	
+				List<HplcBean> measurements = new ArrayList<HplcBean>();
 
 				for (i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
 					Row row = sheet.getRow(i);
-					HPLCBean hb = new HPLCBean();
+					HplcBean hb = new HplcBean();
 	
 					LocationBean location = locationFromCells(DEFAULT_PLATE, row.getCell(ROW_COL), row.getCell(COLUMN_COL));
 					if (!location.isValid())
@@ -129,7 +129,7 @@ public class ImportSpreadsheetHandler implements IHandler {
 					nativeFile = HplcUtils.getNewFileFromName(spreadSheetFileName + "-" + fileIndex); 
 				}
 				
-				XMLHelpers.writeToXML(HPLCSessionBean.mappingURL, sessionBean, nativeFile);
+				XMLHelpers.writeToXML(HplcSessionBean.mappingURL, sessionBean, nativeFile);
 				IFileStore hplcFileStore = EFS.getLocalFileSystem().getStore(nativeFile.toURI());
 				IDE.openEditorOnFileStore(page, hplcFileStore);
 			} catch (PartInitException e) {
@@ -153,7 +153,7 @@ public class ImportSpreadsheetHandler implements IHandler {
 	}
 
 	private LocationBean locationFromCells(int 	platec, Cell rowc, Cell columnc) {
-		LocationBean location = new LocationBean(HPLCSessionBean.HPLC_PLATES);
+		LocationBean location = new LocationBean(HplcSessionBean.HPLC_PLATES);
 		location.setPlate((short) platec);
 		location.setRow(rowc.getStringCellValue().charAt(0));
 		location.setColumn((short) columnc.getNumericCellValue());

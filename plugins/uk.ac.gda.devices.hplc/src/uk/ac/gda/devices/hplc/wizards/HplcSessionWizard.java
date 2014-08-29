@@ -29,24 +29,24 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uk.ac.gda.devices.bssc.beans.LocationBean;
-import uk.ac.gda.devices.hplc.beans.HPLCBean;
-import uk.ac.gda.devices.hplc.beans.HPLCSessionBean;
+import uk.ac.gda.devices.hplc.beans.HplcBean;
+import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 
-public class HPLCSessionWizard extends Wizard implements INewWizard {
-	private HPLCSessionWizardPage page;
+public class HplcSessionWizard extends Wizard implements INewWizard {
+	private HplcSessionWizardPage page;
 	private ISelection selection;
 	private double concentration = 0.1;
 	private int frames = 10;
 	private double timePerFrame = 0.2;
 
-	public HPLCSessionWizard() {
+	public HplcSessionWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
 
 	@Override
 	public void addPages() {
-		page = new HPLCSessionWizardPage(selection);
+		page = new HplcSessionWizardPage(selection);
 		addPage(page);
 	}
 
@@ -133,13 +133,13 @@ public class HPLCSessionWizard extends Wizard implements INewWizard {
 	 * We will initialize file contents with a sample text.
 	 */
 	private InputStream getContentStream() {
-		HPLCSessionBean sessionBean = new HPLCSessionBean();
-		List<HPLCBean> measurements = new ArrayList<HPLCBean>();
-		LocationBean location = new LocationBean(HPLCSessionBean.HPLC_PLATES);
+		HplcSessionBean sessionBean = new HplcSessionBean();
+		List<HplcBean> measurements = new ArrayList<HplcBean>();
+		LocationBean location = new LocationBean(HplcSessionBean.HPLC_PLATES);
 		location.setPlate((short) 1);
 		location.setRow('A');
 		location.setColumn((short) 1);
-		HPLCBean hb = new HPLCBean();
+		HplcBean hb = new HplcBean();
 		hb.setLocation(location);
 		hb.setConcentration(concentration);
 		hb.setBuffers("");
@@ -152,7 +152,7 @@ public class HPLCSessionWizard extends Wizard implements INewWizard {
 		measurements.add(hb);
 		sessionBean.setMeasurements(measurements);
 		
-		return HPLCWizardUtils.sessionBeanToStream(sessionBean);
+		return HplcWizardUtils.sessionBeanToStream(sessionBean);
 	}
 
 	private void throwCoreException(String message) throws CoreException {

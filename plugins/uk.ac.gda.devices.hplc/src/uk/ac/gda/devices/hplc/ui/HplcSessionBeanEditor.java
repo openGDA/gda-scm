@@ -50,30 +50,30 @@ import uk.ac.gda.common.rcp.util.EclipseUtils;
 import uk.ac.gda.devices.bssc.BioSaxsUtils;
 import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.hplc.HplcUtils;
-import uk.ac.gda.devices.hplc.beans.HPLCBean;
-import uk.ac.gda.devices.hplc.beans.HPLCSessionBean;
+import uk.ac.gda.devices.hplc.beans.HplcBean;
+import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
-public final class HPLCSessionBeanEditor extends RichBeanMultiPageEditorPart {
-	private static final Logger logger = LoggerFactory.getLogger(HPLCSessionBeanEditor.class);
-	private HPLCSessionBean sessionBean;
-	private ArrayList<HPLCBean> measurements;
+public final class HplcSessionBeanEditor extends RichBeanMultiPageEditorPart {
+	private static final Logger logger = LoggerFactory.getLogger(HplcSessionBeanEditor.class);
+	private HplcSessionBean sessionBean;
+	private ArrayList<HplcBean> measurements;
 
-	public HPLCSessionBeanEditor() {
+	public HplcSessionBeanEditor() {
 		super();
 		setPartProperty("RichBeanEditorPart", null);
 	}
 
 	@Override
 	public Class<?> getBeanClass() {
-		return HPLCSessionBean.class;
+		return HplcSessionBean.class;
 	}
 
 	@Override
 	public URL getMappingUrl() {
-		return HPLCSessionBean.mappingURL; // Please make sure this field is present and the mapping
+		return HplcSessionBean.mappingURL; // Please make sure this field is present and the mapping
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public final class HPLCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 
 	@Override
 	public URL getSchemaUrl() {
-		return HPLCSessionBean.schemaURL; // Please make sure this field is present and the schema
+		return HplcSessionBean.schemaURL; // Please make sure this field is present and the schema
 	}
 
 	@Override
@@ -186,21 +186,21 @@ public final class HPLCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 			File nativeFile = HplcUtils.getNewFileFromName("default");
 
 			if (!nativeFile.exists()) {
-				sessionBean = new HPLCSessionBean();
-				measurements = new ArrayList<HPLCBean>();
+				sessionBean = new HplcSessionBean();
+				measurements = new ArrayList<HplcBean>();
 
 				try {
-					HPLCBean tibi1 = new HPLCBean();
-					initialiseHPLCBean(tibi1, "Sample A1", "low", (short) 1, 'A', (short) 3, (short) 1, 'A',
+					HplcBean tibi1 = new HplcBean();
+					initialiseHplcBean(tibi1, "Sample A1", "low", (short) 1, 'A', (short) 3, (short) 1, 'A',
 							(short) 1, 10, 560, 0.5, 120, (float) 22.0);
-					HPLCBean tibi2 = new HPLCBean();
-					initialiseHPLCBean(tibi2, "Sample B1", "medium", (short) 1, 'B', (short) 3, (short) 1, 'B',
+					HplcBean tibi2 = new HplcBean();
+					initialiseHplcBean(tibi2, "Sample B1", "medium", (short) 1, 'B', (short) 3, (short) 1, 'B',
 							(short) 1, 30, 78, 0.5, 120, (float) 22.0);
-					HPLCBean tibi3 = new HPLCBean();
-					initialiseHPLCBean(tibi3, "Sample C1", "medium", (short) 1, 'C', (short) 3, (short) 1, 'C',
+					HplcBean tibi3 = new HplcBean();
+					initialiseHplcBean(tibi3, "Sample C1", "medium", (short) 1, 'C', (short) 3, (short) 1, 'C',
 							(short) 1, 300, 340, 2.0, 30, (float) 22.0);
-					HPLCBean tibi4 = new HPLCBean();
-					initialiseHPLCBean(tibi4, "Sample C2", "medium", (short) 1, 'C', (short) 3, (short) 2, 'C',
+					HplcBean tibi4 = new HplcBean();
+					initialiseHplcBean(tibi4, "Sample C2", "medium", (short) 1, 'C', (short) 3, (short) 2, 'C',
 							(short) 1, 150, 340, 2.0, 30, (float) 22.0);
 					measurements.add(tibi1);
 					measurements.add(tibi2);
@@ -212,7 +212,7 @@ public final class HPLCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 
 				sessionBean.setMeasurements(measurements);
 				try {
-					XMLHelpers.writeToXML(HPLCSessionBean.mappingURL, sessionBean, nativeFile);
+					XMLHelpers.writeToXML(HplcSessionBean.mappingURL, sessionBean, nativeFile);
 				} catch (Exception e) {
 					logger.error("Exception writing bean to XML", e);
 				}
@@ -230,10 +230,10 @@ public final class HPLCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		}
 	}
 
-	private void initialiseHPLCBean(HPLCBean titrationBean, String name, String viscosity, short bufferCol,
+	private void initialiseHplcBean(HplcBean titrationBean, String name, String viscosity, short bufferCol,
 			char bufferRow, short bufferPlate, short col, char row, short plate, double concentration,
 			double molecularWeight, double timePerFrame, int noOfFrames, float exposureTemp) throws Exception {
-		LocationBean location = new LocationBean(HPLCSessionBean.HPLC_PLATES);
+		LocationBean location = new LocationBean(HplcSessionBean.HPLC_PLATES);
 		titrationBean.setSampleName(name);
 		location.setColumn(col);
 		location.setRow(row);

@@ -61,7 +61,6 @@ public final class HplcSessionBeanUIEditor extends RichBeanEditorPart {
 
 	@Override
 	public void setFocus() {
-		//TODO
 	}
 
 	public FieldComposite getSampleStorageTemperature() {

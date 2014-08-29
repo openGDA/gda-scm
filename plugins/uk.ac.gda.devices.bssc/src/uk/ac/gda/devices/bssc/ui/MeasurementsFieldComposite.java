@@ -18,6 +18,8 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
+import gda.jython.InterfaceProvider;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -81,6 +83,8 @@ public class MeasurementsFieldComposite extends FieldComposite {
 	private final TableViewer tableViewer;
 	private Composite composite_1;
 	private final RichBeanEditorPart rbeditor;
+	
+	private boolean isStaff;
 
 	private Map<String, Column<TitrationBean,?>> columns;
 
@@ -104,7 +108,10 @@ public class MeasurementsFieldComposite extends FieldComposite {
 	public MeasurementsFieldComposite(Composite parent, int style, RichBeanEditorPart editor) {
 		super(parent, style);
 		this.rbeditor = editor;
-
+		this.isStaff = InterfaceProvider.getBatonStateProvider().getMyDetails().getAuthorisationLevel() >= 3;
+		if (isStaff) {
+			logger.debug("Running biosaxs editor with staff authorisation");
+		}
 		final Display display = Display.getCurrent();
 		okay = null;
 		warning = new Color(display, 255, 160, 30);
@@ -191,7 +198,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				element.setViscosity(value);
 			}
 		});
-		columns.put("Molecular Weight", new Column<TitrationBean, Double>(100, tableViewer, rbeditor, ColumnType.DOUBLE) {
+		columns.put("Molecular\n Weight", new Column<TitrationBean, Double>(100, tableViewer, rbeditor, ColumnType.DOUBLE) {
 			@Override
 			public Double getRealValue(TitrationBean element) {
 				return element.getMolecularWeight();
@@ -202,7 +209,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				element.setMolecularWeight(weight);
 			}
 		});
-		columns.get("Molecular Weight").setOutputFormat("%s kDa");
+		columns.get("Molecular\n Weight").setOutputFormat("%s kDa");
 		columns.put("isBuffer", new Column<TitrationBean, Boolean>(40, tableViewer, rbeditor, ColumnType.BOOL) {
 			@Override
 			public Boolean getRealValue(TitrationBean element) {
@@ -362,6 +369,28 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			}
 			
 		});
+		if (isStaff) {
+			columns.put("Visit", new Column<TitrationBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
+				@Override
+				public String getRealValue(TitrationBean element) {
+					return element.getVisit();
+				}
+				@Override
+				public void setNewValue(TitrationBean element, String value) {
+					element.setVisit(value);
+				}
+			});
+			columns.put("Username", new Column<TitrationBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
+				@Override
+				public String getRealValue(TitrationBean element) {
+					return element.getUsername();
+				}
+				@Override
+				public void setNewValue(TitrationBean element, String value) {
+					element.setUsername(value);
+				}
+			});
+		}
 
 		for (Entry<String, Column<TitrationBean,?>> column : columns.entrySet()) {
 			TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.CENTER);

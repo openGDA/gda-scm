@@ -24,12 +24,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-public class HPLCSessionWizardPage extends WizardPage {
+public class HplcSessionWizardPage extends WizardPage {
 	private Text containerText;
 	private Text fileText;
 	private ISelection selection;
 
-	public HPLCSessionWizardPage(ISelection selection) {
+	public HplcSessionWizardPage(ISelection selection) {
 		super("wizardPage");
 		setTitle("HPLC File location");
 		setDescription("This wizard creates a new XML file to run a set of HPLC samples.");

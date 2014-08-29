@@ -25,19 +25,19 @@ import java.io.Reader;
 import org.eclipse.core.runtime.content.IContentDescriber;
 import org.eclipse.core.runtime.content.IContentDescription;
 
-import uk.ac.gda.devices.hplc.beans.HPLCSessionBean;
+import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 import uk.ac.gda.richbeans.xml.XMLBeanContentDescriber;
 
-public final class HPLCSessionBeanDescriber extends XMLBeanContentDescriber {
+public final class HplcSessionBeanDescriber extends XMLBeanContentDescriber {
 
 	@Override
 	public String getBeanName() {
-		return HPLCSessionBean.class.getName();
+		return HplcSessionBean.class.getName();
 	}
 	
 	@Override
 	public String getEditorId() {
-		return "uk.ac.gda.devices.hplc.beans.HPLCSessionBeanEditor";
+		return "uk.ac.gda.devices.hplc.beans.HplcSessionBeanEditor";
 	}
 	
 	@Override

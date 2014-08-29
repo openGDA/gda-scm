@@ -30,7 +30,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PerspectiveAdapter;
 import org.eclipse.ui.PlatformUI;
 
-import uk.ac.gda.devices.hplc.ui.HPLCSessionBeanEditor;
+import uk.ac.gda.devices.hplc.ui.HplcSessionBeanEditor;
 
 public class HplcStartUp implements IStartup {
 
@@ -100,7 +100,7 @@ public class HplcStartUp implements IStartup {
 	}
 
 	private void openEditorWithDefaultSamples() {
-		HPLCSessionBeanEditor editor = new HPLCSessionBeanEditor();
+		HplcSessionBeanEditor editor = new HplcSessionBeanEditor();
 		editor.openEditorWithDefaultSamples();
 	}
 }
