@@ -4,7 +4,7 @@
     <name>Please add sample name/filename</name>
     <description1>Please add a description...</description1>
     <description2>Please add a description...</description2>
-    <sampleEnvironment>None</sampleEnvironment>
+    <sampleEnvironment>none</sampleEnvironment>
     <xyzStageParameters>
         <x>0.0</x>
         <y>0.0</y>

@@ -45,7 +45,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.diamond.scisoft.analysis.dataset.AbstractDataset;
+import uk.ac.diamond.scisoft.analysis.dataset.Dataset;
 import uk.ac.diamond.scisoft.analysis.dataset.IDataset;
 import uk.ac.diamond.scisoft.analysis.dataset.ILazyDataset;
 import uk.ac.diamond.scisoft.analysis.dataset.Maths;
@@ -279,7 +279,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 			plotting.createPlot1D(null, list, null);
 		} else if (list.get(0).getShape().length == 2) {
 			// Average the images, then plot
-			AbstractDataset added = Maths.add(list, list.size() > 1);
+			Dataset added = Maths.add(list, list.size() > 1);
 			plotting.createPlot2D(added, null, null);
 		}
 		return true;
