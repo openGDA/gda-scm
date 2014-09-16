@@ -16,10 +16,10 @@
     </appender>
     
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>${gda.logs.dir}/${gda.beamline.name}-GDA-server.log</File>
+        <File>${gda.logs.dir}/bm26-gda-server.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${gda.logs.dir}/${gda.beamline.name}-GDA-server.%d{yyyy-MM-dd}.log.zip</FileNamePattern>
-		</rollingPolicy>
+            <FileNamePattern>${gda.logs.dir}/bm26-gda-server.%d{yyyy-MM-dd}.log.zip</FileNamePattern>
+        </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d %-5level [%logger] %ex - %m%n</pattern>
         </layout>
@@ -46,6 +46,12 @@
         <level value="INFO"/>
     </logger>    
     <logger name="gda.oe.corba.impl">
+        <level value="INFO"/>
+    </logger>    
+    <logger name="gda.data.nexus.NexusFileWrapper">
+        <level value="DEBUG"/>
+    </logger>    
+    <logger name="gda.device.detector.DAServer">
         <level value="INFO"/>
     </logger>    
     <root>

@@ -3,31 +3,16 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="linkam" class="gda.device.temperature.DummyTemp">
+	<bean id="LinkamT95" class="gda.device.temperature.DummyTemp">
 		<property name="configureAtStartup" value="false" />
-		<property name="probeNames">
-			<list>
-				<value>temp</value>
-			</list>
-		</property>
-		<property name="accuracy" value="0.2" />
-		<property name="fileSuffix" value="dat" />
 		<property name="upperTemp" value="600" />
 		<property name="lowerTemp" value="-195" />
-		<property name="extraNames">
-			<list>
-				<value>dummyDSC</value>
-			</list>
-		</property>
 	</bean>
 
-	<bean id="Eurotherm" class="gda.device.temperature.DummyTemp">
+	<bean id="Eurotherm2400" class="gda.device.temperature.DummyTemp">
 		<property name="configureAtStartup" value="false" />
 		<property name="accuracy" value="2" />
 		<property name="polltime" value="5000" />
-		<property name="gid" value="0" />
-		<property name="uid" value="1" />
-		<property name="fileSuffix" value="dat" />
 	</bean>
 
 </beans>
