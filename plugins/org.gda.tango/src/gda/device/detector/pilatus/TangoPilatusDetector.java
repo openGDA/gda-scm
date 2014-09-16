@@ -32,14 +32,6 @@ import gda.factory.corba.util.CorbaAdapterClass;
 import gda.factory.corba.util.CorbaImplClass;
 import gda.observable.IObserver;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -57,9 +49,6 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 	private String thresholdGain = null;
 	private String fillMode = null;
 	private Float energyThreshold = null;
-	private Integer imageToReadout = 0;
-	private String imageDirectory = null;
-	private Boolean deleteAfterOutput = false;
 	private static int detectorCount = 0;
 	private static int ready = 0;
 	private static int scanPoint;
@@ -82,6 +71,7 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 			if (timer != null)
 				timer.addIObserver(this);
 			configured = true;
+			logger.debug("TangoPilatusDetector {} configured successfully", getName());
 		} catch (Exception e) {
 			configured = false;
 			logger.error("TangoPilatusDetector {} configure: {}", getName(), e);
@@ -103,36 +93,24 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 	}
 	
 	@Override
-	public void atScanStart() throws DeviceException {
-		scanPoint = 0;
-		deleteExistingFiles();
-//		writeSavingNextNumber(0);
-		writeSavingOverwritePolicy("OVERWRITE");
-		writeSavingPrefix(getSavingPrefix());
-		writeSavingSuffix(getSavingSuffix());
-		writeSavingDirectory(getSavingDirectory());
+	public void close() {
+		configured = false;
+		timer.deleteIObserver(this);
 	}
 	
-	public void deleteExistingFiles() {
-		String prefix = getSavingPrefix();
-		String suffix = getSavingSuffix();
-		String filename;
-		File f = null;
-		int i = 0;
-		while(true) {
-			filename = String.format("%s/%s%04d%s", imageDirectory, prefix, i, suffix);
-			f = new File(filename);
-			if (!f.exists())
-				break;
-			f.delete();
-			i++;
-		}
+	@Override
+	public void atScanStart() throws DeviceException {
+		scanPoint = 0;
+		writeSavingOverwritePolicy("OVERWRITE");
 	}
 	
 	@Override
 	public void collectData() throws DeviceException {
 		detectorCount++;
+		int nbFrames = timer.getCurrentFrames(1);
+		System.out.println("Writing nbFrames " + nbFrames);
 		writeNbFrames(timer.getCurrentFrames(1));
+		writeSavingFramePerFile(timer.getCurrentFrames(1));
 		writeExposureTime(timer.getCurrentLiveTime(1));
 		writeLatencyTime(timer.getCurrentDeadTime(1));
 		if (scanPoint != 0) {
@@ -204,22 +182,6 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 
 	public void setEnergyThreshold(float energyThreshold) {
 		this.energyThreshold = energyThreshold;
-	}
-
-	public String getImageDirectory() {
-		return imageDirectory;
-	}
-
-	public void setImageDirectory(String imageDirectory) {
-		this.imageDirectory = imageDirectory;
-	}
-
-	public Boolean getDeleteAfterOutput() {
-		return deleteAfterOutput;
-	}
-
-	public void setDeleteAfterOutput(Boolean deleteAfterOutput) {
-		this.deleteAfterOutput = deleteAfterOutput;
 	}
 
 	public double readTriggerDelay() throws DeviceException {
@@ -329,8 +291,10 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 			writeFillMode((String) value);
 		} else if ("EnergyThreshold".equalsIgnoreCase(attributeName)) {
 			writeEnergyThreshold((Float) value);
-		} else if ("ImageToReadout".equalsIgnoreCase(attributeName)) {
-			imageToReadout = (Integer) value;
+		} else if ("ScanNumber".equalsIgnoreCase(attributeName)) {
+			setSavingNextNumber((Integer) value);
+		} else if ("SavingDirectory".equalsIgnoreCase(attributeName)) {
+			setSavingDirectory((String)value);
 		}
 		super.setAttribute(attributeName, value);
 	}
@@ -350,6 +314,11 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 			object = readEnergyThreshold();
 		} else if ("TotalFrames".equalsIgnoreCase(attributeName)) {
 			object = timer.getAttribute("TotalFrames");
+		} else if ("Cycles".equalsIgnoreCase(attributeName)) {
+			object = timer.getAttribute("Cycles");
+		} else if ("LastFileName".equalsIgnoreCase(attributeName)) {
+			String index = String.format(getSavingIndexFormat(), getSavingNextNumber());
+		      object = getSavingPrefix() + index + getSavingSuffix();
 		} else {
 			object = super.getAttribute(attributeName);
 		}
@@ -358,16 +327,20 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 
 	@Override
 	public void update(Object source, Object arg) {
-		if (arg != null && arg instanceof TimerStatus) {
+		if (arg != null && arg instanceof TimerStatus && configured) {
 			TimerStatus ts = (TimerStatus) arg;
 			if ("DEAD PAUSE".equals(ts.getCurrentStatus())) {
 				try {
-					writeNbFrames(timer.getCurrentFrames(ts.getCurrentFrame()));
+					stop();
+					int nbFrames = timer.getCurrentFrames(ts.getCurrentFrame());
+					System.out.println("Writing nbFrames " + nbFrames);
+					writeNbFrames(nbFrames);
+					writeSavingFramePerFile(nbFrames);
 					writeExposureTime(timer.getCurrentLiveTime(ts.getCurrentFrame()));
 					writeLatencyTime(timer.getCurrentDeadTime(ts.getCurrentFrame()));
-					writeSavingOverwritePolicy("ABORT");
+					writeSavingOverwritePolicy("APPEND");
 					writeSavingPrefix(getSavingPrefix());
-					super.collectData();
+					super.restart();
 					synchronized (this) {
 						ready++;
 						System.out.println(">> ready " + ready + " detectorCount " + detectorCount);
@@ -379,7 +352,7 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 						}
 					}
 				} catch (DeviceException e) {
-					logger.error("Unable to restart timer");
+					logger.error("Unable to restart the timer from Pilatus "+ e.getMessage());
 				}
 			} else if ("IDLE".equals(ts.getCurrentStatus())) {
 				System.out.println("Setting detector count back to zero");
@@ -390,138 +363,6 @@ public class TangoPilatusDetector extends TangoLimaDetector implements Initializ
 
 	@Override
 	public boolean createsOwnFiles() throws DeviceException {
-		return false;
-	}
-
-	@Override
-	public Object readout() {
-		int[] data = null;
-		String filename = null;
-		try {
-			String prefix = getSavingPrefix();
-			String suffix = getSavingSuffix();
-			data = new int[getWidth()*getHeight()];
-			filename = String.format("%s/%s%04d%s", imageDirectory, prefix, imageToReadout, suffix);
-			logger.info("Translating {} into NeXus", filename);
-			data = edfLoader(filename);
-		} catch (Exception e) {
-			logger.error("Unable to translate file {} into hdf5: {}", filename, e.getMessage());
-		}
-		return data;
-	}
-	
-	private int[] edfLoader(String fileName) throws Exception {
-		Map<String, String> textMetadata = new HashMap<String, String>();
-		int[] data = null;
-		int index = 0;
-		FileInputStream fi = null;
-		File f = null;
-		int count = 0;
-
-		try {
-			f = new File(fileName);
-			while (true) {
-				// Either the file exists or we've waited a second so allow a failure
-				if (f.exists() || count == 1000) {
-					break;
-				}
-				Thread.sleep(10);
-				count ++;
-			}
-			fi = new FileInputStream(f);
-
-			BufferedReader br = new BufferedReader(new FileReader(f));
-			String line = br.readLine();
-			index += line.length()+1;
-			
-			// If the first line is not a { then we fail this loader.
-			if (!line.trim().startsWith("{")) 
-				throw new Exception("EDF File should start with {"); 
-			
-			if (line.contains("{")) {				
-				// Read the header
-				textMetadata.clear();
-
-				while (true) {					
-					line = br.readLine();
-					index += line.length()+1;
-					if (line.contains("}")) {
-						break;
-					}
-					String[] keyvalue = line.split("=");
-						
-					if (keyvalue.length == 1) {
-						textMetadata.put(keyvalue[0].trim(), "");
-					} else {		
-						int len = (keyvalue[1].endsWith(";")) ? keyvalue[1].length()-1 : keyvalue[1].length();
-						String value = keyvalue[1].substring(0, len);
-						textMetadata.put(keyvalue[0].trim(), value.trim());
-					}
-				}
-				
-				// Now read the data
-				int height = Integer.parseInt(textMetadata.get("Dim_1"));
-				int width = Integer.parseInt(textMetadata.get("Dim_2"));
-				int size = height * width;
-				data = new int[size];
-				if ("UnsignedShort".equals(textMetadata.get("DataType"))) {
-					byte[] buf = new byte[(2 * size)+index];
-					fi.read(buf);
-					int pos = index; // Byte offset to start of data
-					for (int i = 0; i < size; i++) {
-						if ("LowByteFirst".equals(textMetadata.get("ByteOrder"))) {
-							data[i] = leInt(buf[pos], buf[pos+1]);
-						} else {
-							data[i] = beInt(buf[pos], buf[pos+1]);
-						}
-						pos += 2;
-					}
-				} else if ("SignedInteger".equals(textMetadata.get("DataType"))) {
-					final byte[] buf = new byte[index + 4 * size];
-					fi.read(buf);
-					int pos = index;
-					for (int i = 0; i < size; i++) {
-						if ("LowByteFirst".equals(textMetadata.get("ByteOrder"))) {
-							data[i] = leInt(buf[pos], buf[pos + 1], buf[pos + 2], buf[pos + 3]);
-						} else {
-							data[i] = beInt(buf[pos], buf[pos + 1], buf[pos + 2], buf[pos + 3]);							
-						}
-						pos += 4;
-					}
-				} else {
-					throw new Exception("Unknown data type ");					
-				}
-			}
-		} catch (Exception e) {
-			throw new Exception("File failed to load " + fileName + ": " + e.getMessage());
-		} finally {
-			if (fi != null) {
-				try {
-					fi.close();
-				} catch (IOException ex) {
-					// do nothing
-				}
-				fi = null;
-			}
-//			if (f != null && deleteAfterOutput)
-//				f.delete();
-		}		
-		return data;	
-	}
-
-	private int leInt(int b1, int b2) {
-		return ((b2 & 0xff) << 8) | (b1 & 0xff);
-	}
-
-	private int leInt(int b1, int b2, int b3, int b4) {
-		return ((b4 & 0xff) << 24)| ((b3 & 0xff) << 16) | ((b2 & 0xff) << 8) | (b1 & 0xff);
-	}
-
-	private int beInt(int b1, int b2) {
-		return ((b1 & 0xff) << 8) | (b2 & 0xff);
-	}
-
-	private int beInt(int b1, int b2, int b3, int b4) {
-		return ((b1 & 0xff) << 24)| ((b2 & 0xff) << 16) | ((b3 & 0xff) << 8) | (b4 & 0xff);
+		return true;
 	}
 }

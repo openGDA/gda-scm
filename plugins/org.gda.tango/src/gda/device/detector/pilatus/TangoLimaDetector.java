@@ -56,6 +56,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 	private String imageType = null;
 	private int lastImageReady = -1;
 	private int lastImageSaved = -1;
+	private int lastImageAcquired = -1;
 	private boolean readyForNextAcq = false;
 	private boolean readyForNextImage = false;
 	private String savingFormat = "EDF";
@@ -63,6 +64,8 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 	private String savingPrefix = "img_";
 	private String savingDirectory = "/tmp";
 	private String savingMode = "MANUAL";
+	private String savingIndexFormat = "%04d";
+	private int nextNumber;
 		
 	private String triggerMode = null;
 	private String acqMode = null;
@@ -77,22 +80,6 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 			readDetectorType();
 			readDetectorDescription();
 			readImageType();
-			if (triggerMode != null)
-				writeTriggerMode(triggerMode);
-			if (latencyTime != null)
-				writeLatencyTime(latencyTime);
-			if (acqMode != null)
-				writeAcqMode(acqMode);
-			if (savingFormat != null)
-				writeSavingFormat(savingFormat);
-			if (savingSuffix != null)
-				writeSavingSuffix(savingSuffix);
-			if (savingPrefix != null)
-				writeSavingPrefix(savingPrefix);
-			if (savingDirectory != null)
-				writeSavingDirectory(savingDirectory);
-			if (savingMode != null)
-				writeSavingMode(savingMode);
 			configured = true;
 		} catch (Exception e) {
 			logger.error("TangoLimaDetector {} configure: {}", getName(), e);
@@ -159,6 +146,14 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		this.savingFormat = savingFormat;
 	}
 
+	public String getSavingIndexFormat() {
+		return savingIndexFormat;
+	}
+
+	public void setSavingIndexFormat(String savingIndexFormat) {
+		this.savingIndexFormat = savingIndexFormat;
+	}
+
 	public String getSavingSuffix() {
 		return savingSuffix;
 	}
@@ -189,6 +184,14 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 
 	public void setSavingMode(String savingMode) {
 		this.savingMode = savingMode;
+	}
+
+	public int getSavingNextNumber() {
+		return nextNumber;
+	}
+
+	public void setSavingNextNumber(int nextNumber) {
+		this.nextNumber = nextNumber;
 	}
 
 	public int getWidth() throws DeviceException {
@@ -247,25 +250,91 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 	public void collectData() throws DeviceException {
 		isAvailable();
 		try {
-			if (triggerMode != null) {
+			if (acqMode != null)
+				writeAcqMode(acqMode);
+			if (savingFormat != null)
+				writeSavingFormat(savingFormat);
+			if (savingIndexFormat != null)
+				writeSavingIndexFormat(savingIndexFormat);
+			if (savingSuffix != null)
+				writeSavingSuffix(savingSuffix);
+			if (savingPrefix != null)
+				writeSavingPrefix(savingPrefix);
+			if (savingDirectory != null)
+				writeSavingDirectory(savingDirectory);
+			if (savingMode != null)
+				writeSavingMode(savingMode);
+			if (triggerMode != null)
 				writeTriggerMode(triggerMode);
+
+			writeSavingNextNumber(nextNumber);
+
+			System.out.println("Check for readiness **************************");
+			for (int i=0; i<100; i++) {
+				if (readReadyForNextAcq()) {
+					break;
+				}
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// ignore
+				}
 			}
-			dev.command_inout("PrepareAcq");
-			// Add small sleep time for slower detectors  to respond before start arrives.
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// ignore
+			if (readReadyForNextAcq()) {
+				System.out.println("Preparing acq **************************");
+				dev.command_inout("PrepareAcq");
+				System.out.println("Prepared **************************");
+				// Add small sleep time for slower detectors to respond before start arrives.
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					// ignore
+				}
+			} else {
+				//Lets throw until we figure out why its not ready!
+				throw new DeviceException(getName() + " not ready for acquisition ");
 			}
-//			dev.command_inout("StartAcq");
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to prepare for acq " + getName(), e);
+			throw new DeviceException("failed to prepare acq for " + getName(), e);
 		}		
 		try {
 			dev.command_inout("StartAcq");
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to start acq " + getName(), e);
+			throw new DeviceException("failed to start acq for " + getName(), e);
 		}		
+	}
+
+
+	public void restart() throws DeviceException {
+		isAvailable();
+		writeSavingNextNumber(nextNumber);
+		boolean ready = false;
+		for (int i = 0; i < 100; i++) {
+			ready = readReadyForNextAcq();
+			if (ready) {
+				try {
+					dev.command_inout("PrepareAcq");
+					break;
+				} catch (DevFailed e) {
+					// ignore
+				}
+			} else {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					// ignore
+				}
+			}
+		}
+		if (!ready) {
+			// Lets throw until we figure out why its not ready!
+			throw new DeviceException(getName() + " not ready for acquisition ");
+		}
+		try {
+			dev.command_inout("StartAcq");
+		} catch (DevFailed e) {
+			throw new DeviceException("failed to start acq for " + getName(), e);
+		}
 	}
 
 	@Override
@@ -296,6 +365,10 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		this.detectorID = detectorID;
 	}
 
+	public void setDetectorType(String detectorType) {
+		this.detectorType = detectorType;
+	}
+
 	@Override
 	public int getStatus() throws DeviceException {
 		int istat = Detector.FAULT;
@@ -305,9 +378,9 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 			if ("ready".equalsIgnoreCase(status)) {
 				istat = Detector.IDLE;
 			} else if ("fault".equalsIgnoreCase(status)) {
-				istat = Detector.FAULT;				
+				istat = Detector.FAULT;
 			} else { // "running", "readout"
-				istat = Detector.BUSY;								
+				istat = Detector.BUSY;
 			}
 		} catch (DevFailed e) {
 			throw new DeviceException("failed to get status from " + getName(), e);
@@ -338,14 +411,22 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 				DeviceData argout = dev.command_inout("getImage", argin);
 				byteData = argout.extractByteArray();
 				
-				if (byteData.length !=  width*height*4) {
-					logger.error("TangoLimaDetector.readout failed: expected {} bytes, got {}", width*height*4, byteData.length);
-					throw new DeviceException("TangoLimaDetector.readout failed to read all the image data");
-				}
 				if ("Bpp32S".equalsIgnoreCase(imageType)) {
+					if (byteData.length !=  width*height*4) {
+						logger.error("TangoLimaDetector.readout failed: expected {} bytes, got {}", width*height*4, byteData.length);
+						throw new DeviceException("TangoLimaDetector.readout failed to read all the image data");
+					}
 					for (int j = 0; j < byteData.length; j += 4, n++) {
 						intData[n] = ((byteData[j + 3] & 0xff) << 24) | ((byteData[j + 2] & 0xff) << 16)
 								| ((byteData[j + 1] & 0xff) << 8) | (byteData[j] & 0xff);
+					}
+				} else if ("Bpp16".equalsIgnoreCase(imageType)) {
+					if (byteData.length !=  width*height*2) {
+						logger.error("TangoLimaDetector.readout failed: expected {} bytes, got {}", width*height*2, byteData.length);
+						throw new DeviceException("TangoLimaDetector.readout failed to read all the image data");
+					}
+					for (int j = 0; j < byteData.length; j += 2, n++) {
+						intData[n] = ((byteData[j + 1] & 0xff) << 8) | (byteData[j] & 0xff);
 					}
 				} else {
 					logger.error("TangoLimaDetector: readout: Unsupported image type {}", imageType);
@@ -365,7 +446,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		try {
 			dev.isAvailable();
 			int n = 0;
-			int last = readLastImageReady();
+			int last = readLastImageAcquired();
 			logger.debug("TangoLimaDetector is reading last image nos: {}", last);
 			if (last >= 0) {
 				DeviceData argin = new DeviceData();
@@ -373,14 +454,22 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 				DeviceData argout = dev.command_inout("getImage", argin);
 				byteData = argout.extractByteArray();
 				
-				if (byteData.length !=  width*height*4) {
-					logger.error("TangoLimaDetector.readout failed: expected {} bytes, got {}", width*height*4, byteData.length);
-					throw new DeviceException("TangoLimaDetector.readout failed to read all the image data");
-				}
 				if ("Bpp32S".equalsIgnoreCase(imageType)) {
+					if (byteData.length !=  width*height*4) {
+						logger.error("TangoLimaDetector.readout failed: expected {} bytes, got {}", width*height*4, byteData.length);
+						throw new DeviceException("TangoLimaDetector.readout failed to read all the image data");
+					}
 					for (int j = 0; j < byteData.length; j += 4, n++) {
 						data[n] = ((byteData[j + 3] & 0xff) << 24) | ((byteData[j + 2] & 0xff) << 16)
 								| ((byteData[j + 1] & 0xff) << 8) | (byteData[j] & 0xff);
+					}
+				} else if ("Bpp16".equalsIgnoreCase(imageType)) {
+					if (byteData.length !=  width*height*2) {
+						logger.error("TangoLimaDetector.readout failed: expected {} bytes, got {}", width*height*2, byteData.length);
+						throw new DeviceException("TangoLimaDetector.readout failed to read all the image data");
+					}
+					for (int j = 0; j < byteData.length; j += 2, n++) {
+						data[n] = ((byteData[j + 1] & 0xff) << 8) | (byteData[j] & 0xff);
 					}
 				} else {
 					logger.error("TangoLimaDetector: readout: Unsupported image type {}", imageType);
@@ -572,10 +661,21 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		return lastImageSaved;
 	}
 
+	public int readLastImageAcquired() throws DeviceException {
+		isAvailable();
+		try {
+			lastImageAcquired = dev.read_attribute("last_image_acquired").extractLong();
+		} catch (DevFailed e) {
+			throw new DeviceException("failed to get last image acquired", e);
+		}		
+		return lastImageAcquired;
+	}
+
 	public boolean readReadyForNextAcq() throws DeviceException {
 		isAvailable();
 		try {
 			readyForNextAcq = dev.read_attribute("ready_for_next_acq").extractBoolean();
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$ ready " + readyForNextAcq);
 		} catch (DevFailed e) {
 			throw new DeviceException("failed to get ready for next acq", e);
 		}		
@@ -597,7 +697,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		try {
 			dev.write_attribute(new DeviceAttribute("saving_overwrite_policy", policy));
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to set saving overwrite policy ", e);
+			throw new DeviceException("failed to set saving overwrite policy " + policy, e);
 		}		
 	}
 
@@ -606,7 +706,16 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		try {
 			dev.write_attribute(new DeviceAttribute("saving_format", format));
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to set saving format ", e);
+			throw new DeviceException("failed to set saving format " + format, e);
+		}		
+	}
+
+	public void writeSavingIndexFormat(String format) throws DeviceException {
+		isAvailable();
+		try {
+			dev.write_attribute(new DeviceAttribute("saving_index_format", format));
+		} catch (DevFailed e) {
+			throw new DeviceException("failed to set saving index format " + format, e);
 		}		
 	}
 
@@ -615,7 +724,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		try {
 			dev.write_attribute(new DeviceAttribute("saving_next_number", nextNumber));
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to set saving next number ", e);
+			throw new DeviceException("failed to set saving next number "+ nextNumber, e);
 		}		
 	}
 
@@ -624,7 +733,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		try {
 			dev.write_attribute(new DeviceAttribute("saving_suffix", suffix));
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to set saving suffix ", e);
+			throw new DeviceException("failed to set saving suffix " + suffix, e);
 		}
 	}
 
@@ -642,7 +751,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		try {
 			dev.write_attribute(new DeviceAttribute("saving_directory", directory));
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to set saving directory ", e);
+			throw new DeviceException("failed to set saving directory " + directory, e);
 		}
 	}
 
@@ -651,7 +760,7 @@ public class TangoLimaDetector extends DetectorBase implements Detector, Scannab
 		try {
 			dev.write_attribute(new DeviceAttribute("saving_mode", mode));
 		} catch (DevFailed e) {
-			throw new DeviceException("failed to set saving mode ", e);
+			throw new DeviceException("failed to set saving mode " + mode, e);
 		}
 	}
 
