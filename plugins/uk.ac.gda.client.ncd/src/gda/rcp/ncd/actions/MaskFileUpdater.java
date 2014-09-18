@@ -28,6 +28,9 @@ import org.dawb.common.services.IPersistenceService;
 import org.dawb.common.services.IPersistentFile;
 import org.dawb.common.services.ServiceManager;
 import org.dawb.common.ui.util.EclipseUtils;
+import org.eclipse.dawnsci.analysis.api.dataset.IDataset;
+import org.eclipse.dawnsci.analysis.api.metadata.IDiffractionMetadata;
+import org.eclipse.dawnsci.analysis.api.metadata.IMetadata;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.region.IRegion;
 import org.eclipse.dawnsci.plotting.api.trace.IImageTrace;
@@ -42,9 +45,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.diamond.scisoft.analysis.dataset.IDataset;
-import uk.ac.diamond.scisoft.analysis.metadata.IDiffractionMetadata;
-import uk.ac.diamond.scisoft.analysis.metadata.IMetadata;
 import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
 
 public class MaskFileUpdater extends AbstractHandler {

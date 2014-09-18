@@ -25,6 +25,7 @@ import gda.factory.Finder;
 import gda.jython.JythonServerFacade;
 import gda.observable.IObserver;
 
+import org.eclipse.dawnsci.analysis.dataset.impl.IntegerDataset;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.diamond.scisoft.analysis.SDAPlotter;
-import uk.ac.diamond.scisoft.analysis.dataset.IntegerDataset;
 import uk.ac.diamond.scisoft.analysis.rcp.views.PlotView;
 
 public class LpdButtonView extends ViewPart implements IObserver {
