@@ -37,12 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.eclipse.dawnsci.analysis.dataset.impl.IntegerDataset;
 import org.nexusformat.NexusFile;
 import org.python.core.PyObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.ac.diamond.scisoft.analysis.dataset.IntegerDataset;
 
 @CorbaAdapterClass(DetectorAdapter.class)
 @CorbaImplClass(DetectorImpl.class)
