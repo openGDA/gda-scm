@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.diamond.scisoft.analysis.dataset.IDataset;
 import uk.ac.diamond.scisoft.analysis.io.IDiffractionMetadata;
-import uk.ac.diamond.scisoft.analysis.io.IMetaData;
+import uk.ac.diamond.scisoft.analysis.io.IMetadata;
 import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
 
 public class MaskFileUpdater extends AbstractHandler {
@@ -133,7 +133,7 @@ public class MaskFileUpdater extends AbstractHandler {
 	private void addDiffractionMetadataToFile() throws Exception {
 		IImageTrace trace = getImage();
 		if (trace!=null && trace.getData() != null) {
-			IMetaData meta = trace.getData().getMetadata();
+			IMetadata meta = trace.getData().getMetadata();
 			if (meta == null || meta instanceof IDiffractionMetadata) {
 				file.setDiffractionMetadata((IDiffractionMetadata) meta);
 			}
