@@ -21,16 +21,13 @@ package gda.device.motor;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevState;
 import fr.esrf.TangoApi.DeviceAttribute;
-import fr.esrf.TangoApi.events.ITangoChangeListener;
-import fr.esrf.TangoApi.events.TangoChangeEvent;
-import fr.esrf.TangoApi.events.TangoEventsAdapter;
 import gda.device.DeviceException;
 import gda.device.Motor;
 import gda.device.MotorException;
 import gda.device.MotorStatus;
 import gda.device.TangoDeviceProxy;
-import gda.factory.FactoryException;
 import gda.device.spec.TangoSpecCmd;
+import gda.factory.FactoryException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
