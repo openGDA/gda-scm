@@ -18,10 +18,14 @@
 
 package uk.ac.gda.devices.hplc.ui;
 
+import gda.configuration.properties.LocalProperties;
+import gda.data.PathConstructor;
 import gda.jython.InterfaceProvider;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -258,6 +262,20 @@ public class HplcSampleFieldComposite extends FieldComposite {
 				@Override
 				public void setNewValue(HplcBean element, String value) {
 					element.setVisit(value);
+				}
+				@Override
+				protected Color getColour(HplcBean element) {
+					String visit = element.getVisit();
+					HashMap<String, String> overrides = new HashMap<>();
+					overrides.put("visit", visit);
+					String visitPath = PathConstructor.createFromTemplate(LocalProperties.get("gda.data.visitdirectory"), overrides);
+					File visitDir = new File(visitPath);
+					if (!(visitDir.exists() && visitDir.isDirectory() && visitDir.canWrite())) {
+						logger.error("visit doesn't exist");
+						return warning;
+					} else {
+						return super.getColour(element);
+					}
 				}
 			});
 			columns.put("Username", new Column<HplcBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
