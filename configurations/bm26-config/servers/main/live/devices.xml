@@ -1,0 +1,528 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="machineDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://orion:10000/Fe/D/26" />
+	</bean>
+
+	<bean id="shutter" class="gda.device.enumpositioner.TangoShutter">
+		<property name="tangoDeviceProxy" ref="shutterDeviceProxy" />
+	</bean>
+	<bean id="shutterDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/bshutter/1" />
+	</bean>
+
+	<bean id="DummyMotor01" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="DummyMotor02" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="samplexMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="sampleXmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="sampleXmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/samplex" />
+	</bean>
+
+	<bean id="sampleyMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="sampleYmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="sampleYmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sampley" />
+	</bean>
+
+	<bean id="beamstopxMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="beamstopXmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="beamstopXmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/beamstx" />
+	</bean>
+
+	<bean id="beamstopyMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="beamstopYmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="beamstopYmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/beamsty" />
+	</bean>
+
+	<bean id="detectorxMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="detectorXmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="detectorXmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/detectx" />
+	</bean>
+
+	<bean id="detectoryMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="detectorYmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="detectorYmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/detecty" />
+	</bean>
+
+	<bean id="sxMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="sxMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="sxMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sx" />
+	</bean>
+
+	<bean id="syMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="syMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="syMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sy" />
+	</bean>
+
+	<bean id="szMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="szMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="szMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/sz" />
+	</bean>
+
+	<bean id="ztableMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="ztableMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="ztableMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/ztable" />
+	</bean>
+
+	<bean id="xtableMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="xtableMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="xtableMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/xtable" />
+	</bean>
+
+	<bean id="h1horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horg" />
+	</bean>
+
+	<bean id="h1horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horl" />
+	</bean>
+
+	<bean id="h1horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horo" />
+	</bean>
+
+	<bean id="h1horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1horr" />
+	</bean>
+
+	<bean id="h1verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1verb" />
+	</bean>
+
+	<bean id="h1vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1verg" />
+	</bean>
+
+	<bean id="h1veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1vero" />
+	</bean>
+
+	<bean id="h1vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h1vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h1vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h1vert" />
+	</bean>
+
+	<bean id="h3horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horg" />
+	</bean>
+
+	<bean id="h3horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horl" />
+	</bean>
+
+	<bean id="h3horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horo" />
+	</bean>
+
+	<bean id="h3horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3horr" />
+	</bean>
+
+	<bean id="h3verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3verb" />
+	</bean>
+
+	<bean id="h3vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3verg" />
+	</bean>
+
+	<bean id="h3veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3vero" />
+	</bean>
+
+	<bean id="h3vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h3vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h3vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h3vert" />
+	</bean>
+
+	<bean id="h4horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horg" />
+	</bean>
+
+	<bean id="h4horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horl" />
+	</bean>
+
+	<bean id="h4horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horo" />
+	</bean>
+
+	<bean id="h4horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4horr" />
+	</bean>
+
+	<bean id="h4verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4verb" />
+	</bean>
+
+	<bean id="h4vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4verg" />
+	</bean>
+
+	<bean id="h4veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4vero" />
+	</bean>
+
+	<bean id="h4vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h4vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h4vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h4vert" />
+	</bean>
+
+	<bean id="h5horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horg" />
+	</bean>
+
+	<bean id="h5horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horl" />
+	</bean>
+
+	<bean id="h5horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horo" />
+	</bean>
+
+	<bean id="h5horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5horr" />
+	</bean>
+
+	<bean id="h5verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5verb" />
+	</bean>
+
+	<bean id="h5vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5verg" />
+	</bean>
+
+	<bean id="h5veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5vero" />
+	</bean>
+
+	<bean id="h5vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h5vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h5vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h5vert" />
+	</bean>
+
+	<bean id="h6horgMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horgMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horgMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horg" />
+	</bean>
+
+	<bean id="h6horlMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horlMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horlMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horl" />
+	</bean>
+
+	<bean id="h6horoMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horoMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horoMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horo" />
+	</bean>
+
+	<bean id="h6horrMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6horrMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6horrMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6horr" />
+	</bean>
+
+	<bean id="h6verbMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6verbMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6verbMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6verb" />
+	</bean>
+
+	<bean id="h6vergMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6vergMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6vergMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6verg" />
+	</bean>
+
+	<bean id="h6veroMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6veroMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6veroMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6vero" />
+	</bean>
+
+	<bean id="h6vertMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="h6vertMotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="h6vertMotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/h6vert" />
+	</bean>
+
+	<bean id="xcradleMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="xcradlemotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="xcradlemotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/xcradle" />
+	</bean>
+
+	<bean id="ycradleMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="ycradlemotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="ycradlemotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/ycradle" />
+	</bean>
+
+	<bean id="gonioMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="goniomotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="goniomotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/gonio" />
+	</bean>
+
+	<bean id="endxMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="endxmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="endxmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/endx" />
+	</bean>
+
+	<bean id="endzMotor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="endzmotorDeviceProxy" />
+		<property name="local" value="true" />
+	</bean>
+
+	<bean id="endzmotorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26h/motor/endz" />
+	</bean>
+</beans>

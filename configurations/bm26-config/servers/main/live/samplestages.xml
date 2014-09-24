@@ -18,7 +18,6 @@
 	<bean id="LinkamT95" class="gda.device.temperature.LinkamT95">
 		<property name="serialReaderWriter" ref="ReaderWriter00" />
 		<property name="configureAtStartup" value="false" />
-		<property name="fileSuffix" value="dat" />
 		<property name="upperTemp" value="600" />
 		<property name="lowerTemp" value="-195" />
 	</bean>

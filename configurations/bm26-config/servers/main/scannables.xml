@@ -1,0 +1,467 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="testScannable01" class="gda.device.scannable.ScannableMotor">
+		<property name="motor" ref="DummyMotor01" />
+		<property name="protectionLevel" value="3" />
+		<property name="initialUserUnits" value="mm" />
+		<property name="hardwareUnitString" value="mm" />
+	</bean>
+
+	<bean id="testScannable02" class="gda.device.scannable.ScannableMotor">
+		<property name="motor" ref="DummyMotor02" />
+		<property name="protectionLevel" value="3" />
+		<property name="initialUserUnits" value="mm" />
+		<property name="hardwareUnitString" value="mm" />
+	</bean>
+
+	<bean id="samplex" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="samplexMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="sampley" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="sampleyMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="beamstopx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="beamstopxMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="beamstopy" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="beamstopyMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="detectorx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="detectorxMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="detectory" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="detectoryMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="sx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="sxMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="sy" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="syMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="sz" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="szMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="ztable" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="ztableMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="xtable" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="xtableMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h1vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h1vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h3vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h3vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h4vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h4vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h5vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h5vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horgMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horl" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horlMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horo" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horoMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6horr" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6horrMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6verb" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6verbMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6vergMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6vero" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6veroMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="h6vert" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="h6vertMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="xcradle" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="xcradleMotor" />
+		<property name="hardwareUnitString" value="deg" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="ycradle" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="ycradleMotor" />
+		<property name="hardwareUnitString" value="deg" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="gonio" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="gonioMotor" />
+		<property name="hardwareUnitString" value="deg" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="endx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="endxMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+
+	<bean id="endz" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="motor" ref="endzMotor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="lowerGdaLimits" value="-999999" />
+		<property name="upperGdaLimits" value="999999" />
+	</bean>
+</beans>

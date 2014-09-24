@@ -1,0 +1,328 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="machineDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="machineDeviceImpl" />
+	</bean>
+	<bean id="machineDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://orion:10000/Fe/D/26" />
+		<property name="attributeMap">
+			<list>
+				<bean id="currentAttribute" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="SR_Current" />
+					<property name="attributeValue" value="100.0" />
+					<property name="attributeDataType" value="5" />
+				</bean>
+				<bean id="fillModeAttribute" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="SR_Filling_Mode" />
+					<property name="attributeValue" value="multibunch" />
+					<property name="attributeDataType" value="8" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="shutter" class="gda.device.enumpositioner.TangoShutter">
+		<property name="tangoDeviceProxy" ref="shutterDeviceProxy" />
+	</bean>
+	<bean id="shutterDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="shutterDeviceImpl"/>
+	</bean>
+
+	<bean id="shutterDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26h/bshutter/1" />
+	</bean>
+
+	<bean id="DummyMotor01" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="DummyMotor02" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="samplexMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="sampleyMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="beamstopxMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="beamstopyMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="detectorxMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="detectoryMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="sxMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="syMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="szMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="ztableMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="xtableMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1horgMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1horlMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1horoMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1horrMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1verbMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1vergMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1veroMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h1vertMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3horgMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3horlMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3horoMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3horrMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3verbMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3vergMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3veroMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h3vertMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4horgMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4horlMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4horoMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4horrMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4verbMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4vergMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4veroMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h4vertMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5horgMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5horlMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5horoMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5horrMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5verbMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5vergMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5veroMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h5vertMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6horgMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6horlMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6horoMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6horrMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6verbMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6vergMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6veroMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="h6vertMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="xcradleMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="ycradleMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="gonioMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="endxMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="endzMotor" class="gda.device.motor.DummyMotor">
+		<property name="local" value="true" />
+		<property name="speed" value="500" />
+	</bean>
+
+</beans>

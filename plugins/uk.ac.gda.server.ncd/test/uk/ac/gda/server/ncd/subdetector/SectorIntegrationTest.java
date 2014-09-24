@@ -24,9 +24,8 @@ import gda.data.nexus.extractor.NexusGroupData;
 import gda.device.DeviceException;
 import gda.device.detector.NXDetectorData;
 
+import org.eclipse.dawnsci.analysis.dataset.roi.SectorROI;
 import org.junit.Test;
-
-import uk.ac.diamond.scisoft.analysis.roi.SectorROI;
 
 public class SectorIntegrationTest extends ReductionDetectorBaseTest {
 

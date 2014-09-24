@@ -1,20 +1,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-<!--
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location" value="file:${gda.config}/properties/${gda.mode}/java.properties" />
 	</bean>
 	<bean class="gda.spring.FindableNameSetterPostProcessor" />
--->
+
 	<bean id="command_server" class="gda.jython.JythonServer">
 		<property name="jythonScriptPaths">
 			<bean class="gda.jython.ScriptPaths">
 				<property name="projects">
 					<list>
 						<bean class="gda.jython.ScriptProject">
-							<property name="path" value="/data/bm26/inhouse/scripts" />
+							<property name="path" value="${gda.users.scriptDir}" />
 							<property name="name" value="Scripts: User" />
 							<property name="type" value="USER" />
 						</bean>
@@ -33,9 +33,9 @@
 				<property name="startupScript" value="${gda.config}/scripts/localStation.py" />
 			</bean>
 		</property>
-		<property name="gdaVarDirectory" value="${gda.config}/var" />
-		<property name="cacheDirectory" value="${gda.config}/var/jythonCache" />
+		<property name="gdaVarDirectory" value="${gda.var}" />
+		<property name="cacheDirectory" value="${gda.var}/jythonCache" />
 		<property name="remotePort" value="9999" />
 	</bean>
-
+	
 </beans>

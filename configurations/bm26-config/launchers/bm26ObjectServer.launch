@@ -8,7 +8,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="LD_LIBRARY_PATH" value="${workspace_loc:uk.ac.gda.nexus}/lib/${target.os}-${target.arch}"/>
+<mapEntry key="LD_LIBRARY_PATH" value="/home/grm84/bm26-master_git/gda-nexus.git/uk.ac.gda.nexus/lib/linux-x86"/>
 </mapAttribute>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
@@ -16,25 +16,25 @@
 </listAttribute>
 <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;uk.ac.gda.core&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/tp/plugins/uk.ac.diamond.org.jscience_2.0.2.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;uk.ac.gda.core&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;org.gda.tango&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/org.gda.tango/jars/TangORB-7.0.3.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
-<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.gda.nexus&quot; type=&quot;1&quot;/&gt;&#10;"/>
-<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/uk.ac.gda.nexus/jars/jnexus-4.3.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.gda.api&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.gda.common&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.gda.server.ncd&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/uk.ac.gda.server.ncd/jars/gda-ncd-corba.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.diamond.scisoft.analysis&quot; type=&quot;1&quot;/&gt;&#10;"/>
-<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/uk.ac.diamond.scisoft.analysis/jars/jtransforms-2.4.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/uk.ac.diamond.scisoft.analysis/jars/it.tidalwave.imageio.raw-1.6.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/uk.ac.diamond.scisoft.analysis/jars/jai_imageio.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.diamond.scisoft.deprecated&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.diamond.scisoft.ncd&quot; type=&quot;1&quot;/&gt;&#10;"/>
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.gda.analysis&quot; type=&quot;1&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.diamond.scisoft.analysis.plotserver&quot; type=&quot;1&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;3&quot; projectName=&quot;uk.ac.diamond.scisoft.analysis.xmlrpc&quot; type=&quot;1&quot;/&gt;&#10;"/>
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="gda.util.ObjectServer"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="uk.ac.gda.core"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgda.root=${project_loc:uk.ac.gda.core}/..&#10;-Dgda.config=${project_loc:bm26-config}&#10;-Dgda.propertiesFile=${project_loc:bm26-config}/properties/live/java.properties&#10;-Djacorb.config.dir=${project_loc:bm26-config}/jacorb/live&#10;-Dgda.mode=live&#10;-Xms128m&#10;-Xmx1024m"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgda.install.git.loc=${project_loc:uk.ac.gda.core/}/../..&#10;-Dgda.config=${project_loc:bm26-config}&#10;-Dgda.propertiesFile=${project_loc:bm26-config}/properties/dummy/java.properties&#10;-Djacorb.config.dir=${project_loc:bm26-config}/jacorb/dummy&#10; -Dgda.mode=dummy&#10;-Xms128m -Xmx1024m"/>
 </launchConfiguration>

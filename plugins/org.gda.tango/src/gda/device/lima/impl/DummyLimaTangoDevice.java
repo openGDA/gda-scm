@@ -58,13 +58,11 @@ public class DummyLimaTangoDevice extends DummyTangoDeviceImpl{
 
 	@Override
 	public DeviceData command_inout(String cmd, DeviceData argin) throws DevFailed {
-		// TODO Auto-generated method stub
 		return super.command_inout(cmd, argin);
 	}
 
 	@Override
 	public DeviceData command_inout(String cmd) throws DevFailed {
-		// TODO Auto-generated method stub
 		if( cmd.equals(LimaCCDImpl.COMMAND_START_ACQ)){
 			//create the files in another thread
 			Thread thread = new Thread(new Runnable(){
