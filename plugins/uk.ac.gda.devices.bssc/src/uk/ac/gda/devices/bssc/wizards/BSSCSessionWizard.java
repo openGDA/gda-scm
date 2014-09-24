@@ -30,8 +30,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
-import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
 
 public class BSSCSessionWizard extends Wizard implements INewWizard {
 	private BSSCSessionWizardPage page;

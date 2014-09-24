@@ -86,8 +86,20 @@ public final class BSSCSessionBeanComposite extends Composite {
 					measurements.deleteSelection();
 			}
 		});
+		layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
+
+		Composite runControls = new Composite(this, SWT.NONE);
+		runControls.setLayout(new GridLayout(2, false));
+		runControls.setLayoutData(layoutData);
+
+		layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
+
+		final Button btnRunPipeline = new Button(runControls, SWT.CHECK);
+		btnRunPipeline.setLayoutData(layoutData);
+		btnRunPipeline.setText("Run processing");
+		btnRunPipeline.setToolTipText("Automatically run processing after experiment");
 		
-		Button btnQueueExperiment = new Button(this, SWT.NONE);
+		Button btnQueueExperiment = new Button(runControls, SWT.NONE);
 		layoutData = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
 		btnQueueExperiment.setLayoutData(layoutData);
 		btnQueueExperiment.setText("Queue Experiment");
@@ -104,7 +116,7 @@ public final class BSSCSessionBeanComposite extends Composite {
 						return;
 					Queue queue = CommandQueueViewFactory.getQueue();
 					if (queue != null) {
-						queue.addToTail(new JythonCommandCommandProvider(String.format("import BSSC; BSSC.BSSCRun(\"%s\").run()", editor.getPath()), editor.getTitle(), editor.getPath()));
+						queue.addToTail(new JythonCommandCommandProvider(String.format("import BSSC; BSSC.BSSCRun('%s').run('%s')", editor.getPath(), String.valueOf(btnRunPipeline.getSelection())), editor.getTitle(), editor.getPath()));
 					} else {
 						logger.warn("No queue received from CommandQueueViewFactory");
 					}

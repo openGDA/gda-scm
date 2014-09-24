@@ -28,7 +28,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
-import uk.ac.gda.devices.bssc.beans.LocationBean;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
 import uk.ac.gda.devices.hplc.beans.HplcBean;
 import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 
@@ -36,7 +36,6 @@ public class HplcSessionWizard extends Wizard implements INewWizard {
 	private HplcSessionWizardPage page;
 	private ISelection selection;
 	private double concentration = 0.1;
-	private int frames = 10;
 	private double timePerFrame = 0.2;
 
 	public HplcSessionWizard() {
@@ -147,7 +146,6 @@ public class HplcSessionWizard extends Wizard implements INewWizard {
 		hb.setVisit("ab1234-1");
 		hb.setComment("helloWorld");
 		hb.setMolecularWeight(0);
-		hb.setFrames(frames);
 		hb.setTimePerFrame(timePerFrame);
 		measurements.add(hb);
 		sessionBean.setMeasurements(measurements);

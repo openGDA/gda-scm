@@ -48,7 +48,7 @@ public final class HplcSessionBeanComposite extends Composite {
 
 	public HplcSessionBeanComposite(Composite parent, int style, final RichBeanEditorPart editor) {
 		super(parent, style);
-		GridLayout layout = new GridLayout(2, false);
+		GridLayout layout = new GridLayout(3, false);
 		layout.marginWidth=5;
 		setLayout(layout);
 		Composite composite = new Composite(this, SWT.NONE);
@@ -65,11 +65,9 @@ public final class HplcSessionBeanComposite extends Composite {
 		btnNewSample.setText("New Sample");
 		btnNewSample.setToolTipText("add line(s) for new sample(s)");
 		btnNewSample.addSelectionListener(new SelectionAdapter() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				// TODO
 				if (measurements != null)
 					measurements.addSample();
 			}
@@ -79,7 +77,6 @@ public final class HplcSessionBeanComposite extends Composite {
 		btnDelete.setText("Delete");
 		btnDelete.setToolTipText("remove selected rows");
 		btnDelete.addSelectionListener(new SelectionAdapter() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
@@ -87,14 +84,24 @@ public final class HplcSessionBeanComposite extends Composite {
 					measurements.deleteSelection();			
 			}
 		});
+		layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
+
+		Composite runControls = new Composite(this, SWT.NONE);
+		runControls.setLayout(new GridLayout(2, false));
+		runControls.setLayoutData(layoutData);
 		
-		Button btnQueueExperiment = new Button(this, SWT.NONE);
-		layoutData = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
+		layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
+
+		final Button btnRunPipeline = new Button(runControls, SWT.CHECK);
+		btnRunPipeline.setLayoutData(layoutData);
+		btnRunPipeline.setText("Run processing");
+		btnRunPipeline.setToolTipText("Automatically run processing after experiment");
+
+		Button btnQueueExperiment = new Button(runControls, SWT.NONE);
 		btnQueueExperiment.setLayoutData(layoutData);
 		btnQueueExperiment.setText("Queue Experiment");
 		btnQueueExperiment.setToolTipText("save file and queue for execution (will start immediately if queue running");
 		btnQueueExperiment.addSelectionListener(new SelectionAdapter() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
@@ -105,7 +112,7 @@ public final class HplcSessionBeanComposite extends Composite {
 						return;
 					Queue queue = CommandQueueViewFactory.getQueue();
 					if (queue != null) {
-						queue.addToTail(new JythonCommandCommandProvider(String.format("import HPLC;HPLC.HPLC('%s').run()", editor.getPath()), editor.getTitle(), editor.getPath()));
+						queue.addToTail(new JythonCommandCommandProvider(String.format("import HPLC;HPLC.HPLC('%s').run('%s')", editor.getPath(), String.valueOf(btnRunPipeline.getSelection())), editor.getTitle(), editor.getPath()));
 					} else {
 						logger.warn("No queue received from CommandQueueViewFactory");
 					}
@@ -114,10 +121,9 @@ public final class HplcSessionBeanComposite extends Composite {
 				}
 			}
 		});
-		
 		measurements = new HplcSampleFieldComposite(this, SWT.NONE, editor);
 		layoutData = new GridData(GridData.FILL_BOTH);
-		layoutData.horizontalSpan=2;
+		layoutData.horizontalSpan=3;
 		measurements.setLayoutData(layoutData);
 	}
 

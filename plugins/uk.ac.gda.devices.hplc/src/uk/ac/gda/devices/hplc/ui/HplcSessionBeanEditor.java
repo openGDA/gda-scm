@@ -47,9 +47,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.common.rcp.util.EclipseUtils;
-import uk.ac.gda.devices.bssc.BioSaxsUtils;
-import uk.ac.gda.devices.bssc.beans.LocationBean;
-import uk.ac.gda.devices.hplc.HplcUtils;
+import uk.ac.gda.devices.hatsaxs.HatsaxsUtils;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
 import uk.ac.gda.devices.hplc.beans.HplcBean;
 import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
@@ -125,7 +124,7 @@ public final class HplcSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		dialog.setText("Save as HPLC Experiment");
 		dialog.setFilterExtensions(new String[] { "*.hplc", "*.xml" });
 		final File currentFile = new File(this.path);
-		dialog.setFilterPath(BioSaxsUtils.getXmlDirectory());
+		dialog.setFilterPath(HatsaxsUtils.getXmlDirectory());
 
 		String newFile = dialog.open();
 		if (newFile != null) {
@@ -183,7 +182,7 @@ public final class HplcSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		IProject dataProject = DataProject.getDataProjectIfExists();
 
 		if (dataProject != null) {
-			File nativeFile = HplcUtils.getNewFileFromName("default");
+			File nativeFile = HatsaxsUtils.getDefaultHplcFile();
 
 			if (!nativeFile.exists()) {
 				sessionBean = new HplcSessionBean();
@@ -246,6 +245,5 @@ public final class HplcSessionBeanEditor extends RichBeanMultiPageEditorPart {
 		titrationBean.setConcentration(concentration);
 		titrationBean.setMolecularWeight(molecularWeight);
 		titrationBean.setTimePerFrame(timePerFrame);
-		titrationBean.setFrames(noOfFrames);
 	}
 }

@@ -335,7 +335,7 @@
 			<list>
 				<ref bean="FileRegistrar" />
 				<ref bean="twodscan"/>
-				<ref bean="ncddetectorsProcessingListener" />
+<!-- 				<ref bean="ncddetectorsProcessingListener" /> -->
 				<!-- <ref bean="scan2elog" /> -->
 			</list>
 		</property>
@@ -567,4 +567,5 @@
 			</set>
 		</property>
 	</bean>
+	<import resource="./ncdsim_hatsax.xml" />
 </beans>

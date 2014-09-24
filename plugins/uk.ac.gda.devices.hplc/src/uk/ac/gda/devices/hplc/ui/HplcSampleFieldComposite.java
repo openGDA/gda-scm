@@ -67,11 +67,11 @@ import org.eclipse.swt.widgets.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.beans.LocationBean;
-import uk.ac.gda.devices.bssc.beans.Plate;
-import uk.ac.gda.devices.bssc.ui.Column;
-import uk.ac.gda.devices.bssc.ui.Column.ColumnHelper;
-import uk.ac.gda.devices.bssc.ui.Column.ColumnType;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
+import uk.ac.gda.devices.hatsaxs.beans.Plate;
+import uk.ac.gda.devices.hatsaxs.ui.Column;
+import uk.ac.gda.devices.hatsaxs.ui.Column.ColumnHelper;
+import uk.ac.gda.devices.hatsaxs.ui.Column.ColumnType;
 import uk.ac.gda.devices.hplc.beans.HplcBean;
 import uk.ac.gda.devices.hplc.beans.HplcSessionBean;
 import uk.ac.gda.richbeans.components.FieldComposite;
@@ -219,20 +219,6 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			}
 		});
 		columns.get("Time per\n  Frame").setOutputFormat("%5.3f s");
-		columns.put("Frames", new Column<HplcBean, Integer>(40, tableViewer, rbeditor, ColumnType.INTEGER) {
-			@Override
-			public Integer getRealValue(HplcBean element) {
-				return element.getFrames();
-			}
-			@Override
-			public void setNewValue(HplcBean element, String value) {
-				try {
-					Integer frames = Integer.valueOf(value);
-					element.setFrames(frames);
-				} catch (NumberFormatException nfe) {
-				}
-			}
-		});
 		columns.put("Buffers", new Column<HplcBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
 			public String getRealValue(HplcBean element) {
