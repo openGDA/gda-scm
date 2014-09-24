@@ -43,7 +43,6 @@ import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class ImportSpreadsheetHandler implements IHandler {
 	private Logger logger = LoggerFactory.getLogger(ImportSpreadsheetHandler.class);
-	private static final String DEFAULT_HPLC_MODE = "HPLC";
 	private static final int ROW_COL = 0;
 	private static final int COLUMN_COL = 1;
 	private static final int SAMPLE_NAME_COL = 2;
@@ -100,7 +99,7 @@ public class ImportSpreadsheetHandler implements IHandler {
 					hb.setConcentration(row.getCell(CONCENTRATION_COL).getNumericCellValue()); 
 					hb.setMolecularWeight(row.getCell(MOLECULAR_WEIGHT_COL).getNumericCellValue());
 					hb.setTimePerFrame(row.getCell(TIME_PER_FRAME_COL).getNumericCellValue());
-					hb.setMode(DEFAULT_HPLC_MODE);
+					hb.setMode(HplcBean.DEFAULT_HPLC_MODE);
 					
 					Cell visit = row.getCell(VISIT_COL, Row.RETURN_BLANK_AS_NULL);
 					if (visit != null) {
