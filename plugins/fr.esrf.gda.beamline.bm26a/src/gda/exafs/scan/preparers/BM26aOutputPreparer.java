@@ -21,6 +21,7 @@ package gda.exafs.scan.preparers;
 import java.util.List;
 
 import gda.data.scan.datawriter.AsciiDataWriterConfiguration;
+import gda.device.DeviceException;
 import gda.scan.ScanPlotSettings;
 
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ public class BM26aOutputPreparer implements OutputPreparer {
 	}
 
 	@Override
-	public void prepare(IOutputParameters outputParameters, IScanParameters scanBean) {
+	public void configure(IOutputParameters outputParameters, IScanParameters scanBean, IDetectorParameters detectorBean) throws DeviceException{
 		logger.debug("Preparing output parameters");
 		List<MetadataParameters> metadata = outputParameters.getMetadataList();
 		if (metadata.size() > 0) {
@@ -62,7 +63,7 @@ public class BM26aOutputPreparer implements OutputPreparer {
 
 	// For any specific plotting requirements based on all the options in this experiment
 	@Override
-	public ScanPlotSettings getPlotSettings(IDetectorParameters detectorBean, IOutputParameters outputBean) {
+	public ScanPlotSettings getPlotSettings() {
 		return null;
 	}
 
@@ -73,7 +74,12 @@ public class BM26aOutputPreparer implements OutputPreparer {
 	}
 
 	@Override
-	public void _resetNexusStaticMetadataList() {
+	public void resetNexusStaticMetadataList() {
 		return;
+	}
+
+	@Override
+	public void beforeEachRepetition() throws Exception {
+		// 
 	}
 }

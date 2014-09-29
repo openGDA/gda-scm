@@ -19,20 +19,16 @@
 package gda.exafs.scan.preparers;
 
 import gda.device.scannable.scannablegroup.ScannableGroup;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import uk.ac.gda.beans.exafs.ISampleParameters;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
-import uk.ac.gda.beans.exafs.bm26a.XYZStageParameters;
 import uk.ac.gda.server.exafs.scan.SampleEnvironmentPreparer;
 import uk.ac.gda.server.exafs.scan.iterators.SampleEnvironmentIterator;
 
 public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
-	private static final Logger logger = LoggerFactory.getLogger(BM26aSamplePreparer.class);
+
 	private ScannableGroup xyzStage;
 	private ScannableGroup cryoStage;
+	private SampleParameters parameters;
 
 	public BM26aSamplePreparer(ScannableGroup xyzStage, ScannableGroup cryoStage) {
 		this.xyzStage = xyzStage;
@@ -40,26 +36,12 @@ public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
 	}
 
 	@Override
-	public void prepare(ISampleParameters parameters) throws Exception {
-		SampleParameters sampleParameters = (SampleParameters)parameters;
-		logger.debug("Preparing sample parameters");
-		if (sampleParameters.getStage().equals("xyzStage")) {
-			XYZStageParameters bean = sampleParameters.getXyzStageParameters();
-			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
-			logger.info("moving xyzStage (" + xyzStage.getName() + ") to " + targetPosition);
-			xyzStage.asynchronousMoveTo(targetPosition);
-			logger.info("xyzStage move complete.");
-		} else if (sampleParameters.getStage().equals("cryoStage")) {
-			XYZStageParameters bean = sampleParameters.getCryoStageParameters();
-			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
-			logger.info("moving cryoStage (" + cryoStage.getName() + ") to " + targetPosition);
-			cryoStage.asynchronousMoveTo(targetPosition);
-			logger.info("cryoStage move complete.");
-		}
+	public void configure(ISampleParameters parameters) throws Exception {
+		this.parameters = (SampleParameters) parameters;
 	}
 
 	@Override
 	public SampleEnvironmentIterator createIterator(String experimentType) {
-		return null;
+		return new BM26aSampleEnvironmentIterator(parameters, xyzStage, cryoStage);
 	}
 }

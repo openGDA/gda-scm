@@ -1,5 +1,6 @@
 print "Initialization Started";
 
+from gda.exafs.scan.preparers import BM26aBeamlinePreparer
 from gda.exafs.scan.preparers import BM26aDetectorPreparer
 from gda.exafs.scan.preparers import BM26aSamplePreparer
 from gda.exafs.scan.preparers import BM26aOutputPreparer
@@ -25,7 +26,7 @@ original_header = datawriterconfig.getHeader()[:]
 detectorPreparer = BM26aDetectorPreparer(xspressConfig)
 samplePreparer = BM26aSamplePreparer(sampleStage, cryoStage)
 outputPreparer = BM26aOutputPreparer(datawriterconfig)
-xas = XasScan(detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, ExafsScriptObserver, XASLoggingScriptController, datawriterconfig, original_header, bragg1, counterTimer01, False, False, False, False, False)
+xas = XasScan(BM26aBeamlinePreparer(), detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, XASLoggingScriptController, datawriterconfig, original_header, bragg1,Finder.getInstance().find("metashop"), False)
 xanes = xas
 
 alias("xas")
