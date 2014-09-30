@@ -18,46 +18,68 @@
 
 package gda.exafs.scan.preparers;
 
+import gda.device.DeviceException;
 import gda.device.scannable.scannablegroup.ScannableGroup;
-import uk.ac.gda.beans.exafs.ISampleParameters;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
-import uk.ac.gda.server.exafs.scan.SampleEnvironmentPreparer;
+import uk.ac.gda.beans.exafs.bm26a.XYZStageParameters;
 import uk.ac.gda.server.exafs.scan.iterators.SampleEnvironmentIterator;
 
-public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
+public class BM26aSampleEnvironmentIterator implements SampleEnvironmentIterator {
 
+	private static final Logger logger = LoggerFactory.getLogger(BM26aSampleEnvironmentIterator.class);
+	
+	private SampleParameters parameters;
 	private ScannableGroup xyzStage;
 	private ScannableGroup cryoStage;
-	private SampleParameters parameters;
 
-	public BM26aSamplePreparer(ScannableGroup xyzStage, ScannableGroup cryoStage) {
+	public BM26aSampleEnvironmentIterator(SampleParameters parameters, ScannableGroup xyzStage, ScannableGroup cryoStage) {
+		this.parameters = parameters;
 		this.xyzStage = xyzStage;
 		this.cryoStage = cryoStage;
 	}
 
 	@Override
-	public void prepare(ISampleParameters parameters) throws Exception {
-		SampleParameters sampleParameters = (SampleParameters)parameters;
-		logger.debug("Preparing sample parameters");
-		if (sampleParameters.getStage().equals("xyzStage")) {
-			XYZStageParameters bean = sampleParameters.getXyzStageParameters();
-			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
-			logger.info("moving xyzStage (" + xyzStage.getName() + ") to " + targetPosition);
-			xyzStage.moveTo(targetPosition);
-			logger.info("xyzStage move complete.");
-		} else if (sampleParameters.getStage().equals("cryoStage")) {
-			XYZStageParameters bean = sampleParameters.getCryoStageParameters();
-			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
-			logger.info("moving cryoStage (" + cryoStage.getName() + ") to " + targetPosition);
-			cryoStage.moveTo(targetPosition);
-			logger.info("cryoStage move complete.");
-		}
-	public void configure(ISampleParameters parameters) throws Exception {
-		this.parameters = (SampleParameters) parameters;
+	public int getNumberOfRepeats() {
+		return 1;
 	}
 
 	@Override
-	public SampleEnvironmentIterator createIterator(String experimentType) {
-		return new BM26aSampleEnvironmentIterator(parameters, xyzStage, cryoStage);
+	public void next() throws DeviceException, InterruptedException {
+		
+		logger.debug("Preparing sample parameters");
+		if (parameters.getStage().equals("xyzStage")) {
+			XYZStageParameters bean = parameters.getXyzStageParameters();
+			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
+			logger.info("moving xyzStage (" + xyzStage.getName() + ") to " + targetPosition);
+			xyzStage.asynchronousMoveTo(targetPosition);
+			logger.info("xyzStage move complete.");
+		} else if (parameters.getStage().equals("cryoStage")) {
+			XYZStageParameters bean = parameters.getCryoStageParameters();
+			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
+			logger.info("moving cryoStage (" + cryoStage.getName() + ") to " + targetPosition);
+			cryoStage.asynchronousMoveTo(targetPosition);
+			logger.info("cryoStage move complete.");
+		}
+	}
+
+	@Override
+	public void resetIterator() {
+		// not applicable
+	}
+
+	@Override
+	public String getNextSampleName() {
+		return parameters.getName();
+	}
+
+	@Override
+	public List<String> getNextSampleDescriptions() {
+		return parameters.getDescriptions();
 	}
 }
