@@ -47,13 +47,13 @@ public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
 			XYZStageParameters bean = sampleParameters.getXyzStageParameters();
 			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
 			logger.info("moving xyzStage (" + xyzStage.getName() + ") to " + targetPosition);
-			xyzStage.asynchronousMoveTo(targetPosition);
+			xyzStage.moveTo(targetPosition);
 			logger.info("xyzStage move complete.");
 		} else if (sampleParameters.getStage().equals("cryoStage")) {
 			XYZStageParameters bean = sampleParameters.getCryoStageParameters();
 			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
 			logger.info("moving cryoStage (" + cryoStage.getName() + ") to " + targetPosition);
-			cryoStage.asynchronousMoveTo(targetPosition);
+			cryoStage.moveTo(targetPosition);
 			logger.info("cryoStage move complete.");
 		}
 	}

@@ -18,9 +18,14 @@
 
 package gda.exafs.scan.preparers;
 
+import gda.data.scan.datawriter.XasAsciiNexusDataWriter;
+import gda.device.Detector;
+import gda.device.Scannable;
 import gda.device.detector.xspress.XspressBeanUtils;
 import gda.device.detector.xspress.XspressDetectorConfiguration;
+import gda.scan.StaticScan;
 import uk.ac.gda.beans.exafs.FluorescenceParameters;
+import uk.ac.gda.beans.exafs.IExperimentDetectorParameters;
 import uk.ac.gda.beans.exafs.TransmissionParameters;
 import uk.ac.gda.beans.exafs.IDetectorParameters;
 import uk.ac.gda.beans.exafs.IOutputParameters;
@@ -34,9 +39,13 @@ import org.slf4j.LoggerFactory;
 public class BM26aDetectorPreparer implements DetectorPreparer {
 	private static final Logger logger = LoggerFactory.getLogger(BM26aDetectorPreparer.class);
 	private XspressDetectorConfiguration xspressConfig;
+	private Scannable energy_scannable;
+	private Detector mythen_scannable;
 	
-	public BM26aDetectorPreparer(XspressDetectorConfiguration xspressConfig) {
+	public BM26aDetectorPreparer(Scannable energy_scannable, XspressDetectorConfiguration xspressConfig) {
+//	public BM26aDetectorPreparer(Scannable energy_scannable, Detector mythen, XspressDetectorConfiguration xspressConfig) {
 		this.xspressConfig = xspressConfig;
+		this.energy_scannable = energy_scannable;
 //		this.vortexConfig = vortexConfig;
 	}
 	
@@ -46,7 +55,7 @@ public class BM26aDetectorPreparer implements DetectorPreparer {
 		if (detectorBean.getExperimentType().equals("Fluorescence")) {
 			FluorescenceParameters fluoresenceParameters = detectorBean.getFluorescenceParameters();
 			if (fluoresenceParameters.isCollectDiffractionImages()) {
-//				_control_mythen(fluoresenceParameters, outputBean, experimentFullPath);
+//				control_mythen(fluoresenceParameters, outputBean, experimentFullPath);
 				String detType = fluoresenceParameters.getDetectorType();
 				String xmlFileName = experimentFullPath + fluoresenceParameters.getConfigFileName();
 				if (detType.equals("Germanium")) {
@@ -76,5 +85,36 @@ public class BM26aDetectorPreparer implements DetectorPreparer {
 	@Override
 	public void completeCollection() {
 		return;
+	}
+
+	private void control_mythen(IExperimentDetectorParameters fluoresenceParameters, IOutputParameters outputBean,
+			String experimentFullPath) throws Exception {
+
+		String experimentFolderName = experimentFullPath.substring(experimentFullPath.indexOf("xml") + 4,
+				experimentFullPath.length());
+		String nexusSubFolder = experimentFolderName + "/" + outputBean.getNexusDirectory();
+		String asciiSubFolder = experimentFolderName + "/" + outputBean.getAsciiDirectory();
+
+		// print "Moving DCM for Mythen image..."
+		energy_scannable.moveTo(fluoresenceParameters.getMythenEnergy());
+
+		mythen_scannable.setCollectionTime(fluoresenceParameters.getMythenTime());
+
+//		mythen_scannable.setSubDirectory(experimentFolderName);
+		XasAsciiNexusDataWriter dataWriter = new XasAsciiNexusDataWriter();
+		dataWriter.setRunFromExperimentDefinition(false);
+		dataWriter.setNexusFileNameTemplate(nexusSubFolder + "/%d-mythen.nxs");
+		dataWriter.setAsciiFileNameTemplate(asciiSubFolder + "/%d-mythen.dat");
+
+		StaticScan staticscan = new StaticScan(new Scannable[] { mythen_scannable });
+		staticscan.setDataWriter(dataWriter);
+		// print "Collecting a diffraction image...";
+		staticscan.run();
+		// print "Diffraction scan complete.";
+	}
+
+	@Override
+	public void beforeEachRepetition() throws Exception {
+		// do nothing
 	}
 }
