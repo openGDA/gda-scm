@@ -18,11 +18,11 @@
 
 package gda.exafs.scan.preparers;
 
-import gda.device.scannable.scannablegroup.ScannableGroup;
 import uk.ac.gda.beans.exafs.ISampleParameters;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
 import uk.ac.gda.server.exafs.scan.SampleEnvironmentPreparer;
 import uk.ac.gda.server.exafs.scan.iterators.SampleEnvironmentIterator;
+import gda.device.scannable.scannablegroup.ScannableGroup;
 
 public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
 
@@ -36,28 +36,12 @@ public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
 	}
 
 	@Override
-	public void prepare(ISampleParameters parameters) throws Exception {
-		SampleParameters sampleParameters = (SampleParameters)parameters;
-		logger.debug("Preparing sample parameters");
-		if (sampleParameters.getStage().equals("xyzStage")) {
-			XYZStageParameters bean = sampleParameters.getXyzStageParameters();
-			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
-			logger.info("moving xyzStage (" + xyzStage.getName() + ") to " + targetPosition);
-			xyzStage.moveTo(targetPosition);
-			logger.info("xyzStage move complete.");
-		} else if (sampleParameters.getStage().equals("cryoStage")) {
-			XYZStageParameters bean = sampleParameters.getCryoStageParameters();
-			Double[] targetPosition = { bean.getX(), bean.getY(), bean.getZ() };
-			logger.info("moving cryoStage (" + cryoStage.getName() + ") to " + targetPosition);
-			cryoStage.moveTo(targetPosition);
-			logger.info("cryoStage move complete.");
-		}
-	public void configure(ISampleParameters parameters) throws Exception {
-		this.parameters = (SampleParameters) parameters;
+	public SampleEnvironmentIterator createIterator(String experimentType) {
+		return new BM26aSampleEnvironmentIterator(parameters, xyzStage, cryoStage);
 	}
 
 	@Override
-	public SampleEnvironmentIterator createIterator(String experimentType) {
-		return new BM26aSampleEnvironmentIterator(parameters, xyzStage, cryoStage);
+	public void configure(ISampleParameters sampleParameters) throws Exception {
+		this.parameters = (SampleParameters) parameters;
 	}
 }
