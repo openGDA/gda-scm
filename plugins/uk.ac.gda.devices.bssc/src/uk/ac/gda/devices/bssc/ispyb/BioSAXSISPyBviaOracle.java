@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.BioSAXSDataCollectionBean;
-import uk.ac.gda.devices.bssc.beans.LocationBean;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
 
 /*
  * An Oracle extension of the abstract BioSAXSISPyB class TODO run ispybb-oracle.sql on live database TODO run

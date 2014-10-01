@@ -16,6 +16,7 @@
 		http://www.diamond.ac.uk/schema/gda/gda
 		http://www.diamond.ac.uk/schema/gda/gda/gda-gda-1.1.xsd">
 
+	<import resource="./ncdsim_hatsax.xml" />
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location"
@@ -94,40 +95,4 @@
 		</property>
 	</bean>
 
-	<bean id="bsscPlates" class="uk.ac.gda.devices.bssc.beans.PlateConfig">
-		<property name="plates">
-			<list>
-				<ref bean="plate1"/>
-				<ref bean="plate2"/>
-				<ref bean="plate3"/>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="plate1" class="uk.ac.gda.devices.bssc.beans.Plate">
-		<constructor-arg index="0" value="I"/>
-		<constructor-arg index="1" value="7"/>
-		<constructor-arg index="2" value="8"/>
-	</bean>
-	<bean id="plate2" class="uk.ac.gda.devices.bssc.beans.Plate">
-		<constructor-arg index="0" value="II"/>
-		<constructor-arg index="1" value="5"/>
-		<constructor-arg index="2" value="6"/>
-	</bean>
-	<bean id="plate3" class="uk.ac.gda.devices.bssc.beans.Plate">
-		<constructor-arg index="0" value="III"/>
-		<constructor-arg index="1" value="3"/>
-		<constructor-arg index="2" value="4"/>
-	</bean>
-
-	<bean id="hplcPlates" class="uk.ac.gda.devices.bssc.beans.PlateConfig">
-		<property name="plates">
-			<ref bean="hplcPlate" />
-		</property>
-	</bean>
-	<bean id="hplcPlate" class="uk.ac.gda.devices.bssc.beans.Plate">
-		<constructor-arg index="0" value="I"/>
-		<constructor-arg index="1" value="3"/>
-		<constructor-arg index="2" value="4"/>
-	</bean>
 </beans>

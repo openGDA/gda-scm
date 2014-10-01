@@ -32,8 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
-import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class BSSCImportWizardPage extends WizardNewFileCreationPage {
@@ -138,11 +138,6 @@ public class BSSCImportWizardPage extends WizardNewFileCreationPage {
 					tibi.setLocation(location);
 				
 					tibi.setSampleName(row.getCell(SAMPLE_NAME_COL_NO).getStringCellValue());
-	
-//					location = locationFromCells(row.getCell(BUFFER_PLATE_COL_NO), row.getCell(BUFFER_ROW_COL_NO), row.getCell(BUFFER_COLUMN_COL_NO));
-//					if (!location.isValid())
-//						throw new Exception("invalid buffer location");
-//					tibi.setBufferLocation(location);
 	
 					try {
 						location = locationFromCells(row.getCell(RECOUP_PLATE_COL_NO), row.getCell(RECOUP_ROW_COL_NO), row.getCell(RECOUP_COLUMN_COL_NO));

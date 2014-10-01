@@ -47,10 +47,10 @@ import org.eclipse.ui.ide.IDE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.devices.bssc.BioSaxsUtils;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
-import uk.ac.gda.devices.bssc.beans.LocationBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
+import uk.ac.gda.devices.hatsaxs.HatsaxsUtils;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 public class ImportSpreadsheetHandler implements IHandler {
@@ -156,14 +156,14 @@ public class ImportSpreadsheetHandler implements IHandler {
 
 				// Need to convert file to .biosaxs and put in default location in the visit directory
 				String spreadSheetFileName = fileToOpen.getName().substring(0, fileToOpen.getName().lastIndexOf('.'));
-				File nativeFile = BioSaxsUtils.getNewFileFromName(spreadSheetFileName);
+				File nativeFile = HatsaxsUtils.getBioSaxsFileFromName(spreadSheetFileName);
 				
 				// if file exists then create a new instance of it with an increment (i.e. TestTemplate.biosaxs will be opened as TestTemplate-1.biosaxs)
 				int fileIndex = 0;
 				while (nativeFile.exists())
 				{
 					fileIndex++;
-					nativeFile = BioSaxsUtils.getNewFileFromName(spreadSheetFileName + "-" + fileIndex); 
+					nativeFile = HatsaxsUtils.getBioSaxsFileFromName(spreadSheetFileName + "-" + fileIndex); 
 				}
 				
 				XMLHelpers.writeToXML(BSSCSessionBean.mappingURL, sessionBean, nativeFile);

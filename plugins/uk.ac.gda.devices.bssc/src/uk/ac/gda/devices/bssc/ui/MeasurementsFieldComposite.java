@@ -64,11 +64,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
-import uk.ac.gda.devices.bssc.beans.LocationBean;
-import uk.ac.gda.devices.bssc.beans.Plate;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
-import uk.ac.gda.devices.bssc.ui.Column.ColumnHelper;
-import uk.ac.gda.devices.bssc.ui.Column.ColumnType;
+import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
+import uk.ac.gda.devices.hatsaxs.beans.Plate;
+import uk.ac.gda.devices.hatsaxs.ui.Column;
+import uk.ac.gda.devices.hatsaxs.ui.Column.ColumnHelper;
+import uk.ac.gda.devices.hatsaxs.ui.Column.ColumnType;
 import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 import uk.ac.gda.richbeans.event.ValueEvent;
