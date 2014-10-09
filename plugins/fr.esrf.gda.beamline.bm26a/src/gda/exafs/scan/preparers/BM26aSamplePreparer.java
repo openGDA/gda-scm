@@ -42,6 +42,6 @@ public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
 
 	@Override
 	public void configure(ISampleParameters sampleParameters) throws Exception {
-		this.parameters = (SampleParameters) parameters;
+		this.parameters = (SampleParameters) sampleParameters;
 	}
 }
