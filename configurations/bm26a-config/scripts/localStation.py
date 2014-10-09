@@ -31,8 +31,8 @@ outputPreparer = BM26aOutputPreparer(datawriterconfig, metashop)
 xas = XasScan(BM26aBeamlinePreparer(), detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, XASLoggingScriptController, datawriterconfig, original_header, bragg1, metashop, False)
 xanes = xas
 
-alias("xas")
-alias("xanes")
+vararg_alias("xas")
+vararg_alias("xanes")
 alias("xspress")
 
 # To make scans return to the start after being run
