@@ -26,22 +26,22 @@ import gda.device.frelon.Frelon;
 
 public class FrelonImpl extends BaseImpl implements Frelon {
 
-	private static final String SPEED = "speed";
-	private static final String PRECISION = "precision";
+	private static final String SPEED = "SPEED";
+	private static final String PRECISION = "PRECISION";
 	private static final String SPB2_CONFIG = "spb2_config";
 	private static final String SEQ_STATUS = "seq_status";
 	private static final String ROI_BIN_OFFSET = "roi_bin_offset";
-	private static final String SLOW = "Slow";
-	private static final String KINETIC = "Kinetic";
-	private static final String FAST = "Fast";
-	private static final String NONE = "None";
+	private static final String SLOW = "SLOW";
+	private static final String KINETIC = "KINETIC";
+	private static final String FAST = "FAST";
+	private static final String NONE = "NONE";
 	private static final String ROI_MODE = "roi_mode";
-	private static final String OFF = "Off";
+	private static final String OFF = "OFF";
 	private static final String E2V_CORRECTION = "e2v_correction";
-	private static final String ON = "On";
+	private static final String ON = "ON";
 	private static final String INPUT_CHANNEL = "input_channel";
-	private static final String FULL_FRAME = "Full frame";
-	private static final String FRAME_TRANSFERT = "Frame transfert";
+	private static final String FULL_FRAME = "FULL FRAME";
+	private static final String FRAME_TRANSFERT = "FRAME TRANSFERT";//TODO THIS SEEMS INCORRECT
 	private static final String ATTRIBUTE_ESPIA_DEV_NB = "espia_dev_nb";
 	private static final String ATTRIBUTE_IMAGE_MODE = "image_mode";
 
@@ -155,13 +155,13 @@ public class FrelonImpl extends BaseImpl implements Frelon {
 	public ROIMode getROIMode() throws DevFailed {
 		String val = getTangoDeviceProxy().getAttributeAsString(ROI_MODE);
 		if (val.equals(NONE))
-			return ROIMode.None;
+			return ROIMode.NONE;
 		if (val.equals(SLOW))
-			return ROIMode.Slow;
+			return ROIMode.SLOW;
 		if (val.equals(FAST))
-			return ROIMode.Fast;
+			return ROIMode.FAST;
 		if (val.equals(KINETIC))
-			return ROIMode.Kinetic;
+			return ROIMode.KINETIC;
 		throw new DevFailed(new DevError[] { new DevError(getTangoDeviceProxy().toString() + " : " + ROI_MODE
 				+ " returned unknown value :" + val, ErrSeverity.ERR, "", "") });
 	}
@@ -170,16 +170,16 @@ public class FrelonImpl extends BaseImpl implements Frelon {
 	public void setROIMode(ROIMode roiMode) throws DevFailed {
 		String val = "";
 		switch (roiMode) {
-		case None:
+		case NONE:
 			val = NONE;
 			break;
-		case Fast:
+		case FAST:
 			val = FAST;
 			break;
-		case Kinetic:
+		case KINETIC:
 			val = KINETIC;
 			break;
-		case Slow:
+		case SLOW:
 			val = SLOW;
 			break;
 		}
