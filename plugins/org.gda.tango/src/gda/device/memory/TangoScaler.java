@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import fr.esrf.Tango.DevFailed;
+import fr.esrf.TangoApi.DeviceAttribute;
 import fr.esrf.TangoApi.DeviceData;
 import gda.device.DeviceBase;
 import gda.device.DeviceException;
@@ -37,11 +38,15 @@ public class TangoScaler extends DeviceBase implements Memory, InitializingBean{
 	private int height = 1;
 	private int totalFrames;
 	private int[] supportedDimensions = new int[] {};
+	private boolean transposed = false;
 
 	@Override
 	public void configure() throws FactoryException {
 		try {
 			tangoDeviceProxy.isAvailable();
+			tangoDeviceProxy.write_attribute(new DeviceAttribute("transposed", transposed));
+		} catch (DevFailed e) {
+			throw new FactoryException("failed to set transposed", e);
 		} catch(DeviceException e) {
 			throw new FactoryException(e.getMessage(), e);
 		}
@@ -60,6 +65,14 @@ public class TangoScaler extends DeviceBase implements Memory, InitializingBean{
 
 	public void setTangoDeviceProxy(TangoDeviceProxy tangoDeviceProxy) {
 		this.tangoDeviceProxy = tangoDeviceProxy;
+	}
+
+	public boolean getTransposed() {
+		return transposed;
+	}
+
+	public void setTransposed(boolean transposed) {
+		this.transposed = transposed;
 	}
 
 	@Override
@@ -111,6 +124,8 @@ public class TangoScaler extends DeviceBase implements Memory, InitializingBean{
 	@Override
 	public double[] read(int x, int y, int t, int dx, int dy, int dt) throws DeviceException {
 		double[] values = null;
+		int[] ivals = null;
+
 		try {
 			int[] argin = new int[6];
 			argin[0] = x;
@@ -123,7 +138,11 @@ public class TangoScaler extends DeviceBase implements Memory, InitializingBean{
 			args.insert(argin);
 			tangoDeviceProxy.isAvailable();
 			DeviceData argout = tangoDeviceProxy.command_inout("read", args);
-			values = argout.extractDoubleArray();
+			ivals = argout.extractLongArray();
+			values = new double[ivals.length];
+			for (int i = 0; i<ivals.length; i++) {
+				values[i] = ivals[i];
+			}
 		} catch (DevFailed e) {
 			DeviceException ex = new DeviceException(e.errors[0].desc);
 			logger.error(ex.getMessage());
