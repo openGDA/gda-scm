@@ -27,7 +27,7 @@
 
 	<bean id="bragg1_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="bragg1_motorDeviceProxy" />
-		<property name="specMotorName" value="bragg" />
+		<property name="specMotorName" value="mono" />
 		<property name="tangoSpecCmd" ref="specCmd" />
 		<property name="local" value="true" />
 	</bean>

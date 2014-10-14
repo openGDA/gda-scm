@@ -126,7 +126,6 @@
 	<bean id="Stanford03" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
 	<bean id="Stanford04" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
 -->
-	<!--  <bean id="ct1" class="gda.device.detector.countertimer.TfgScalerWithLogValues">  -->
 	<bean id="counterTimer01" class="gda.device.detector.countertimer.TfgScalerWithLogValues">
 		<property name="extraNames">
 			<list>
