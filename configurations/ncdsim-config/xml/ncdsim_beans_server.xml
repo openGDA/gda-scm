@@ -77,7 +77,7 @@
 		<property name="inputNames"><list><value>"sample_concentration"</value></list></property>
 		<property name="outputFormat"><list><value>%5.5g</value></list></property>
 		<property name="protectionLevel" value="1" />
-		<!--  Throws error: <property name="userUnits" value="mg/ml" /> -->
+		<property name="userUnits" value="mg/mL" />
 	</bean>
 	
 	<bean class="uk.ac.gda.server.ncd.beans.StoredDetectorInfoImpl" id="detectorInfoPath">
