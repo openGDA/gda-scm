@@ -3,5 +3,11 @@
         <cs:dependency name="fr.esrf.gda.beamline.bm26a.site" componentType="eclipse.feature"/>
         <cs:dependency name="org.gda.tango" componentType="osgi.bundle"/>
         <cs:dependency name="uk.ac.gda.exafs.datawriter" componentType="osgi.bundle"/>
+        <cs:dependency name="org.eclipse.core.jobs" componentType="osgi.bundle"/>
+        <cs:dependency name="org.eclipse.core.resources" componentType="osgi.bundle"/>
+        <cs:dependency name="org.eclipse.equinox.common" componentType="osgi.bundle"/>
+        <cs:dependency name="uk.ac.gda.client" componentType="osgi.bundle"/>
+        <cs:dependency name="core-config" componentType="buckminster"/>
+        <cs:dependency name="fr.esrf.gda.beamline.bm26a" componentType="osgi.bundle"/>
     </cs:dependencies>
 </cs:cspec>
