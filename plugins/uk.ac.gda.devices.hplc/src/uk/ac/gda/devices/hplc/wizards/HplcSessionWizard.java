@@ -154,7 +154,7 @@ public class HplcSessionWizard extends Wizard implements INewWizard {
 	}
 
 	private void throwCoreException(String message) throws CoreException {
-		IStatus status = new Status(IStatus.ERROR, "uk.ac.gda.devices.bssc", IStatus.OK, message, null);
+		IStatus status = new Status(IStatus.ERROR, "uk.ac.gda.devices.hplc", IStatus.OK, message, null);
 		throw new CoreException(status);
 	}
 }
