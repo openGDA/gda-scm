@@ -19,6 +19,7 @@
 package gda.exafs.scan.preparers;
 
 import uk.ac.gda.beans.exafs.ISampleParameters;
+import uk.ac.gda.beans.exafs.IScanParameters;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
 import uk.ac.gda.server.exafs.scan.SampleEnvironmentPreparer;
 import uk.ac.gda.server.exafs.scan.iterators.SampleEnvironmentIterator;
@@ -41,7 +42,7 @@ public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
 	}
 
 	@Override
-	public void configure(ISampleParameters sampleParameters) throws Exception {
+	public void configure(IScanParameters scanParameters, ISampleParameters sampleParameters) throws Exception {
 		this.parameters = (SampleParameters) sampleParameters;
 	}
 }
