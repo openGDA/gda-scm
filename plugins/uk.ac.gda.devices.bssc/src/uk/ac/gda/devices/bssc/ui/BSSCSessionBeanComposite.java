@@ -86,24 +86,24 @@ public final class BSSCSessionBeanComposite extends Composite {
 					measurements.deleteSelection();
 			}
 		});
-		layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
+		layoutData = new GridData(SWT.TRAIL, SWT.FILL, true, false, 1, 1);
 
 		Composite runControls = new Composite(this, SWT.NONE);
 		runControls.setLayout(new GridLayout(2, false));
 		runControls.setLayoutData(layoutData);
 
-		layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, false, 1, 1);
+		layoutData = new GridData(SWT.TRAIL, SWT.FILL, true, false, 1, 1);
 
 		final Button btnRunPipeline = new Button(runControls, SWT.CHECK);
+		btnRunPipeline.setText("Include processing");
 		btnRunPipeline.setLayoutData(layoutData);
-		btnRunPipeline.setText("Run processing");
 		btnRunPipeline.setToolTipText("Automatically run processing after experiment");
 		
+		layoutData = new GridData(SWT.TRAIL, SWT.CENTER, true, false, 1, 1);
 		Button btnQueueExperiment = new Button(runControls, SWT.NONE);
-		layoutData = new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1);
 		btnQueueExperiment.setLayoutData(layoutData);
 		btnQueueExperiment.setText("Queue Experiment");
-		btnQueueExperiment.setToolTipText("save file and queue for execution (will start immediately if queue running");
+		btnQueueExperiment.setToolTipText("save file and queue for execution (will start immediately if queue running)");
 		btnQueueExperiment.addSelectionListener(new SelectionAdapter() {
 
 			@Override
