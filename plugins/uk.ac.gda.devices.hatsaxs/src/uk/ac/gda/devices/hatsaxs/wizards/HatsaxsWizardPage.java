@@ -1,5 +1,6 @@
-package uk.ac.gda.devices.hplc.wizards;
+package uk.ac.gda.devices.hatsaxs.wizards;
 
+import gda.data.PathConstructor;
 import gda.rcp.DataProject;
 
 import org.eclipse.core.resources.IContainer;
@@ -24,16 +25,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-public class HplcSessionWizardPage extends WizardPage {
+import uk.ac.gda.devices.hatsaxs.HatsaxsUtils;
+
+public class HatsaxsWizardPage extends WizardPage {
+	
+	private ISelection selection;
 	private Text containerText;
 	private Text fileText;
-	private ISelection selection;
+	private String fileExtension;
 
-	public HplcSessionWizardPage(ISelection selection) {
+	public HatsaxsWizardPage(ISelection selection, String fileExtension) {
 		super("wizardPage");
-		setTitle("HPLC File location");
-		setDescription("This wizard creates a new XML file to run a set of HPLC samples.");
 		this.selection = selection;
+		this.fileExtension = fileExtension;
 	}
 
 	@Override
@@ -81,21 +85,9 @@ public class HplcSessionWizardPage extends WizardPage {
 		setControl(container);
 	}
 
-	protected void handleBrowse() {
-		ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace()
-				.getRoot(), false, "Select new file container");
-		if (dialog.open() == Window.OK) {
-			Object[] result = dialog.getResult();
-			if (result.length == 1) {
-				containerText.setText(((Path) result[0]).toString());
-			}
-		}
-	}
-
 	private void initialize() {
 		populateContainer();
-		fileText.setText("experiment.hplc");
-		
+		fileText.setText("default." + fileExtension);
 	}
 
 	private void populateContainer() {
@@ -119,7 +111,18 @@ public class HplcSessionWizardPage extends WizardPage {
 
 		IProject dataProject = DataProject.getDataProjectIfExists();
 		if (dataProject != null) {
-			containerText.setText(dataProject.getFolder("data/xml").getFullPath().toString());
+			containerText.setText(PathConstructor.createFromTemplate("/$visit$/data/xml"));
+		}
+	}
+
+	private void handleBrowse() {
+		ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace()
+				.getRoot(), false, "Select new file container");
+		if (dialog.open() == Window.OK) {
+			Object[] result = dialog.getResult();
+			if (result.length == 1) {
+				containerText.setText(((Path) result[0]).toString());
+			}
 		}
 	}
 
@@ -139,7 +142,7 @@ public class HplcSessionWizardPage extends WizardPage {
 			updateStatus("Project must be writable");
 			return;
 		}
-		if (fileName.length() == 0) {
+		if (fileName == null || fileName.length() == 0) {
 			updateStatus("File name must be specified");
 			return;
 		}
@@ -147,13 +150,9 @@ public class HplcSessionWizardPage extends WizardPage {
 			updateStatus("File name must be valid");
 			return;
 		}
-		int dotLoc = fileName.lastIndexOf('.');
-		if (dotLoc != -1) {
-			String ext = fileName.substring(dotLoc + 1);
-			if ((ext.equalsIgnoreCase("hplc") == false) && (ext.equalsIgnoreCase("xml") == false)) {
-				updateStatus("File extension must be \"hplc\" or \"xml\"");
-				return;
-			}
+		if (!validFileName(fileName)) {
+			updateStatus(String.format("File extension must be \"%s\" or \"xml\"", fileExtension));
+			return;
 		}
 		updateStatus(null);
 	}
@@ -171,4 +170,14 @@ public class HplcSessionWizardPage extends WizardPage {
 		return fileText.getText();
 	}
 
+	private boolean validFileName(String name) {
+		if (name == null) {
+			return false;
+		}
+		if (name.lastIndexOf('.') < 1) {
+			return false;
+		}
+		return name.endsWith("." + fileExtension) || name.endsWith(".xml"); 
+	}
+	
 }
