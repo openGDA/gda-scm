@@ -8,7 +8,6 @@
 
 	<bean id="datawriterconfig" class="gda.data.scan.datawriter.AsciiDataWriterConfiguration">
 		<property name="commentMarker" value="#"></property>
-		<property name="controllerName" value="ExafsScriptObserver"></property>
 		<property name="header">
 			<list>
 				<bean id="machine1" class="gda.data.scan.datawriter.AsciiMetadataConfig">
@@ -80,4 +79,33 @@
 		<property name="local" value="true" />
 	</bean>
 
+
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="gda.data.scan.datawriter.NexusDataWriter.setLocationmap" />
+		<property name="arguments">
+			<map>
+<!-- 				<entry key="d1motor"> -->
+<!-- 					<bean -->
+<!-- 						class="gda.data.scan.datawriter.scannablewriter.SingleScannableWriter"> -->
+<!-- 						<property name="paths" -->
+<!-- 							value="instrument:NXinstrument/D1motor:NXattenuator/d1motor" /> -->
+<!-- 						<property name="units" value="mm" /> -->
+<!-- 					</bean> -->
+<!-- 				</entry> -->
+			</map>
+		</property>
+	</bean>
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="gda.data.scan.datawriter.NexusDataWriter.setMetadatascannables" />
+		<property name="arguments">
+			<set>
+<!-- 				<value>d1motor</value> -->
+			</set>
+		</property>
+	</bean>
+	<bean id="metashop" class="gda.data.metadata.NXMetaDataProvider" />
 </beans>

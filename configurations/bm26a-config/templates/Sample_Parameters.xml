@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SampleParameters>
     <shouldValidate>true</shouldValidate>
-    <name>Please add sample name/filename</name>
+    <name>Please add sample name or filename</name>
     <description1>Please add a description...</description1>
     <description2>Please add a description...</description2>
-    <sampleEnvironment>none</sampleEnvironment>
+    <stage>none</stage>
     <xyzStageParameters>
         <x>0.0</x>
         <y>0.0</y>
