@@ -50,7 +50,7 @@ public interface Frelon extends Base {
 	void setE2VCorrectionActive(boolean activate) throws DevFailed;
 
 	enum ROIMode {
-		None, Slow, Fast, Kinetic
+		NONE, SLOW, FAST, KINETIC
 	}
 	
 	ROIMode getROIMode() throws DevFailed;

@@ -18,10 +18,6 @@
    </license>
 
    <includes
-         id="uk.ac.gda.dal.feature"
-         version="0.0.0"/>
-
-   <includes
          id="uk.ac.gda.client.feature"
          version="0.0.0"/>
 
@@ -122,6 +118,13 @@
 
    <plugin
          id="uk.ac.gda.devices.xspress3"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.core.runtime"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -102,12 +102,23 @@
 	</bean>
 
 	<!-- Scaler channels -->
-	<bean id="CalMemory" class="gda.device.memory.Scaler">
-		<property name="daServer" ref="DAServer" />
+	<bean id="scalerDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/scaler/1" />
+	</bean>
+
+	<bean id="ScalerMemory" class="gda.device.memory.TangoScaler"> -->
+		<property name="TangoDeviceProxy" ref="scalerDeviceProxy"/>
 		<property name="width" value="5" />
 		<property name="height" value="1" />
-		<property name="openCommand" value="scaler open transposed" />
+		<property name="transposed" value="true" />
 	</bean>
+
+<!-- 	<bean id="ScalerMemory" class="gda.device.memory.Scaler"> -->
+<!-- 		<property name="daServer" ref="DAServer" /> -->
+<!-- 		<property name="width" value="5" /> -->
+<!-- 		<property name="height" value="1" /> -->
+<!-- 		<property name="openCommand" value="scaler open transposed" /> -->
+<!-- 	</bean> -->
 
 <!--
 	<bean id="Stanford01" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
@@ -115,7 +126,6 @@
 	<bean id="Stanford03" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
 	<bean id="Stanford04" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
 -->
-	<!--  <bean id="ct1" class="gda.device.detector.countertimer.TfgScalerWithLogValues">  -->
 	<bean id="counterTimer01" class="gda.device.detector.countertimer.TfgScalerWithLogValues">
 		<property name="extraNames">
 			<list>
@@ -127,7 +137,7 @@
 				<value>lnItIref</value>
 			</list>
 		</property>
-		<property name="scaler" ref="CalMemory" />
+		<property name="scaler" ref="ScalerMemory" />
 		<property name="timer" ref="tfg" />
 		<property name="timeChannelRequired" value="true" />
 		<property name="outputLogValues" value="true" />
