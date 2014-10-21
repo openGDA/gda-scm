@@ -84,7 +84,7 @@
 	</bean>
 
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
-		<property name="staticMethod" value="uk.ac.gda.devices.hplc.beans.HplcSessionBean.setPlates" />
+		<property name="staticMethod" value="uk.ac.gda.devices.hplc.beans.HplcSessionBean.setModes" />
 		<property name="arguments" >
 			<list>
 				<ref bean="hplcPlates" />
