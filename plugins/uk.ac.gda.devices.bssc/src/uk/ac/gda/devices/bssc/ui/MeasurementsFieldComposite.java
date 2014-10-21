@@ -84,7 +84,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 	private final TableViewer tableViewer;
 	private Composite composite_1;
 	private final RichBeanEditorPart rbeditor;
-	
+
 	private boolean isStaff;
 
 	private Map<String, Column<TitrationBean,?>> columns;
@@ -138,7 +138,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			public void handleEvent(Event event) {
 				event.detail &= ~SWT.HOT;
 				if ((event.detail & SWT.SELECTED) == 0)
-					return; 
+					return;
 				GC gc = event.gc;
 				Rectangle rect = event.getBounds();
 				gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
@@ -222,7 +222,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				boolean isBuffer = Boolean.valueOf(value);
 				element.setBuffer(isBuffer);
 			}
-			
+
 		});
 		columns.put("Buffers", new Column<TitrationBean, String>(40, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
@@ -346,8 +346,9 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			}
 		});
 		columns.get("Exposure\nTemperature").setOutputFormat("%4.1f \u00B0C");
-		
-		columns.put("Mode", new Column<TitrationBean, String>(40, tableViewer, rbeditor, "NORMAL", "SM", "NONE") {
+
+		columns.put("Mode", new Column<TitrationBean, String>(40, tableViewer, rbeditor, TitrationBean.MODES.keySet().toArray(new String[]{})) {
+			private int a = 0;
 			@Override
 			public String getRealValue(TitrationBean element) {
 				return element.getMode();
@@ -355,6 +356,22 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			@Override
 			public void setNewValue(TitrationBean element, String value) {
 				element.setMode(value);
+			}
+			@Override
+			protected Color getColour(TitrationBean element) {
+				if (validKeyMode(element)) {
+					return null;
+				}
+				return warning;
+			}
+			@Override
+			protected String getToolTip(TitrationBean element) {
+				if (TitrationBean.MODES.get(element.getMode())) {
+					a++;
+					System.out.println(a);
+					return "Key must be present and >2 samples must be\ndefined with matching key/mode";
+				}
+				return null;
 			}
 		});
 		columns.put("Key", new Column<TitrationBean, String>(40, tableViewer, rbeditor, ColumnType.TEXT) {
@@ -368,7 +385,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			public void setNewValue(TitrationBean element, String value) {
 				element.setKey(value);
 			}
-			
+
 		});
 		if (isStaff) {
 			columns.put("Visit", new Column<TitrationBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
@@ -577,7 +594,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 						copiedBean.setRecouperateLocation((LocationBean) BeanUtils.cloneBean(oldBean
 								.getRecouperateLocation()));
 					}
-					
+
 					toadd.add(copiedBean);
 				} catch (Exception e) {
 				}
@@ -588,7 +605,7 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		tableViewer.refresh();
 		rbeditor.valueChangePerformed(new ValueEvent("", ""));
 	}
-	
+
 	private Map<String,Column<TitrationBean,?>> getLocationColumns(final String prefix, final ColumnHelper<TitrationBean, LocationBean> helper) {
 		Map<String,Column<TitrationBean,?>> columns = new LinkedHashMap<>();
 
@@ -699,5 +716,29 @@ public class MeasurementsFieldComposite extends FieldComposite {
 			}
 		});
 		return columns;
+	}
+
+	private boolean validKeyMode(TitrationBean sample) {
+		String key = sample.getKey();
+		String mode = sample.getMode();
+		int matches = 0;
+
+		if (!TitrationBean.MODES.get(mode)) {
+			//validation is not required
+			return true;
+		}
+
+		if (key == null || key.isEmpty()) {
+			return false;
+		}
+		for (TitrationBean tb : this.getList()) {
+			if (tb.getMode().equals(mode) && tb.getKey().equals(key)) {
+				matches++;
+			}
+		}
+		if (matches < 2) {
+			return false;
+		}
+		return true;
 	}
 }
