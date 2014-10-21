@@ -74,10 +74,10 @@ public abstract class Column<T,V> {
 	public static abstract class ColumnHelper<T,V> {
 		public abstract V getValue(T target);
 		public abstract void setValue(T target, V value);
-		public Color bGColor(@SuppressWarnings("unused") T element) {
+		public Color bGColor(T element) {
 			return null;
 		}
-		public String toolTip(@SuppressWarnings("unused") T element) {
+		public String toolTip(T element) {
 			return null;
 		}
 	}
@@ -275,10 +275,10 @@ public abstract class Column<T,V> {
 	public void setLabelProvider(CellLabelProvider labelProvider) {
 		this.labelProvider = labelProvider;
 	}
-	protected Color getColour(@SuppressWarnings("unused") T element) {
+	protected Color getColour(T element) {
 		return null;
 	}
-	protected String getToolTip(@SuppressWarnings("unused") T element) {
+	protected String getToolTip(T element) {
 		return null;
 	}
 	public <E> void setInput(E[] options) {
