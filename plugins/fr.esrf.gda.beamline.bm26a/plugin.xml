@@ -64,7 +64,7 @@
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             default="true"
             icon="icons/page_refresh.png"
-            id="uk.ac.gda.exafs.ui.detector.xspress.XspressParametersEditor"
+            id="uk.ac.gda.exafs.ui.XspressParametersEditor"
             name="Xspress Parameters">
          <contentTypeBinding
                contentTypeId="uk.ac.diamond.gda.client.exafs.getXspressContent">
