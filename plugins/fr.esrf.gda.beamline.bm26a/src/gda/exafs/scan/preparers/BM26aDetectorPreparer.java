@@ -118,4 +118,10 @@ public class BM26aDetectorPreparer implements DetectorPreparer {
 		// do nothing
 
 	}
+
+	@Override
+	public Detector[] getExtraDetectors() {
+		// not required for this beamline
+		return null;
+	}
 }

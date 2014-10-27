@@ -4,7 +4,7 @@ from gda.exafs.scan.preparers import BM26aBeamlinePreparer
 from gda.exafs.scan.preparers import BM26aDetectorPreparer
 from gda.exafs.scan.preparers import BM26aSamplePreparer
 from gda.exafs.scan.preparers import BM26aOutputPreparer
-from uk.ac.gda.server.exafs.scan import XasScan
+from uk.ac.gda.server.exafs.scan import EnergyScan
 from gda.factory import Finder
 from gda.configuration.properties import LocalProperties
 from gda.jython.scriptcontroller.logging import LoggingScriptController
@@ -28,7 +28,7 @@ metashop = Finder.getInstance().find("metashop")
 detectorPreparer = BM26aDetectorPreparer(bragg1, xspressConfig)
 samplePreparer = BM26aSamplePreparer(sampleStage, cryoStage)
 outputPreparer = BM26aOutputPreparer(datawriterconfig, metashop)
-xas = XasScan(BM26aBeamlinePreparer(), detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, XASLoggingScriptController, datawriterconfig, original_header, bragg1, metashop, False)
+xas = EnergyScan(BM26aBeamlinePreparer(), detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, XASLoggingScriptController, datawriterconfig, original_header, bragg1, metashop, False)
 xanes = xas
 
 vararg_alias("xas")
