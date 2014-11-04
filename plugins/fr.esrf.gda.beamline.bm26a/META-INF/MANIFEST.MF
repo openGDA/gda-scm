@@ -26,7 +26,6 @@ Export-Package: fr.esrf.gda.beamline.bm26a,
  gda.device.scannable
 Bundle-Vendor: Daresbury Laboratory
 Import-Package: Jama,
- gda.device.detector.mythen,
  org.dawnsci.plotting.jreality.impl,
  org.eclipse.ui.forms.events,
  org.eclipse.ui.forms.widgets,
