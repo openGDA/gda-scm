@@ -62,9 +62,9 @@
        <perspectiveShortcut
              id="gda.rcp.ncd.perspectives.GridScanPerspective">
        </perspectiveShortcut>
--   </perspectiveExtension>
--   </extension>
-<extension
+    </perspectiveExtension>
+   </extension>
+   <extension
       point="uk.ac.gda.client.dashboard.objects">
    <Scannable
          name="bsdiode"
@@ -92,7 +92,7 @@
          </implementation>
       </presentation>
    </config>
-   </extension>
+</extension>
       <extension
             point="org.eclipse.ui.menus">
          <menuContribution
