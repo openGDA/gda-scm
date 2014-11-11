@@ -4,7 +4,7 @@ from gda.exafs.scan.preparers import BM26aBeamlinePreparer
 from gda.exafs.scan.preparers import BM26aDetectorPreparer
 from gda.exafs.scan.preparers import BM26aSamplePreparer
 from gda.exafs.scan.preparers import BM26aOutputPreparer
-from uk.ac.gda.server.exafs.scan import EnergyScan
+from uk.ac.gda.server.exafs.scan import EnergyScan, XasScanFactory
 from gda.factory import Finder
 from gda.configuration.properties import LocalProperties
 from gda.jython.scriptcontroller.logging import LoggingScriptController
@@ -28,7 +28,22 @@ metashop = Finder.getInstance().find("metashop")
 detectorPreparer = BM26aDetectorPreparer(bragg1, xspressConfig)
 samplePreparer = BM26aSamplePreparer(sampleStage, cryoStage)
 outputPreparer = BM26aOutputPreparer(datawriterconfig, metashop)
-xas = EnergyScan(BM26aBeamlinePreparer(), detectorPreparer, samplePreparer, outputPreparer, commandQueueProcessor, XASLoggingScriptController, datawriterconfig, original_header, bragg1, metashop, False)
+
+# TODO this could all be done in Sping XML
+theFactory = XasScanFactory();
+theFactory.setBeamlinePreparer(BM26aBeamlinePreparer());
+theFactory.setDetectorPreparer(detectorPreparer);
+theFactory.setSamplePreparer(samplePreparer);
+theFactory.setOutputPreparer(outputPreparer);
+theFactory.setCommandQueueProcessor(commandQueueProcessor);
+theFactory.setXASLoggingScriptController(XASLoggingScriptController);
+theFactory.setDatawriterconfig(datawriterconfig);
+theFactory.setEnergyScannable(bragg1);
+theFactory.setMetashop(metashop);
+theFactory.setIncludeSampleNameInNexusName(False);
+theFactory.setOriginal_header(original_header);
+
+xas = theFactory.createEnergyScan();
 xanes = xas
 
 vararg_alias("xas")
