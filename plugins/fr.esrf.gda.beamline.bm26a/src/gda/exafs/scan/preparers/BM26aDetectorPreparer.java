@@ -35,20 +35,50 @@ import uk.ac.gda.server.exafs.scan.DetectorPreparer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
-public class BM26aDetectorPreparer implements DetectorPreparer {
+public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean {
 	private static final Logger logger = LoggerFactory.getLogger(BM26aDetectorPreparer.class);
 	private XspressDetectorConfiguration xspressConfig;
-	private Scannable energy_scannable;
+	private Scannable energyScannable;
 	private Detector mythen_scannable;
 	
-	public BM26aDetectorPreparer(Scannable energy_scannable, XspressDetectorConfiguration xspressConfig) {
-//	public BM26aDetectorPreparer(Scannable energy_scannable, Detector mythen, XspressDetectorConfiguration xspressConfig) {
+	public BM26aDetectorPreparer() {
+	}
+	
+	public BM26aDetectorPreparer(Scannable energyScannable, XspressDetectorConfiguration xspressConfig) {
+//	public BM26aDetectorPreparer(Scannable energyScannable, Detector mythen, XspressDetectorConfiguration xspressConfig) {
 		this.xspressConfig = xspressConfig;
-		this.energy_scannable = energy_scannable;
+		this.energyScannable = energyScannable;
 //		this.vortexConfig = vortexConfig;
 	}
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (xspressConfig == null) {
+			throw new IllegalArgumentException("Missing xspress configuration");
+		}
+		if (energyScannable == null) {
+			throw new IllegalArgumentException("Missing energy scannable");
+		}
+	}
+
+	public XspressDetectorConfiguration getXspressConfig() {
+		return xspressConfig;
+	}
+
+	public void setXspressConfig(XspressDetectorConfiguration xspressConfig) {
+		this.xspressConfig = xspressConfig;
+	}
+
+	public Scannable getEnergyScannable() {
+		return energyScannable;
+	}
+
+	public void setEnergyScannable(Scannable energyScannable) {
+		this.energyScannable = energyScannable;
+	}
+
 	@Override
 	public void configure(IScanParameters scanBean, IDetectorParameters detectorBean, IOutputParameters outputBean, String experimentFullPath) throws Exception {
 		logger.debug("Preparing detector parameters");
@@ -96,7 +126,7 @@ public class BM26aDetectorPreparer implements DetectorPreparer {
 		String asciiSubFolder = experimentFolderName + "/" + outputBean.getAsciiDirectory();
 
 		// print "Moving DCM for Mythen image..."
-		energy_scannable.moveTo(fluoresenceParameters.getMythenEnergy());
+		energyScannable.moveTo(fluoresenceParameters.getMythenEnergy());
 
 		mythen_scannable.setCollectionTime(fluoresenceParameters.getMythenTime());
 

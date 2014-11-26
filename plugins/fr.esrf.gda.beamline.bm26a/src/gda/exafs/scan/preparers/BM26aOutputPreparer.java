@@ -25,6 +25,10 @@ import uk.ac.gda.server.exafs.scan.preparers.OutputPreparerBase;
 
 public class BM26aOutputPreparer extends OutputPreparerBase implements OutputPreparer {
 
+	public BM26aOutputPreparer() {
+		super();
+	}
+	
 	public BM26aOutputPreparer(AsciiDataWriterConfiguration datawriterconfig, NXMetaDataProvider metashop) {
 		super(datawriterconfig, metashop);
 	}

@@ -11,4 +11,37 @@
 	<import resource="file:${gda.config}/servers/main/${gda.mode}/devices.xml" />
 	<import resource="file:${gda.config}/servers/main/command-server.xml" />
 
+
+	<bean id="xspressConfig" class="gda.device.detector.xspress.XspressDetectorConfiguration" >
+		<property name="xspressSystem" ref="xspress1system" />
+		<property name="observer" ref="ExafsScriptObserver" />
+	</bean>
+	<bean id="beamlinePreparer" class="gda.exafs.scan.preparers.BM26aBeamlinePreparer" />
+	<bean id="detectorPreparer" class="gda.exafs.scan.preparers.BM26aDetectorPreparer" >
+		<property name="xspressConfig" ref="xspressConfig" />
+		<property name="energyScannable" ref="bragg1" />
+	</bean>
+	<bean id="samplePreparer" class="gda.exafs.scan.preparers.BM26aSamplePreparer" >
+		<property name="cryoStage" ref="cryoStage" />
+		<property name="xyzStage" ref="sampleStage" />
+	</bean>
+	<bean id="outputPreparer" class="gda.exafs.scan.preparers.BM26aOutputPreparer" >
+		<property name="metashop" ref="metashop" />
+		<property name="datawriterconfig" ref="datawriterconfig" />
+	</bean>
+
+	<bean id="scanFactory" class="uk.ac.gda.server.exafs.scan.XasScanFactory">
+		<property name="beamlinePreparer" ref="beamlinePreparer" />
+		<property name="detectorPreparer" ref="detectorPreparer" />
+		<property name="samplePreparer" ref="samplePreparer" />
+		<property name="outputPreparer" ref="outputPreparer" />
+		<property name="loggingScriptController" ref="XASLoggingScriptController" />
+		<property name="datawriterconfig" ref="datawriterconfig" />
+ 		<property name="energyScannable" ref="bragg1" /> 
+ 		<property name="metashop" ref="metashop" />
+		<property name="includeSampleNameInNexusName" value="False" />
+		<property name="scanName" value="energyScan" />
+	</bean>
+
+	<bean id="energyScan" factory-bean="scanFactory" factory-method="createEnergyScan" />
 </beans>

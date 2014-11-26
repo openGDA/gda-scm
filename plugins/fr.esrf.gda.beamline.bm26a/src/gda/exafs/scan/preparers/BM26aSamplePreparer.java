@@ -18,6 +18,8 @@
 
 package gda.exafs.scan.preparers;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import uk.ac.gda.beans.exafs.ISampleParameters;
 import uk.ac.gda.beans.exafs.IScanParameters;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
@@ -25,14 +27,40 @@ import uk.ac.gda.server.exafs.scan.SampleEnvironmentPreparer;
 import uk.ac.gda.server.exafs.scan.iterators.SampleEnvironmentIterator;
 import gda.device.scannable.scannablegroup.ScannableGroup;
 
-public class BM26aSamplePreparer implements SampleEnvironmentPreparer {
+public class BM26aSamplePreparer implements SampleEnvironmentPreparer, InitializingBean {
 
 	private ScannableGroup xyzStage;
 	private ScannableGroup cryoStage;
 	private SampleParameters parameters;
 
+	public BM26aSamplePreparer() {
+	}
+
 	public BM26aSamplePreparer(ScannableGroup xyzStage, ScannableGroup cryoStage) {
 		this.xyzStage = xyzStage;
+		this.cryoStage = cryoStage;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (xyzStage == null || cryoStage == null) {
+			throw new IllegalArgumentException("Missing scannable group xyzStage or cryoStage");
+		}
+	}
+	
+	public ScannableGroup getXyzStage() {
+		return xyzStage;
+	}
+
+	public void setXyzStage(ScannableGroup xyzStage) {
+		this.xyzStage = xyzStage;
+	}
+
+	public ScannableGroup getCryoStage() {
+		return cryoStage;
+	}
+
+	public void setCryoStage(ScannableGroup cryoStage) {
 		this.cryoStage = cryoStage;
 	}
 

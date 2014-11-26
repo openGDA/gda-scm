@@ -18,13 +18,22 @@
 
 package gda.exafs.scan.preparers;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import uk.ac.gda.beans.exafs.IDetectorParameters;
 import uk.ac.gda.beans.exafs.IOutputParameters;
 import uk.ac.gda.beans.exafs.ISampleParameters;
 import uk.ac.gda.beans.exafs.IScanParameters;
 import uk.ac.gda.server.exafs.scan.BeamlinePreparer;
 
-public class BM26aBeamlinePreparer implements BeamlinePreparer {
+public class BM26aBeamlinePreparer implements BeamlinePreparer, InitializingBean {
+	
+	public BM26aBeamlinePreparer() {
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+	}
 
 	@Override
 	public void configure(IScanParameters scanBean, IDetectorParameters detectorBean,
