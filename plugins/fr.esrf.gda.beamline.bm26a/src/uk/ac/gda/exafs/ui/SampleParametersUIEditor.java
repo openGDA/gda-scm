@@ -142,7 +142,7 @@ public class SampleParametersUIEditor extends RichBeanEditorPart {
 		};
 		sampleStageExpandableComposite.addExpansionListener(stageExpansionListener);
 
-		if (!bean.getStage().toString().equals("none")) {
+		if (bean != null && !bean.getStage().toString().equals("none")) {
 			sampleStageExpandableComposite.setExpanded(true);
 			linkuiForDynamicLoading(false);
 			updateStageType();
