@@ -8,6 +8,7 @@
 
 	<bean id="datawriterconfig" class="gda.data.scan.datawriter.AsciiDataWriterConfiguration">
 		<property name="commentMarker" value="#"></property>
+		<property name="fluorescenceDetector" ref="xspress1system"></property>
 		<property name="header">
 			<list>
 				<bean id="machine1" class="gda.data.scan.datawriter.AsciiMetadataConfig">
