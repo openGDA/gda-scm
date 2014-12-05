@@ -11,7 +11,9 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>
+      <vmArgs>-Dorg.eclipse.swt.internal.gtk.cairoGraphics=false
+-Dorg.eclipse.swt.internal.gtk.useCairo=false
+
 -Xms512m
 -Xmx1024m
 -XX:MaxPermSize=1024m</vmArgs>
