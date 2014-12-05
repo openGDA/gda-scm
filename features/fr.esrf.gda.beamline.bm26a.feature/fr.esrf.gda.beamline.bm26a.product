@@ -11,7 +11,9 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Declipse.pluginCustomization=/home/ppc/gda_git/gda-scm.git/plugins/fr.esrf.gda.beamline.bm26a/plugin_customization.ini
+      <vmArgs>-Dorg.eclipse.swt.internal.gtk.cairoGraphics=false
+-Dorg.eclipse.swt.internal.gtk.useCairo=false
+-Declipse.pluginCustomization=/home/ppc/gda_git/gda-scm.git/plugins/fr.esrf.gda.beamline.bm26a/plugin_customization.ini
 -Dgda.mode=live
 -Dosgi.locking=none
 -Dgda.install.workspace.loc=/home/ppc/gda
