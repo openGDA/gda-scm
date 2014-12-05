@@ -19,6 +19,7 @@
 package uk.ac.gda.devices.bssc.ui.handlers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +98,7 @@ public class ImportSpreadsheetHandler implements IHandler {
 		if (selected == null) return null; //user chose to cancel
 		
 		File fileToOpen = new File(selected);
+		File nativeFile = null;
 
 		if (fileToOpen.exists() && fileToOpen.isFile()) {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -150,7 +152,7 @@ public class ImportSpreadsheetHandler implements IHandler {
 
 				// Need to convert file to .biosaxs and put in default location in the visit directory
 				String spreadSheetFileName = fileToOpen.getName().substring(0, fileToOpen.getName().lastIndexOf('.'));
-				File nativeFile = BioSaxsUtils.getNewFileFromName(spreadSheetFileName);
+				nativeFile = BioSaxsUtils.getNewFileFromName(spreadSheetFileName);
 				
 				// if file exists then create a new instance of it with an increment (i.e. TestTemplate.biosaxs will be opened as TestTemplate-1.biosaxs)
 				int fileIndex = 0;
@@ -167,6 +169,12 @@ public class ImportSpreadsheetHandler implements IHandler {
 				logger.error("PartInitException opening editor", e);
 			} catch (InvalidFormatException e1) {
 				logger.error("InvalidFormatException creating Workbook", e1);
+			} catch (FileNotFoundException fnfe) {
+				MessageDialog.openError(
+						new Shell(Display.getCurrent()),
+						"Could not write .biosaxs file",
+						"Is the file path valid?\nFile: '" + String.valueOf(nativeFile) + "'");
+				logger.error("Could not write biosaxs file", fnfe);
 			} catch (IOException e1) {
 				MessageDialog.openError(
 						new Shell(Display.getCurrent()),
