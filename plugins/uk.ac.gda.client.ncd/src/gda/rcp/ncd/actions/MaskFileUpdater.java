@@ -24,7 +24,6 @@ import gda.factory.Finder;
 import java.io.File;
 import java.util.Collection;
 
-import org.dawb.common.services.ServiceManager;
 import org.dawb.common.ui.util.EclipseUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -49,9 +48,14 @@ import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
 
 public class MaskFileUpdater extends AbstractHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MaskFileUpdater.class);
+	private static IPersistenceService service;
 	private StoredDetectorInfo fileLocation;
 	private IPersistentFile file;
-	
+
+	public static void setPersistenceService(IPersistenceService s) { // Injected
+		service = s;
+	}
+
 	public MaskFileUpdater() {
 		fileLocation = Finder.getInstance().find("detectorInfoPath");
 	}
@@ -95,7 +99,6 @@ public class MaskFileUpdater extends AbstractHandler {
 	}
 	
 	private void createMaskFile(String newFile) throws Exception {
-		IPersistenceService service = (IPersistenceService)ServiceManager.getService(IPersistenceService.class);
 		file = service.createPersistentFile(newFile);
 	}
 	
