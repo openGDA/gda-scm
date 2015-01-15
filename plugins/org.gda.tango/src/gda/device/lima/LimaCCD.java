@@ -19,13 +19,10 @@
 package gda.device.lima;
 
 import fr.esrf.Tango.DevFailed;
+import gda.device.DeviceException;
 import gda.device.base.Base;
 
 public interface LimaCCD extends Base {
-
-	/*
-	 * Commands
-	 */
 
 	void prepareAcq() throws DevFailed;
 
@@ -43,9 +40,6 @@ public interface LimaCCD extends Base {
 
 	void reset() throws DevFailed;
 
-	/*
-	 * Attributes
-	 */
 	String getLimaType() throws DevFailed;
 
 	String getCameraType() throws DevFailed;
@@ -145,6 +139,8 @@ public interface LimaCCD extends Base {
 	LimaBin getImageBin() throws DevFailed;
 
 	void setImageBin(LimaBin limaBin) throws DevFailed;
+	
+	void setImageBin(long xBinValue, long yBinValue) throws DeviceException;
 
 	LimaFlip getImageFlip() throws DevFailed;
 

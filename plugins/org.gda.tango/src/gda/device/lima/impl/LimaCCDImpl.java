@@ -21,7 +21,9 @@ package gda.device.lima.impl;
 import fr.esrf.Tango.DevError;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.ErrSeverity;
+import fr.esrf.TangoApi.DeviceAttribute;
 import fr.esrf.TangoApi.DeviceData;
+import gda.device.DeviceException;
 import gda.device.base.impl.BaseImpl;
 import gda.device.lima.LimaBin;
 import gda.device.lima.LimaCCD;
@@ -29,9 +31,13 @@ import gda.device.lima.LimaFlip;
 import gda.device.lima.LimaROIInt;
 import gda.device.lima.LimaSavingHeaderDelimiter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 public class LimaCCDImpl extends BaseImpl implements LimaCCD, InitializingBean {
+	
+	private static final Logger logger = LoggerFactory.getLogger(LimaCCDImpl.class);
 
 	static final String ACQ_STATUS_VAL_FAULT = "Fault";
 	static final String ACQ_STATUS_VAL_RUNNING = "Running";
@@ -397,6 +403,17 @@ public class LimaCCDImpl extends BaseImpl implements LimaCCD, InitializingBean {
 	}
 
 	@Override
+	public void setImageBin(long xBinValue, long yBinValue) throws DeviceException {
+		DeviceAttribute deviceAttribute = new DeviceAttribute(ATTRIBUTE_IMAGE_BIN, 2, 1);
+		deviceAttribute.insert_ul(new long[]{xBinValue, yBinValue});
+		try {
+			getTangoDeviceProxy().write_attribute(deviceAttribute);
+		} catch (DevFailed e) {
+			logger.error("Unable to set image bin value to detector", e);
+		}
+	}
+
+	@Override
 	public LimaFlip getImageFlip() throws DevFailed {
 		boolean[] val = getTangoDeviceProxy().getAttributeAsBooleanArray(ATTRIBUTE_IMAGE_FLIP);
 		if (val.length < 3) // 2 plus true at the end
@@ -730,5 +747,4 @@ public class LimaCCDImpl extends BaseImpl implements LimaCCD, InitializingBean {
 	public void reset() throws DevFailed {
 		sendSimpleCommand(COMMAND_RESET);
 	}
-
 }

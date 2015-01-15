@@ -19,6 +19,7 @@
 
 package gda.device.timer;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -33,10 +34,16 @@ import gda.device.Timer;
 /**
  * A timer class for the VME time frame generator card implemented using DA.Server
  */
-public class TangoTfg extends Etfg {
+public class TangoTfg2 extends TangoTfg1 {
 
-	private static final Logger logger = LoggerFactory.getLogger(TangoTfg.class);
-	private TangoDeviceProxy tangoDeviceProxy;
+	private static final Logger logger = LoggerFactory.getLogger(TangoTfg2.class);
+	private static int MAXFRAMES = 32767;
+	private static final String version = "Version 2";
+	private ArrayList<Double> debounceValues;
+	private ArrayList<Double> thresholdValues;
+	private int drive = 0;
+	private int inversion = 0;
+	private int startMethod;
 	private enum group { 
 		help(1<<0), ext_start(1<<1), ext_inh(1<<2), cycles(1<<3), file(1<<4), no_min_20us(1<<5), silent(1<<6),
 		sequence(1<<7), auto_rearm(1<<8), ext_falling(1<<9);
@@ -75,135 +82,6 @@ public class TangoTfg extends Etfg {
 		}
 	}
 
-	@Override
-	public void configure() {
-		if (!configured) {
-			runner = uk.ac.gda.util.ThreadManager.getThread(this, getClass().getName());
-			runner.start();
-			configured = true;
-		}
-	}
-
-	/**
-	 * @return Returns the Tango device proxy.
-	 */
-	public TangoDeviceProxy getTangoDeviceProxy() {
-		return tangoDeviceProxy;
-	}
-
-	/**
-	 * @param dev The Tango device proxy to set.
-	 */
-	public void setTangoDeviceProxy(TangoDeviceProxy dev) {
-		this.tangoDeviceProxy = dev;
-	}
-
-	@Override
-	public int getStatus() {
-		int state = Timer.IDLE;
-		String status = null;
-		try {
-			String statusCommand = isShowArmed() ? "ArmedStatus" : "AcqStatus";
-			status = tangoDeviceProxy.getAttributeAsString(statusCommand);
-			if ("RUNNING".equals(status)) {
-				state = Timer.ACTIVE;
-			} else if ("PAUSED".equals(status)) {
-				state = Timer.PAUSED;
-			} else if ("EXT-ARMED".equals(status)) {
-				state = Timer.ARMED;
-			}
-		} catch (DevFailed e) {
-			DeviceException ex = new DeviceException(e.errors[0].desc);
-			logger.error(ex.getMessage());
-		}
-		return state;
-	}
-
-	@Override
-	public String getAcqStatus() {
-		String status = "IDLE";
-		try {
-			status = tangoDeviceProxy.getAttributeAsString("AcqStatus");
-		} catch (DevFailed e) {
-			DeviceException ex = new DeviceException(e.errors[0].desc);
-			logger.error(ex.getMessage());
-		}
-		return status;
-	}
-
-	@Override
-	public void stop() throws DeviceException {
-		waitingForExtStart = false;
-		try {
-			tangoDeviceProxy.command_inout("stop");
-		} catch (DevFailed e) {
-			DeviceException ex = new DeviceException(e.errors[0].desc);
-			logger.error(ex.getMessage());
-			throw ex;
-		}
-	}
-
-	@Override
-	public int getCurrentFrame()  {
-		int frame = 0;
-		try {
-			frame = tangoDeviceProxy.getAttributeAsInt("CurrentFrame");
-		} catch (DevFailed e) {
-			DeviceException ex = new DeviceException(e.errors[0].desc);
-			logger.error(ex.getMessage());
-		}
-		return frame;
-	}
-
-	@Override
-	public int getCurrentCycle() {
-		int cycle = 0;
-		try {
-			cycle = tangoDeviceProxy.getAttributeAsInt("CurrentLap");
-		} catch (DevFailed e) {
-			DeviceException ex = new DeviceException(e.errors[0].desc);
-			logger.error(ex.getMessage());
-		}
-		return cycle;
-	}
-
-	@Override
-	public void cont() throws DeviceException {
-		if (!framesLoaded) {
-			throw new DeviceException(getName() + " no frames loaded");
-		}
-		try {
-			tangoDeviceProxy.command_inout("cont");
-		} catch (DevFailed e) {
-			DeviceException ex = new DeviceException(e.errors[0].desc);
-			logger.error(ex.getMessage());
-			throw ex;
-		}
-	}
-
-	@Override
-	public synchronized void start() throws DeviceException {
-		if (!framesLoaded) {
-			throw new DeviceException(getName() + " no frames loaded");
-		}
-		try {
-			if (vmeStart) {
-				tangoDeviceProxy.command_inout("start");
-			} else {
-				tangoDeviceProxy.command_inout("arm");
-				waitingForExtStart = true;
-			}
-		} catch (DevFailed e) {
-			DeviceException ex = new DeviceException(e.errors[0].desc);
-			logger.error(ex.getMessage());
-			throw ex;
-		}
-		Date d = new Date();
-		startTime = d.getTime();
-		elapsedTime = 0;
-		started = true;
-		notify();
-	}
 
 	@Override
 	public void loadFrameSets() throws DeviceException {
@@ -278,7 +156,6 @@ public class TangoTfg extends Etfg {
 		notify();
 	}
 
-	@Override
 	public void setDriveAndInversion(int drv, int inv) throws DeviceException {
 		int[] argin = new int[2];
 		argin[0] = inv & 0xFF;
@@ -286,6 +163,7 @@ public class TangoTfg extends Etfg {
 		try {
 			DeviceData args = new DeviceData();
 			args.insert(argin);
+			tangoDeviceProxy.isAvailable();
 			tangoDeviceProxy.command_inout("setupPort", args);
 		} catch (DevFailed e) {
 			DeviceException ex = new DeviceException(e.errors[0].desc);
@@ -294,7 +172,6 @@ public class TangoTfg extends Etfg {
 		}
 	}
 
-	@Override
 	public void setStartMethod(int startTrig) throws DeviceException {
 		double[] argin = new double[5];
 		argin[4] = 0; // unused here. Alternate trigger input value
@@ -304,7 +181,6 @@ public class TangoTfg extends Etfg {
 			argin[2] = 0; // Debounce value
 			argin[3] = 0; // Threshold value
 			extStart = false;
-			vmeStart = true;
 		} else if (startTrig < 17) {
 			double debounce = debounceValues.get(startTrig - 1);
 			double threshold = thresholdValues.get(startTrig - 1);
@@ -333,7 +209,6 @@ public class TangoTfg extends Etfg {
 				}
 			}
 			extStart = true;
-			vmeStart = false;
 		} else {
 			// there is only one debounce value per trigger channel, hence the -16
 			double debounce = debounceValues.get(startTrig - 17);
@@ -364,11 +239,11 @@ public class TangoTfg extends Etfg {
 				}
 			}
 			extStart = true;
-			vmeStart = false;
 		}
 		try {
 			DeviceData args = new DeviceData();
 			args.insert(argin);
+			tangoDeviceProxy.isAvailable();
 			tangoDeviceProxy.command_inout("setupTrig", args);
 		} catch (DevFailed e) {
 			DeviceException ex = new DeviceException(e.errors[0].desc);
@@ -377,4 +252,59 @@ public class TangoTfg extends Etfg {
 		}
 	}
 
+	@Override
+	public int getMaximumFrames() {
+		return MAXFRAMES;
+	}
+
+	public void setMaximumFrames(int max) {
+		MAXFRAMES = max;
+	}
+	
+	/**
+	 * Set attribute values for "Ext-Start", "Ext-Inhibit", "VME-Start" and "Auto-Continue"
+	 * 
+	 * @param attributeName
+	 *            the attribute name
+	 * @param value
+	 *            the attribute value
+	 * @throws DeviceException 
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setAttribute(String attributeName, Object value) throws DeviceException {
+		if ("Debounce".equals(attributeName)) {
+			debounceValues = (ArrayList<Double>) value;
+		} else if ("Threshold".equals(attributeName)) {
+			thresholdValues = (ArrayList<Double>) value;
+		} else if ("Inversion".equals(attributeName)) {
+			inversion = (Integer) value;
+			setDriveAndInversion(drive, inversion);
+		} else if ("Drive".equals(attributeName)) {
+			drive = (Integer) value;
+			setDriveAndInversion(drive, inversion);
+		} else if ("Start-Method".equals(attributeName)) {
+			startMethod = (Integer) value;
+			setStartMethod(startMethod);
+
+		}
+		super.setAttribute(attributeName, value);
+	}
+
+	
+	@Override
+	public Object getAttribute(String attributeName) throws DeviceException {
+		if ("Debounce".equals(attributeName)) {
+			return debounceValues;
+		} else if ("Threshold".equals(attributeName)) {
+			return thresholdValues;
+		} else if ("Inversion".equals(attributeName)) {
+			return inversion;
+		} else if ("Drive".equals(attributeName)) {
+			return drive;
+		} else if ("Start-Method".equals(attributeName)) {
+			return startMethod;
+		}
+		return super.getAttribute(attributeName);
+	}
 }
