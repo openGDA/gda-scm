@@ -5,7 +5,7 @@
         <cs:dependency name="org.eclipse.core.jobs" componentType="osgi.bundle"/>
         <cs:dependency name="org.eclipse.core.resources" componentType="osgi.bundle"/>
         <cs:dependency name="org.gda.tango" componentType="osgi.bundle"/>
-        <cs:dependency name="uk.ac.gda.beans.vortex" componentType="osgi.bundle"/>
+        <cs:dependency name="uk.ac.gda.exafs.api" componentType="osgi.bundle"/>
         <cs:dependency name="uk.ac.gda.client" componentType="osgi.bundle"/>
         <cs:dependency name="uk.ac.gda.exafs.datawriter" componentType="osgi.bundle"/>
         <cs:dependency name="uk.ac.gda.server.exafs" componentType="osgi.bundle"/>
