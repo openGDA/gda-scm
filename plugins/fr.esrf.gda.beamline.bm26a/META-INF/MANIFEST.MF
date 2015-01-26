@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources;bundle-version="3.6.1",
  uk.ac.gda.devices.xmap;bundle-version="1.0.0",
  uk.ac.gda.devices.xspress2;bundle-version="1.0.0",
- uk.ac.gda.beans.vortex;bundle-version="1.0.0",
+ uk.ac.gda.exafs.api;bundle-version="1.0.0",
  org.dawnsci.plotting.jreality;bundle-version="1.0.0",
  org.dawb.common.ui;bundle-version="1.2.0",
  uk.ac.gda.exafs.datawriter;bundle-version="1.0.0"
