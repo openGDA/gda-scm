@@ -22,11 +22,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.dawnsci.common.richbeans.xml.XMLBeanContentDescriber;
 import org.eclipse.core.runtime.content.IContentDescriber;
 import org.eclipse.core.runtime.content.IContentDescription;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
-import uk.ac.gda.richbeans.xml.XMLBeanContentDescriber;
 
 public final class BSSCSessionBeanDescriber extends XMLBeanContentDescriber {
 

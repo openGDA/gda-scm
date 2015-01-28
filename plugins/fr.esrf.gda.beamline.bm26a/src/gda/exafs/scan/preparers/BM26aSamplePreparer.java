@@ -18,6 +18,8 @@
 
 package gda.exafs.scan.preparers;
 
+import gda.device.scannable.scannablegroup.ScannableGroup;
+
 import org.springframework.beans.factory.InitializingBean;
 
 import uk.ac.gda.beans.exafs.ISampleParameters;
@@ -25,7 +27,6 @@ import uk.ac.gda.beans.exafs.IScanParameters;
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
 import uk.ac.gda.server.exafs.scan.SampleEnvironmentPreparer;
 import uk.ac.gda.server.exafs.scan.iterators.SampleEnvironmentIterator;
-import gda.device.scannable.scannablegroup.ScannableGroup;
 
 public class BM26aSamplePreparer implements SampleEnvironmentPreparer, InitializingBean {
 

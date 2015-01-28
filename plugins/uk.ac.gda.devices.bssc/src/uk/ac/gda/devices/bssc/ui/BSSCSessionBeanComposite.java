@@ -21,6 +21,8 @@ package uk.ac.gda.devices.bssc.ui;
 import gda.commandqueue.JythonCommandCommandProvider;
 import gda.commandqueue.Queue;
 
+import org.dawnsci.common.richbeans.components.FieldComposite;
+import org.dawnsci.common.richbeans.components.scalebox.NumberBox;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
@@ -35,8 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.client.CommandQueueViewFactory;
-import uk.ac.gda.richbeans.components.FieldComposite;
-import uk.ac.gda.richbeans.components.scalebox.NumberBox;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 
 public final class BSSCSessionBeanComposite extends Composite {

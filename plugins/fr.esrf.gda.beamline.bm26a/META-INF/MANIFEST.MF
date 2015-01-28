@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.ui,
  uk.ac.gda.exafs.api;bundle-version="1.0.0",
  org.dawnsci.plotting.jreality;bundle-version="1.0.0",
  org.dawb.common.ui;bundle-version="1.2.0",
- uk.ac.gda.exafs.datawriter;bundle-version="1.0.0"
+ uk.ac.gda.exafs.datawriter;bundle-version="1.0.0",
+ org.dawnsci.common.widgets;bundle-version="1.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: fr.esrf.gda.beamline.bm26a,

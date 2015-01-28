@@ -20,25 +20,11 @@ package uk.ac.gda.devices.bssc.perspectives;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IPartService;
-import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IFolderLayout;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PerspectiveAdapter;
-import org.eclipse.ui.PlatformUI;
-
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
-import uk.ac.gda.richbeans.editors.RichBeanMultiPageEditorPart;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPerspectiveFactory;
 
 public class BSSCPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.perspective";

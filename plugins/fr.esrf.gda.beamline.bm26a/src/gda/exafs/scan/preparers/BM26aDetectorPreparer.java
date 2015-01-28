@@ -24,18 +24,19 @@ import gda.device.Scannable;
 import gda.device.detector.xspress.XspressBeanUtils;
 import gda.device.detector.xspress.XspressDetectorConfiguration;
 import gda.scan.StaticScan;
-import uk.ac.gda.beans.exafs.FluorescenceParameters;
-import uk.ac.gda.beans.exafs.IExperimentDetectorParameters;
-import uk.ac.gda.beans.exafs.TransmissionParameters;
-import uk.ac.gda.beans.exafs.IDetectorParameters;
-import uk.ac.gda.beans.exafs.IOutputParameters;
-import uk.ac.gda.beans.exafs.IScanParameters;
-import uk.ac.gda.beans.xspress.XspressParameters;
-import uk.ac.gda.server.exafs.scan.DetectorPreparer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+
+import uk.ac.gda.beans.exafs.FluorescenceParameters;
+import uk.ac.gda.beans.exafs.IDetectorParameters;
+import uk.ac.gda.beans.exafs.IExperimentDetectorParameters;
+import uk.ac.gda.beans.exafs.IOutputParameters;
+import uk.ac.gda.beans.exafs.IScanParameters;
+import uk.ac.gda.beans.exafs.TransmissionParameters;
+import uk.ac.gda.beans.xspress.XspressParameters;
+import uk.ac.gda.server.exafs.scan.DetectorPreparer;
 
 public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean {
 	private static final Logger logger = LoggerFactory.getLogger(BM26aDetectorPreparer.class);

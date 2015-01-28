@@ -11,8 +11,6 @@ import org.eclipse.ui.intro.IIntroPart;
 import org.eclipse.ui.intro.IIntroSite;
 import org.eclipse.ui.intro.config.IIntroAction;
 
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
-
 public class SwitchToBioSAXSSetupPerspectiveAction implements IIntroAction {
 	public SwitchToBioSAXSSetupPerspectiveAction() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
