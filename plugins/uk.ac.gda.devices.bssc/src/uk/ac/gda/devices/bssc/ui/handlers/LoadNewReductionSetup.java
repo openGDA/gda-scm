@@ -51,6 +51,9 @@ public class LoadNewReductionSetup implements IHandler {
 		String[] filterExt = { "*.xml" };
 		fd.setFilterExtensions(filterExt);
 		String selected = fd.open();
+		if (selected == null) {
+			return 0;
+		}
 		
 		File fileToOpen = new File(selected);
 		
