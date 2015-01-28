@@ -47,7 +47,7 @@ public interface LimaCCD extends Base {
 	String getCameraModel() throws DevFailed;
 
 	enum AcqStatus {
-		READY, RUNNING, FAULT
+		READY, RUNNING, FAULT, CONFIGURATION
 	}
 
 	AcqStatus getAcqStatus() throws DevFailed;

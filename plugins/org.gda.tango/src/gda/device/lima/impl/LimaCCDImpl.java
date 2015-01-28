@@ -410,6 +410,7 @@ public class LimaCCDImpl extends BaseImpl implements LimaCCD, InitializingBean {
 			getTangoDeviceProxy().write_attribute(deviceAttribute);
 		} catch (DevFailed e) {
 			logger.error("Unable to set image bin value to detector", e);
+			throw new DeviceException("Unable to set image bin value to detector", e);
 		}
 	}
 

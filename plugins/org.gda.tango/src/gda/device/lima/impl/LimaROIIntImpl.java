@@ -24,6 +24,14 @@ public class LimaROIIntImpl implements LimaROIInt {
 
 	int [] data = new int[]{0,0,0,0};
 	
+	public LimaROIIntImpl() {
+		
+	}
+	
+	public LimaROIIntImpl(int i, int j, int k, int l) {
+		data=new int[] {i,j,k,l};
+	}
+
 	@Override
 	public String toString() {
 		return "LimaROIIntImpl [getBeginX()=" + getBeginX() + ", getBeginY()=" + getBeginY() + ", getEndX()=" + getEndX()

@@ -17,21 +17,55 @@
  */
 
 package gda.device.lima;
-
+/**
+ * Area of interest (AOI) settings for Lima CCD.
+ */
 public interface LimaROIInt {
+	/**
+	 * return ROI begin X in unit of X binning factor of the detector settings
+	 * @return X-Begin
+	 */
 	int getBeginX();
 
+	/**
+	 * return ROI begin Y in unit of Y binning factor of the detector settings
+	 * @return Y-Begin
+	 */
 	int getBeginY();
 
+	/**
+	 * return ROI End X in unit of X binning factor of the detector settings
+	 * @return X-End
+	 */
 	int getEndX();
 
+	/**
+	 * return ROI End Y in unit of Y binning factor of the detector settings
+	 * @return Y-End
+	 */
 	int getEndY();
 
+	/**
+	 * set ROI begin X in unit of X binning factor of the detector settings
+	 * @param val - X-Begin
+	 */
 	void setBeginX(int val);
 
+	/**
+	 * set ROI End X in unit of X binning factor of the detector settings
+	 * @param val - X-End
+	 */
 	void setEndX(int val);
 
+	/**
+	 * set ROI begin Y in unit of Y binning factor of the detector settings
+	 * @param val - Y-Begin
+	 */
 	void setBeginY(int val);
 
+	/**
+	 * set ROI End Y in unit of Y binning factor of the detector settings
+	 * @param val - Y-End
+	 */
 	void setEndY(int val);
 }
