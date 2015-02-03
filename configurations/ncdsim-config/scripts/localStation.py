@@ -69,6 +69,7 @@ waxs_distance = DetectorMeta("waxs_distance", ncddetectors, "WAXS", "distance", 
 saxs_distance = DetectorMeta("saxs_distance", ncddetectors, "SAXS", "distance", "m")
 saxs_centre_x = DetectorMeta("saxs_centre_x", ncddetectors, "SAXS", "beam_center_x")
 saxs_centre_y = DetectorMeta("saxs_centre_y", ncddetectors, "SAXS", "beam_center_y")
+saxs_abs_cal = DetectorMeta("saxs_abs_cal", ncddetectors, "SAXS", "scaling_factor")
 
 from gda.device.scannable.scannablegroup import ScannableGroup
 gridxy=ScannableGroup()
