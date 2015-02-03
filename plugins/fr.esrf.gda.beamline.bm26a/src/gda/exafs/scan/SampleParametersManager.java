@@ -18,20 +18,13 @@
 
 package gda.exafs.scan;
 
-import gda.data.scan.datawriter.NexusExtraMetadataDataWriter;
-import gda.data.scan.datawriter.NexusFileMetadata;
-import gda.device.DeviceException;
-import gda.device.Temperature;
-import gda.factory.Finder;
 import gda.jython.scriptcontroller.event.ScriptProgressEvent;
 import gda.observable.ObservableComponent;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.gda.beans.exafs.bm26a.SampleParameters;
-import uk.ac.gda.beans.exafs.bm26a.XYZStageParameters;
 
 /**
  * Sets up Sample Parameters for BM26a. Talks to hardware with hard coded parameter names.

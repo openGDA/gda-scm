@@ -21,7 +21,6 @@ package uk.ac.gda.devices.bssc.actions;
 import java.util.Properties;
 
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.intro.IIntroPart;

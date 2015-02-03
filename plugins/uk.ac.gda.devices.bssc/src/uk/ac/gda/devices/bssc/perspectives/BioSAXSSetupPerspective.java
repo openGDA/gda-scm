@@ -20,17 +20,7 @@ package uk.ac.gda.devices.bssc.perspectives;
 
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IPartService;
-import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PerspectiveAdapter;
-import org.eclipse.ui.PlatformUI;
-
-import uk.ac.gda.devices.bssc.ui.BSSCSessionBeanEditor;
 
 public class BioSAXSSetupPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxssetupperspective";

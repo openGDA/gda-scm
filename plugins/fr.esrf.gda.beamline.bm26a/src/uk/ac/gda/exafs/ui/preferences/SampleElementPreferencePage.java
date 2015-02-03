@@ -21,6 +21,10 @@ package uk.ac.gda.exafs.ui.preferences;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dawnsci.common.richbeans.beans.BeanUI;
+import org.dawnsci.common.richbeans.components.selector.VerticalListEditor;
+import org.dawnsci.common.richbeans.event.ValueAdapter;
+import org.dawnsci.common.richbeans.event.ValueEvent;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -33,17 +37,13 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.beans.BeansFactory;
 import uk.ac.gda.beans.exafs.ElementPosition;
 import uk.ac.gda.beans.exafs.SampleElements;
 import uk.ac.gda.client.experimentdefinition.ExperimentBeanManager;
 import uk.ac.gda.client.experimentdefinition.ui.handlers.XMLCommandHandler;
 import uk.ac.gda.exafs.ExafsActivator;
 import uk.ac.gda.exafs.ui.composites.ElementPositionComposite;
-import uk.ac.gda.richbeans.beans.BeanUI;
-import uk.ac.gda.richbeans.components.selector.VerticalListEditor;
-import uk.ac.gda.richbeans.event.ValueAdapter;
-import uk.ac.gda.richbeans.event.ValueEvent;
+import uk.ac.gda.util.beans.xml.XMLHelpers;
 
 /**
  *
@@ -163,7 +163,7 @@ public class SampleElementPreferencePage extends PreferencePage implements IWork
 		
 			templateParameters.setElementPositions(elements.getElementPositions());
 			
-			BeansFactory.saveBean(xmlCommandHandler.getTemplatePath(), templateParameters);
+			XMLHelpers.saveBean(xmlCommandHandler.getTemplatePath(), templateParameters);
 			
 			ExafsActivator.getDefault().getPreferenceStore().firePropertyChangeEvent(ExafsPreferenceConstants.SAMPLE_ELEMENTS, null, null);
 		

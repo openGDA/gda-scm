@@ -21,8 +21,6 @@ package uk.ac.gda.devices.bssc.perspectives;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-import uk.ac.gda.devices.bssc.views.BioSAXSProgressPlotView;
-
 public class BioSAXSProgressPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.biosaxsprogressperspective";
 
