@@ -81,7 +81,7 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 	}
 
 	@Override
-	public void configure(IScanParameters scanBean, IDetectorParameters detectorBean, IOutputParameters outputBean, String experimentFullPath) throws Exception {
+	public void configure(IScanParameters scanBean, IDetectorParameters detectorBean, IOutputParameters outputBean, String experimentFullPath, int repetitonNumber) throws Exception {
 		logger.debug("Preparing detector parameters");
 		if (detectorBean.getExperimentType().equals("Fluorescence")) {
 			FluorescenceParameters fluoresenceParameters = detectorBean.getFluorescenceParameters();
