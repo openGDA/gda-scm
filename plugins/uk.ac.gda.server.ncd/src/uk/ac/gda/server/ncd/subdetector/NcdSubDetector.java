@@ -44,7 +44,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.dawnsci.analysis.api.diffraction.DetectorProperties;
 import org.eclipse.dawnsci.analysis.dataset.impl.Dataset;
 import org.eclipse.dawnsci.analysis.dataset.impl.DoubleDataset;
-import org.nexusformat.NexusFile;
+import gda.data.nexus.NexusGlobals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -244,15 +244,15 @@ public class NcdSubDetector extends DeviceBase implements INcdSubDetector {
 		if (data instanceof NexusGroupData) {
 			ngd = (NexusGroupData) data;
 		} else if (data instanceof double[]) {
-			ngd = new NexusGroupData(datadims, NexusFile.NX_FLOAT64, (double[]) data);
+			ngd = new NexusGroupData(datadims, NexusGlobals.NX_FLOAT64, (double[]) data);
 		} else if (data instanceof float[]) {
-			ngd = new NexusGroupData(datadims, NexusFile.NX_FLOAT32, (float[]) data);
+			ngd = new NexusGroupData(datadims, NexusGlobals.NX_FLOAT32, (float[]) data);
 		} else if (data instanceof int[]) {
-			ngd = new NexusGroupData(datadims, NexusFile.NX_INT32, (int[]) data);
+			ngd = new NexusGroupData(datadims, NexusGlobals.NX_INT32, (int[]) data);
 		} else if (data instanceof short[]) {
-			ngd = new NexusGroupData(datadims, NexusFile.NX_INT16, (short[]) data);
+			ngd = new NexusGroupData(datadims, NexusGlobals.NX_INT16, (short[]) data);
 		} else if (data instanceof byte[]) {
-			ngd = new NexusGroupData(datadims, NexusFile.NX_INT8, (byte[]) data);
+			ngd = new NexusGroupData(datadims, NexusGlobals.NX_INT8, (byte[]) data);
 		} else {
 			throw new DeviceException("Detector readout type not supported: " + data);
 		}
@@ -296,7 +296,7 @@ public class NcdSubDetector extends DeviceBase implements INcdSubDetector {
 		}
 
 		if (getPixelSize() != 0.0) {
-			ngd = new NexusGroupData(new int[] { 1 }, NexusFile.NX_FLOAT64, new double[] { getPixelSize() });
+			ngd = new NexusGroupData(new int[] { 1 }, NexusGlobals.NX_FLOAT64, new double[] { getPixelSize() });
 			ngd.isDetectorEntryData = false;
 
 			for (String label : new String[] { "x_pixel_size", "y_pixel_size" }) {
@@ -311,7 +311,7 @@ public class NcdSubDetector extends DeviceBase implements INcdSubDetector {
 
 		if (mask != null) {
 			int[] devicedims = getDataDimensions();
-			ngd = new NexusGroupData(new int[] { devicedims[0], devicedims[1] }, NexusFile.NX_FLOAT64, mask.getData());
+			ngd = new NexusGroupData(new int[] { devicedims[0], devicedims[1] }, NexusGlobals.NX_FLOAT64, mask.getData());
 			nxdata.addData(getName() + "mask", ngd, null, null);
 		} else {
 			if (getDetectorType().equals("SAXS")) {
@@ -322,7 +322,7 @@ public class NcdSubDetector extends DeviceBase implements INcdSubDetector {
 		for (String label : new String[] { "distance", "beam_center_x", "beam_center_y", "scaling_factor" }) {
 			if (attributeMap.containsKey(label)) {
 				try {
-					ngd = new NexusGroupData(new int[] { 1 }, NexusFile.NX_FLOAT64,
+					ngd = new NexusGroupData(new int[] { 1 }, NexusGlobals.NX_FLOAT64,
 							new double[] { (Double) attributeMap.get(label) });
 					ngd.isDetectorEntryData = "scaling_factor".equals(label);
 

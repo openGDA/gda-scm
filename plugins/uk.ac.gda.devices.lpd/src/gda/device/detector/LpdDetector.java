@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.eclipse.dawnsci.analysis.dataset.impl.IntegerDataset;
-import org.nexusformat.NexusFile;
+import gda.data.nexus.NexusGlobals;
 import org.python.core.PyObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,7 +163,7 @@ public class LpdDetector extends DetectorBase implements ILpdDetector, NexusDete
 		connect();
 		int[] detectorData = readAndMergeModuleData();
 		int[] datadims = getDataDimensions();
-		NexusGroupData ngd = new NexusGroupData(datadims, NexusFile.NX_INT32, detectorData);
+		NexusGroupData ngd = new NexusGroupData(datadims, NexusGlobals.NX_INT32, detectorData);
 		ngd.isDetectorEntryData = true;
 		nxdata.addData(getName(), ngd, "counts", 1);		
 //		addMetadata(dataTree);
