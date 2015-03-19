@@ -30,7 +30,7 @@ import gda.device.DeviceException;
 import gda.device.detector.NXDetectorData;
 
 import org.junit.Test;
-import org.nexusformat.NexusFile;
+import gda.data.nexus.NexusGlobals;
 
 import uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem;
 
@@ -51,7 +51,7 @@ public class ReductionDetectorBaseTest {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = i;
 		}
-		NexusGroupData ngd = new NexusGroupData(devicedims, NexusFile.NX_FLOAT32, data);
+		NexusGroupData ngd = new NexusGroupData(devicedims, NexusGlobals.NX_FLOAT32, data);
 		ngd.isDetectorEntryData = true;
 		nxdata.addData("upstream", ngd, "counts", 1);
 		
@@ -69,7 +69,7 @@ public class ReductionDetectorBaseTest {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = 1;
 		}
-		NexusGroupData ngd = new NexusGroupData(devicedims, NexusFile.NX_FLOAT32, data);
+		NexusGroupData ngd = new NexusGroupData(devicedims, NexusGlobals.NX_FLOAT32, data);
 		ngd.isDetectorEntryData = true;
 		nxdata.addData("upstream", ngd, "counts", 1);
 		
