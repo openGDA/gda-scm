@@ -18,19 +18,19 @@
 
 package uk.ac.gda.server.ncd.subdetector;
 
-import static org.junit.Assert.*;
-
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import gda.data.nexus.extractor.NexusExtractor;
 import gda.data.nexus.extractor.NexusGroupData;
 import gda.device.DeviceException;
 import gda.device.detector.NXDetectorData;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+
 import org.junit.Test;
-import gda.data.nexus.NexusGlobals;
 
 import uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem;
 
@@ -51,7 +51,7 @@ public class ReductionDetectorBaseTest {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = i;
 		}
-		NexusGroupData ngd = new NexusGroupData(devicedims, NexusGlobals.NX_FLOAT32, data);
+		NexusGroupData ngd = new NexusGroupData(devicedims, data);
 		ngd.isDetectorEntryData = true;
 		nxdata.addData("upstream", ngd, "counts", 1);
 		
@@ -69,7 +69,7 @@ public class ReductionDetectorBaseTest {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = 1;
 		}
-		NexusGroupData ngd = new NexusGroupData(devicedims, NexusGlobals.NX_FLOAT32, data);
+		NexusGroupData ngd = new NexusGroupData(devicedims, data);
 		ngd.isDetectorEntryData = true;
 		nxdata.addData("upstream", ngd, "counts", 1);
 		
