@@ -44,6 +44,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.client.UIHelper;
 import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
 
 public class MaskFileUpdater extends AbstractHandler {
@@ -64,20 +65,15 @@ public class MaskFileUpdater extends AbstractHandler {
 		String newFile = LocalProperties.getVarDir() + "temporaryMaskFileForMaskFileUpdater.hdf5";
 		try {
 			saveMaskFile(newFile);
-			if (fileLocation.setSaxsDetectorInfoPath(newFile)) {
-				MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_INFORMATION | SWT.OK);
-				dialog.setText("Mask and Profiles Saved");
-				dialog.setMessage("The mask and any profiles selected have been saved to " + fileLocation.getSaxsDetectorInfoPath());
-				dialog.open();
-			} else {
-				throw new Exception("File not created successfully");
-			}
+			fileLocation.setSaxsDetectorInfoPath(newFile);
+			MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_INFORMATION | SWT.OK);
+			dialog.setText("Mask and Profiles Saved");
+			dialog.setMessage("The mask and any profiles selected have been saved to " + fileLocation.getSaxsDetectorInfoPath());
+			dialog.open();
 		} catch (Exception e) {
 			logger.error("Could not save mask file", e);
-			MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_ERROR| SWT.OK);
-			dialog.setText("Error saving file");
-			dialog.setMessage("The mask/profile file could not be saved (existing file will continue to be used). If problem continues please contact support");
-			dialog.open();
+			fileLocation.clearSaxsDetectorInfoPath();
+			UIHelper.showError("Error Saving File", "The mask/profile file could not be saved (existing file will continue to be used). If problem continues please contact support");
 		} finally {
 			if (file != null) {
 				file.close();
@@ -133,15 +129,20 @@ public class MaskFileUpdater extends AbstractHandler {
 		}
 	}
 	
-	private void addDiffractionMetadataToFile() throws Exception {
-		IImageTrace trace = getImage();
-		if (trace!=null && trace.getData() != null) {
-			IMetadata meta = trace.getData().getMetadata();
-			if (meta == null || meta instanceof IDiffractionMetadata) {
-				file.setDiffractionMetadata((IDiffractionMetadata) meta);
+	private void addDiffractionMetadataToFile() {
+		IImageTrace trace;
+		try {
+			trace = getImage();
+			if (trace!=null && trace.getData() != null) {
+				IMetadata meta = trace.getData().getMetadata();
+				if (meta == null || meta instanceof IDiffractionMetadata) {
+					file.setDiffractionMetadata((IDiffractionMetadata) meta);
+				}
+			} else {
+				logger.debug("No diffractionMetadata to save to file");
 			}
-		} else {
-			logger.debug("No diffractionMetadata to save to file");
+		} catch (Exception e) {
+			logger.error("Could not include metadata in mask file", e);
 		}
 	}
 	
