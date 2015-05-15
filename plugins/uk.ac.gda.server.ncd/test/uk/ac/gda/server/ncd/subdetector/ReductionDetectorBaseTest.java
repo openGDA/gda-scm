@@ -26,10 +26,6 @@ import gda.data.nexus.extractor.NexusGroupData;
 import gda.device.DeviceException;
 import gda.device.detector.NXDetectorData;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-
 import org.junit.Test;
 
 import uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem;
@@ -91,7 +87,7 @@ public class ReductionDetectorBaseTest {
 		groupData = nd.getData("me", "sas_type", NexusExtractor.SDSClassName);
 		assertNotNull(groupData); 
 		
-		CharBuffer decode = Charset.forName("UTF-8").decode(ByteBuffer.wrap((byte[]) groupData.getBuffer()));
+		String decode = ((String[]) groupData.getBuffer())[0];
 		assertEquals(NcdDetectorSystem.REDUCTION_DETECTOR, decode.toString());
 	}
 
