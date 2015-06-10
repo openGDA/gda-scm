@@ -158,39 +158,6 @@ public class BioSAXSISPyBTest {
 		assertEquals(reductionStatusFailed.getStatus(),
 				iSpyBReductionDetails2.getStatus());
 
-		// start data analysis and assert it is in the running state
-		ISpyBStatusInfo analysisStatusInfo = new ISpyBStatusInfo();
-		analysisStatusInfo.setStatus(ISpyBStatus.RUNNING);
-		long analysisId = bioSAXSISPyB.createDataAnalysis(collection1);
-		ISpyBStatusInfo iSpyBAnalysisStatusInfo = bioSAXSISPyB
-				.getDataAnalysisStatus(collection1);
-		assertEquals(analysisStatusInfo.getStatus(),
-				iSpyBAnalysisStatusInfo.getStatus());
-
-		// test data analysis completed
-		ISpyBStatusInfo analysisStatusInfo1 = new ISpyBStatusInfo();
-		analysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
-		bioSAXSISPyB.setDataAnalysisStatus(collection1, analysisStatusInfo1);
-
-		ISpyBStatusInfo iSpyBAnalysisInfo1 = bioSAXSISPyB
-				.getDataAnalysisStatus(collection1);
-		assertEquals(analysisStatusInfo1.getStatus(),
-				iSpyBAnalysisInfo1.getStatus());
-		assertEquals(analysisStatusInfo1.getProgress(),
-				iSpyBAnalysisInfo1.getProgress(), 0.0);
-
-		// test data analysis failed
-		// create a new data collection here
-		ISpyBStatusInfo analysisStatusInfo2 = new ISpyBStatusInfo();
-		analysisStatusInfo2.setStatus(ISpyBStatus.FAILED);
-		bioSAXSISPyB
-				.setDataAnalysisStatus(collection1, analysisStatusInfo2);
-
-		ISpyBStatusInfo iSpyBAnalysisInfo2 = bioSAXSISPyB
-				.getDataAnalysisStatus(collection1);
-		assertEquals(analysisStatusInfo2.getStatus(),
-				iSpyBAnalysisInfo2.getStatus());
-
 		bioSAXSISPyB.disconnect();
 	}
 }

@@ -297,58 +297,6 @@ public class BioSAXSISpyBIntegrationTest {
 									expectedReductionStatusInfo.getMessage(),
 									ispyBStatusInfo.getMessage());
 
-							ISpyBStatusInfo expectedAnalysisStatusInfo = new ISpyBStatusInfo();
-							expectedAnalysisStatusInfo
-									.setStatus(ISpyBStatus.NOT_STARTED);
-							expectedAnalysisStatusInfo.setProgress(0);
-							expectedAnalysisStatusInfo.setMessage("");
-							ispyBStatusInfo = bioSAXSISPyB
-									.getDataAnalysisStatus(saxsDataCollectionId);
-							assertEquals(
-									expectedAnalysisStatusInfo.getStatus(),
-									ispyBStatusInfo.getStatus());
-							assertEquals(
-									expectedAnalysisStatusInfo.getProgress(),
-									ispyBStatusInfo.getProgress(), 0.0);
-							assertEquals(
-									expectedAnalysisStatusInfo.getMessage(),
-									ispyBStatusInfo.getMessage());
-							// create an analysis entry in ISpyB
-							long analysisId = bioSAXSISPyB
-									.createDataAnalysis(saxsDataCollectionId);
-							// Set the analysis status upon successful
-							// completion
-							ISpyBStatusInfo analysisStatus = new ISpyBStatusInfo();
-							analysisStatus.setStatus(ISpyBStatus.COMPLETE);
-							analysisStatus.setProgress(100);
-							analysisStatus.addFileName(getFilename(5));
-							analysisStatus.setMessage("");
-							bioSAXSISPyB
-									.createDataAnalysis(saxsDataCollectionId);
-
-							Thread.sleep(1000);
-
-							expectedAnalysisStatusInfo = new ISpyBStatusInfo();
-							expectedAnalysisStatusInfo
-									.setStatus(ISpyBStatus.COMPLETE);
-							expectedAnalysisStatusInfo.setProgress(100);
-							expectedAnalysisStatusInfo
-									.addFileName(getFilename(5));
-							expectedAnalysisStatusInfo.setMessage("");
-							ispyBStatusInfo = bioSAXSISPyB
-									.getDataAnalysisStatus(saxsDataCollectionId);
-							assertEquals(
-									expectedAnalysisStatusInfo.getStatus(),
-									ispyBStatusInfo.getStatus());
-							assertEquals(
-									expectedAnalysisStatusInfo.getProgress(),
-									ispyBStatusInfo.getProgress(), 0.0);
-//							assertEquals(expectedAnalysisStatusInfo
-//									.getFileNames().get(0), ispyBStatusInfo
-//									.getFileNames().get(0));
-							assertEquals(
-									expectedAnalysisStatusInfo.getMessage(),
-									ispyBStatusInfo.getMessage());
 						}
 					}
 

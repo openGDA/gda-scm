@@ -22,7 +22,6 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-import uk.ac.gda.devices.bssc.views.BioSAXSAnalysisResultPlotView;
 import uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView;
 import uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView;
 
@@ -40,7 +39,6 @@ public class BioSAXSResultPerspective implements IPerspectiveFactory {
 		
 		folderLayout.addView(BioSAXSCollectionResultPlotView.ID);
 		folderLayout.addView(BioSAXSReductionResultPlotView.ID);
-		folderLayout.addView(BioSAXSAnalysisResultPlotView.ID);
 		
 		layout.setEditorAreaVisible(false);
 	}

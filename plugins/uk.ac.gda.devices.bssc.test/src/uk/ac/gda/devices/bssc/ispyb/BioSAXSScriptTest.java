@@ -216,44 +216,6 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getFileNames().get(0));
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-
-		// Analysis
-		ISpyBStatusInfo expectedAnalysisStatusInfo = new ISpyBStatusInfo();
-		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
-		expectedAnalysisStatusInfo.setProgress(0);
-		expectedAnalysisStatusInfo.setMessage("");
-		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId1);
-		assertEquals(expectedAnalysisStatusInfo.getStatus(),
-				ispyBStatusInfo.getStatus());
-		assertEquals(expectedAnalysisStatusInfo.getProgress(),
-				ispyBStatusInfo.getProgress(), 0.0);
-		assertEquals(expectedAnalysisStatusInfo.getMessage(),
-				ispyBStatusInfo.getMessage());
-		// create an analysis entry in ISpyB
-		long analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId1);
-		// Set the analysis status upon successful completion
-		ISpyBStatusInfo analysisStatus = new ISpyBStatusInfo();
-		analysisStatus.setStatus(ISpyBStatus.COMPLETE);
-		analysisStatus.setProgress(100);
-		analysisStatus.addFileName(getFilename(5));
-		analysisStatus.setMessage("");
-		bioSAXSISPyB.setDataAnalysisStatus(dataCollectionId1, analysisStatus);
-
-		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
-		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.COMPLETE);
-		expectedAnalysisStatusInfo.setProgress(100);
-		expectedAnalysisStatusInfo.addFileName(getFilename(5));
-		expectedAnalysisStatusInfo.setMessage("");
-		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId1);
-		assertEquals(expectedAnalysisStatusInfo.getStatus(),
-				ispyBStatusInfo.getStatus());
-		assertEquals(expectedAnalysisStatusInfo.getProgress(),
-				ispyBStatusInfo.getProgress(), 0.0);
-		assertEquals(expectedAnalysisStatusInfo.getFileNames().get(0),
-				ispyBStatusInfo.getFileNames().get(0));
-		assertEquals(expectedAnalysisStatusInfo.getMessage(),
-				ispyBStatusInfo.getMessage());
-
 		
 		
 		
@@ -610,43 +572,6 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getFileNames().get(0));
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-
-		// Analysis
-		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
-		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
-		expectedAnalysisStatusInfo.setProgress(0);
-		expectedAnalysisStatusInfo.setMessage("");
-		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId4);
-		assertEquals(expectedAnalysisStatusInfo.getStatus(),
-				ispyBStatusInfo.getStatus());
-		assertEquals(expectedAnalysisStatusInfo.getProgress(),
-				ispyBStatusInfo.getProgress(), 0.0);
-		assertEquals(expectedAnalysisStatusInfo.getMessage(),
-				ispyBStatusInfo.getMessage());
-		// create an analysis entry in ISpyB
-		analysisId = bioSAXSISPyB.createDataAnalysis(dataCollectionId4);
-		// Set the analysis status FAILED
-		analysisStatus = new ISpyBStatusInfo();
-		analysisStatus.setStatus(ISpyBStatus.FAILED);
-		analysisStatus.setProgress(0);
-		analysisStatus.setMessage("Data Analysis Failed for data collection "
-				+ dataCollectionId4);
-		bioSAXSISPyB.setDataAnalysisStatus(dataCollectionId4, analysisStatus);
-		expectedAnalysisStatusInfo = new ISpyBStatusInfo();
-		expectedAnalysisStatusInfo.setStatus(ISpyBStatus.FAILED);
-		expectedAnalysisStatusInfo.setProgress(0);
-		expectedAnalysisStatusInfo
-				.setMessage("Data Analysis Failed for data collection "
-						+ dataCollectionId4);
-		ispyBStatusInfo = bioSAXSISPyB.getDataAnalysisStatus(dataCollectionId4);
-		assertEquals(expectedAnalysisStatusInfo.getStatus(),
-				ispyBStatusInfo.getStatus());
-		assertEquals(expectedAnalysisStatusInfo.getProgress(),
-				ispyBStatusInfo.getProgress(), 0.0);
-		assertEquals(expectedAnalysisStatusInfo.getFileNames().size(), 0);
-		assertEquals(expectedAnalysisStatusInfo.getMessage(),
-				ispyBStatusInfo.getMessage());
-
 		
 		
 		

@@ -69,12 +69,6 @@ public class BioSaxsProgressViewTest {
 			ISpyBStatusInfo analysisStatusDetails = new ISpyBStatusInfo();
 			analysisStatusDetails.setStatus(ISpyBStatus.NOT_STARTED);
 			analysisStatusDetails.setProgress(0);
-
-			ISAXSProgress progress = new BioSAXSProgress(i, i, "Sample " + i,
-					collectionStatusDetails, reductionStatusDetails,
-					analysisStatusDetails);;
-
-			model.add(progress);
 		}
 	}
 
@@ -107,10 +101,6 @@ public class BioSaxsProgressViewTest {
 			reductionStatusDetails.setProgress(100);
 			progress.setReductionStatusInfo(reductionStatusDetails);
 
-			ISpyBStatusInfo analysisStatusDetails = new ISpyBStatusInfo();
-			analysisStatusDetails.setStatus(ISpyBStatus.COMPLETE);
-			analysisStatusDetails.setProgress(100);
-			progress.setAnalysisStatusInfo(analysisStatusDetails);
 		}
 		delay(1000);
 	}
@@ -130,18 +120,13 @@ public class BioSaxsProgressViewTest {
 		collectionStatusInfo.setProgress(0);
 		ISpyBStatusInfo reductionStatusInfo = new ISpyBStatusInfo();
 		collectionStatusInfo.setProgress(0);
-		ISpyBStatusInfo analysisStatusInfo = new ISpyBStatusInfo();
-		collectionStatusInfo.setProgress(0);
 
 		ISAXSProgress newProgress = new BioSAXSProgress(model.size() + 1, 
 				model.size() + 1, "New Sample "
 						+ model.size() + 1, collectionStatusInfo,
-				reductionStatusInfo, analysisStatusInfo);
-		;
+				reductionStatusInfo);
 
 		newProgress.setCollectionStatusInfo(collectionStatusInfo);
-		newProgress.setAnalysisStatusInfo(reductionStatusInfo);
-		newProgress.setAnalysisStatusInfo(analysisStatusInfo);
 
 		items.add(newProgress);
 	}
