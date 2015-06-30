@@ -35,20 +35,17 @@ if test -d $VISIT ; then
 	if test -w $VISIT ; then
 		REDUCTIONOUTPUTFILE=${VISIT}/processed/${RESTOFPATH}.reduced.nxs
 		mkdir -p $(dirname $REDUCTIONOUTPUTFILE)
-		ANALYSISOUTPUT=${VISIT}/processed/${RESTOFPATH}.analysis
 		UNSUBOUTPUT=${VISIT}/processed/${RESTOFPATH}.unsub
 	else 
 		REDUCTIONOUTPUTFILE=${VISIT}/processing/${RESTOFPATH}.reduced.nxs
 		mkdir -p $(dirname $REDUCTIONOUTPUTFILE)
 		REDUCTIONOUTPUTFILE=
-		ANALYSISOUTPUT=${VISIT}/processing/${RESTOFPATH}.analysis
 		UNSUBOUTPUT=${VISIT}/processing/${RESTOFPATH}.unsub
 	fi
 	TMPDIR=${VISIT}/tmp/${RESTOFPATH}.$$
 else
 	echo running reduction outside of a visit
 	TMPDIR=${DATAFILE}.$$.reduction
-	ANALYSISOUTPUT=${DATAFILE}.$$.analysis
 	UNSUBOUTPUT=${DATAFILE}.$$.unsub
 fi
 
@@ -79,21 +76,18 @@ mkdir $WORKSPACE
 OUTPUTDIR=$TMPDIR/output
 mkdir $OUTPUTDIR
 
-${RUNANALYSIS:=/bin/true} # run by default if not enabled
 if test -n "${BACKGROUNDFILE}" ; then
 sed "s,bgFile>.*</bgFile,bgFile>${BACKGROUNDFILE}</bgFile," < $NCDREDXML > ncd_reduction.xml
 else 
 sed "s,enableBackground>.*</enableBackground,enableBackground>false</enableBackground," < $NCDREDXML > ncd_reduction.xml
-RUNANALYSIS=/bin/false
 fi
 NCDREDXML=${TMPDIR}/ncd_reduction.xml
 
-# do not run ispybupdate or analysis if datacollectionid is not set
+# do not run ispybupdate if datacollectionid is not set
 if test -n "$DATACOLLID" ; then
 	: 
 else 
 ISPYBUPDATE=":"
-RUNANALYSIS=/bin/false
 fi
 
 mkdir ${WORKSPACE}/workflows/
@@ -183,15 +177,6 @@ if test -n "$DATACOLLID" ; then
 else
 	echo collectionid not set, not populating ISPyB
 fi;
-
-if $RUNANALYSIS ; then
-echo restricting file sizes via ulimit
-ulimit -f 500000
-mkdir $ANALYSISOUTPUT
-$ISPYBUPDATE analysis $DATACOLLID STARTED \"\"
-python $EDNAPYSCRIPT --filename \$REDUCEDFILE --detector detector --dataCollectionId $DATACOLLID --outputFolderName $ANALYSISOUTPUT --threads 4 
-$ISPYBUPDATE analysis $DATACOLLID COMPLETE $ANALYSISOUTPUT
-fi
 EOF
 
 #bash $SCRIPT > ${SCRIPT}.stdout 2> ${SCRIPT}.errout
