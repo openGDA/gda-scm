@@ -42,13 +42,13 @@ public class LpdConfigureView extends ViewPart {
 
     private Button setButton;
 	private Text collectTime;
-    private Button voltageButton;
+    //private Button voltageButton;
 	private Text voltageText;
 	private Detector lpdDetector;
 
 	@Override
 	public void createPartControl(Composite parent) {
-		
+
 		lpdDetector = (Detector) Finder.getInstance().find("lpdDetector");
 		final String voltageName = "DACVoltage";
 		GridLayout gridLayout = new GridLayout(2, false);
