@@ -22,7 +22,7 @@ Require-Bundle: org.eclipse.ui,
  uk.ac.gda.exafs.datawriter;bundle-version="1.0.0",
  org.dawnsci.common.widgets;bundle-version="1.2.0"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: fr.esrf.gda.beamline.bm26a,
  gda.device.scannable
 Bundle-Vendor: Daresbury Laboratory

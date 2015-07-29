@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  uk.ac.gda.common.rcp;bundle-version="1.0.0",
  uk.ac.gda.server.ncd;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: APS & Daresbury Laboratory
 Import-Package: org.eclipse.ui.intro.config,
  org.slf4j;version="[1.7.6,1.7.7)"
