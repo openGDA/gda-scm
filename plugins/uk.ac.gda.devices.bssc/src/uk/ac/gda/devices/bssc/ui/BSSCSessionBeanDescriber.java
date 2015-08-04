@@ -22,9 +22,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.dawnsci.common.richbeans.xml.XMLBeanContentDescriber;
 import org.eclipse.core.runtime.content.IContentDescriber;
 import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.richbeans.xml.XMLBeanContentDescriber;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 
