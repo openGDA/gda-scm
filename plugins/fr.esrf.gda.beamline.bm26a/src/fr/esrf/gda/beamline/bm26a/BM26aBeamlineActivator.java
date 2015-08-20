@@ -32,7 +32,7 @@ public class BM26aBeamlineActivator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static BM26aBeamlineActivator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -60,8 +60,8 @@ public class BM26aBeamlineActivator extends AbstractUIPlugin {
 		return plugin;
 	}
 
-	public static Object getService(Class<?> serviceClass) {
-		ServiceReference<?> ref = plugin.getBundle().getBundleContext().getServiceReference(serviceClass);
+	public static <T> T getService(Class<T> serviceClass) {
+		ServiceReference<T> ref = plugin.getBundle().getBundleContext().getServiceReference(serviceClass);
 		return plugin.getBundle().getBundleContext().getService(ref);
 	}
 
