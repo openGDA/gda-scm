@@ -17,13 +17,12 @@
 
 	<bean id="ScanDataStore" class="gda.util.simpleServlet.FindableSimpleServlet" />
 
-	<bean id="plot_server"
-		class="uk.ac.diamond.scisoft.analysis.plotserver.PlotServerBase" />
-
+<!-- 	<bean id="Plot_Manager" class="gda.analysis.plotmanager.PlotManager" /> -->
+	<bean id="plot_server" class="uk.ac.diamond.scisoft.analysis.plotserver.PlotServerBase" />
 
 <!-- 	<bean id="GDAHashtable" class="gda.util.findableHashtable.FindableHashtable" /> -->
 	
-	<bean class="org.dawnsci.common.richbeans.beans.BeansFactory">
+	<bean class="org.eclipse.richbeans.api.beans.BeansFactory">
 	    <property name="classList">
 	        <list>
 	           <value>uk.ac.gda.beans.exafs.XasScanParameters</value>

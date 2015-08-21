@@ -18,9 +18,117 @@
 		<property name="replyTimeOut" value="30000"/>
 	</bean>
 
-	<!-- Time Frame Generator -->
+
 	<bean id="tfg" class="gda.device.timer.Tfg">
 		<property name="daServer" ref="DAServer" />
+	</bean>
+
+	<bean id="limaDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26s/limaccd/dcs1" />
+		<property name="attributeMap">
+			<list>
+				<bean id="mythen_acq_status" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="acq_status"/>
+					<property name="attributeValue" value="Ready"/>
+					<property name="attributeDataType" value="8"/>  <!-- TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="mythen_image_width" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_width"/>
+					<property name="attributeValue" value="1280"/>
+					<property name="attributeDataType" value="7"/>  <!-- TangoConst.Tango_DEV_ULONG -->
+				</bean>
+				<bean id="mythen_image_height" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_height"/>
+					<property name="attributeValue" value="1"/>
+					<property name="attributeDataType" value="7"/>  <!-- TangoConst.Tango_DEV_ULONG -->
+				</bean>
+				<bean id="mythen_camera_type" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="camera_type"/>
+					<property name="attributeValue" value="Mythen"/>
+					<property name="attributeDataType" value="8"/>  <!-- TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="mythen_camera_model" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="camera_model"/>
+					<property name="attributeValue" value="DCS1"/>
+					<property name="attributeDataType" value="8"/>  <!-- TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="mythen_image_type" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="image_type"/>
+					<property name="attributeValue" value="Bpp32S"/>
+					<property name="attributeDataType" value="8"/>  <!-- TangoConst.Tango_DEV_STRING -->
+				</bean>
+				<bean id="mythen_image_ready" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="last_image_ready"/>
+					<property name="attributeValue" value="0"/>
+					<property name="attributeDataType" value="3"/>  <!--  TangoConst.Tango_DEV_LONG -->
+				</bean>
+				<bean id="mythen_last_image_acquired" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="last_image_acquired"/>
+					<property name="attributeValue" value="0"/>
+					<property name="attributeDataType" value="3"/>  <!--  TangoConst.Tango_DEV_LONG -->
+				</bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="mythenDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26s/mythen3/dcs1" />
+		<property name="attributeMap">
+			<list>
+			</list>
+		</property>
+	</bean>
+	<bean id="mythenROIDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26s/mythen3/dcs1" />
+		<property name="attributeMap">
+			<list>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="limaMythenDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="limaDeviceImpl" />
+<!--		<constructor-arg value="tango://dubble27:20000/d26s/limaccd/dcs1" />-->
+	</bean>
+
+	<bean id="mythenDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="mythenDeviceImpl" />
+<!--		<constructor-arg value="tango://dubble27:20000/d26s/mythen3/dcs1" />-->
+	</bean>
+
+	<bean id="mythenROICounterProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="mythenROIDeviceImpl" />
+<!--		<constructor-arg value="tango://dubble27:20000/d26s/roicounter/dcs1" />-->
+	</bean>
+
+	<bean id="mythenCounterTimer" class="gda.device.detector.mythen.TangoMythenDetectorCT">
+ 		<property name="limaTangoDeviceProxy" ref="limaMythenDeviceProxy"/>
+		<property name="TangoDeviceProxy" ref="mythenDeviceProxy"/>
+		<property name="TangoROICounterProxy" ref="mythenROICounterProxy"/>
+
+		<property name="counterValues" value="5" />
+		<property name="extraNames">
+			<list>
+				<value>Sum</value>
+				<value>Average</value>
+				<value>Std</value>
+				<value>Min</value>
+				<value>Max</value>
+			</list>
+		</property>
+		<property name="outputFormat">
+			<list>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="mythen" class="gda.device.detector.mythen.TangoMythenDetector">
+		<property name="limaTangoDeviceProxy" ref="limaMythenDeviceProxy"/>
+		<property name="TangoDeviceProxy" ref="mythenDeviceProxy"/>
+<!--		<property name="TangoROICounterProxy" ref="mythenROICounterProxy"/>-->
 	</bean>
 
 	<bean id="xspress1DeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
@@ -100,7 +208,7 @@
 	<bean id="Stanford03" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
 	<bean id="Stanford04" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
 -->
-	<bean id="counterTimer01" class="gda.device.detector.countertimer.TfgScalerWithFrames">
+	<bean id="counterTimer01" class="gda.device.detector.countertimer.TfgScalerWithLogValues">
 		<property name="extraNames">
 			<list>
 				<value>time</value>

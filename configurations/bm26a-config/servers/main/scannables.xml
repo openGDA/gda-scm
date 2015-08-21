@@ -2,15 +2,20 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-<!--
-	<bean id="dif" class="gda.device.scannable.ScannableMotor">
-		<property name="protectionLevel" value="3"/>
-		<property name="motor" ref="difMotor"/>
-		<property name="hardwareUnitString" value="mm"/>
-		<property name="lowerGdaLimits" value="-999999"/>
-		<property name="upperGdaLimits" value="999999"/>
+
+<!-- Use this for testing scans -->
+	<bean id="test" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="test_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>	
 	</bean>
--->
+
 	<bean id="bragg1" class="gda.device.scannable.MonoScannable">
 		<property name="protectionLevel" value="3" />
 		<property name="userUnits" value="eV" />
@@ -32,6 +37,18 @@
 		<property name="outputFormat">
 			<list>
 				<value>%2.6g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dif" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3"/>
+		<property name="userUnits" value="degrees" />
+		<property name="motor" ref="dif_motor"/>
+		<property name="hardwareUnitString" value="degrees" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
 			</list>
 		</property>
 	</bean>
@@ -127,5 +144,65 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="beamstx" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="beamstx_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="beamsty" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="beamsty_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="s1horg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="s1horg_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="s1verg" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="s1verg_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mythenTrigger" class="gda.device.scannable.TangoMythenDetectorTrigger">
+		<property name="mythenDetector" ref="mythen"/>
+	</bean>
+
+<!-- 	<bean id="Eurotherm2400" class="gda.device.temperature.TangoEurotherm2400"> -->
+<!-- 		<property name="tangoDeviceProxy" ref="eurothermDeviceProxy" /> -->
+<!-- 		<property name="configureAtStartup" value="false" /> -->
+<!-- 		<property name="accuracy" value="0.5" /> -->
+<!-- 		<property name="polltime" value="2000" /> -->
+<!-- 		<property name="poll" value="false" /> -->
+<!-- 	</bean> -->
 
 </beans>

@@ -3,88 +3,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="DAServer" class="gda.device.detector.DAServer">
-		<property name="local" value="true"/>
-		<property name="host" value="bm26-exafs-vme"/>
-		<property name="port" value="1972"/>
-		<property name="startupCommands">
-			<list>
-				<value>close-all</value>
-				<value>tfg config '/dev/tfg0'</value>
-				<value>scaler config 32 0</value>
-			</list>
-		</property>
-		<property name="dataPort" value="20030"/>
-		<property name="replyTimeOut" value="30000"/>
+	<bean id="tfg1DeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/tfg1/1" />
 	</bean>
 
-	<!-- Time Frame Generator -->
-	<bean id="tfg" class="gda.device.timer.Tfg">
-		<property name="daServer" ref="DAServer" />
+	<bean id="tfg" class="gda.device.timer.TangoTfg1">
+		<property name="TangoDeviceProxy" ref="tfg1DeviceProxy"/>
 	</bean>
-
-<!-- 	<bean id="xspress1DeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/xspress1/1" /> -->
-<!-- 		<property name="attributeMap"> -->
-<!-- 			<list> -->
-<!-- 				<bean id="numberOfDetectors" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="numberOfDetectors"/> -->
-<!-- 					<property name="attributeValue" value="9"/> -->
-<!-- 					<property name="attributeDataType" value="3"/>  TangoConst.Tango_DEV_LONG -->
-<!-- 				</bean> -->
-<!-- 				<bean id="acq_status" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="acq_status"/> -->
-<!-- 					<property name="attributeValue" value="Ready"/> -->
-<!-- 					<property name="attributeDataType" value="8"/>  TangoConst.Tango_DEV_STRING -->
-<!-- 				</bean> -->
-<!-- 				<bean id="image_width" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="image_width"/> -->
-<!-- 					<property name="attributeValue" value="256"/> -->
-<!-- 					<property name="attributeDataType" value="7"/>  TangoConst.Tango_DEV_ULONG -->
-<!-- 				</bean> -->
-<!-- 				<bean id="image_height" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="image_height"/> -->
-<!-- 					<property name="attributeValue" value="64"/> -->
-<!-- 					<property name="attributeDataType" value="7"/>  TangoConst.Tango_DEV_ULONG -->
-<!-- 				</bean> -->
-<!-- 				<bean id="camera_type" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="camera_type"/> -->
-<!-- 					<property name="attributeValue" value="Xspress1"/> -->
-<!-- 					<property name="attributeDataType" value="8"/>  TangoConst.Tango_DEV_STRING -->
-<!-- 				</bean> -->
-<!-- 				<bean id="camera_model" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="camera_model"/> -->
-<!-- 					<property name="attributeValue" value="1"/> -->
-<!-- 					<property name="attributeDataType" value="8"/>  TangoConst.Tango_DEV_STRING -->
-<!-- 				</bean> -->
-<!-- 				<bean id="image_type" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="image_type"/> -->
-<!-- 					<property name="attributeValue" value="Bpp32S"/> -->
-<!-- 					<property name="attributeDataType" value="8"/>  TangoConst.Tango_DEV_STRING -->
-<!-- 				</bean> -->
-<!-- 				<bean id="image_ready" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="last_image_ready"/> -->
-<!-- 					<property name="attributeValue" value="0"/> -->
-<!-- 					<property name="attributeDataType" value="3"/>   TangoConst.Tango_DEV_LONG -->
-<!-- 				</bean> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="xspress1DeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg ref="xspress1DeviceImpl"/> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="xspress1Impl" class="gda.device.detector.xspress.TangoXspress1DetectorImpl"> -->
-<!-- 		<property name="TangoDeviceProxy" ref="xspress1DeviceProxy"/> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="xspress1system" class="gda.device.detector.xspress.Xspress1System"> -->
-<!-- 		<property name="xspressDetectorImpl" ref="xspress1Impl" /> -->
-<!-- 		<property name="timer" ref="tfg" /> -->
-<!-- 		<property name="configFileName" value="${gda.config}/templates/Xspress_Parameters.xml" />  -->
-<!-- 		<property name="dtcConfigFileName" value="${gda.config}/templates/Xspress_DeadTime_Parameters.xml" />  -->
-<!-- 	</bean> -->
 
 	<bean id="xspress1DeviceProxy" class="gda.device.TangoDeviceProxy">
 		<constructor-arg value="tango://dubble27:20000/d26s/xspress1/1" />
@@ -101,24 +26,59 @@
 		<property name="dtcConfigFileName" value="${gda.config}/templates/Xspress_DeadTime_Parameters.xml" /> 
 	</bean>
 
-	<!-- Scaler channels -->
 	<bean id="scalerDeviceProxy" class="gda.device.TangoDeviceProxy">
 		<constructor-arg value="tango://dubble27:20000/d26s/scaler/1" />
 	</bean>
 
-	<bean id="ScalerMemory" class="gda.device.memory.TangoScaler"> -->
+	<bean id="ScalerMemory" class="gda.device.memory.TangoScaler">
 		<property name="TangoDeviceProxy" ref="scalerDeviceProxy"/>
 		<property name="width" value="5" />
 		<property name="height" value="1" />
-		<property name="transposed" value="true" />
+		<property name="transposed" value="false" />
 	</bean>
 
-<!-- 	<bean id="ScalerMemory" class="gda.device.memory.Scaler"> -->
-<!-- 		<property name="daServer" ref="DAServer" /> -->
-<!-- 		<property name="width" value="5" /> -->
-<!-- 		<property name="height" value="1" /> -->
-<!-- 		<property name="openCommand" value="scaler open transposed" /> -->
-<!-- 	</bean> -->
+	<bean id="mythenDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/mythen3/dcs1" />
+	</bean>
+
+	<bean id="limaMythenDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/limaccd/dcs1" />
+	</bean>
+
+	<bean id="mythenROICounterProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/roicounter/dcs1" />
+	</bean>
+
+	<bean id="mythenCounterTimer" class="gda.device.detector.mythen.TangoMythenDetectorCT">
+ 		<property name="limaTangoDeviceProxy" ref="limaMythenDeviceProxy"/>
+		<property name="TangoDeviceProxy" ref="mythenDeviceProxy"/>
+		<property name="TangoROICounterProxy" ref="mythenROICounterProxy"/>
+
+		<property name="counterValues" value="5" />
+		<property name="extraNames">
+			<list>
+				<value>Sum</value>
+				<value>Average</value>
+				<value>Std</value>
+				<value>Min</value>
+				<value>Max</value>
+			</list>
+		</property>
+		<property name="outputFormat">
+			<list>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+				<value>%5.5g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mythen" class="gda.device.detector.mythen.TangoMythenDetector">
+		<property name="limaTangoDeviceProxy" ref="limaMythenDeviceProxy"/>
+		<property name="TangoDeviceProxy" ref="mythenDeviceProxy"/>
+	</bean>
 
 <!--
 	<bean id="Stanford01" class="gda.device.currentamplifier.DummyCurrentAmplifier"/>
@@ -152,8 +112,8 @@
 				<value>%9d</value>
 				<value>%9d</value>
 				<value>%9d</value>
-				<value>%.4g</value>
-				<value>%.4g</value>
+				<value>%.6g</value>
+				<value>%.6g</value>
 			</list>
 		</property>
 	</bean>
