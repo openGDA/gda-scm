@@ -34,7 +34,7 @@
             <FileNamePattern>${gda.logs.dir}/client.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d %-5level [%logger] %ex - %m%n</pattern>
+            <pattern>%d %-5level [%logger] %rEx - %m%n</pattern>
         </layout>
     </appender>
     <logger name="gda">

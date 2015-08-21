@@ -2,7 +2,7 @@
 <configuration>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%date %-5level %logger{36} - %m %ex%n</Pattern>
+            <Pattern>%date %-5level %logger{36} - %m %rEx%n</Pattern>
         </layout>
     </appender>
     <appender name="LogPanel" class="gda.util.LogPanelAppender">
@@ -10,7 +10,7 @@
             <level>INFO</level>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%date %-5level %logger - %m %ex %n</pattern>
+            <pattern>%date %-5level %logger - %m %rEx %n</pattern>
         </layout>
     </appender>
     <appender name="DebugPanel" class="gda.util.DebugPanelAppender">
@@ -18,7 +18,7 @@
             <level>DEBUG</level>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%date %-5level %logger - %m %ex%n</pattern>
+            <pattern>%date %-5level %logger - %m %rEx%n</pattern>
         </layout>
     </appender>
     <appender name="DebugFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -27,7 +27,7 @@
             <FileNamePattern>${gda.users}/logs/gda_client.%d{yyyy-MM-dd}.log.zip</FileNamePattern>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d %-5level %logger %ex - %m%n</pattern>
+            <pattern>%d %-5level %logger %rEx - %m%n</pattern>
         </layout>
         <!--<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <FileNamePattern>${gda.users}/logs/gda.%i.log.zip</FileNamePattern>
