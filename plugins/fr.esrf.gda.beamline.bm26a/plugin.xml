@@ -580,12 +580,6 @@
    </extension>  
     <extension
          point="org.eclipse.ui.preferencePages">
-      <page
-            category="uk.ac.gda.client.preferences.gdaroot"
-            class="uk.ac.gda.exafs.ui.preferences.SampleElementPreferencePage"
-            id="uk.ac.gda.exafs.preferences.sampleElementPreferencePage"
-            name="Reference Sample Wheel">
-      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -688,6 +682,21 @@
             </hiddenToolBarItem>
          </perspectiveExtension>
       </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="uk.ac.diamond.scisoft.analysis.rcp.views.PlotView"
+            id="uk.ac.gda.exafs.ui.views.MythenPlotView"
+            name="Mythen Plot"
+            restorable="true">
+      </view>
+      <view
+            class="uk.ac.gda.exafs.ui.views.MythenControl"
+            id="uk.ac.gda.exafs.ui.views.MythenControl"
+            name="Mythen Control"
+            restorable="true">
+      </view>
+   </extension>
    
    
 </plugin>

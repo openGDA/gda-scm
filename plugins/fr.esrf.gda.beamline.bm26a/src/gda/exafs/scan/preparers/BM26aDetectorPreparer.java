@@ -18,12 +18,12 @@
 
 package gda.exafs.scan.preparers;
 
-import gda.data.scan.datawriter.XasAsciiNexusDataWriter;
 import gda.device.Detector;
 import gda.device.Scannable;
-import gda.device.detector.xspress.XspressBeanUtils;
-import gda.device.detector.xspress.XspressDetectorConfiguration;
-import gda.scan.StaticScan;
+import gda.device.detector.mythen.TangoMythenDetector;
+import gda.device.detector.xspress.Xspress1System;
+import gda.device.scannable.TangoMythenDetectorTrigger;
+import gda.exafs.scan.ExafsScanPointCreator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,41 +35,21 @@ import uk.ac.gda.beans.exafs.IExperimentDetectorParameters;
 import uk.ac.gda.beans.exafs.IOutputParameters;
 import uk.ac.gda.beans.exafs.IScanParameters;
 import uk.ac.gda.beans.exafs.TransmissionParameters;
-import uk.ac.gda.beans.xspress.XspressParameters;
+import uk.ac.gda.beans.exafs.XasScanParameters;
 import uk.ac.gda.server.exafs.scan.DetectorPreparer;
 
 public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean {
+
 	private static final Logger logger = LoggerFactory.getLogger(BM26aDetectorPreparer.class);
-	private XspressDetectorConfiguration xspressConfig;
 	private Scannable energyScannable;
-	private Detector mythen_scannable;
-	
+	private Xspress1System xspressSystem;
+//	private Xmap vortexDetector;
+//	private Xspress3Detector xspress3Detector;
+	private TangoMythenDetectorTrigger mythenDetectorTrigger;
+	private IScanParameters scanBean;
+	private IDetectorParameters detectorBean;
+
 	public BM26aDetectorPreparer() {
-	}
-	
-	public BM26aDetectorPreparer(Scannable energyScannable, XspressDetectorConfiguration xspressConfig) {
-//	public BM26aDetectorPreparer(Scannable energyScannable, Detector mythen, XspressDetectorConfiguration xspressConfig) {
-		this.xspressConfig = xspressConfig;
-		this.energyScannable = energyScannable;
-//		this.vortexConfig = vortexConfig;
-	}
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (xspressConfig == null) {
-			throw new IllegalArgumentException("Missing xspress configuration");
-		}
-		if (energyScannable == null) {
-			throw new IllegalArgumentException("Missing energy scannable");
-		}
-	}
-
-	public XspressDetectorConfiguration getXspressConfig() {
-		return xspressConfig;
-	}
-
-	public void setXspressConfig(XspressDetectorConfiguration xspressConfig) {
-		this.xspressConfig = xspressConfig;
 	}
 
 	public Scannable getEnergyScannable() {
@@ -80,79 +60,108 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 		this.energyScannable = energyScannable;
 	}
 
+	public Xspress1System getXspressSystem() {
+		return xspressSystem;
+	}
+
+	public void setXspressSystem(Xspress1System xspressSystem) {
+		this.xspressSystem = xspressSystem;
+	}
+
+	public TangoMythenDetectorTrigger getTangoMythenDetectorTrigger() {
+		return mythenDetectorTrigger;
+	}
+
+	public void setTangoMythenDetectorTrigger(TangoMythenDetectorTrigger mythenDetectorTrigger) {
+		this.mythenDetectorTrigger = mythenDetectorTrigger;
+	}
+
 	@Override
-	public void configure(IScanParameters scanBean, IDetectorParameters detectorBean, IOutputParameters outputBean, String experimentFullPath) throws Exception {
-		logger.debug("Preparing detector parameters");
-		if (detectorBean.getExperimentType().equals("Fluorescence")) {
-			FluorescenceParameters fluoresenceParameters = detectorBean.getFluorescenceParameters();
-			if (fluoresenceParameters.isCollectDiffractionImages()) {
-//				control_mythen(fluoresenceParameters, outputBean, experimentFullPath);
-				String detType = fluoresenceParameters.getDetectorType();
-				String xmlFileName = experimentFullPath + fluoresenceParameters.getConfigFileName();
-				if (detType.equals("Germanium")) {
-					XspressParameters xspressBean = XspressBeanUtils.createBeanFromXML(xmlFileName);
-					xspressConfig.setOnlyShowFF(xspressBean.isOnlyShowFF());
-					xspressConfig.setShowDTRawValues(xspressBean.isShowDTRawValues());
-					xspressConfig.setSaveRawSpectrum(xspressBean.isSaveRawSpectrum());
-					xspressConfig.configure(xmlFileName);
-				} else if (detType.equals("Silicon")) {
-//					vortexConfig.initialize()
-//					vortexBean = self.vortexConfig.createBeanFromXML(xmlFileName);
-//					saveRawSpectrum = vortexBean.isSaveRawSpectrum();
-//					vortexConfig.configure(xmlFileName, saveRawSpectrum);
-				}
-//				_control_all_ionc(fluoresenceParameters.getIonChamberParameters());
-			} else  if (detectorBean.getExperimentType().equals("Transmission")) {
-				TransmissionParameters transmissionParameters = detectorBean.getTransmissionParameters();
-				if (transmissionParameters.isCollectDiffractionImages()) {
-//					_control_mythen(transmissionParameters, outputBean, experimentFullPath);
-				}
-//				_control_all_ionc(transmissionParameters.getIonChamberParameters())
-			}
+	public void afterPropertiesSet() throws Exception {
+		if (energyScannable == null) {
+			logger.error("BM26aDetectorPreparer(): enery scannable is not set");
 		}
 	}
-	
+
+	@Override
+	public void configure(IScanParameters scanBean, IDetectorParameters detectorBean, IOutputParameters outputBean, String experimentFullPath) throws Exception {
+		logger.debug("Preparing bm26a detector parameters");
+		this.scanBean = scanBean;
+		this.detectorBean = detectorBean;
+
+		if (detectorBean.getExperimentType().equalsIgnoreCase("Fluorescence")) {
+			FluorescenceParameters fluoresenceParameters = detectorBean.getFluorescenceParameters();
+			if (fluoresenceParameters.isCollectDiffractionImages()) {
+				control_mythen(fluoresenceParameters, outputBean, experimentFullPath);
+			}
+			String detType = fluoresenceParameters.getDetectorType();
+			String xmlFileName = experimentFullPath + fluoresenceParameters.getConfigFileName();
+			if (detType == "Germanium") {
+				xspressSystem.setConfigFileName(xmlFileName);
+				xspressSystem.configure();
+			} else if (detType == "Silicon") {
+//				vortexDetector.setConfigFileName(xmlFileName);
+//				vortexDetector.configure();
+			} else if (detType == "Xspress3") {
+//				xspress3Detector.setConfigFileName(xmlFileName);
+//				xspress3Detector.configure();
+			}
+//			control_all_ionc(fluoresenceParameters.getIonChamberParameters());
+		} else if (detectorBean.getExperimentType().equalsIgnoreCase("Transmission")) {
+			TransmissionParameters transmissionParameters = detectorBean.getTransmissionParameters();
+			if (transmissionParameters.isCollectDiffractionImages()) {
+				control_mythen(transmissionParameters, outputBean, experimentFullPath);
+			}
+//			control_all_ionc(transmissionParameters.getIonChamberParameters());
+		}
+	}
+
 	// this will be called at the end of a loop of scans or after an abort
 	@Override
 	public void completeCollection() {
 		return;
 	}
 
-	private void control_mythen(IExperimentDetectorParameters fluoresenceParameters, IOutputParameters outputBean,
+	private void control_mythen(IExperimentDetectorParameters detectorParameters, IOutputParameters outputBean,
 			String experimentFullPath) throws Exception {
 
 		String experimentFolderName = experimentFullPath.substring(experimentFullPath.indexOf("xml") + 4,
 				experimentFullPath.length());
-		String nexusSubFolder = experimentFolderName + "/" + outputBean.getNexusDirectory();
-		String asciiSubFolder = experimentFolderName + "/" + outputBean.getAsciiDirectory();
+		String nexusSubFolder = experimentFolderName + outputBean.getNexusDirectory();
+		// String asciiSubFolder = experimentFolderName + outputBean.getAsciiDirectory();
 
-		// print "Moving DCM for Mythen image..."
-		energyScannable.moveTo(fluoresenceParameters.getMythenEnergy());
-
-		mythen_scannable.setCollectionTime(fluoresenceParameters.getMythenTime());
-
-//		mythen_scannable.setSubDirectory(experimentFolderName);
-		XasAsciiNexusDataWriter dataWriter = new XasAsciiNexusDataWriter();
-		dataWriter.setRunFromExperimentDefinition(false);
-		dataWriter.setNexusFileNameTemplate(nexusSubFolder + "/%d-mythen.nxs");
-		dataWriter.setAsciiFileNameTemplate(asciiSubFolder + "/%d-mythen.dat");
-
-		StaticScan staticscan = new StaticScan(new Scannable[] { mythen_scannable });
-		staticscan.setDataWriter(dataWriter);
-		// print "Collecting a diffraction image...";
-		staticscan.run();
-		// print "Diffraction scan complete.";
+		mythenDetectorTrigger.setStartAtScanPoint(calculateStartPoint(detectorParameters.getMythenEnergy()));
+		TangoMythenDetector mythenDetector = mythenDetectorTrigger.getMythenDetector();
+		mythenDetector.writeSavingDirectory(nexusSubFolder);
+		mythenDetector.setCollectionTime(detectorParameters.getMythenTime());
+		mythenDetector.writeNbFrames(detectorParameters.getMythenFrames());
+		mythenDetector.writeSavingFramePerFile(detectorParameters.getMythenFrames());
+		// XasAsciiNexusDataWriter dataWriter = new XasAsciiNexusDataWriter();
+		// dataWriter.setRunFromExperimentDefinition(false);
+		// dataWriter.setNexusFileNameTemplate(nexusSubFolder + "/%d-mythen.nxs");
+		// dataWriter.setAsciiFileNameTemplate(asciiSubFolder + "/%d-mythen.dat");
 	}
 
 	@Override
 	public void beforeEachRepetition() throws Exception {
 		// do nothing
-
 	}
 
 	@Override
 	public Detector[] getExtraDetectors() {
 		// not required for this beamline
 		return null;
+	}
+
+	private int calculateStartPoint(double energy) throws Exception {
+		double scanEnergies[][] = ExafsScanPointCreator.calculateScanEnergies((XasScanParameters) scanBean);
+		int scanPoint = 1;
+		for (int i = 0; i < scanEnergies.length; i++) {
+			if (scanEnergies[i][0] > energy) {
+				scanPoint = i - 1;
+				break;
+			}
+		}
+		return scanPoint;
 	}
 }
