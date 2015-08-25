@@ -569,4 +569,6 @@
 			</set>
 		</property>
 	</bean>
+
+	<import resource="devices/devices.xml" />
 </beans>
