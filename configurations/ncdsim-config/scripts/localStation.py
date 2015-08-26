@@ -11,6 +11,8 @@ from gdascripts.pd.time_pds import showtimeClass
 from gdascripts.pd.time_pds import showincrementaltimeClass
 from gdascripts.pd.time_pds import waittimeClass
 
+from maskUtils import setMask, clearMask, currentMask
+
 print "Creating dummy devices x,y and z"
 x=DummyPD("x")
 y=DummyPD("y")
