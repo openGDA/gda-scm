@@ -27,6 +27,10 @@
 				<ref bean="title" />
 				<ref bean="subdirectory" />
 				<ref bean="samplename" />
+				<bean id="visit" class="gda.data.metadata.StoredMetadataEntry">
+					<property name="name" value="visit" />
+					<property name="value" value="" />
+				</bean>
 			</list>
 		</property>
 	</bean>
@@ -78,8 +82,7 @@
 		<property name="userUnits" value="mg/mL" />
 	</bean>
 	
-	<bean class="uk.ac.gda.server.ncd.beans.StoredDetectorInfoImpl" id="detectorInfoPath">
-		<property name="currentDataDirectoryUpdater" ref="observableSubdirectory"/>
+	<bean class="uk.ac.gda.server.ncd.beans.PerVisitMaskLocation" id="detectorInfoPath">
 	</bean>
 	
 	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
@@ -119,10 +122,14 @@
 	</bean>
 	<bean id="SaxsMemory" class="gda.device.memory.Gdscaler">
 		<property name="daServerName" value="DAServerS" />
-		<property name="width" value="512" />
-		<property name="height" value="512" />
+		<property name="width" value="64" />
+		<property name="height" value="64" />
 		<property name="supportedDimensions">
 			<list>
+				<value>16</value>
+				<value>32</value>
+				<value>48</value>
+				<value>64</value>
 				<value>128</value>
 				<value>256</value>
 				<value>512</value>
@@ -174,10 +181,6 @@
 	<bean id="Waxs" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
 		<property name="detectorType" value="WAXS" />
 		<property name="memory" ref="WaxsMemory" />
-	</bean>
-	<bean id="Waxs2" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
-		<property name="detectorType" value="WAXS" />
-		<property name="memory" ref="SaxsMemory" />
 	</bean>
 
 	<bean id="Scaler" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
