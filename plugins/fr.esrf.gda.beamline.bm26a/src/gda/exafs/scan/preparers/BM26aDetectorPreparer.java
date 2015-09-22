@@ -21,7 +21,7 @@ package gda.exafs.scan.preparers;
 import gda.device.Detector;
 import gda.device.Scannable;
 import gda.device.detector.mythen.TangoMythenDetector;
-import gda.device.detector.xspress.Xspress1System;
+import gda.device.detector.xspress.XspressSystem;
 import gda.device.scannable.TangoMythenDetectorTrigger;
 import gda.exafs.scan.ExafsScanPointCreator;
 
@@ -42,7 +42,7 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 
 	private static final Logger logger = LoggerFactory.getLogger(BM26aDetectorPreparer.class);
 	private Scannable energyScannable;
-	private Xspress1System xspressSystem;
+	private XspressSystem xspressSystem;
 //	private Xmap vortexDetector;
 //	private Xspress3Detector xspress3Detector;
 	private TangoMythenDetectorTrigger mythenDetectorTrigger;
@@ -60,11 +60,11 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 		this.energyScannable = energyScannable;
 	}
 
-	public Xspress1System getXspressSystem() {
+	public XspressSystem getXspressSystem() {
 		return xspressSystem;
 	}
 
-	public void setXspressSystem(Xspress1System xspressSystem) {
+	public void setXspressSystem(XspressSystem xspressSystem) {
 		this.xspressSystem = xspressSystem;
 	}
 

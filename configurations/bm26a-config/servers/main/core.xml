@@ -1,5 +1,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
@@ -64,4 +65,12 @@
 		<property name="service" ref="XASLoggingScriptController" />
 		<property name="serviceInterface" value="gda.jython.scriptcontroller.logging.ILoggingScriptController" />
 	</bean>
+
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/xspress1system" />
+		<property name="service" ref="xspress1system" />
+		<property name="serviceInterface"
+			value="uk.ac.gda.devices.detector.FluorescenceDetector" />
+	</bean>
+
 </beans>
