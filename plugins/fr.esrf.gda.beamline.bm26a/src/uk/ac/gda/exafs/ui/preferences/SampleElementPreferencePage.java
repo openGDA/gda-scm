@@ -54,14 +54,14 @@ import fr.esrf.gda.beamline.bm26a.BM26aBeamlineActivator;
 public class SampleElementPreferencePage extends PreferencePage implements IWorkbenchPreferencePage{
 
 	private static final Logger logger = LoggerFactory.getLogger(SampleElementPreferencePage.class);
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public static final String ID = "uk.ac.gda.exafs.preferences.sampleElementPreferencePage";
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public SampleElementPreferencePage() {
 		setDescription("Enter the element configuration of the sample wheel.");
@@ -74,7 +74,7 @@ public class SampleElementPreferencePage extends PreferencePage implements IWork
 
 	@Override
 	protected Control createContents(Composite parent) {
-		
+
         final Composite main = new Composite(parent, SWT.NULL);
         GridLayout layout = new GridLayout();
         layout.numColumns = 1;
@@ -92,10 +92,10 @@ public class SampleElementPreferencePage extends PreferencePage implements IWork
 		elementPositions.setAdditionalFields(new String[]{"wheelPosition"});
 		elementPositions.setColumnWidths(new int[]{120,90});
 		elementPositions.setListWidth(400);
-		
-		
+
+
 		try {
-			IBeanService service = (IBeanService)BM26aBeamlineActivator.getService(IBeanService.class);
+			IBeanService service = BM26aBeamlineActivator.getService(IBeanService.class);
 			this.controller = service.createController(this, new SampleElements());
 			controller.addValueListener(new ValueAdapter("Validate Elements Listener") {
 				@Override
@@ -106,22 +106,22 @@ public class SampleElementPreferencePage extends PreferencePage implements IWork
 		} catch (Exception e) {
 			logger.error("Cannot listen to value changes.",e);
 		}
-		
+
 		performDefaults();
-		 
+
 		return main;
 	}
-	
+
 	@Override
 	public Point doComputeSize() {
 		return new Point(600,300);
 	}
-	
+
     protected void performValidate() {
        	final SampleElements elements = new SampleElements();
     	try {
     		controller.uiToBean();
- 	   		
+
  			final List<Integer> positions  = new ArrayList<Integer>(Math.max(1,elements.getElementPositions().size()));
 		    for (ElementPosition pos : elements.getElementPositions()) {
 				if (pos.getName()==null) {
@@ -146,10 +146,10 @@ public class SampleElementPreferencePage extends PreferencePage implements IWork
 				}
 				positions.add(pos.getWheelPosition());
 			}
-		    
+
 			setErrorMessage(null);
 			setValid(true);
-			
+
 		} catch (Exception e) {
 			logger.error("Cannot validate.", e);
 		}
@@ -160,38 +160,38 @@ public class SampleElementPreferencePage extends PreferencePage implements IWork
      */
     @Override
 	public boolean performOk() {
-    	
+
     	if (!isValid()) return false;
     	final SampleElements elements = new SampleElements();
     	try {
     		controller.uiToBean();
-			
+
 			XMLCommandHandler xmlCommandHandler = ExperimentBeanManager.INSTANCE.getXmlCommandHandler(SampleElements.class);
 			final SampleElements templateParameters = (SampleElements)xmlCommandHandler.getTemplateParameters();
-		
+
 			templateParameters.setElementPositions(elements.getElementPositions());
-			
+
 			XMLHelpers.saveBean(xmlCommandHandler.getTemplatePath(), templateParameters);
-			
+
 			ExafsActivator.getDefault().getPreferenceStore().firePropertyChangeEvent(ExafsPreferenceConstants.SAMPLE_ELEMENTS, null, null);
-		
+
     	} catch (Exception e) {
 			logger.error("Cannot get bean.", e);
 		}
         return true;
     }
-    
+
     @Override
     protected void performDefaults()  {
     	try {
 			XMLCommandHandler xmlCommandHandler = ExperimentBeanManager.INSTANCE.getXmlCommandHandler(SampleElements.class);
     		final SampleElements templateParameters = (SampleElements)xmlCommandHandler.getTemplateParameters();
-    		
-			IBeanService service = (IBeanService)BM26aBeamlineActivator.getService(IBeanService.class);
+
+			IBeanService service = BM26aBeamlineActivator.getService(IBeanService.class);
 			this.controller = service.createController(this, BeansFactory.deepClone(templateParameters));
 
 			controller.beanToUI();
-    		
+
     	} catch (Exception e) {
     		logger.error("Cannot get defaults.", e);
     	}
@@ -208,7 +208,7 @@ public class SampleElementPreferencePage extends PreferencePage implements IWork
 	@Override
 	public void init(IWorkbench workbench) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
