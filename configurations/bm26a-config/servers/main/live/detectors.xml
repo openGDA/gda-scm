@@ -26,6 +26,20 @@
 		<property name="dtcConfigFileName" value="${gda.config}/templates/Xspress_DeadTime_Parameters.xml" /> 
 	</bean>
 
+	<bean id="xmapDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/xmap/1" />
+	</bean>
+
+	<bean id="xmapController" class="gda.device.detector.xmap.TangoXmapController">
+		<property name="TangoDeviceProxy" ref="xmapDeviceProxy"/>
+	</bean>
+
+	<bean id="xmapMca" class="gda.device.detector.xmap/TangoXmap">
+		<property name="controller" ref="xmapController" />
+		<property name="timer" ref="tfg" />
+		<property name="configFileName" value="${gda.config}/templates/Vortex_Parameters.xml" /> 
+	</bean>
+
 	<bean id="scalerDeviceProxy" class="gda.device.TangoDeviceProxy">
 		<constructor-arg value="tango://dubble27:20000/d26s/scaler/1" />
 	</bean>

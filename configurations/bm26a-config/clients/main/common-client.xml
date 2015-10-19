@@ -64,4 +64,9 @@
 		<property name="refreshStubOnConnectFailure" value="true" />
 	</bean>
 
+	<bean id="xmapMca" class="uk.ac.gda.remoting.client.GdaRmiProxyFactoryBean">
+		<property name="serviceUrl" value="${gda.rmi.prefix}xmapsystem" />
+		<property name="serviceInterface" value="uk.ac.gda.devices.detector.FluorescenceDetector" />
+		<property name="refreshStubOnConnectFailure" value="true" />
+	</bean>
 </beans>

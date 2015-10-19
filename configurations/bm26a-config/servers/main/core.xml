@@ -33,6 +33,7 @@
 	           <value>uk.ac.gda.beans.exafs.DetectorParameters</value>
 	           <value>uk.ac.gda.beans.exafs.OutputParameters</value>
 	           <value>uk.ac.gda.beans.xspress.XspressParameters</value>
+	           <value>uk.ac.gda.beans.vortex.VortexParameters</value>
 	        </list>
 	    </property>
 	</bean>
@@ -73,4 +74,9 @@
 			value="uk.ac.gda.devices.detector.FluorescenceDetector" />
 	</bean>
 
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/xmapsystem" />
+		<property name="service" ref="xmapMca" />
+		<property name="serviceInterface" value="uk.ac.gda.devices.detector.FluorescenceDetector" />
+	</bean>
 </beans>

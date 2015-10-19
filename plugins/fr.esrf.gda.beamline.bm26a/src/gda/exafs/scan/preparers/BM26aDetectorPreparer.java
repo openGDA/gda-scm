@@ -21,6 +21,8 @@ package gda.exafs.scan.preparers;
 import gda.device.Detector;
 import gda.device.Scannable;
 import gda.device.detector.mythen.TangoMythenDetector;
+import gda.device.detector.xmap.TangoXmap;
+import gda.device.detector.xmap.Xmap;
 import gda.device.detector.xspress.XspressSystem;
 import gda.device.scannable.TangoMythenDetectorTrigger;
 import gda.exafs.scan.ExafsScanPointCreator;
@@ -43,11 +45,12 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 	private static final Logger logger = LoggerFactory.getLogger(BM26aDetectorPreparer.class);
 	private Scannable energyScannable;
 	private XspressSystem xspressSystem;
-//	private Xmap vortexDetector;
-//	private Xspress3Detector xspress3Detector;
+	private Xmap xmapSystem;
+	// private Xspress3Detector xspress3System;
 	private TangoMythenDetectorTrigger mythenDetectorTrigger;
 	private IScanParameters scanBean;
-	private IDetectorParameters detectorBean;
+
+	// private IDetectorParameters detectorBean;
 
 	public BM26aDetectorPreparer() {
 	}
@@ -76,6 +79,14 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 		this.mythenDetectorTrigger = mythenDetectorTrigger;
 	}
 
+	public Xmap getXmapSystem() {
+		return xmapSystem;
+	}
+
+	public void setXmapSystem(Xmap xmapSystem) {
+		this.xmapSystem = xmapSystem;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (energyScannable == null) {
@@ -87,7 +98,7 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 	public void configure(IScanParameters scanBean, IDetectorParameters detectorBean, IOutputParameters outputBean, String experimentFullPath) throws Exception {
 		logger.debug("Preparing bm26a detector parameters");
 		this.scanBean = scanBean;
-		this.detectorBean = detectorBean;
+		// this.detectorBean = detectorBean;
 
 		if (detectorBean.getExperimentType().equalsIgnoreCase("Fluorescence")) {
 			FluorescenceParameters fluoresenceParameters = detectorBean.getFluorescenceParameters();
@@ -96,15 +107,18 @@ public class BM26aDetectorPreparer implements DetectorPreparer, InitializingBean
 			}
 			String detType = fluoresenceParameters.getDetectorType();
 			String xmlFileName = experimentFullPath + fluoresenceParameters.getConfigFileName();
-			if (detType == "Germanium") {
+			if ("Germanium".equals(detType)) {
 				xspressSystem.setConfigFileName(xmlFileName);
+				logger.debug("Configuring xspressSystem detector parameters");
 				xspressSystem.configure();
-			} else if (detType == "Silicon") {
-//				vortexDetector.setConfigFileName(xmlFileName);
-//				vortexDetector.configure();
-			} else if (detType == "Xspress3") {
-//				xspress3Detector.setConfigFileName(xmlFileName);
-//				xspress3Detector.configure();
+			} else if ("Silicon".equals(detType)) {
+				xmapSystem.setConfigFileName(xmlFileName);
+				((TangoXmap) xmapSystem).setFilePath(experimentFullPath);
+				logger.debug("Configuring xmap detector parameters");
+				xmapSystem.loadConfigurationFromFile();
+			} else if ("Xspress3".equals(detType)) {
+				// xspress3System.setConfigFileName(xmlFileName);
+				// xspress3System.configure();
 			}
 //			control_all_ionc(fluoresenceParameters.getIonChamberParameters());
 		} else if (detectorBean.getExperimentType().equalsIgnoreCase("Transmission")) {
