@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<VortexParameters>
-    <detectorName>xmapMca</detectorName>
+<Xspress3Parameters>
+    <detectorName>xspress3</detectorName>
     <tfgName>tfg</tfgName>
     <countType>Static</countType>
     <collectionTime>1000.0</collectionTime>
@@ -58,4 +58,4 @@
     </DetectorElement>
     <saveRawSpectrum>false</saveRawSpectrum>
     <selectedRegionNumber>0</selectedRegionNumber>
-</VortexParameters>
+</Xspress3Parameters>

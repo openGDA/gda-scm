@@ -24,6 +24,7 @@
 	<bean id="beamlinePreparer" class="gda.exafs.scan.preparers.BM26aBeamlinePreparer" />
 	<bean id="detectorPreparer" class="gda.exafs.scan.preparers.BM26aDetectorPreparer" >
 		<property name="xspressSystem" ref="xspress1system" />
+		<property name="xmapSystem" ref="xmapMca" />
 		<property name="energyScannable" ref="bragg1" />
 		<property name="tangoMythenDetectorTrigger" ref="mythenTrigger" />
 	</bean>

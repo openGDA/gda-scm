@@ -6,15 +6,20 @@
     </detectorGroup>  
     <detectorGroup>
         <name>Silicon</name>
-        <detector>counterTimer02</detector>
-        <detector>FFI0_vortex</detector>
-        <detector>xmapMca</detector>
         <detector>counterTimer01</detector>
+        <detector>xmapMca</detector>
+        <detector>FFI0_vortex</detector>
     </detectorGroup>  
     <detectorGroup>
         <name>Germanium</name>
         <detector>FFI0</detector>
         <detector>xspress1system</detector>
+        <detector>counterTimer01</detector>
+    </detectorGroup>
+    <detectorGroup>
+        <name>Xspress3</name>
+        <detector>xspress3Detector</detector>
+        <detector>FFI0_xspress3</detector>
         <detector>counterTimer01</detector>
     </detectorGroup>
     
