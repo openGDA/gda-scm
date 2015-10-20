@@ -9,10 +9,25 @@
         <scannableName>dif</scannableName>
     </scannables>
     <scannables>
+        <scannableName>bragg1</scannableName>
+    </scannables>
+    <scannables>
         <scannableName>beamstx</scannableName>
     </scannables>
     <scannables>
         <scannableName>beamsty</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>s1horg</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>s1verg</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>cryox</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>cryoy</scannableName>
     </scannables>
     <detectors>
         <enabled>true</enabled>

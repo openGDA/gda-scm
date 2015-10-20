@@ -12,7 +12,7 @@
 <booleanAttribute key="default" value="false"/>
 <stringAttribute key="deselected_workspace_plugins" value="net.sf.py4j.defaultserver,org.eclipse.nebula.visualization.xygraph.preference,org.gda.tango.test,uk.ac.diamond.scisoft.analysis.osgi,uk.ac.diamond.scisoft.analysis.polling,uk.ac.diamond.scisoft.qstatMonitor,uk.ac.diamond.scisoft.system.info,uk.ac.diamond.sda.meta.extended,uk.ac.diamond.sda.navigator,uk.ac.diamond.sda.polling,uk.ac.gda.analysis.test,uk.ac.gda.client.exafs.test,uk.ac.gda.client.test,uk.ac.gda.common.rcp.test,uk.ac.gda.common.test,uk.ac.gda.core.test,uk.ac.gda.devices.xspress2.test,uk.ac.gda.devices.xspress3.test,uk.ac.gda.epics.test,uk.ac.gda.nexus.test,uk.ac.gda.server.exafs.test,uk.ac.gda.test.helpers"/>
 <booleanAttribute key="includeOptional" value="true"/>
-<stringAttribute key="location" value="/home/grm84/users/bm26a/workspace"/>
+<stringAttribute key="location" value="/home/gmant/users/bm26a/workspace"/>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
 <mapEntry key="LD_LIBRARY_PATH" value="${workspace_loc:ncsa.hdf}/lib/linux-x86_64:"/>
 </mapAttribute>

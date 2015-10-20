@@ -37,7 +37,7 @@
 	</bean>
 
 	<bean id="dif_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
-		<constructor-arg value="tango://dubble27:20000/d26s/motor/dif28" />
+		<constructor-arg value="tango://dubble27:20000/d26s/motor/dif" />
 	</bean>
 
 	<bean id="samplex_motor" class="gda.device.motor.TangoSpecMotor">
