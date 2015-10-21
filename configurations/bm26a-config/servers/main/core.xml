@@ -79,4 +79,5 @@
 		<property name="service" ref="xmapMca" />
 		<property name="serviceInterface" value="uk.ac.gda.devices.detector.FluorescenceDetector" />
 	</bean>
+
 </beans>
