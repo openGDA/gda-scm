@@ -294,15 +294,20 @@
 			</list>
 		</property>
 	</bean>
-
+<!--  
 	<bean id="xmapDeviceProxy" class="gda.device.TangoDeviceProxy">
 		<constructor-arg ref="xmapDeviceImpl"/>
 	</bean>
-
+-->
+	<bean id="xmapDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://tcfidell11:10000/xia/tango/1" />
+	</bean>
+	
 	<bean id="xmapController" class="gda.device.detector.xmap.TangoXmapController">
 		<property name="TangoDeviceProxy" ref="xmapDeviceProxy"/>
 		<property name="filePrefix" value="bm26_" />
 		<property name="fileSuffix" value=".hdf" />
+		<property name="filePath" value="/home/gmant/users/data/" />
 	</bean>
 
 	<bean id="xmapMca" class="gda.device.detector.xmap.TangoXmap">

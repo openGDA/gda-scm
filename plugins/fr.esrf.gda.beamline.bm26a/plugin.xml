@@ -153,7 +153,7 @@
       </content-type>
       <content-type
             base-type="org.eclipse.core.runtime.xml"
-            describer="uk.ac.gda.exafs.ui.describers.VortexDescriber"
+            describer="uk.ac.gda.exafs.ui.describers.BM26aVortexDescriber"
             file-extensions="xml"
             id="uk.ac.diamond.gda.client.exafs.getVortexContent"
             name="Vortex Bean File Content"
@@ -498,7 +498,7 @@
       </bean>
       <bean
             class="uk.ac.gda.beans.vortex.VortexParameters"
-            describer="uk.ac.gda.exafs.ui.describers.VortexDescriber">
+            describer="uk.ac.gda.exafs.ui.describers.BM26aVortexDescriber">
       </bean>
    </extension>
    <extension

@@ -71,7 +71,7 @@
 		<property name="serviceName" value="gda/xspress1system" />
 		<property name="service" ref="xspress1system" />
 		<property name="serviceInterface"
-			value="uk.ac.gda.devices.detector.FluorescenceDetector" />
+			value="uk.ac.gda.devices.detector.XspressFluorescenceDetector" />
 	</bean>
 
 	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
