@@ -26,7 +26,7 @@ import uk.ac.gda.exafs.ui.editors.detectors.VortexParametersEditor;
 /**
  *
  */
-public class VortexDescriber extends XMLBeanContentDescriber {
+public class BM26aVortexDescriber extends XMLBeanContentDescriber {
 
 	@Override
 	protected String getBeanName() {
