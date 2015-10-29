@@ -34,6 +34,8 @@
 	<bean id="dif_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="dif_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="dif" />
 	</bean>
 
 	<bean id="dif_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -43,6 +45,8 @@
 	<bean id="samplex_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="samplex_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="samplex" />
 	</bean>
 
 	<bean id="samplex_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -52,6 +56,8 @@
 	<bean id="sampley_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="sampley_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="sampley" />
 	</bean>
 
 	<bean id="sampley_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -61,6 +67,8 @@
 	<bean id="samplez_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="samplez_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="samplez" />
 	</bean>
 
 	<bean id="samplez_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -70,6 +78,8 @@
 	<bean id="cryox_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="cryox_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="cryox" />
 	</bean>
 
 	<bean id="cryox_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -79,6 +89,8 @@
 	<bean id="cryoy_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="cryoy_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="cryoy" />
 	</bean>
 
 	<bean id="cryoy_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -88,6 +100,8 @@
 	<bean id="cryoz_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="cryoz_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="cryoz" />
 	</bean>
 
 	<bean id="cryoz_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -97,6 +111,8 @@
 	<bean id="beamstx_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="beamstx_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="beamstx" />
 	</bean>
 
 	<bean id="beamstx_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -106,6 +122,8 @@
 	<bean id="beamsty_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="beamsty_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="beamsty" />
 	</bean>
 
 	<bean id="beamsty_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -115,6 +133,8 @@
 	<bean id="s1horg_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="s1horg_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="s1horg" />
 	</bean>
 
 	<bean id="s1horg_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
@@ -124,10 +144,56 @@
 	<bean id="s1verg_motor" class="gda.device.motor.TangoSpecMotor">
 		<property name="tangoDeviceProxy" ref="s1verg_motorDeviceProxy" />
 		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="s1verg" />
 	</bean>
 
 	<bean id="s1verg_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
 		<constructor-arg value="tango://dubble27:20000/d26s/motor/s1verg" />
+	</bean>
+
+	<bean id="same_motor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="same_motorDeviceProxy" />
+		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="same" />
+	</bean>
+
+	<bean id="same_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/motor/same" />
+	</bean>
+
+	<bean id="samz_motor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="samz_motorDeviceProxy" />
+		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="samz" />
+	</bean>
+
+	<bean id="samz_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/motor/samz" />
+	</bean>
+
+	<bean id="bstop_x_motor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="bstop_x_motorDeviceProxy" />
+		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="bstop_x" />
+	</bean>
+
+	<bean id="bstop_x_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/motor/bstop_x" />
+	</bean>
+
+	<bean id="bstop_z_motor" class="gda.device.motor.TangoSpecMotor">
+		<property name="tangoDeviceProxy" ref="bstop_z_motorDeviceProxy" />
+		<property name="local" value="true" />
+		<property name="tangoSpecCmd" ref="specCmd" />
+		<property name="specMotorName" value="bstop_z" />
+	</bean>
+
+	<bean id="bstop_z_motorDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg value="tango://dubble27:20000/d26s/motor/bstop_z" />
 	</bean>
 
 	<bean id="eurothermDeviceProxy" class="gda.device.TangoDeviceProxy">

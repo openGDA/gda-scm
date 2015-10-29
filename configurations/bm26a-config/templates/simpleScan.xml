@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SimpleScan>
-    <scannableName>dif</scannableName>
+    <scannableName>beamstx</scannableName>
     <fromPos>0.0</fromPos>
     <toPos>90.0</toPos>
     <stepSize>10.0</stepSize>
@@ -29,18 +29,30 @@
     <scannables>
         <scannableName>cryoy</scannableName>
     </scannables>
+    <scannables>
+        <scannableName>same</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>samz</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>bstop_x</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>bstop_z</scannableName>
+    </scannables>
     <detectors>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
         <detectorName>mythenCounterTimer</detectorName>
         <detectorDescription>Dectris Mythen CounterTimer</detectorDescription>
     </detectors>
     <detectors>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
         <detectorName>xspress1system</detectorName>
         <detectorDescription>VME Xspress1 Fluorescence</detectorDescription>
     </detectors>
     <detectors>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
         <detectorName>counterTimer01</detectorName>
         <detectorDescription>VME Tfg1/Scaler CounterTimer</detectorDescription>
     </detectors>

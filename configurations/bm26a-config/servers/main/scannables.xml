@@ -193,6 +193,54 @@
 		</property>
 	</bean>
 
+	<bean id="same" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="same_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="samz" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="samz_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="bstop_z" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="bstop_z_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="bstop_x" class="gda.device.scannable.ScannableMotor">
+		<property name="protectionLevel" value="3" />
+		<property name="userUnits" value="mm" />
+		<property name="motor" ref="bstop_x_motor" />
+		<property name="hardwareUnitString" value="mm" />
+		<property name="outputFormat">
+			<list>
+				<value>%8.8g</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="mythenTrigger" class="gda.device.scannable.TangoMythenDetectorTrigger">
 		<property name="mythenDetector" ref="mythen"/>
 	</bean>
