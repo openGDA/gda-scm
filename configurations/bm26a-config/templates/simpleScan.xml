@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SimpleScan>
+    <scannableName>beamstx</scannableName>
+    <fromPos>0.0</fromPos>
+    <toPos>90.0</toPos>
+    <stepSize>10.0</stepSize>
+    <acqTime>1.0</acqTime>
+    <scannables>
+        <scannableName>dif</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>bragg1</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>beamstx</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>beamsty</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>s1horg</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>s1verg</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>cryox</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>cryoy</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>same</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>samz</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>bstop_x</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>bstop_z</scannableName>
+    </scannables>
+    <detectors>
+        <enabled>false</enabled>
+        <detectorName>mythenCounterTimer</detectorName>
+        <detectorDescription>Dectris Mythen CounterTimer</detectorDescription>
+    </detectors>
+    <detectors>
+        <enabled>true</enabled>
+        <detectorName>xspress1system</detectorName>
+        <detectorDescription>VME Xspress1 Fluorescence</detectorDescription>
+    </detectors>
+    <detectors>
+        <enabled>true</enabled>
+        <detectorName>counterTimer01</detectorName>
+        <detectorDescription>VME Tfg1/Scaler CounterTimer</detectorDescription>
+    </detectors>
+</SimpleScan>

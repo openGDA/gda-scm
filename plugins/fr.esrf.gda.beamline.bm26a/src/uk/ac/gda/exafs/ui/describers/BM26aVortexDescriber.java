@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2009 Diamond Light Source Ltd.
+ * Copyright © 2015 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -16,22 +16,26 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.esrf.gda.beamline.bm26a;
+package uk.ac.gda.exafs.ui.describers;
 
-import gda.configuration.properties.LocalProperties;
+import org.eclipse.richbeans.xml.XMLBeanContentDescriber;
 
-import org.eclipse.ui.IStartup;
+import uk.ac.gda.beans.vortex.VortexParameters;
+import uk.ac.gda.exafs.ui.editors.detectors.VortexParametersEditor;
+
 /**
- * Setting up the data prior to other views connecting to it.
+ *
  */
-public class StartupService implements IStartup {
+public class BM26aVortexDescriber extends XMLBeanContentDescriber {
 
-	
 	@Override
-	public void earlyStartup() {
-		
-		if (!LocalProperties.get("gda.factory.factoryName").equals("bm26a")) return;
+	protected String getBeanName() {
+		return VortexParameters.class.getName();
 	}
-	
+
+	@Override
+	public String getEditorId() {
+		return VortexParametersEditor.ID;
+	}
 
 }

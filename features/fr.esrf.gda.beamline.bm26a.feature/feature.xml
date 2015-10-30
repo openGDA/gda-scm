@@ -117,7 +117,7 @@
          unpack="false"/>
 
    <plugin
-         id="uk.ac.gda.epics"
+         id="org.gda.tango"
          download-size="0"
          install-size="0"
          version="0.0.0"

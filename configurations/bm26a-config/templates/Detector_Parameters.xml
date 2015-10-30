@@ -6,15 +6,20 @@
     </detectorGroup>  
     <detectorGroup>
         <name>Silicon</name>
-        <detector>counterTimer02</detector>
-        <detector>FFI0_vortex</detector>
-        <detector>xmapMca</detector>
         <detector>counterTimer01</detector>
+        <detector>xmapMca</detector>
+        <detector>FFI0_vortex</detector>
     </detectorGroup>  
     <detectorGroup>
         <name>Germanium</name>
         <detector>FFI0</detector>
         <detector>xspress1system</detector>
+        <detector>counterTimer01</detector>
+    </detectorGroup>
+    <detectorGroup>
+        <name>Xspress3</name>
+        <detector>xspress3Detector</detector>
+        <detector>FFI0_xspress3</detector>
         <detector>counterTimer01</detector>
     </detectorGroup>
     
@@ -27,7 +32,7 @@
             <name>I0</name>
             <deviceName>counterTimer01</deviceName>
             <channel>1</channel>
-            <currentAmplifierName>Stanford01</currentAmplifierName>
+            <currentAmplifierName>Keithley01</currentAmplifierName>
             <gain>10^3 V/A</gain>
             <useGasProperties>false</useGasProperties>
         </ionChamber>
@@ -35,7 +40,7 @@
             <name>It</name>
             <deviceName>counterTimer01</deviceName>
             <channel>2</channel>
-            <currentAmplifierName>Stanford02</currentAmplifierName>
+            <currentAmplifierName>Keithley02</currentAmplifierName>
             <gain>10^3 V/A</gain>
             <useGasProperties>false</useGasProperties>
         </ionChamber>
@@ -43,7 +48,7 @@
             <name>Iref</name>
             <deviceName>counterTimer01</deviceName>
             <channel>3</channel>
-            <currentAmplifierName>Stanford02</currentAmplifierName>
+            <currentAmplifierName>Keithley03</currentAmplifierName>
             <gain>10^3 V/A</gain>
             <useGasProperties>false</useGasProperties>
         </ionChamber>
@@ -55,7 +60,7 @@
             <name>I0</name>
             <deviceName>counterTimer01</deviceName>
             <channel>1</channel>
-            <currentAmplifierName>Stanford01</currentAmplifierName>
+            <currentAmplifierName>Keithley01</currentAmplifierName>
             <gain>10^3 V/A</gain>
             <useGasProperties>false</useGasProperties>
         </ionChamber>
@@ -63,7 +68,7 @@
             <name>It</name>
             <deviceName>counterTimer01</deviceName>
             <channel>2</channel>
-            <currentAmplifierName>Stanford02</currentAmplifierName>
+            <currentAmplifierName>Keithley02</currentAmplifierName>
             <gain>10^3 V/A</gain>
             <useGasProperties>false</useGasProperties>
         </ionChamber>
@@ -71,7 +76,7 @@
             <name>Iref</name>
             <deviceName>counterTimer01</deviceName>
             <channel>3</channel>
-            <currentAmplifierName>Stanford02</currentAmplifierName>
+            <currentAmplifierName>Keithley03</currentAmplifierName>
             <gain>10^3 V/A</gain>
             <useGasProperties>false</useGasProperties>
         </ionChamber>

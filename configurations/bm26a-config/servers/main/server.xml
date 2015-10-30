@@ -12,19 +12,21 @@
 	<import resource="file:${gda.config}/servers/main/command-server.xml" />
 
 
-	<bean id="xspressConfig" class="gda.device.detector.xspress.XspressDetectorConfiguration" >
-		<property name="xspressSystem" ref="xspress1system" />
-	</bean>
-	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
-		<property name="serviceName" value="gda/xspressConfig" />
-		<property name="service" ref="xspressConfig" />
-		<property name="serviceInterface" value="gda.device.detector.FluorescentDetectorConfiguration" />
-	</bean>
+<!-- 	<bean id="xspressConfig" class="gda.device.detector.xspress.XspressDetectorConfiguration" > -->
+<!-- 		<property name="xspressSystem" ref="xspress1system" /> -->
+<!-- 	</bean> -->
+<!-- 	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter"> -->
+<!-- 		<property name="serviceName" value="gda/xspressConfig" /> -->
+<!-- 		<property name="service" ref="xspressConfig" /> -->
+<!-- 		<property name="serviceInterface" value="gda.device.detector.FluorescentDetectorConfiguration" /> -->
+<!-- 	</bean> -->
 	
 	<bean id="beamlinePreparer" class="gda.exafs.scan.preparers.BM26aBeamlinePreparer" />
 	<bean id="detectorPreparer" class="gda.exafs.scan.preparers.BM26aDetectorPreparer" >
-		<property name="xspressConfig" ref="xspressConfig" />
+		<property name="xspressSystem" ref="xspress1system" />
+		<property name="xmapSystem" ref="xmapMca" />
 		<property name="energyScannable" ref="bragg1" />
+		<property name="tangoMythenDetectorTrigger" ref="mythenTrigger" />
 	</bean>
 	<bean id="samplePreparer" class="gda.exafs.scan.preparers.BM26aSamplePreparer" >
 		<property name="cryoStage" ref="cryoStage" />
@@ -42,8 +44,8 @@
 		<property name="outputPreparer" ref="outputPreparer" />
 		<property name="loggingScriptController" ref="XASLoggingScriptController" />
 		<property name="datawriterconfig" ref="datawriterconfig" />
- 		<property name="energyScannable" ref="bragg1" /> 
- 		<property name="metashop" ref="metashop" />
+		<property name="energyScannable" ref="bragg1" /> 
+		<property name="metashop" ref="metashop" />
 		<property name="includeSampleNameInNexusName" value="False" />
 		<property name="scanName" value="energyScan" />
 	</bean>

@@ -46,26 +46,6 @@
 				</bean>
 			</list>
 		</property>
-<!-- 		<property name="footer"> -->
-<!-- 			<list> -->
-<!-- 				<bean id="inst2" class="gda.data.scan.datawriter.AsciiMetadataConfig"> -->
-<!-- 					<property name="label" value="Instrument: BM26a-XAS Date: %s" /> -->
-<!-- 					<property name="labelValues"> -->
-<!-- 						<list> -->
-<!-- 							<bean id="date2" class="gda.device.scannable.TimeScannable" /> -->
-<!-- 						</list> -->
-<!-- 					</property> -->
-<!-- 				</bean> -->
-<!-- 				<bean id="ringcurrentend" class="gda.data.scan.datawriter.AsciiMetadataConfig"> -->
-<!-- 					<property name="label" value="Final ring current: %5.5f" /> -->
-<!-- 					<property name="labelValues"> -->
-<!-- 						<list> -->
-<!-- 							<ref bean="ringCurrent" /> -->
-<!-- 						</list> -->
-<!-- 					</property> -->
-<!-- 				</bean> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
 	</bean>
 
 	<bean id="ringCurrent" class="gda.device.monitor.TangoMonitor">
