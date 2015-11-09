@@ -22,7 +22,7 @@ import java.net.URL;
 
 import org.eclipse.richbeans.api.event.ValueEvent;
 import org.eclipse.richbeans.api.event.ValueListener;
-import org.eclipse.richbeans.api.widget.ACTIVE_MODE;
+import org.eclipse.richbeans.api.widget.ActiveMode;
 import org.eclipse.richbeans.widgets.FieldBeanComposite;
 import org.eclipse.richbeans.widgets.FieldComposite;
 import org.eclipse.richbeans.widgets.scalebox.ScaleBox;
@@ -193,12 +193,12 @@ public class SampleParametersUIEditor extends RichBeanEditorPart {
 			xyzStageComposite = new XYZStageComposite(grpStageParameters, SWT.NONE, "samplex", "sampley", "samplez");
 			xyzStageComposite.setVisible(true);
 			xyzStageComposite.setEditorClass(XYZStageParameters.class);
-			xyzStageComposite.setActiveMode(ACTIVE_MODE.ACTIVE_ONLY);
+			xyzStageComposite.setActiveMode(ActiveMode.ACTIVE_ONLY);
 
 			cryoStageComposite = new XYZStageComposite(grpStageParameters, SWT.NONE, "cryox", "cryoy", "cryoz");
 			cryoStageComposite.setVisible(true);
 			cryoStageComposite.setEditorClass(XYZStageParameters.class);
-			cryoStageComposite.setActiveMode(ACTIVE_MODE.ACTIVE_ONLY);
+			cryoStageComposite.setActiveMode(ActiveMode.ACTIVE_ONLY);
 
 
 			Control[] children = grpStageParameters.getChildren();
