@@ -26,7 +26,6 @@ import org.eclipse.richbeans.api.event.ValueAdapter;
 import org.eclipse.richbeans.api.event.ValueEvent;
 import org.eclipse.richbeans.api.reflection.IBeanController;
 import org.eclipse.richbeans.api.reflection.IBeanService;
-import org.eclipse.richbeans.reflection.BeansFactory;
 import org.eclipse.richbeans.widgets.selector.VerticalListEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -45,6 +44,7 @@ import uk.ac.gda.client.experimentdefinition.ExperimentBeanManager;
 import uk.ac.gda.client.experimentdefinition.ui.handlers.XMLCommandHandler;
 import uk.ac.gda.exafs.ExafsActivator;
 import uk.ac.gda.exafs.ui.composites.ElementPositionComposite;
+import uk.ac.gda.util.beans.BeansFactory;
 import uk.ac.gda.util.beans.xml.XMLHelpers;
 import fr.esrf.gda.beamline.bm26a.BM26aBeamlineActivator;
 
