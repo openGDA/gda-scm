@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.richbeans.api.binding.IBeanController;
+import org.eclipse.richbeans.api.binding.IBeanService;
 import org.eclipse.richbeans.api.event.ValueAdapter;
 import org.eclipse.richbeans.api.event.ValueEvent;
-import org.eclipse.richbeans.api.reflection.IBeanController;
-import org.eclipse.richbeans.api.reflection.IBeanService;
 import org.eclipse.richbeans.widgets.selector.VerticalListEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
