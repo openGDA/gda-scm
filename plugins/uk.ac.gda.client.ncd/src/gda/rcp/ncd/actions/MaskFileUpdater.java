@@ -146,14 +146,14 @@ public class MaskFileUpdater extends AbstractHandler {
 		}
 	}
 	
-	private void addRegionToFile(IRegion roi) throws Exception {
-		if (!file.isRegionSupported(roi.getROI())) {
+	private void addRegionToFile(IRegion r) throws Exception {
+		if (!file.isRegionSupported(r.getROI())) {
 			return;
 		}
-		file.addROI(roi.getName(), roi.getROI());
-		file.setRegionAttribute(roi.getName(), "Region Type", roi.getRegionType().getName());
-		if (roi.getUserObject()!=null) {
-			file.setRegionAttribute(roi.getName(), "User Object", roi.getUserObject().toString()); 
+		file.addROI(r.getName(), r.getROI());
+		file.setRegionAttribute(r.getName(), "Region Type", r.getRegionType().getName());
+		if (r.getUserObject()!=null) {
+			file.setRegionAttribute(r.getName(), "User Object", r.getUserObject().toString()); 
 		}
 	}
 
