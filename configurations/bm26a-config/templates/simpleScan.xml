@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SimpleScan>
-    <scannableName>beamstx</scannableName>
+    <scannableName>dif</scannableName>
     <fromPos>0.0</fromPos>
     <toPos>90.0</toPos>
     <stepSize>10.0</stepSize>
@@ -28,6 +28,9 @@
     </scannables>
     <scannables>
         <scannableName>cryoy</scannableName>
+    </scannables>
+    <scannables>
+        <scannableName>cryoz</scannableName>
     </scannables>
     <scannables>
         <scannableName>same</scannableName>
