@@ -2,7 +2,7 @@
 <feature
       id="fr.esrf.gda.beamline.bm26a.feature"
       label="bm26a Feature"
-      version="8.48.0.qualifier"
+      version="8.52.0.qualifier"
       provider-name="Diamond Light Source">
 
    <description url="http://www.example.com/description">
@@ -117,7 +117,14 @@
          unpack="false"/>
 
    <plugin
-         id="uk.ac.gda.epics"
+         id="org.gda.tango"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.github.tschoonj.xraylib"
          download-size="0"
          install-size="0"
          version="0.0.0"

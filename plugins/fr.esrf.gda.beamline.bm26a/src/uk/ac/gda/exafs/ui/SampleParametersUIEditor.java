@@ -22,7 +22,7 @@ import java.net.URL;
 
 import org.eclipse.richbeans.api.event.ValueEvent;
 import org.eclipse.richbeans.api.event.ValueListener;
-import org.eclipse.richbeans.api.widget.ACTIVE_MODE;
+import org.eclipse.richbeans.api.widget.ActiveMode;
 import org.eclipse.richbeans.widgets.FieldBeanComposite;
 import org.eclipse.richbeans.widgets.FieldComposite;
 import org.eclipse.richbeans.widgets.scalebox.ScaleBox;
@@ -90,7 +90,7 @@ public class SampleParametersUIEditor extends RichBeanEditorPart {
 
 		composite = new Composite(container, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-		composite.setLayout(new GridLayout(3, false));
+		composite.setLayout(new GridLayout(4, true));
 
 		topComposite.setContent(container);
 		topComposite.setMinSize(container.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -100,29 +100,30 @@ public class SampleParametersUIEditor extends RichBeanEditorPart {
 		label.setText("Filename");
 
 		name = new TextWrapper(composite, SWT.NONE);
-		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		name.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		name.setSize(234, 21);
 
-		new Label(composite, SWT.NONE);
+//		new Label(composite, SWT.NONE);
 
 		label = new Label(composite, SWT.NONE);
 		label.setSize(72, 17);
 		label.setText("Sample description");
 		description1 = new TextWrapper(composite, SWT.NONE);
-		description1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		description1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		description1.setSize(234, 21);
+//		description1.setSize(500, 21);
 
-		new Label(composite, SWT.NONE);
+//		new Label(composite, SWT.NONE);
 
 		label = new Label(composite, SWT.NONE);
 		label.setSize(72, 17);
 		label.setText("Additional comments");
 
 		description2 = new TextWrapper(composite, SWT.NONE);
-		description2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		description2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		description2.setSize(234, 21);
 
-		new Label(composite, SWT.NONE);
+//		new Label(composite, SWT.NONE);
 
 		sampleStageExpandableComposite = new ExpandableComposite(composite, SWT.NONE);
 		sampleStageExpandableComposite.setText("Sample Stage");
@@ -141,11 +142,11 @@ public class SampleParametersUIEditor extends RichBeanEditorPart {
 		};
 		sampleStageExpandableComposite.addExpansionListener(stageExpansionListener);
 
-		if (bean != null && !bean.getStage().toString().equals("none")) {
+//		if (bean != null && !bean.getStage().toString().equals("none")) {
 			sampleStageExpandableComposite.setExpanded(true);
 			linkuiForDynamicLoading(false);
 			updateStageType();
-		}
+//		}
 
 	}
 
@@ -192,12 +193,12 @@ public class SampleParametersUIEditor extends RichBeanEditorPart {
 			xyzStageComposite = new XYZStageComposite(grpStageParameters, SWT.NONE, "samplex", "sampley", "samplez");
 			xyzStageComposite.setVisible(true);
 			xyzStageComposite.setEditorClass(XYZStageParameters.class);
-			xyzStageComposite.setActiveMode(ACTIVE_MODE.ACTIVE_ONLY);
+			xyzStageComposite.setActiveMode(ActiveMode.ACTIVE_ONLY);
 
 			cryoStageComposite = new XYZStageComposite(grpStageParameters, SWT.NONE, "cryox", "cryoy", "cryoz");
 			cryoStageComposite.setVisible(true);
 			cryoStageComposite.setEditorClass(XYZStageParameters.class);
-			cryoStageComposite.setActiveMode(ACTIVE_MODE.ACTIVE_ONLY);
+			cryoStageComposite.setActiveMode(ActiveMode.ACTIVE_ONLY);
 
 
 			Control[] children = grpStageParameters.getChildren();

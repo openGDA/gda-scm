@@ -57,7 +57,7 @@ import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 
 public class BioSAXSCollectionResultPlotView extends ViewPart {
 	public static String ID = "uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView";
-	private IPlottingSystem plotting;
+	private IPlottingSystem<Composite> plotting;
 	private Logger logger = LoggerFactory.getLogger(BioSAXSCollectionResultPlotView.class);
 	private String plotName;
 	private Composite plotComposite;
@@ -84,7 +84,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 				int[] shape = lz.getShape();
 
 				final int maxframes = shape[1] - 1;
-				
+
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
@@ -93,7 +93,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 						slider.setValue(frame);
 					}
 				});
-				
+
 				sliceJob.schedule();
 			} catch (Exception e) {
 				logger.error("Exception creating 2D plot", e);
@@ -110,14 +110,14 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
 				String name = sampleProgress.getSampleName();
-				
+
 				if (activeRadio == 0) {
 					name = name + " (buffer before)";
 				} else if (activeRadio == 2) {
 					name = name + " (buffer after)";
 				}
 				sliceObject.setName(name);
-				
+
 				int[] shape = lz.getShape();
 				sliceObject.setFullShape(shape);
 				sliceObject.setShapeMessage("");
@@ -125,7 +125,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 				sliceObject.setSliceStart(new int[] { 0, frame, 0, 0 });
 				sliceObject.setSliceStop(new int[] { 1, frame+1, shape[2], shape[3] });
 				sliceObject.setSliceStep(null);
-				
+
 				final IDataset dataSet = SliceUtils.getSlice(lz, sliceObject, monitor);
 
 				List<IDataset> dataSetList = new ArrayList<IDataset>();
@@ -138,7 +138,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 						slider.slider.setToolTipText(String.valueOf(frame));
 					}
 				});
-				
+
 			} catch (Exception e) {
 				logger.error("Exception creating 2D plot", e);
 			} catch (Throwable e) {
@@ -203,7 +203,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 			Button button = new Button(sliderComposite, SWT.RADIO);
 			button.setEnabled(false);
 			button.addSelectionListener(new SelectionListener() {
-				
+
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					final int oldActive = activeRadio;
@@ -219,7 +219,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 					if (oldActive != activeRadio)
 						loadJob.schedule();
 				}
-				
+
 				@Override
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
@@ -229,7 +229,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 		fileRadios.get(0).setText("buffer before");
 		fileRadios.get(1).setText("sample");
 		fileRadios.get(2).setText("buffer after");
-		
+
 		plotting.createPlotPart(plotComposite, plotName, getViewSite().getActionBars(), PlotType.IMAGE, this);
 		GridData plotGD = new GridData(SWT.FILL, SWT.FILL, true, true);
 		plotGD.horizontalSpan = 2;
@@ -267,7 +267,7 @@ public class BioSAXSCollectionResultPlotView extends ViewPart {
 				loadJob.schedule();
 			}
 		});
-		
+
 	}
 
 	private boolean plot(List<IDataset> list) {
