@@ -539,6 +539,15 @@
 						</property>
 					</bean>
 				</entry>
+				<entry key="scantype">
+					<bean
+						class="gda.data.scan.datawriter.scannablewriter.SingleScannableWriter">
+						<property name="paths" value="scan_type" />
+						<property name="prerequisiteScannableNames">
+							<list/>
+						</property>
+					</bean>
+				</entry>
 				<entry key="motor">
 					<bean
 						class="gda.data.scan.datawriter.scannablewriter.TransformationWriter">
@@ -568,8 +577,21 @@
 				<value>energy</value>
 				<value>sample_name</value>
 				<value>sample_thickness</value>
+				<value>scantype</value>
 				<value>motor</value>
 			</set>
+		</property>
+	</bean>
+
+	<bean id="scantype" class="gda.device.enumpositioner.DummyEnumPositioner">
+		<property name="local" value="true"/>
+		<property name="positions">
+			<list>
+				<value>OTHER</value>
+				<value>BSSC</value>
+				<value>HPLC</value>
+				<value>BUFFER</value>
+			</list>
 		</property>
 	</bean>
 
