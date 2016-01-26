@@ -82,9 +82,8 @@
         <property name="basePVName" value="ws140-AD-SIM-01:HDF5:" />
         <property name="file" ref="adsim_ndfile"/>
     </bean>
-    <bean id="adsim_hdf5_writer" class="gda.device.detector.addetector.filewriter.MultipleImagesPerHDF5FileWriterWithNumTracker" >
+    <bean id="adsim_hdf5_writer" class="gda.device.detector.addetector.filewriter.MultipleImagesPerHDF5FileWriter" >
         <property name="ndFileHDF5" ref="adsim_hdf5" />
-        <property name="numTrackerExt" value="ncd" />
         <property name="fileTemplate" value="%s%s/adsim-%d.h5" />
         <property name="filePathTemplate" value="$datadir$" />
         <property name="fileNameTemplate" value="" />
