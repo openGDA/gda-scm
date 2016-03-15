@@ -151,10 +151,9 @@
 
 
 	<bean id="simcam_filewriter"
-		class="gda.device.detector.addetector.filewriter.MultipleImagesPerHDF5FileWriterWithNumTracker">
+		class="gda.device.detector.addetector.filewriter.MultipleImagesPerHDF5FileWriter">
 		<property name="ndFileHDF5" ref="simcam_hdf5" />
 		<property name="fileNameTemplate" value="" />
-		<property name="numTrackerExt" value="ncd" />
 		<property name="filePathTemplate" value="$datadir$/" />
 		<property name="fileTemplate" value="%s%s/simcam-%d.h5" />
 		<property name="fileNumberAtScanStart" value="-1" />
