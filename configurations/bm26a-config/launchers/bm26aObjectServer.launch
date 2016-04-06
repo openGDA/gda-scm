@@ -8,7 +8,7 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="LD_LIBRARY_PATH" value="${workspace_loc:ncsa.hdf}/lib/linux-x86_64"/>
+<mapEntry key="LD_LIBRARY_PATH" value="${workspace_loc:hdf.hdf5lib}/lib/${target.os}-${target.arch}"/>
 </mapAttribute>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
