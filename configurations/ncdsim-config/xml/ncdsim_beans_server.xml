@@ -84,11 +84,30 @@
 	
 	<bean class="uk.ac.gda.server.ncd.beans.PerVisitMaskLocation" id="detectorInfoPath">
 	</bean>
-	
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/syringe" />
+		<property name="service" ref="syringe" />
+		<property name="serviceInterface" value="gda.device.syringepump.Syringe" />
+	</bean>
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/syringe2" />
+		<property name="service" ref="syringe2" />
+		<property name="serviceInterface" value="gda.device.syringepump.Syringe" />
+	</bean>
 	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
 		<property name="serviceName" value="gda/detectorInfoPath"/>
 		<property name="service" ref="detectorInfoPath"/>
 		<property name="serviceInterface" value="uk.ac.gda.server.ncd.beans.StoredDetectorInfo"/>
+	</bean>
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/syringe" />
+		<property name="service" ref="syringe" />
+		<property name="serviceInterface" value="gda.device.syringepump.Syringe" />
+	</bean>
+	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
+		<property name="serviceName" value="gda/syringe2" />
+		<property name="service" ref="syringe2" />
+		<property name="serviceInterface" value="gda.device.syringepump.Syringe" />
 	</bean>
 
 	<bean id="GDAHashtable" class="gda.util.findableHashtable.FindableHashtable" />

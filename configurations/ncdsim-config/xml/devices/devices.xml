@@ -9,4 +9,5 @@
 	<import resource="simcam.xml" />
 	<import resource="hexapod.xml" />
 -->
+	<import resource="syringe.xml" />
 </beans>
