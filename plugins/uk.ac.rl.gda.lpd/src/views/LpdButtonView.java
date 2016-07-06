@@ -25,7 +25,7 @@ import gda.factory.Finder;
 import gda.jython.JythonServerFacade;
 import gda.observable.IObserver;
 
-import org.eclipse.dawnsci.analysis.dataset.impl.IntegerDataset;
+import org.eclipse.january.dataset.IntegerDataset;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
