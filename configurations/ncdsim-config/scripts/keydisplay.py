@@ -1,5 +1,5 @@
 from gda.analysis import RCPPlotter
-from org.eclipse.dawnsci.analysis.dataset.impl import DoubleDataset
+from org.eclipse.january.dataset import DatasetFactory
 
 class KeyenceDisplay:
     
@@ -19,11 +19,11 @@ class KeyenceDisplay:
         raster=bi.getData()
         width=raster.getWidth()
         height=raster.getHeight()
-        ds=DoubleDataset([height,width])
+        ds=DatasetFactory.zeros(height,width)
         for x in range(width):
             for y in range(height):
                 try:
-                    ds[y,x] = raster.getSampleDouble(x,y,0)
+                    ds.set(raster.getSampleDouble(x,y,0), y, x)
                 except:
                     print x,y
                     return
