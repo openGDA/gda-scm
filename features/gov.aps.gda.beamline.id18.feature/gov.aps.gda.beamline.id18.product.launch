@@ -20,10 +20,6 @@
 <mapEntry key="HDF5_DISABLE_VERSION_CHECK" value="1"/>
 <mapEntry key="LD_LIBRARY_PATH" value="${workspace_loc:uk.ac.gda.core}/lib/Linux-i386:${workspace_loc:uk.ac.gda.nexus}/lib/Linux-i386"/>
 </mapAttribute>
-<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
-<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
-<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
-</listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl}"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgda.root=${project_loc:uk.ac.gda.core}/..&#10;-Dgda.config=${project_loc:id18-config}&#10;-Dgda.mode=dummy&#10;-Dgda.propertiesFile=${project_loc:id18-config}/properties/dummy/java.properties&#10;-Djacorb.config.dir=${project_loc:id18-config}/jacorb/dummy&#10;-Xms512m -Xmx1024m"/>
