@@ -215,6 +215,7 @@ public final class HplcSessionBeanEditor extends RichBeanMultiPageEditorPart {
 				} catch (Exception e) {
 					logger.error("Exception writing bean to XML", e);
 				}
+				HatsaxsUtils.refreshXmlDirectory();
 			}
 
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();

@@ -18,8 +18,6 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
-import gda.rcp.DataProject;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -46,6 +44,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gda.rcp.DataProject;
 import uk.ac.gda.common.rcp.util.EclipseUtils;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
@@ -101,7 +100,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 			} catch (InstantiationException | IllegalAccessException e) {
 				logger.error("Failed to read beans from file and could not create empty bean");
 			}
-			
+
 		}
 		try {
 			linkUI();
@@ -211,6 +210,7 @@ public final class BSSCSessionBeanEditor extends RichBeanMultiPageEditorPart {
 				} catch (Exception e) {
 					logger.error("Exception writing bean to XML", e);
 				}
+				HatsaxsUtils.refreshXmlDirectory();
 			}
 
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
