@@ -18,9 +18,13 @@
 
 package uk.ac.gda.devices.bssc.perspectives;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IFolderLayout;
 
 public class BSSCPerspective implements IPerspectiveFactory {
 	public static String ID = "uk.ac.gda.devices.bssc.perspective";

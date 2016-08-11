@@ -50,6 +50,7 @@ public class BioSAXSStartUp implements IStartup {
 			public void run() {
 				window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				page = window.getActivePage();
+				activePerspectiveID = page.getPerspective().getId();
 
 				// Need add listener to workbench to always have at least one editor available
 				IPartService service = (IPartService) window.getService(IPartService.class);

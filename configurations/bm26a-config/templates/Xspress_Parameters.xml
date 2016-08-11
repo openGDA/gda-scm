@@ -11,6 +11,11 @@
         <windowStart>2264</windowStart>
         <windowEnd>2504</windowEnd>
         <excluded>false</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 1</name>
@@ -18,6 +23,11 @@
         <windowStart>2263</windowStart>
         <windowEnd>2454</windowEnd>
         <excluded>false</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 2</name>
@@ -25,6 +35,11 @@
         <windowStart>2503</windowStart>
         <windowEnd>2710</windowEnd>
         <excluded>false</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 3</name>
@@ -32,6 +47,11 @@
         <windowStart>2565</windowStart>
         <windowEnd>2814</windowEnd>
         <excluded>false</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 4</name>
@@ -39,6 +59,11 @@
         <windowStart>2358</windowStart>
         <windowEnd>2610</windowEnd>
         <excluded>false</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 5</name>
@@ -46,6 +71,11 @@
         <windowStart>2264</windowStart>
         <windowEnd>2504</windowEnd>
         <excluded>true</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 6</name>
@@ -53,6 +83,11 @@
         <windowStart>2264</windowStart>
         <windowEnd>2504</windowEnd>
         <excluded>true</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 7</name>
@@ -60,6 +95,11 @@
         <windowStart>2384</windowStart>
         <windowEnd>2632</windowEnd>
         <excluded>false</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <DetectorElement>
         <name>Element 8</name>
@@ -67,6 +107,11 @@
         <windowStart>2752</windowStart>
         <windowEnd>3008</windowEnd>
         <excluded>false</excluded>
+        <Region>
+            <roiName>window</roiName>
+            <roiStart>0</roiStart>
+            <roiEnd>4000</roiEnd>
+        </Region>
     </DetectorElement>
     <xspressOnlyShowFF>false</xspressOnlyShowFF>
     <xspressShowDTRawValues>true</xspressShowDTRawValues>

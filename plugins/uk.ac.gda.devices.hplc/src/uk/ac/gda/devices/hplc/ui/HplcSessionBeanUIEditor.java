@@ -21,13 +21,13 @@ package uk.ac.gda.devices.hplc.ui;
 import java.net.URL;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.richbeans.widgets.FieldComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.widgets.Composite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.gda.richbeans.components.FieldComposite;
 import uk.ac.gda.richbeans.editors.DirtyContainer;
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
 

@@ -11,6 +11,8 @@ from gdascripts.pd.time_pds import showtimeClass
 from gdascripts.pd.time_pds import showincrementaltimeClass
 from gdascripts.pd.time_pds import waittimeClass
 
+from maskUtils import setMask, clearMask, currentMask
+
 print "Creating dummy devices x,y and z"
 x=DummyPD("x")
 y=DummyPD("y")
@@ -69,6 +71,7 @@ waxs_distance = DetectorMeta("waxs_distance", ncddetectors, "WAXS", "distance", 
 saxs_distance = DetectorMeta("saxs_distance", ncddetectors, "SAXS", "distance", "m")
 saxs_centre_x = DetectorMeta("saxs_centre_x", ncddetectors, "SAXS", "beam_center_x")
 saxs_centre_y = DetectorMeta("saxs_centre_y", ncddetectors, "SAXS", "beam_center_y")
+saxs_abs_cal = DetectorMeta("saxs_abs_cal", ncddetectors, "SAXS", "scaling_factor")
 
 from gda.device.scannable.scannablegroup import ScannableGroup
 gridxy=ScannableGroup()

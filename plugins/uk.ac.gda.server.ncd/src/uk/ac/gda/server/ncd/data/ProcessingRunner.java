@@ -1,5 +1,5 @@
 /*-
- * Copyright © 2014 Diamond Light Source Ltd.
+ * Copyright © 2016 Diamond Light Source Ltd.
  *
  * This file is part of GDA.
  *
@@ -18,35 +18,19 @@
 
 package uk.ac.gda.server.ncd.data;
 
-import gda.factory.Findable;
-import gda.util.OSCommandRunner;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
-import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
+import gda.factory.Findable;
 
-public class ProcessingRunner implements Findable, Map<String, String> {
+public abstract class ProcessingRunner implements Findable {
 
 	private String name;
-	private String executablePath;
-	private Map<String, String> environment = new HashMap<String, String>();
-	private StoredDetectorInfo detectorInfo;
-	
-	public StoredDetectorInfo getDetectorInfo() {
-		return detectorInfo;
-	}
 
-	public void setDetectorInfo(StoredDetectorInfo detectorInfo) {
-		this.detectorInfo = detectorInfo;
-	}
+	public abstract void triggerProcessing(String... args) throws IOException;
 
+	public void __call__(String... args) throws IOException {
+		triggerProcessing(args);
+	}
 	@Override
 	public void setName(String name) {
 		this.name = name;
@@ -56,99 +40,5 @@ public class ProcessingRunner implements Findable, Map<String, String> {
 	public String getName() {
 		return name;
 	}
-	
-	public void triggerProcessing(String datafilepath, String backgroundfilepath, String dataCollectionId) throws IOException {
-		if (executablePath == null)
-			throw new IOException("executablePath not set");
-		if (! new File(executablePath).canExecute())
-			throw new IOException(executablePath + " not executable");
-		if (datafilepath == null)
-			throw new IllegalArgumentException("need datafilepath");
-		if (backgroundfilepath == null)
-			backgroundfilepath = "";
-		
-		if (detectorInfo != null) {
-			environment.put("NCDREDXML", detectorInfo.getDataCalibrationReductionSetupPath());
-			environment.put("PERSISTENCEFILE", detectorInfo.getSaxsDetectorInfoPath());
-		}
-		
-		OSCommandRunner.runNoWait(Arrays.asList(new String[] {executablePath, datafilepath, backgroundfilepath, dataCollectionId}), OSCommandRunner.LOGOPTION.ONLY_ON_ERROR, "/dev/null", environment, new Vector<String>());
-	}
 
-		
-	public String getExecutablePath() {
-		return executablePath;
-	}
-
-	public void setExecutablePath(String executablePath) {
-		this.executablePath = executablePath;
-	}
-
-	@Override
-	public void clear() {
-		environment.clear();
-	}
-
-	@Override
-	public boolean containsKey(Object arg0) {
-		return environment.containsKey(arg0);
-	}
-
-	@Override
-	public boolean containsValue(Object arg0) {
-		return environment.containsValue(arg0);
-	}
-
-	@Override
-	public Set<java.util.Map.Entry<String, String>> entrySet() {
-		return environment.entrySet();
-	}
-
-	@Override
-	public String get(Object arg0) {
-		return environment.get(arg0);
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return environment.isEmpty();
-	}
-
-	@Override
-	public Set<String> keySet() {
-		return environment.keySet();
-	}
-
-	@Override
-	public String put(String arg0, String arg1) {
-		return environment.put(arg0, arg1);
-	}
-
-	@Override
-	public void putAll(Map<? extends String, ? extends String> arg0) {
-		environment.putAll(arg0);
-	}
-
-	@Override
-	public String remove(Object arg0) {
-		return environment.remove(arg0);
-	}
-
-	@Override
-	public int size() {
-		return environment.size();
-	}
-
-	@Override
-	public Collection<String> values() {
-		return environment.values();
-	}
-
-	public Map<String, String> getEnvironment() {
-		return environment;
-	}
-
-	public void setEnvironment(Map<String, String> environment) {
-		this.environment = environment;
-	}
 }

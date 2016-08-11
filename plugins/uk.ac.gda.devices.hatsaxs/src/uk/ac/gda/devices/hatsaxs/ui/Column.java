@@ -29,13 +29,13 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.richbeans.api.event.ValueEvent;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 
 import uk.ac.gda.richbeans.editors.RichBeanEditorPart;
-import uk.ac.gda.richbeans.event.ValueEvent;
 
 public abstract class Column<T,V> {
 	public static enum ColumnType{

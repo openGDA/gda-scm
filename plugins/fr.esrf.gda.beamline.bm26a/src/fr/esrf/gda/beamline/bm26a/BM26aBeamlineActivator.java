@@ -20,6 +20,7 @@ package fr.esrf.gda.beamline.bm26a;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -31,7 +32,7 @@ public class BM26aBeamlineActivator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static BM26aBeamlineActivator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -57,6 +58,11 @@ public class BM26aBeamlineActivator extends AbstractUIPlugin {
 	 */
 	public static BM26aBeamlineActivator getDefault() {
 		return plugin;
+	}
+
+	public static <T> T getService(Class<T> serviceClass) {
+		ServiceReference<T> ref = plugin.getBundle().getBundleContext().getServiceReference(serviceClass);
+		return plugin.getBundle().getBundleContext().getService(ref);
 	}
 
 }

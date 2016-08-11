@@ -803,132 +803,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return subtractionId;
 	}
 
-	private boolean setDataAnalysisStatusInDatabase(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
-		connectIfNotConnected();
-		String selectSql1 = "UPDATE ispyb4a_db.Subtraction su SET gnomFilePath=?, subtractedFilePath = ?, guinierFilePath = ? "
-				+ "WHERE su.dataCollectionId = ?";
-		try (PreparedStatement stmt1 = conn.prepareStatement(selectSql1)) {
-			int index = 1;
-			stmt1.setString(index++, getAnalysisStringFromStatus(status.getStatus()));
-			List<String> filenames = status.getFileNames();
-			if (!filenames.isEmpty()) {
-				stmt1.setString(index++, filenames.get(0));
-			} else {
-				stmt1.setNull(index++, java.sql.Types.VARCHAR);
-			}
-			stmt1.setString(index++, status.getMessage());
-			stmt1.setLong(index++, dataCollectionId);
-
-			boolean success1 = stmt1.execute();
-			return success1;
-		} catch (SQLException e) {
-			logger.error("Exception while setting data analysis status in database", e);
-			throw new SQLException(e);
-		}
-
-	}
-
-	private ISpyBStatusInfo getDataAnalysisStatusFromDatabase(long dataCollectionId) throws SQLException {
-		// TODO create message column in Subtraction so we can store the information without using up an existing column
-		ISpyBStatusInfo info = new ISpyBStatusInfo();
-		String rg = null;
-		String rgGnom = null;
-		String gnomFilePath = null;
-		String subtractedFilePath = null;
-		String guinierFilePath = null;
-
-		connectIfNotConnected();
-
-		String selectSql = "SELECT rg, rggnom, gnomFilePath, subtractedFilePath, guinierFilePath FROM ispyb4a_db.Subtraction su WHERE su.dataCollectionId = ?";
-
-		try (PreparedStatement stmt = conn.prepareStatement(selectSql)) {
-			stmt.setLong(1, dataCollectionId);
-			boolean success = stmt.execute();
-			if (success) {
-				try (ResultSet rs = stmt.getResultSet()) {
-					if (rs.next()) {
-						rg = rs.getString(1);
-						rgGnom = rs.getString(2);
-						gnomFilePath = rs.getString(3);
-						subtractedFilePath = rs.getString(4);
-						guinierFilePath = rs.getString(5);
-					}
-				} catch (SQLException e) {
-					logger.error("Exception while getting result set", e);
-					throw new SQLException(e);
-				}
-
-			}
-		} catch (SQLException e) {
-			logger.error("Exception while getting data analysis status from database", e);
-			throw new SQLException(e);
-		}
-
-		if (gnomFilePath == null || gnomFilePath.equals(DATA_ANALYSIS_NOT_STARTED)) {
-			info.setStatus(ISpyBStatus.NOT_STARTED);
-		} else if (gnomFilePath.equals(DATA_ANALYSIS_FAILED)) {
-			info.setStatus(ISpyBStatus.FAILED);
-		} else if (gnomFilePath.equals(DATA_ANALYSIS_RUNNING)) {
-			info.setStatus(ISpyBStatus.RUNNING);
-		} else if (gnomFilePath.equals(DATA_ANALYSIS_COMPLETE)) {
-			info.setStatus(ISpyBStatus.COMPLETE);
-			info.setProgress(100);
-			info.addFileName(subtractedFilePath);
-		} else if (rg == null || rgGnom == null) {
-			info.setStatus(ISpyBStatus.FAILED);
-		} else {
-			info.setStatus(ISpyBStatus.FAILED);
-		}
-
-		if (guinierFilePath != null) {
-			info.setMessage(guinierFilePath);
-		}
-
-		return info;
-	}
-
-	/**
-	 * Check whether a data analysis has already been started - this would result in a Subtraction entry.
-	 * 
-	 * @param dataCollectionId
-	 * @return does a Subtraction entry exist for this dataCollectionId?
-	 * @throws SQLException
-	 */
-	private boolean isDataAnalysisExisting(long dataCollectionId) throws SQLException {
-		boolean toReturn = false;
-
-		connectIfNotConnected();
-
-		String selectSql = "SELECT COUNT(*) FROM ispyb4a_db.Subtraction s " + "WHERE s.datacollectionid = ?";
-
-		try (PreparedStatement stmt = conn.prepareStatement(selectSql)) {
-			stmt.setLong(1, dataCollectionId);
-			boolean success = stmt.execute();
-			if (success) {
-				try (ResultSet rs = stmt.getResultSet()) {
-					if (rs.next()) {
-						int numOfItems = (int) rs.getLong(1);
-						if (numOfItems >= 1) {
-							toReturn = true;
-						} else {
-							toReturn = false;
-						}
-
-					}
-				} catch (SQLException e) {
-					logger.error("Exception while getting result set", e);
-					throw new SQLException(e);
-				}
-
-			}
-		} catch (SQLException e) {
-			logger.error("Exception while checking whether data analysis exists", e);
-			throw new SQLException(e);
-		}
-
-		return toReturn;
-	}
-
 	private ISAXSDataCollection getSAXSDataCollectionFromDataCollection(long dataCollectionId) throws SQLException {
 		BioSAXSDataCollectionBean bean = null;
 
@@ -1723,27 +1597,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 		return getSAXSDataCollection(dataCollectionId).getReductionStatus();
 	}
 
-	@Override
-	public long createDataAnalysis(long dataCollectionId) throws SQLException {
-		long subtractionId = createSubtractionForDataAnalysis(dataCollectionId);
-		return subtractionId;
-	}
-
-	@Override
-	public void setDataAnalysisStatus(long dataCollectionId, ISpyBStatusInfo status) throws SQLException {
-		if (!isDataAnalysisExisting(dataCollectionId)) {
-			createSubtractionForDataAnalysis(dataCollectionId);
-		}
-		setDataAnalysisStatusInDatabase(dataCollectionId, status);
-
-		sendISpyBUpdate(dataCollectionId);
-	}
-
-	@Override
-	public ISpyBStatusInfo getDataAnalysisStatus(long dataCollectionId) throws SQLException {
-		return getSAXSDataCollection(dataCollectionId).getAnalysisStatus();
-	}
-
 	/**
 	 * Retrieve data collection status and place in collectionsMap
 	 * 
@@ -1759,7 +1612,6 @@ public class BioSAXSISPyBviaOracle implements BioSAXSISPyB {
 			if (bioSaxsDataCollection.getReductionStatus().getStatus() == null) {
 				bioSaxsDataCollection.getReductionStatus().setStatus(ISpyBStatus.NOT_STARTED);
 			}
-			bioSaxsDataCollection.setAnalysisStatus(getDataAnalysisStatusFromDatabase(dataCollectionId));
 
 			return bioSaxsDataCollection;
 		} catch (Exception e) {

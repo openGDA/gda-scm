@@ -24,9 +24,9 @@ import java.io.Reader;
 
 import org.eclipse.core.runtime.content.IContentDescriber;
 import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.richbeans.xml.XMLBeanContentDescriber;
 
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
-import uk.ac.gda.richbeans.xml.XMLBeanContentDescriber;
 
 public final class BSSCSessionBeanDescriber extends XMLBeanContentDescriber {
 

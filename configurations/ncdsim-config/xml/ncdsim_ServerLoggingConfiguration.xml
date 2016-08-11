@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration>
+<configuration scan="True" scanPeriod="2 minutes">
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Name>Finest</Name>
         <Marker>FINEST</Marker>
@@ -26,11 +26,12 @@
 	    </encoder>
 	</appender>
 
-   <logger name="gda">
-        <level value="DEBUG"/>
-    </logger>
+    <logger name="gda" level="DEBUG"/>
+    <logger name="gda.scan.ScanDataPointPopulatorAndPublisher" level="INFO" />
+    <logger name="ncsa.hdf.object" level="INFO" />
+    <logger name="org.eclipse.dawnsci.hdf5" level="INFO" />
     <root>
-        <level value="ALL"/>
+        <level value="DEBUG"/>
         <appender-ref ref="Console"/>
         <appender-ref ref="File"/>
     </root>

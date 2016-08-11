@@ -22,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dawb.common.services.ServiceManager;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.dawnsci.analysis.api.dataset.IDataset;
 import org.eclipse.dawnsci.analysis.api.dataset.ILazyDataset;
 import org.eclipse.dawnsci.analysis.api.io.IDataHolder;
@@ -36,10 +40,6 @@ import org.eclipse.dawnsci.plotting.api.filter.AbstractPlottingFilter;
 import org.eclipse.dawnsci.plotting.api.filter.IFilterDecorator;
 import org.eclipse.dawnsci.plotting.api.tool.IToolPageSystem;
 import org.eclipse.dawnsci.slicing.api.util.SliceUtils;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -63,20 +63,20 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	public static final String ID = "uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView";
 
 	private Logger logger = LoggerFactory.getLogger(BioSAXSProgressPlotView.class);
-	
-	// data related 
+
+	// data related
 	private ILazyDataset lz;
 	private ILazyDataset xAxisLazyDataSet;
 	private IDataset xAxisDataSet;
 	private List<IDataset> dataSetList;                                      // retain state of which data is currently displayed
 	private IDataHolder dh;
 	private SliceObject sliceObject;
-	
-	// plotting system related 
-	private IPlottingSystem saxsPlottingSystem;
+
+	// plotting system related
+	private IPlottingSystem<Composite> saxsPlottingSystem;
 	private SaxsAnalysisPlotType plotType;
 	private IFilterDecorator plotTypeFilterDecorator;
-	
+
 	// paths, mainly nexus
 	private String filePath;
 	private String xAxisPath;
@@ -87,7 +87,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	private final String sampleDataSetPath = "/entry1/detector_processing/Normalisation/data";
 	private final String rgPath = "/entry1/detector_processing/guinierTestData/Rg";
 	private final String invPath = "/entry1/detector_processing/Invariant/data";
-	
+
 	private int frame;
 	private ISAXSProgress sampleProgress;
 	private Composite plotComposite;
@@ -300,7 +300,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			return Status.OK_STATUS;
 		}
 	};
-	
+
 	private Group grpData;
 	private Group grpPlot;
 	private Button logNorm;
@@ -460,7 +460,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    protected IDataset[] filter(IDataset x, IDataset y) {
 	    	return SaxsAnalysisPlotType.LOGNORM_PLOT.process((Dataset) x, (Dataset) y);
 	    }
-	};		
+	};
 
 	final AbstractPlottingFilter saxsPlotTransformLL = new AbstractPlottingFilter() {
 	    @Override
@@ -469,7 +469,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    protected IDataset[] filter(IDataset x, IDataset y) {
 	    	return SaxsAnalysisPlotType.LOGLOG_PLOT.process((Dataset) x, (Dataset) y);
 	    }
-	};		
+	};
 
 	final AbstractPlottingFilter saxsPlotTransformGN = new AbstractPlottingFilter() {
 	    @Override
@@ -478,8 +478,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    protected IDataset[] filter(IDataset x, IDataset y) {
 	    	return SaxsAnalysisPlotType.GUINIER_PLOT.process((Dataset) x, (Dataset) y);
 	    }
-	};		
-	
+	};
+
 	final AbstractPlottingFilter saxsPlotTransformPD = new AbstractPlottingFilter() {
 	    @Override
 	    public int getRank() { return 1; }
@@ -487,8 +487,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    protected IDataset[] filter(IDataset x, IDataset y) {
 	    	return SaxsAnalysisPlotType.POROD_PLOT.process((Dataset) x, (Dataset) y);
 	    }
-	};		
-	
+	};
+
 	final AbstractPlottingFilter saxsPlotTransformKY = new AbstractPlottingFilter() {
 	    @Override
 	    public int getRank() { return 1; }
@@ -496,8 +496,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    protected IDataset[] filter(IDataset x, IDataset y) {
 	    	return SaxsAnalysisPlotType.KRATKY_PLOT.process((Dataset) x, (Dataset) y);
 	    }
-	};		
-	
+	};
+
 	final AbstractPlottingFilter saxsPlotTransformZM = new AbstractPlottingFilter() {
 	    @Override
 	    public int getRank() { return 1; }
@@ -505,8 +505,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    protected IDataset[] filter(IDataset x, IDataset y) {
 	    	return SaxsAnalysisPlotType.ZIMM_PLOT.process((Dataset) x, (Dataset) y);
 	    }
-	};	
-	
+	};
+
 	final AbstractPlottingFilter saxsPlotTransformDB = new AbstractPlottingFilter() {
 	    @Override
 	    public int getRank() { return 1; }
@@ -514,19 +514,19 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 	    protected IDataset[] filter(IDataset x, IDataset y) {
 	    	return SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT.process((Dataset) x, (Dataset) y);
 	    }
-	};		
-	
+	};
+
 	// new Label(grpPlot, SWT.NONE);                                    // include for marginally nicer alignment of radio buttons
 	logNorm = new Button(grpPlot, SWT.RADIO);
 	logNorm.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (logNorm.getSelection()) {	
+				if (logNorm.getSelection()) {
 				    logger.trace("BioSAXSReductionResultPlotView.widgetSelected:LN");
-			    	plotType = SaxsAnalysisPlotType.LOGNORM_PLOT;  // a bit redundant since current filter is already record of current transform state 
+			    	plotType = SaxsAnalysisPlotType.LOGNORM_PLOT;  // a bit redundant since current filter is already record of current transform state
 				    plotTypeFilterDecorator.clear();
 				    plotTypeFilterDecorator.addFilter(saxsPlotTransformLN);
-				    setPlot(sampleProgress); 
+				    setPlot(sampleProgress);
 				}
 			}
 
@@ -537,7 +537,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			}
 		});
 		logNorm.setText("Log/Norm");
-		logNorm.setSelection(true); 
+		logNorm.setSelection(true);
 
 		logLog = new Button(grpPlot, SWT.RADIO);
 		logLog.addSelectionListener(new SelectionListener() {
@@ -546,10 +546,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 			    if (logLog.getSelection()) {
 			    	logger.trace("BioSAXSReductionResultPlotView.widgetSelected:LL");
-			    	plotType = SaxsAnalysisPlotType.LOGLOG_PLOT;  // a bit redundant since current filter is already record 			    	
+			    	plotType = SaxsAnalysisPlotType.LOGLOG_PLOT;  // a bit redundant since current filter is already record
 			    	plotTypeFilterDecorator.clear();
 			    	plotTypeFilterDecorator.addFilter(saxsPlotTransformLL);
-				    setPlot(sampleProgress);  			    	
+				    setPlot(sampleProgress);
 				}
 			}
 			@Override
@@ -565,10 +565,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (guinier.getSelection()) {
 					logger.trace("BioSAXSReductionResultPlotView.widgetSelected:GN");
-			    	plotType = SaxsAnalysisPlotType.GUINIER_PLOT;  // a bit redundant since current filter is already record of current transform state 			    
+			    	plotType = SaxsAnalysisPlotType.GUINIER_PLOT;  // a bit redundant since current filter is already record of current transform state
 				    plotTypeFilterDecorator.clear();
 				    plotTypeFilterDecorator.addFilter(saxsPlotTransformGN);
-				    setPlot(sampleProgress); 	
+				    setPlot(sampleProgress);
 				}
 			}
 			@Override
@@ -584,10 +584,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (porod.getSelection()) {
 					logger.trace("BioSAXSReductionResultPlotView.widgetSelected:PD");
-			    	plotType = SaxsAnalysisPlotType.POROD_PLOT;  // a bit redundant since current filter is already record of current transform state 				    
+			    	plotType = SaxsAnalysisPlotType.POROD_PLOT;  // a bit redundant since current filter is already record of current transform state
 				    plotTypeFilterDecorator.clear();
 				    plotTypeFilterDecorator.addFilter(saxsPlotTransformPD);
-				    setPlot(sampleProgress); 
+				    setPlot(sampleProgress);
 
 				}
 			}
@@ -604,10 +604,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (kratky.getSelection()) {
 					logger.trace("BioSAXSReductionResultPlotView.widgetSelected:KY");
-			    	plotType = SaxsAnalysisPlotType.KRATKY_PLOT;  // a bit redundant since current filter is already record of current transform state 						    
+			    	plotType = SaxsAnalysisPlotType.KRATKY_PLOT;  // a bit redundant since current filter is already record of current transform state
 				    plotTypeFilterDecorator.clear();
 				    plotTypeFilterDecorator.addFilter(saxsPlotTransformKY);
-				    setPlot(sampleProgress); 
+				    setPlot(sampleProgress);
 				}
 			}
 			@Override
@@ -623,10 +623,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (zimm.getSelection()) {
 					logger.trace("BioSAXSReductionResultPlotView.widgetSelected:ZM");
-			    	plotType = SaxsAnalysisPlotType.ZIMM_PLOT;  // a bit redundant since current filter is already record of current transform state				    
+			    	plotType = SaxsAnalysisPlotType.ZIMM_PLOT;  // a bit redundant since current filter is already record of current transform state
 				    plotTypeFilterDecorator.clear();
 				    plotTypeFilterDecorator.addFilter(saxsPlotTransformZM);
-				    setPlot(sampleProgress); 
+				    setPlot(sampleProgress);
 				}
 			}
 			@Override
@@ -642,10 +642,10 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			public void widgetSelected(SelectionEvent e) {
 				if (debyeBueche.getSelection()) {
 					logger.trace("BioSAXSReductionResultPlotView.widgetSelected:DB");
-			    	plotType = SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT;  // a bit redundant since current filter is already record of current transform state 				    
+			    	plotType = SaxsAnalysisPlotType.DEBYE_BUECHE_PLOT;  // a bit redundant since current filter is already record of current transform state
 				    plotTypeFilterDecorator.clear();
 				    plotTypeFilterDecorator.addFilter(saxsPlotTransformDB);
-				    setPlot(sampleProgress); 
+				    setPlot(sampleProgress);
 				}
 			}
 			@Override
@@ -654,8 +654,8 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 			}
 		});
 		debyeBueche.setText("Debye-Bueche");
-				
-		
+
+
 		saxsPlottingSystem.createPlotPart(plotComposite, "My Plot Name", getViewSite().getActionBars(), PlotType.XY, this); // move this up so default selection code below can be put in widgetDefaultSelected?
 		plotType = SaxsAnalysisPlotType.LOGNORM_PLOT;                       // remove recording which plotType is active? FilterDecorator remembers state instead
         plotTypeFilterDecorator.clear();                                    // set initial transform after createPlotPart
@@ -717,7 +717,7 @@ public class BioSAXSReductionResultPlotView extends ViewPart {
 				axis.setTitle(plotType.getAxisNames().getSecond() );
 			} else {
 				axis.setTitle(plotType.getAxisNames().getFirst() );
-			}			
+			}
 		}
 
 		return true;

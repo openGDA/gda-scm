@@ -24,20 +24,19 @@ import gda.factory.Finder;
 import java.io.File;
 import java.util.Collection;
 
-import org.dawb.common.services.IPersistenceService;
-import org.dawb.common.services.IPersistentFile;
-import org.dawb.common.services.ServiceManager;
 import org.dawb.common.ui.util.EclipseUtils;
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.dawnsci.analysis.api.dataset.IDataset;
 import org.eclipse.dawnsci.analysis.api.metadata.IDiffractionMetadata;
 import org.eclipse.dawnsci.analysis.api.metadata.IMetadata;
+import org.eclipse.dawnsci.analysis.api.persistence.IPersistenceService;
+import org.eclipse.dawnsci.analysis.api.persistence.IPersistentFile;
 import org.eclipse.dawnsci.plotting.api.IPlottingSystem;
 import org.eclipse.dawnsci.plotting.api.region.IRegion;
 import org.eclipse.dawnsci.plotting.api.trace.IImageTrace;
 import org.eclipse.dawnsci.plotting.api.trace.ITrace;
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -45,13 +44,19 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.gda.client.UIHelper;
 import uk.ac.gda.server.ncd.beans.StoredDetectorInfo;
 
 public class MaskFileUpdater extends AbstractHandler {
 	private static final Logger logger = LoggerFactory.getLogger(MaskFileUpdater.class);
+	private static IPersistenceService service;
 	private StoredDetectorInfo fileLocation;
 	private IPersistentFile file;
-	
+
+	public static void setPersistenceService(IPersistenceService s) { // Injected
+		service = s;
+	}
+
 	public MaskFileUpdater() {
 		fileLocation = Finder.getInstance().find("detectorInfoPath");
 	}
@@ -60,20 +65,15 @@ public class MaskFileUpdater extends AbstractHandler {
 		String newFile = LocalProperties.getVarDir() + "temporaryMaskFileForMaskFileUpdater.hdf5";
 		try {
 			saveMaskFile(newFile);
-			if (fileLocation.setSaxsDetectorInfoPath(newFile)) {
-				MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_INFORMATION | SWT.OK);
-				dialog.setText("Mask and Profiles Saved");
-				dialog.setMessage("The mask and any profiles selected have been saved to " + fileLocation.getSaxsDetectorInfoPath());
-				dialog.open();
-			} else {
-				throw new Exception("File not created successfully");
-			}
+			fileLocation.setSaxsDetectorInfoPath(newFile);
+			MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_INFORMATION | SWT.OK);
+			dialog.setText("Mask and Profiles Saved");
+			dialog.setMessage("The mask and any profiles selected have been saved to " + fileLocation.getSaxsDetectorInfoPath());
+			dialog.open();
 		} catch (Exception e) {
 			logger.error("Could not save mask file", e);
-			MessageBox dialog = new MessageBox(new Shell(), SWT.ICON_ERROR| SWT.OK);
-			dialog.setText("Error saving file");
-			dialog.setMessage("The mask/profile file could not be saved (existing file will continue to be used). If problem continues please contact support");
-			dialog.open();
+			fileLocation.clearSaxsDetectorInfoPath();
+			UIHelper.showError("Error Saving File", "The mask/profile file could not be saved (existing file will continue to be used). If problem continues please contact support");
 		} finally {
 			if (file != null) {
 				file.close();
@@ -95,7 +95,6 @@ public class MaskFileUpdater extends AbstractHandler {
 	}
 	
 	private void createMaskFile(String newFile) throws Exception {
-		IPersistenceService service = (IPersistenceService)ServiceManager.getService(IPersistenceService.class);
 		file = service.createPersistentFile(newFile);
 	}
 	
@@ -130,26 +129,31 @@ public class MaskFileUpdater extends AbstractHandler {
 		}
 	}
 	
-	private void addDiffractionMetadataToFile() throws Exception {
-		IImageTrace trace = getImage();
-		if (trace!=null && trace.getData() != null) {
-			IMetadata meta = trace.getData().getMetadata();
-			if (meta == null || meta instanceof IDiffractionMetadata) {
-				file.setDiffractionMetadata((IDiffractionMetadata) meta);
+	private void addDiffractionMetadataToFile() {
+		IImageTrace trace;
+		try {
+			trace = getImage();
+			if (trace!=null && trace.getData() != null) {
+				IMetadata meta = trace.getData().getMetadata();
+				if (meta == null || meta instanceof IDiffractionMetadata) {
+					file.setDiffractionMetadata((IDiffractionMetadata) meta);
+				}
+			} else {
+				logger.debug("No diffractionMetadata to save to file");
 			}
-		} else {
-			logger.debug("No diffractionMetadata to save to file");
+		} catch (Exception e) {
+			logger.error("Could not include metadata in mask file", e);
 		}
 	}
 	
-	private void addRegionToFile(IRegion roi) throws Exception {
-		if (!file.isRegionSupported(roi.getROI())) {
+	private void addRegionToFile(IRegion r) throws Exception {
+		if (!file.isRegionSupported(r.getROI())) {
 			return;
 		}
-		file.addROI(roi.getName(), roi.getROI());
-		file.setRegionAttribute(roi.getName(), "Region Type", roi.getRegionType().getName());
-		if (roi.getUserObject()!=null) {
-			file.setRegionAttribute(roi.getName(), "User Object", roi.getUserObject().toString()); 
+		file.addROI(r.getName(), r.getROI());
+		file.setRegionAttribute(r.getName(), "Region Type", r.getRegionType().getName());
+		if (r.getUserObject()!=null) {
+			file.setRegionAttribute(r.getName(), "User Object", r.getUserObject().toString()); 
 		}
 	}
 

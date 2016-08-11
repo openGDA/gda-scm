@@ -8,7 +8,6 @@
 	http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.1.xsd">
 	<gda:rbac />
 	
-
 	<corba:adapterfactory namespace="${gda.factory.factoryName}" />
 
 	<bean
@@ -28,6 +27,10 @@
 				<ref bean="title" />
 				<ref bean="subdirectory" />
 				<ref bean="samplename" />
+				<bean id="visit" class="gda.data.metadata.StoredMetadataEntry">
+					<property name="name" value="visit" />
+					<property name="value" value="" />
+				</bean>
 			</list>
 		</property>
 	</bean>
@@ -61,27 +64,25 @@
 	<bean class="gda.data.metadata.MetadataBlaster" id="observableSamplename">
 		<property name="storedMetadataEntry" ref="samplename" />
 	</bean>
-	
 	<bean
-		class="gda.device.scannable.DummyUnitsScannable" id="sample_thickness">
+		class="uk.ac.gda.server.ncd.scannable.ScanResetDummyUnitScannable" id="sample_thickness">
 		<property name="name" value="sample_thickness" />
 		<property name="inputNames"><list><value>sample_thickness</value></list></property>
 		<property name="outputFormat"><list><value>%5.5g</value></list></property>
 		<property name="protectionLevel" value="1" />
 		<property name="userUnits" value="mm" />
+		<property name="resetValue" value="NaN" />
 	</bean>
-	
 	<bean
 		class="gda.device.scannable.DummyUnitsScannable" id="sample_concentration">
 		<property name="name" value="sample_concentration" />
 		<property name="inputNames"><list><value>"sample_concentration"</value></list></property>
 		<property name="outputFormat"><list><value>%5.5g</value></list></property>
 		<property name="protectionLevel" value="1" />
-		<!--  Throws error: <property name="userUnits" value="mg/ml" /> -->
+		<property name="userUnits" value="mg/mL" />
 	</bean>
 	
-	<bean class="uk.ac.gda.server.ncd.beans.StoredDetectorInfoImpl" id="detectorInfoPath">
-		<property name="currentDataDirectoryUpdater" ref="observableSubdirectory"/>
+	<bean class="uk.ac.gda.server.ncd.beans.PerVisitMaskLocation" id="detectorInfoPath">
 	</bean>
 	
 	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
@@ -121,10 +122,14 @@
 	</bean>
 	<bean id="SaxsMemory" class="gda.device.memory.Gdscaler">
 		<property name="daServerName" value="DAServerS" />
-		<property name="width" value="512" />
-		<property name="height" value="512" />
+		<property name="width" value="64" />
+		<property name="height" value="64" />
 		<property name="supportedDimensions">
 			<list>
+				<value>16</value>
+				<value>32</value>
+				<value>48</value>
+				<value>64</value>
 				<value>128</value>
 				<value>256</value>
 				<value>512</value>
@@ -176,10 +181,6 @@
 	<bean id="Waxs" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
 		<property name="detectorType" value="WAXS" />
 		<property name="memory" ref="WaxsMemory" />
-	</bean>
-	<bean id="Waxs2" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
-		<property name="detectorType" value="WAXS" />
-		<property name="memory" ref="SaxsMemory" />
 	</bean>
 
 	<bean id="Scaler" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
@@ -314,12 +315,12 @@
 	<bean id="twodscan" class="gda.data.scan.TwoDPlotListener">
 		<property name="plotPanel" value="Plot 2D" />
 	</bean>
-	<bean id="ncddetectorsProcessingListener" class="uk.ac.gda.server.ncd.data.scan.DataProcessingScanListener" >
-		<property name="detector" ref="ncddetectors"/>
-		<property name="runner" ref="biosaxsprocessingrunner" />
-		<property name="background" ref="backgroundDataFile" />
-		<property name="collectionId" ref="dataCollectionId" />
-	</bean>
+<!-- 	<bean id="ncddetectorsProcessingListener" class="uk.ac.gda.server.ncd.data.scan.DataProcessingScanListener" > -->
+<!-- 		<property name="detector" ref="ncddetectors"/> -->
+<!-- 		<property name="runner" ref="biosaxsprocessingrunner" /> -->
+<!-- 		<property name="background" ref="backgroundDataFile" /> -->
+<!-- 		<property name="collectionId" ref="dataCollectionId" /> -->
+<!-- 	</bean> -->
 	<bean id="scan2elog" class="gda.data.ScanToElogExtender">
 		<property name="logID" value="DAG" />
 		<property name="groupID" value="SCAN" />
@@ -328,6 +329,9 @@
 				<bean class="uk.ac.gda.server.ncd.data.TfgSettingsExtractor" />
 			</list>
 		</property>
+	</bean>
+	<bean id="scanListFileWriter" class="uk.ac.gda.server.ncd.data.scan.ScanListDataWriterExtender">
+		<property name="filename" value="scanlist.csv" />
 	</bean>
 	<bean id="DataWriterFactory" class="gda.data.scan.datawriter.DefaultDataWriterFactory">
 		<property name="name" value="DataWriterFactory" />
@@ -387,6 +391,7 @@
 		<property name="gdaVarDirectory" value="${gda.config}/var" />
 		<property name="cacheDirectory" value="${gda.config}/var/jythonCache" />
 		<property name="remotePort" value="9999" />
+		<property name="remoteServerUsesJline" value="true" />
 	</bean>
 
 	<bean class="gda.device.scannable.DummyMultiElementScannable" id="dummystage">
@@ -459,19 +464,18 @@
 	</bean>
 	<corba:export namespace="ncdsim" />
 
-	<bean id="biosaxsprocessingrunner" class="uk.ac.gda.server.ncd.data.ProcessingRunner">
-		<property name="environment">
-			<map>
-				<entry key="GDA_CONFIG" value="${gda.config}" />
-				<entry key="DAWN" value="/dls/b21/data/2014/cm4976-1/tmp/DawnDiamond-1.5.0.v20140314-1320-linux64/dawn" />
-				<entry key="MOML" value="${gda.config}/processing/ncd_model.moml" />
-				<entry key="ISPYBUPDATE" value="${gda.config}/processing/updateispyb.py" />
-				<entry key="EDNAPYSCRIPT" value="${gda.install.git.loc}/gda-scm.git/plugins/uk.ac.gda.devices.bssc/scripts/runAnalysisAndPutIntoDatabase.py" />
-			</map>
-		</property>
-		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" />
-		<property name="detectorInfo" ref="detectorInfoPath" />
-	</bean>
+<!-- 	<bean id="biosaxsprocessingrunner" class="uk.ac.gda.server.ncd.data.ProcessingRunner"> -->
+<!-- 		<property name="environment"> -->
+<!-- 			<map> -->
+<!-- 				<entry key="GDA_CONFIG" value="${gda.config}" /> -->
+<!-- 				<entry key="DAWN" value="/dls/b21/data/2014/cm4976-1/tmp/DawnDiamond-1.5.0.v20140314-1320-linux64/dawn" /> -->
+<!-- 				<entry key="MOML" value="${gda.config}/processing/ncd_model.moml" /> -->
+<!-- 				<entry key="ISPYBUPDATE" value="${gda.config}/processing/updateispyb.py" /> -->
+<!-- 			</map> -->
+<!-- 		</property> -->
+<!-- 		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" /> -->
+<!-- 		<property name="detectorInfo" ref="detectorInfoPath" /> -->
+<!-- 	</bean> -->
 	
 	<bean
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -486,12 +490,18 @@
 							<list>
 								<value>instrument:NXinstrument/monochromator:NXmonochromator/energy</value>
 								<value>instrument:NXinstrument/insertion_device:NXinsertion_device/gap</value>
+								<value>instrument:NXinstrument/monochromator:NXmonochromator/perp</value>
+								<value>instrument:NXinstrument/pilthres</value>
+								<value>instrument:NXinstrument/pilthresWAXS</value>
 							</list>
 						</property>
 						<property name="units">
 							<list>
 								<value>keV</value>
 								<value>mm</value>
+								<value>mm</value>
+								<value>keV</value>
+								<value>keV</value>
 							</list>
 						</property>
 						<property name="prerequisiteScannableNames">
@@ -568,4 +578,5 @@
 		</property>
 	</bean>
 	<import resource="./ncdsim_hatsax.xml" />
+	<import resource="devices/devices.xml" />
 </beans>

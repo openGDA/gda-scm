@@ -5,7 +5,7 @@
             <level>INFO</level>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%date %-5level %logger - %m%n%ex</pattern>
+            <pattern>%date %-5level %logger - %m%n%rEx</pattern>
         </layout>
     </appender>
     <logger name="gda">

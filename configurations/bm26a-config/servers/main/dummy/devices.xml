@@ -24,135 +24,73 @@
 		</property>
 	</bean>
 
-
-	<bean id="difMotor" class="gda.device.motor.DummyMotor">
+	<bean id="test_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
-
-<!-- 	<bean id="difMotor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="difmotorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="difmotorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg ref="difmotorDeviceImpl" /> -->
-<!-- 	</bean> -->
-<!-- 	<bean id="difmotorDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/dif28" /> -->
-<!-- 		<property name="attributeMap"> -->
-<!-- 			<list> -->
-<!-- 				<bean id="positionAttribute" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="Position" /> -->
-<!-- 					<property name="attributeValue" value="3.5" /> -->
-<!-- 					<property name="attributeDataType" value="5" /> -->
-<!-- 				</bean> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
 
 	<bean id="bragg1_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
 
-<!-- 	<bean id="bragg1_motor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="bragg1_motorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="bragg1motorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg ref="bragg1motorDeviceImpl" /> -->
-<!-- 	</bean> -->
-<!-- 	<bean id="bragg1motorDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/bragg" /> -->
-<!-- 		<property name="attributeMap"> -->
-<!-- 			<list> -->
-<!-- 				<bean id="positionAttribute" class="gda.device.DummyDeviceAttribute"> -->
-<!-- 					<property name="attributeName" value="Position" /> -->
-<!-- 					<property name="attributeValue" value="3.5" /> -->
-<!-- 					<property name="attributeDataType" value="5" /> -->
-<!-- 				</bean> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 		<property name="propertyMap"> -->
-<!-- 			<list> -->
-<!-- 				<bean id="bragg1_calibratedProperty" class="gda.device.DummyDbDatum"> -->
-<!-- 					<property name="propertyName" value="calibrated" /> -->
-<!-- 					<property name="propertyValue" value="true" /> -->
-<!-- 					<property name="propertyType" value="1" /> -->
-<!-- 				</bean> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
+	<bean id="dif_motor" class="gda.device.motor.DummyMotor">
+		<property name="speed" value="500" />
+	</bean>
 
 	<bean id="samplex_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
-<!-- 	<bean id="samplex_motor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="samplex_motorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="samplex_motorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/samplex" /> -->
-<!-- 	</bean> -->
 
 	<bean id="sampley_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
-<!-- 	<bean id="sampley_motor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="sampley_motorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="sampley_motorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/sampley" /> -->
-<!-- 	</bean> -->
 
 	<bean id="samplez_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
-<!-- 	<bean id="samplez_motor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="samplez_motorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="samplez_motorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/samplez" /> -->
-<!-- 	</bean> -->
 
 	<bean id="cryox_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
-<!-- 	<bean id="cryox_motor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="cryox_motorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="cryox_motorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/cryox" /> -->
-<!-- 	</bean> -->
 
 	<bean id="cryoy_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
-<!-- 	<bean id="cryoy_motor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="cryoy_motorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="cryoy_motorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/cryoy" /> -->
-<!-- 	</bean> -->
 
 	<bean id="cryoz_motor" class="gda.device.motor.DummyMotor">
 		<property name="speed" value="500" />
 	</bean>
-<!-- 	<bean id="cryoz_motor" class="gda.device.motor.TangoSpecMotor"> -->
-<!-- 		<property name="tangoDeviceProxy" ref="cryoz_motorDeviceProxy" /> -->
-<!-- 		<property name="local" value="true" /> -->
-<!-- 	</bean> -->
 
-<!-- 	<bean id="cryoz_motorDeviceProxy" class="gda.device.TangoDeviceProxy"> -->
-<!-- 		<constructor-arg value="tango://dubble27:20000/d26s/motor/cryoz" /> -->
-<!-- 	</bean> -->
+	<bean id="beamstx_motor" class="gda.device.motor.DummyMotor">
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="beamsty_motor" class="gda.device.motor.DummyMotor">
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="s1horg_motor" class="gda.device.motor.DummyMotor">
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="s1verg_motor" class="gda.device.motor.DummyMotor">
+		<property name="speed" value="500" />
+	</bean>
+
+	<bean id="eurothermDeviceProxy" class="gda.device.TangoDeviceProxy">
+		<constructor-arg ref="eurothermDeviceImpl" />
+	</bean>
+
+	<bean id="eurothermDeviceImpl" class="gda.device.impl.DummyTangoDeviceImpl">
+		<constructor-arg value="tango://dubble27:20000/d26s/Eurotherm2400/0" />
+		<property name="attributeMap">
+			<list>
+				<bean id="pollAttribute" class="gda.device.DummyDeviceAttribute">
+					<property name="attributeName" value="poll" />
+					<property name="attributeValue" value="false" />
+					<property name="attributeDataType" value="1"/>  <!-- TangoConst.Tango_DEV_BOOLEAN -->
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 </beans>

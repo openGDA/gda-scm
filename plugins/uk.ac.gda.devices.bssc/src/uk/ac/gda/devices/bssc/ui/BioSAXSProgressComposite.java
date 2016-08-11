@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.richbeans.widgets.FieldComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -60,7 +61,6 @@ import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatusInfo;
 import uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView;
 import uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView;
-import uk.ac.gda.richbeans.components.FieldComposite;
 
 public class BioSAXSProgressComposite extends FieldComposite {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
@@ -107,12 +107,6 @@ public class BioSAXSProgressComposite extends FieldComposite {
 		column3.setWidth(80);
 		column3.setResizable(true);
 		column3.setText("Reduction\nStatus");
-
-		final TableViewerColumn viewerColumn4 = new TableViewerColumn(bioSaxsProgressViewer, SWT.NONE);
-		TableColumn column4 = viewerColumn4.getColumn();
-		column4.setWidth(80);
-		column4.setResizable(true);
-		column4.setText("Analysis\nStatus");
 
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 		bioSaxsProgressViewer.setContentProvider(contentProvider);
@@ -194,16 +188,6 @@ public class BioSAXSProgressComposite extends FieldComposite {
 								logger.error("Error activating the data reduction results view", e);
 							}
 							break;
-						case 3:
-							IViewPart analysisResultPlotView;
-							try {
-								analysisResultPlotView = page
-										.showView("uk.ac.gda.devices.bssc.views.BioSAXSAnalysisResultPlotView");
-								page.activate(analysisResultPlotView);
-							} catch (PartInitException e) {
-								logger.error("Error activating the data analysis results view", e);
-							}
-							break;
 						}
 					}
 				}
@@ -272,29 +256,6 @@ public class BioSAXSProgressComposite extends FieldComposite {
 				ISAXSProgress progress = (ISAXSProgress) element;
 				ISpyBStatusInfo statusInfo = progress.getReductionStatusInfo();
 				paintTableCell(event, viewerColumn3, statusInfo);
-			}
-		});
-
-		final IObservableMap analysisProgressValues = BeanProperties.value(ISAXSProgress.class,
-				ISAXSProgress.ANALYSIS_STATUS_INFO).observeDetail(knownElements);
-
-		viewerColumn4.setLabelProvider(new ObservableMapOwnerDrawProvider(analysisProgressValues) {
-			@Override
-			protected void measure(Event event, Object element) {
-				event.setBounds(new Rectangle(event.x, event.y, 20, 10));
-			}
-
-			@Override
-			protected void erase(Event event, Object element) {
-				eraseTableCell(event);
-				super.erase(event, element);
-			}
-
-			@Override
-			protected void paint(Event event, Object element) {
-				ISAXSProgress progress = (ISAXSProgress) element;
-				ISpyBStatusInfo statusInfo = progress.getAnalysisStatusInfo();
-				paintTableCell(event, viewerColumn4, statusInfo);
 			}
 		});
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="GDA BM26a Beamline" id="fr.esrf.gda.beamline.bm26a.product" application="uk.ac.gda.client.application" version="8.43.0" useFeatures="true" includeLaunchers="true">
+<product name="GDA BM26a Beamline" id="fr.esrf.gda.beamline.bm26a.product" application="uk.ac.gda.client.application" version="8.56.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/uk.ac.gda.core/icons/GDAlogos/GDALogomed.png"/>
@@ -11,20 +11,24 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Declipse.pluginCustomization=/home/ppc/gda_git/gda-scm.git/plugins/fr.esrf.gda.beamline.bm26a/plugin_customization.ini
+      <vmArgs>-Dorg.eclipse.swt.internal.gtk.cairoGraphics=false
+-Dorg.eclipse.swt.internal.gtk.useCairo=false
+-Declipse.pluginCustomization=/home/gmant/gda_git/gda-scm.git/plugins/fr.esrf.gda.beamline.bm26a/plugin_customization.ini
 -Dgda.mode=live
 -Dosgi.locking=none
--Dgda.install.workspace.loc=/home/ppc/gda
--Dgda.install.git.loc=/home/ppc/gda_git
--Dgda.config=/home/ppc/gda_git/gda-scm.git/configurations/bm26a-config
--Djava.library.path=/home/ppc/gda_git/gda-nexus.git/uk.ac.gda.nexus/lib/linux-x86_64
--Dgda.propertiesFile=/home/ppc/gda_git/gda-scm.git/configurations/bm26a-config/properties/live/java.properties
--Djacorb.config.dir=/home/ppc/gda_git/gda-scm.git/configurations/bm26a-config/jacorb/live
+-Dgda.install.workspace.loc=/home/gmant/gda
+-Dgda.install.git.loc=/home/gmant/gda_git
+-Dgda.config=/home/gmant/gda_git/gda-scm.git/configurations/bm26a-config
+-Djava.library.path=/home/gmant/gda_git/gda-nexus.git/uk.ac.gda.nexus/lib/linux-x86_64
+-Dgda.propertiesFile=/home/gmant/gda_git/gda-scm.git/configurations/bm26a-config/properties/live/java.properties
+-Djacorb.config.dir=/home/gmant/gda_git/gda-scm.git/configurations/bm26a-config/jacorb/live
 -Xms512m
 -Xmx1024m
 -XX:MaxPermSize=1024m
--XX:+DisableExplicitGC</vmArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+-XX:+DisableExplicitGC
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="/uk.ac.gda.core/icons/GDAlogos/GDALogo16.png" i32="/uk.ac.gda.core/icons/GDAlogos/GDALogo32.png" i48="/uk.ac.gda.core/icons/GDAlogos/GDALogo48.png" i64="/uk.ac.gda.core/icons/GDAlogos/GDALogo64.png" i128="/uk.ac.gda.core/icons/GDAlogos/GDALogo128.png"/>

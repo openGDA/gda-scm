@@ -8,7 +8,7 @@
 
 	<bean id="datawriterconfig" class="gda.data.scan.datawriter.AsciiDataWriterConfiguration">
 		<property name="commentMarker" value="#"></property>
-		<property name="controllerName" value="ExafsScriptObserver"></property>
+		<property name="fluorescenceDetector" ref="xspress1system"></property>
 		<property name="header">
 			<list>
 				<bean id="machine1" class="gda.data.scan.datawriter.AsciiMetadataConfig">
@@ -46,26 +46,6 @@
 				</bean>
 			</list>
 		</property>
-<!-- 		<property name="footer"> -->
-<!-- 			<list> -->
-<!-- 				<bean id="inst2" class="gda.data.scan.datawriter.AsciiMetadataConfig"> -->
-<!-- 					<property name="label" value="Instrument: BM26a-XAS Date: %s" /> -->
-<!-- 					<property name="labelValues"> -->
-<!-- 						<list> -->
-<!-- 							<bean id="date2" class="gda.device.scannable.TimeScannable" /> -->
-<!-- 						</list> -->
-<!-- 					</property> -->
-<!-- 				</bean> -->
-<!-- 				<bean id="ringcurrentend" class="gda.data.scan.datawriter.AsciiMetadataConfig"> -->
-<!-- 					<property name="label" value="Final ring current: %5.5f" /> -->
-<!-- 					<property name="labelValues"> -->
-<!-- 						<list> -->
-<!-- 							<ref bean="ringCurrent" /> -->
-<!-- 						</list> -->
-<!-- 					</property> -->
-<!-- 				</bean> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
 	</bean>
 
 	<bean id="ringCurrent" class="gda.device.monitor.TangoMonitor">
@@ -80,4 +60,33 @@
 		<property name="local" value="true" />
 	</bean>
 
+
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="gda.data.scan.datawriter.NexusDataWriter.setLocationmap" />
+		<property name="arguments">
+			<map>
+<!-- 				<entry key="d1motor"> -->
+<!-- 					<bean -->
+<!-- 						class="gda.data.scan.datawriter.scannablewriter.SingleScannableWriter"> -->
+<!-- 						<property name="paths" -->
+<!-- 							value="instrument:NXinstrument/D1motor:NXattenuator/d1motor" /> -->
+<!-- 						<property name="units" value="mm" /> -->
+<!-- 					</bean> -->
+<!-- 				</entry> -->
+			</map>
+		</property>
+	</bean>
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="gda.data.scan.datawriter.NexusDataWriter.setMetadatascannables" />
+		<property name="arguments">
+			<set>
+<!-- 				<value>d1motor</value> -->
+			</set>
+		</property>
+	</bean>
+	<bean id="metashop" class="gda.data.metadata.NXMetaDataProvider" />
 </beans>

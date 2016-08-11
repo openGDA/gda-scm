@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="True" scanPeriod="2 minutes">
     <turboFilter class="ch.qos.logback.classic.turbo.MarkerFilter">
         <Name>Finest</Name>
         <Marker>FINEST</Marker>
@@ -34,24 +34,15 @@
             <FileNamePattern>${gda.logs.dir}/client.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d %-5level [%logger] %ex - %m%n</pattern>
+            <pattern>%d %-5level [%logger] %rEx - %m%n</pattern>
         </layout>
     </appender>
-    <logger name="gda">
-        <level value="DEBUG"/>
-    </logger>
-    <logger name="gda.device.corba.impl">
-        <level value="INFO"/>
-    </logger>
-    <logger name="gda.device.temperature">
-        <level value="INFO"/>
-    </logger>
-    <logger name="gda.jython.corba.impl">
-        <level value="INFO"/>
-    </logger>
-    <logger name="gda.oe.corba.impl">
-        <level value="INFO"/>
-    </logger>
+
+    <logger name="gda" level="DEBUG"/>
+    <logger name="gda.device.corba.impl" level="INFO"/>
+    <logger name="gda.device.temperature" level="INFO"/>
+    <logger name="gda.jython.corba.impl" level="INFO"/>
+    <logger name="gda.oe.corba.impl" level="INFO"/>
 
     <root>
         <level value="ALL"/>
