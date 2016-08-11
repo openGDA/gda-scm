@@ -219,6 +219,10 @@ public abstract class Column<T,V> {
 			public String getToolTipText(Object element) {
 				return getToolTip((T)element);
 			}
+			@Override
+			public boolean useNativeToolTip(Object object) {
+				return true; //prevent tooltip disappearing if it overlaps the edge of the screen
+			}
 		});
 		setEditor(new OurEditingSupport(table, rbEditor) {
 			@SuppressWarnings("unchecked")
