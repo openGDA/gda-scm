@@ -241,6 +241,14 @@ public class HplcSampleFieldComposite extends FieldComposite {
 		});
 		if (isStaff) {
 			columns.put("Visit", new Column<HplcBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
+				private boolean validVisit(HplcBean element) {
+					String visit = element.getVisit();
+					HashMap<String, String> overrides = new HashMap<>();
+					overrides.put("visit", visit);
+					String visitPath = PathConstructor.createFromTemplate(LocalProperties.get("gda.data.visitdirectory"), overrides);
+					File visitDir = new File(visitPath);
+					return visitDir.exists() && visitDir.isDirectory() && visitDir.canWrite();
+				}
 				@Override
 				public String getRealValue(HplcBean element) {
 					return element.getVisit();
@@ -251,17 +259,19 @@ public class HplcSampleFieldComposite extends FieldComposite {
 				}
 				@Override
 				protected Color getColour(HplcBean element) {
-					String visit = element.getVisit();
-					HashMap<String, String> overrides = new HashMap<>();
-					overrides.put("visit", visit);
-					String visitPath = PathConstructor.createFromTemplate(LocalProperties.get("gda.data.visitdirectory"), overrides);
-					File visitDir = new File(visitPath);
-					if (!(visitDir.exists() && visitDir.isDirectory() && visitDir.canWrite())) {
+					if (!validVisit(element)) {
 						logger.error("visit doesn't exist");
 						return warning;
 					} else {
 						return super.getColour(element);
 					}
+				}
+				@Override
+				protected String getToolTip(HplcBean element) {
+					if (!validVisit(element)) {
+						return "Visit directory does not exist\n     (or can't be written to)";
+					}
+					return super.getToolTip(element);
 				}
 			});
 			columns.put("Username", new Column<HplcBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {

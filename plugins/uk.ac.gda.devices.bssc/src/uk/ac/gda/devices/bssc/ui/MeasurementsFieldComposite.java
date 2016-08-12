@@ -18,10 +18,10 @@
 
 package uk.ac.gda.devices.bssc.ui;
 
-import gda.jython.InterfaceProvider;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +35,9 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.richbeans.api.event.ValueEvent;
 import org.eclipse.richbeans.widgets.FieldComposite;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -67,6 +65,9 @@ import org.eclipse.swt.widgets.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gda.configuration.properties.LocalProperties;
+import gda.data.PathConstructor;
+import gda.jython.InterfaceProvider;
 import uk.ac.gda.devices.bssc.beans.BSSCSessionBean;
 import uk.ac.gda.devices.bssc.beans.TitrationBean;
 import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
@@ -391,6 +392,14 @@ public class MeasurementsFieldComposite extends FieldComposite {
 		});
 		if (isStaff) {
 			columns.put("Visit", new Column<TitrationBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
+				private boolean validVisit(TitrationBean element) {
+					String visit = element.getVisit();
+					HashMap<String, String> overrides = new HashMap<>();
+					overrides.put("visit", visit);
+					String visitPath = PathConstructor.createFromTemplate(LocalProperties.get("gda.data.visitdirectory"), overrides);
+					File visitDir = new File(visitPath);
+					return visitDir.exists() && visitDir.isDirectory() && visitDir.canWrite();
+				}
 				@Override
 				public String getRealValue(TitrationBean element) {
 					return element.getVisit();
@@ -398,6 +407,24 @@ public class MeasurementsFieldComposite extends FieldComposite {
 				@Override
 				public void setNewValue(TitrationBean element, String value) {
 					element.setVisit(value);
+				}
+
+				@Override
+				protected Color getColour(TitrationBean element) {
+					if (!validVisit(element)) {
+						logger.error("visit doesn't exist");
+						return warning;
+					} else {
+						return super.getColour(element);
+					}
+				}
+
+				@Override
+				protected String getToolTip(TitrationBean element) {
+					if (!validVisit(element)) {
+						return "Visit directory does not exist\n     (or can't be written to)";
+					}
+					return super.getToolTip(element);
 				}
 			});
 			columns.put("Username", new Column<TitrationBean, String>(70, tableViewer, rbeditor, ColumnType.TEXT) {
