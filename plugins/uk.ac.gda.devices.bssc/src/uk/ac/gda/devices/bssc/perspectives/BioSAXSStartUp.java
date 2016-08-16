@@ -99,15 +99,17 @@ public class BioSAXSStartUp implements IStartup {
 								JythonServerFacade.getInstance().runCommand("import loadProfiles\nloadProfiles.load()");
 							} catch (PartInitException e) {
 								//worse things have happened
+							} catch (ClassCastException cce) {
+								// Non radial plot?
 							}
 						}
 					}
-					
+
 					@Override
 					public void perspectiveSavedAs(IWorkbenchPage page, IPerspectiveDescriptor oldPerspective,
 							IPerspectiveDescriptor newPerspective) {
 					}
-					
+
 					@Override
 					public void perspectiveDeactivated(IWorkbenchPage page, IPerspectiveDescriptor perspective) {
 					}
