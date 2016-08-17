@@ -1,0 +1,5 @@
+*.class
+configurations/ncdsim-config/users/data
+configurations/ncdsim-config/users/scripts/.*
+configurations/ncdsim-config/logs
+configurations/ncdsim-config/var

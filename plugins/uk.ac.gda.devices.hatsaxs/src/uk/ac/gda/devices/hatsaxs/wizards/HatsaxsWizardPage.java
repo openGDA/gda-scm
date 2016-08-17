@@ -1,5 +1,6 @@
-package uk.ac.gda.devices.bssc.wizards;
+package uk.ac.gda.devices.hatsaxs.wizards;
 
+import gda.data.PathConstructor;
 import gda.rcp.DataProject;
 
 import org.eclipse.core.resources.IContainer;
@@ -24,20 +25,19 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
-/**
- * The "New" wizard page allows setting the container for the new file as well as the file name. The page will only
- * accept file name without the extension OR with the extension that matches the expected one (xml).
- */
-public class BSSCSessionWizardPage extends WizardPage {
+import uk.ac.gda.devices.hatsaxs.HatsaxsUtils;
+
+public class HatsaxsWizardPage extends WizardPage {
+	
+	private ISelection selection;
 	private Text containerText;
 	private Text fileText;
-	private ISelection selection;
+	private String fileExtension;
 
-	public BSSCSessionWizardPage(ISelection selection) {
+	public HatsaxsWizardPage(ISelection selection, String fileExtension) {
 		super("wizardPage");
-		setTitle("BSSC File location");
-		setDescription("This wizard creates a new XML file to run a set of samples on the BioSAXS sample changer.");
 		this.selection = selection;
+		this.fileExtension = fileExtension;
 	}
 
 	@Override
@@ -85,12 +85,9 @@ public class BSSCSessionWizardPage extends WizardPage {
 		setControl(container);
 	}
 
-	/**
-	 * Tests if the current workbench selection is a suitable container to use.
-	 */
 	private void initialize() {
 		populateContainer();
-		fileText.setText("experiment.biosaxs");
+		fileText.setText("default." + fileExtension);
 	}
 
 	private void populateContainer() {
@@ -114,13 +111,10 @@ public class BSSCSessionWizardPage extends WizardPage {
 
 		IProject dataProject = DataProject.getDataProjectIfExists();
 		if (dataProject != null) {
-			containerText.setText(dataProject.getFolder("data/xml").getFullPath().toString());
+			containerText.setText(PathConstructor.createFromTemplate("/$visit$/data/xml"));
 		}
 	}
 
-	/**
-	 * Uses the standard container selection dialog to choose the new value for the container field.
-	 */
 	private void handleBrowse() {
 		ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace()
 				.getRoot(), false, "Select new file container");
@@ -132,9 +126,6 @@ public class BSSCSessionWizardPage extends WizardPage {
 		}
 	}
 
-	/**
-	 * Ensures that both text fields are set.
-	 */
 	private void dialogChanged() {
 		IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getContainerName()));
 		String fileName = getFileName();
@@ -151,7 +142,7 @@ public class BSSCSessionWizardPage extends WizardPage {
 			updateStatus("Project must be writable");
 			return;
 		}
-		if (fileName.length() == 0) {
+		if (fileName == null || fileName.length() == 0) {
 			updateStatus("File name must be specified");
 			return;
 		}
@@ -159,13 +150,9 @@ public class BSSCSessionWizardPage extends WizardPage {
 			updateStatus("File name must be valid");
 			return;
 		}
-		int dotLoc = fileName.lastIndexOf('.');
-		if (dotLoc != -1) {
-			String ext = fileName.substring(dotLoc + 1);
-			if ((ext.equalsIgnoreCase("biosaxs") == false) && (ext.equalsIgnoreCase("xml") == false)) {
-				updateStatus("File extension must be \"biosaxs\" or \"xml\"");
-				return;
-			}
+		if (!validFileName(fileName)) {
+			updateStatus(String.format("File extension must be \"%s\" or \"xml\"", fileExtension));
+			return;
 		}
 		updateStatus(null);
 	}
@@ -182,4 +169,15 @@ public class BSSCSessionWizardPage extends WizardPage {
 	public String getFileName() {
 		return fileText.getText();
 	}
+
+	private boolean validFileName(String name) {
+		if (name == null) {
+			return false;
+		}
+		if (name.lastIndexOf('.') < 1) {
+			return false;
+		}
+		return name.endsWith("." + fileExtension) || name.endsWith(".xml"); 
+	}
+	
 }

@@ -358,7 +358,6 @@
 			<list>
 				<ref bean="FileRegistrar" />
 				<ref bean="twodscan"/>
-				<ref bean="scanListFileWriter" />
 <!-- 				<ref bean="ncddetectorsProcessingListener" /> -->
 				<!-- <ref bean="scan2elog" /> -->
 			</list>
@@ -395,6 +394,12 @@
 							<property name="path"
 								value="${gda.install.git.loc}/gda-scm.git/plugins/uk.ac.gda.devices.bssc/scripts/" />
 							<property name="name" value="Scripts: BSSC" />
+							<property name="type" value="CORE" />
+						</bean>
+						<bean class="gda.jython.ScriptProject">
+							<property name="path"
+								value="${gda.install.git.loc}/gda-scm.git/plugins/uk.ac.gda.devices.hplc/scripts/" />
+							<property name="name" value="Scripts: HPLC" />
 							<property name="type" value="CORE" />
 						</bean>
 					</list>
@@ -591,6 +596,6 @@
 			</set>
 		</property>
 	</bean>
-
+	<import resource="./ncdsim_hatsax.xml" />
 	<import resource="devices/devices.xml" />
 </beans>

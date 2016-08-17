@@ -16,6 +16,7 @@
 		http://www.diamond.ac.uk/schema/gda/gda
 		http://www.diamond.ac.uk/schema/gda/gda/gda-gda-1.1.xsd">
 
+	<import resource="./ncdsim_hatsax.xml" />
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location"
@@ -90,4 +91,17 @@
 			value="uk.ac.gda.devices.bssc.beans.BioSAXSProgressController" />
 		<property name="service" ref="controller" />
 	</bean>
+		<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="gda.data.scan.datawriter.NexusDataWriter.setMetadatascannables" />
+		<property name="arguments">
+			<set>
+				<value>energy</value>
+				<value>sample_name</value>
+				<value>sample_thickness</value>
+			</set>
+		</property>
+	</bean>
+
 </beans>
