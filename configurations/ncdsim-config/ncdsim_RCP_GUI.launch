@@ -14,13 +14,10 @@
 <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/ncdsim_RCP_GUI"/>
 <booleanAttribute key="default" value="false"/>
 <booleanAttribute key="includeOptional" value="false"/>
-<stringAttribute key="location" value="${workspace_loc}/../runtime-uk.ac.gda.beamline.b21.product2"/>
+<stringAttribute key="location" value="${workspace_loc}/../i22/runtime"/>
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
 <mapEntry key="LD_LIBRARY_PATH" value="${workspace_loc:uk.ac.gda.core}/lib/${target.os}-${target.arch}:${workspace_loc:uk.ac.gda.nexus}/lib/${target.os}-${${build_files}target.arch}"/>
 </mapAttribute>
-<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
-<listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
-</listAttribute>
 <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
 </listAttribute>
@@ -28,7 +25,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgda.config=${project_loc:ncdsim-config}&#10;-Dgda.logs.dir=${project_loc:ncdsim-config}/logs/&#10;-Dgda.propertiesFile=${project_loc:ncdsim-config}/properties/java.properties&#10;-Djacorb.config.dir=${project_loc:ncdsim-config}/properties&#10;-Dgov.aps.jca.JCALibrary.properties=${project_loc:ncdsim-config}/properties/JCALibrary.properties&#10;-Duk.ac.diamond.scisoft.analysis.analysisrpcserverprovider.disable=true&#10;-Declipse.pluginCustomization=${project_loc:i22-config}/client/pluginCustomization.ini&#10;-Dorg.eclipse.swt.internal.gtk.cairoGraphics=false&#10;-Dorg.eclipse.swt.internal.gtk.useCairo=false&#10;-Xms256m &#10;-Xmx1800m"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dgda.config=${project_loc:ncdsim-config}&#10;-Dgda.logs.dir=${project_loc:ncdsim-config}/logs/&#10;-Dgda.propertiesFile=${project_loc:ncdsim-config}/properties/java.properties&#10;-Djacorb.config.dir=${project_loc:ncdsim-config}/properties&#10;-Dgov.aps.jca.JCALibrary.properties=${project_loc:ncdsim-config}/properties/JCALibrary.properties&#10;-Duk.ac.diamond.scisoft.analysis.analysisrpcserverprovider.disable=true&#10;-Declipse.pluginCustomization=${project_loc:i22-config}/client/pluginCustomization.ini&#10;-Dorg.eclipse.swt.internal.gtk.cairoGraphics=false&#10;-Dorg.eclipse.swt.internal.gtk.useCairo=false&#10;-Dorg.dawb.editor.h5.use.default=false&#10;-Xms256m &#10;-Xmx1800m"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="uk.ac.gda.beamline.i22.product"/>
 <stringAttribute key="productFile" value="/uk.ac.gda.beamline.b21.feature/uk.ac.gda.beamline.b21.product"/>
