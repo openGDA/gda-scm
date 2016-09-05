@@ -309,32 +309,11 @@
 		<property name="energyScannable" ref="energy" />
 	</bean>
 
-	<bean id="bssc" class="uk.ac.gda.devices.bssc.BioSAXSSampleChanger">
-		<property name="hostname" value="diamrd2801" />
-		<property name="port" value="9555" />
+	<bean id="bssc" class="uk.ac.gda.devices.bssc.DummyBioSAXSSampleChanger">
 	</bean>
 	<bean id="bsscscannable" class="uk.ac.gda.devices.bssc.scannable.BSSCScannable">
 		<property name="bssc" ref="bssc" />
 		<property name="local" value="false" />
-	</bean>
-
-	<bean id="ispybNotifier" class="uk.ac.gda.devices.bssc.ispyb.NotifyISpyBObserversObject">
-		<constructor-arg value="localhost" />
-		<constructor-arg value="9877" />
-	</bean>
-
-	<bean id="udplistener" class="uk.ac.gda.devices.bssc.ispyb.UDPListener">
-		<property name="port" value="9877" />
-		<property name="running" value="true" />
-		<property name="prefix" value="biosaxs" />
-	</bean>
-	
-	<bean class="uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory">
-		<property name="jdbcURL"
-			value="jdbc:oracle:thin:@ws096.diamond.ac.uk:1521:xe" />
-		<property name="notifyObject" ref="ispybNotifier" />
-		<!-- // protected String testURL = "jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe"; -->
-		<!-- // protected String liveURL = "jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb"; -->
 	</bean>
 
 	<bean id="jythonServerFacade" class="gda.jython.JythonServerFacade">
@@ -361,6 +340,10 @@
 <!-- 		<property name="background" ref="backgroundDataFile" /> -->
 <!-- 		<property name="collectionId" ref="dataCollectionId" /> -->
 <!-- 	</bean> -->
+	<bean id="bssc_proc" class="uk.ac.gda.server.ncd.data.AutoProcessingRunner">
+		<property name="scriptPath" value="/scratch/postProc"/>
+	</bean>
+
 	<bean id="scan2elog" class="gda.data.ScanToElogExtender">
 		<property name="logID" value="DAG" />
 		<property name="groupID" value="SCAN" />
@@ -509,19 +492,6 @@
 	</bean>
 	<corba:export namespace="ncdsim" />
 
-<!-- 	<bean id="biosaxsprocessingrunner" class="uk.ac.gda.server.ncd.data.ProcessingRunner"> -->
-<!-- 		<property name="environment"> -->
-<!-- 			<map> -->
-<!-- 				<entry key="GDA_CONFIG" value="${gda.config}" /> -->
-<!-- 				<entry key="DAWN" value="/dls/b21/data/2014/cm4976-1/tmp/DawnDiamond-1.5.0.v20140314-1320-linux64/dawn" /> -->
-<!-- 				<entry key="MOML" value="${gda.config}/processing/ncd_model.moml" /> -->
-<!-- 				<entry key="ISPYBUPDATE" value="${gda.config}/processing/updateispyb.py" /> -->
-<!-- 			</map> -->
-<!-- 		</property> -->
-<!-- 		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" /> -->
-<!-- 		<property name="detectorInfo" ref="detectorInfoPath" /> -->
-<!-- 	</bean> -->
-	
 	<bean
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"
