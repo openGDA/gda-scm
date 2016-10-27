@@ -59,8 +59,8 @@ import uk.ac.gda.common.rcp.jface.viewers.ObservableMapOwnerDrawProvider;
 import uk.ac.gda.devices.bssc.beans.ISAXSProgress;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatus;
 import uk.ac.gda.devices.bssc.ispyb.ISpyBStatusInfo;
-import uk.ac.gda.devices.bssc.views.BioSAXSCollectionResultPlotView;
-import uk.ac.gda.devices.bssc.views.BioSAXSReductionResultPlotView;
+import uk.ac.gda.devices.bssc.ui.views.BioSAXSCollectionResultPlotView;
+import uk.ac.gda.devices.bssc.ui.views.BioSAXSReductionResultPlotView;
 
 public class BioSAXSProgressComposite extends FieldComposite {
 	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);

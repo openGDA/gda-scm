@@ -16,7 +16,7 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.devices.bssc.actions;
+package uk.ac.gda.devices.bssc.ui.actions;
 
 import java.util.Properties;
 
