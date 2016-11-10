@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test
+Bundle-SymbolicName: uk.ac.gda.device.bssc.ui.test
+Bundle-Version: 1.0.0.qualifier
+Fragment-Host: uk.ac.gda.devices.bssc.ui;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit,
+ uk.ac.gda.devices.bssc
