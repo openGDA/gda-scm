@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd                                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd                                         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd                                                 http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_pitch">
+        <property name="motor" ref="vfm_pitch_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_yaw">
+        <property name="motor" ref="vfm_yaw_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_y1">
+        <property name="motor" ref="vfm_y1_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_roll">
+        <property name="motor" ref="vfm_roll_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_x1">
+        <property name="motor" ref="vfm_x1_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_x">
+        <property name="motor" ref="vfm_x_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_y3">
+        <property name="motor" ref="vfm_y3_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_y">
+        <property name="motor" ref="vfm_y_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_x2">
+        <property name="motor" ref="vfm_x2_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_y2">
+        <property name="motor" ref="vfm_y2_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="vfm_yfine">
+        <property name="motor" ref="vfm_yfine_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="vfm">
+        <property name="groupMembers">
+            <list>
+                <ref bean="vfm_pitch"/>
+                <ref bean="vfm_roll"/>
+                <ref bean="vfm_yaw"/>
+                <ref bean="vfm_x"/>
+                <ref bean="vfm_y"/>
+                <ref bean="vfm_y1"/>
+                <ref bean="vfm_y2"/>
+                <ref bean="vfm_y3"/>
+                <ref bean="vfm_x1"/>
+                <ref bean="vfm_x2"/>
+                <ref bean="vfm_yfine"/>
+            </list>
+        </property>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+</beans>

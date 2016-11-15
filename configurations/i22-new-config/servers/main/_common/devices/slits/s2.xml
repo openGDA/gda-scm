@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd                                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd                                         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd                                                 http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="s2">
+        <property name="groupMembers">
+            <list>
+                <ref bean="s2_xcentre"/>
+                <ref bean="s2_xgap"/>
+                <ref bean="s2_ycentre"/>
+                <ref bean="s2_ygap"/>
+                <ref bean="s2_xplus"/>
+                <ref bean="s2_xminus"/>
+                <ref bean="s2_yplus"/>
+                <ref bean="s2_yminus"/>
+                <ref bean="s2_yplusi"/>
+                <ref bean="s2_yminusi"/>
+            </list>
+        </property>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_ygap">
+        <property name="motor" ref="s2_ygap_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_xplus">
+        <property name="motor" ref="s2_xplus_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_xcentre">
+        <property name="motor" ref="s2_xcentre_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_xgap">
+        <property name="motor" ref="s2_xgap_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_yminus">
+        <property name="motor" ref="s2_yminus_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_yplus">
+        <property name="motor" ref="s2_yplus_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_xminus">
+        <property name="motor" ref="s2_xminus_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="s2_ycentre">
+        <property name="motor" ref="s2_ycentre_motor"/>
+        <property name="local" value="true"/>
+        <property name="protectionLevel" value="3"/>
+    </bean>
+</beans>

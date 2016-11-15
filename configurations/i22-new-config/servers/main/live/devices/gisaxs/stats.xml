@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd                                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd                                         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd                                                 http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_maxx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:MaxX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_min">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:MinValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_max">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:MaxValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_maxx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:MaxX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_max">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:MaxValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_miny">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:MinY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_maxx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:MaxX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_mean">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:MeanValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_min">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:MinValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_sum">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:Total_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_maxx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:MaxX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_sum">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:Total_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_max">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:MaxValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_sum">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:Total_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_minx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:MinX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_maxy">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:MaxY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_minx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:MinX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_miny">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:MinY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_sum">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:Total_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_min">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:MinValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_maxy">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:MaxY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_maxy">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:MaxY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_maxx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:MaxX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_maxx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:MaxX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_minx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:MinX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_max">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:MaxValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_mean">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:MeanValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_min">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:MinValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_sum">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:Total_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_miny">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:MinY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_minx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:MinX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_miny">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:MinY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_miny">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:MinY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_minx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:MinX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_miny">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:MinY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_maxy">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:MaxY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_maxy">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:MaxY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_max">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:MaxValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat6_mean">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT6:MeanValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_min">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:MinValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_min">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:MinValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_minx">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:MinX_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_mean">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:MeanValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat3_mean">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT3:MeanValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat1_mean">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT1:MeanValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat2_maxy">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT2:MaxY_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat5_max">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT5:MaxValue_RBV"/>
+ </bean>
+ <bean class="gda.device.monitor.EpicsMonitor" id="stat4_sum">
+  <property name="pvName" value="BL22I-EA-PILAT-01:STAT4:Total_RBV"/>
+ </bean>
+</beans>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:corba="http://www.diamond.ac.uk/schema/gda/corba" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd                                 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd                                         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd                                                 http://www.diamond.ac.uk/schema/gda/corba http://www.diamond.ac.uk/schema/gda/corba/gda-corba-1.0.xsd">
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="hexapod_temps">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <ref bean="hexapod_l1temp"/>
+                <ref bean="hexapod_l2temp"/>
+                <ref bean="hexapod_l3temp"/>
+                <ref bean="hexapod_l4temp"/>
+                <ref bean="hexapod_l5temp"/>
+                <ref bean="hexapod_l6temp"/>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="hexapod">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <!--<ref bean="hexapod_x" />
+                                <ref bean="hexapod_y" />
+                                <ref bean="hexapod_z" />
+                                <ref bean="hexapod_pitch" />
+                                <ref bean="hexapod_roll" />
+                                <ref bean="hexapod_yaw" />-->
+                <ref bean="hexapod_pos"/>
+                <ref bean="hexapod_rawlegs"/>
+                <ref bean="hexapod_temps"/>
+                <ref bean="hexapod_UfM_offset"/>
+                <ref bean="hexapod_OfP_offset"/>
+                <ref bean="hexapod_pos_PiM"/>
+                <ref bean="hexapod_both_offsets"/>
+                <!--<ref bean="hexapod_l1temp"/>
+                                <ref bean="hexapod_l2temp"/>
+                                <ref bean="hexapod_l3temp"/>
+                                <ref bean="hexapod_l4temp"/>
+                                <ref bean="hexapod_l5temp"/>
+                                <ref bean="hexapod_l6temp"/>
+                                <ref bean="hexapod_l1raw"/>
+                                <ref bean="hexapod_l2raw"/>
+                                <ref bean="hexapod_l3raw"/>
+                                <ref bean="hexapod_l4raw"/>
+                                <ref bean="hexapod_l5raw"/>
+                                <ref bean="hexapod_l6raw"/>
+                                <ref bean="hexapod_x_p_in_m"/>
+                                <ref bean="hexapod_y_p_in_m"/>
+                                <ref bean="hexapod_z_p_in_m"/>
+                                <ref bean="hexapod_roll_p_in_m"/>
+                                <ref bean="hexapod_pitch_p_in_m"/>
+                                <ref bean="hexapod_yaw_p_in_m"/>
+                                <ref bean="hexapod_x_useroffset"/>
+                                <ref bean="hexapod_y_useroffset"/>
+                                <ref bean="hexapod_z_useroffset"/>
+                                <ref bean="hexapod_pitch_useroffset"/>
+                                <ref bean="hexapod_roll_useroffset"/>
+                                <ref bean="hexapod_yaw_useroffset"/>
+                                <ref bean="hexapod_x_objectoffset"/>
+                                <ref bean="hexapod_y_objectoffset"/>
+                                <ref bean="hexapod_z_objectoffset"/>
+                                <ref bean="hexapod_pitch_objectoffset"/>
+                                <ref bean="hexapod_roll_objectoffset"/>
+                                <ref bean="hexapod_yaw_objectoffset"/>
+                                -->
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="hexapod_yaw">
+        <property name="motor" ref="hexapod_yaw_motor"/>
+        <property name="local" value="true"/>
+        <property name="inputNames">
+            <list>
+                <value>
+     hexapod_OiU_yaw
+    </value>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="hexapod_rawlegs">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <ref bean="hexapod_rawleg1"/>
+                <ref bean="hexapod_rawleg2"/>
+                <ref bean="hexapod_rawleg3"/>
+                <ref bean="hexapod_rawleg4"/>
+                <ref bean="hexapod_rawleg5"/>
+                <ref bean="hexapod_rawleg6"/>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="hexapod_z">
+        <property name="motor" ref="hexapod_z_motor"/>
+        <property name="local" value="true"/>
+        <property name="inputNames">
+            <list>
+                <value>
+     hexapod_OiU_z
+    </value>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="hexapod_roll">
+        <property name="motor" ref="hexapod_roll_motor"/>
+        <property name="local" value="true"/>
+        <property name="inputNames">
+            <list>
+                <value>
+     hexapod_OiU_roll
+    </value>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="hexapod_x">
+        <property name="motor" ref="hexapod_x_motor"/>
+        <property name="local" value="true"/>
+        <property name="inputNames">
+            <list>
+                <value>
+     hexapod_OiU_x
+    </value>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="hexapod_pitch">
+        <property name="motor" ref="hexapod_pitch_motor"/>
+        <property name="local" value="true"/>
+        <property name="inputNames">
+            <list>
+                <value>
+     hexapod_OiU_pitch
+    </value>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.DeferredScannableGroup" id="hexapod_pos">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <ref bean="hexapod_x"/>
+                <ref bean="hexapod_y"/>
+                <ref bean="hexapod_z"/>
+                <ref bean="hexapod_roll"/>
+                <ref bean="hexapod_pitch"/>
+                <ref bean="hexapod_yaw"/>
+            </list>
+        </property>
+        <property name="name" value="hexapod_pos_OiU"/>
+        <property name="deferredControlPoint" ref="hexapod_defer"/>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="hexapod_UfM_offset">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <ref bean="hexapod_UfM_x"/>
+                <ref bean="hexapod_UfM_y"/>
+                <ref bean="hexapod_UfM_z"/>
+                <ref bean="hexapod_UfM_pitch"/>
+                <ref bean="hexapod_UfM_roll"/>
+                <ref bean="hexapod_UfM_yaw"/>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="hexapod_pos_PiM">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <ref bean="hexapod_PiM_x"/>
+                <ref bean="hexapod_PiM_y"/>
+                <ref bean="hexapod_PiM_z"/>
+                <ref bean="hexapod_PiM_pitch"/>
+                <ref bean="hexapod_PiM_roll"/>
+                <ref bean="hexapod_PiM_yaw"/>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="hexapod_both_offsets">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <ref bean="hexapod_bothoffsets_x"/>
+                <ref bean="hexapod_bothoffsets_y"/>
+                <ref bean="hexapod_bothoffsets_z"/>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.ScannableMotor" id="hexapod_y">
+        <property name="motor" ref="hexapod_y_motor"/>
+        <property name="local" value="true"/>
+        <property name="inputNames">
+            <list>
+                <value>
+     hexapod_OiU_y
+    </value>
+            </list>
+        </property>
+    </bean>
+    <bean class="gda.device.scannable.scannablegroup.ScannableGroup" id="hexapod_OfP_offset">
+        <property name="local" value="true"/>
+        <property name="groupMembers">
+            <list>
+                <ref bean="hexapod_OfP_x"/>
+                <ref bean="hexapod_OfP_y"/>
+                <ref bean="hexapod_OfP_z"/>
+                <ref bean="hexapod_OfP_pitch"/>
+                <ref bean="hexapod_OfP_roll"/>
+                <ref bean="hexapod_OfP_yaw"/>
+            </list>
+        </property>
+    </bean>
+</beans>
