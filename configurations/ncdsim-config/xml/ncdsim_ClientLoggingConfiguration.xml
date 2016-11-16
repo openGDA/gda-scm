@@ -43,6 +43,8 @@
     <logger name="gda.device.temperature" level="INFO"/>
     <logger name="gda.jython.corba.impl" level="INFO"/>
     <logger name="gda.oe.corba.impl" level="INFO"/>
+    <logger name="uk.ac.diamond.scisoft.analysis" level="INFO"/>
+    <logger name="ncsa.hdf" level="INFO" />
 
     <root>
         <level value="ALL"/>
