@@ -5,7 +5,7 @@
   <property name="local" value="true"/>
  </bean>
  <bean class="gda.device.motor.EpicsMotor" id="wdl_y_motor">
-  <property name="pvName" value="BL22I-EA-DET-05:Y"/>
+  <property name="pvName" value="BL22I-EA-DET-01:Y"/>
   <property name="local" value="true"/>
  </bean>
  <bean class="gda.device.motor.EpicsMotor" id="wd_y_motor">
@@ -13,7 +13,7 @@
   <property name="local" value="true"/>
  </bean>
  <bean class="gda.device.motor.EpicsMotor" id="wdl_x_motor" >
-  <property name="pvName" value="BL22I-EA-DET-05:X" />
+  <property name="pvName" value="BL22I-EA-DET-01:X" />
   <property name="local" value="true" />
  </bean>
 </beans>
