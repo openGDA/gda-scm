@@ -82,6 +82,27 @@
 		<property name="userUnits" value="mg/mL" />
 	</bean>
 	
+	<bean id="sample_type" class="gda.device.enumpositioner.DummyEnumPositioner" >
+		<property name="positions">
+			<list>
+				<value>sample</value>
+				<value>sample+can</value>
+				<value>can</value>
+				<value>sample+buffer</value>
+				<value>buffer</value>
+				<value>calibration</value>
+				<value>sample</value>
+				<value>normalisation</value>
+				<value>sample</value>
+				<value>simulated</value>
+				<value>data</value>
+				<value>none</value>
+				<value>sample</value>
+				<value>environment</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean class="uk.ac.gda.server.ncd.beans.PerVisitMaskLocation" id="detectorInfoPath">
 	</bean>
 	<bean class="uk.ac.gda.remoting.server.GdaRmiServiceExporter">
@@ -546,6 +567,15 @@
 						</property>
 					</bean>
 				</entry>
+				<entry key="sample_type">
+					<bean
+						class="gda.data.scan.datawriter.scannablewriter.SingleScannableWriter">
+						<property name="paths" value="sample:NXsample/type" />
+						<property name="prerequisiteScannableNames">
+							<list></list>
+						</property>
+					</bean>
+				</entry>
 				<entry key="sample_thickness">
 					<bean
 						class="gda.data.scan.datawriter.scannablewriter.SingleScannableWriter">
@@ -596,6 +626,7 @@
 			<set>
 				<value>energy</value>
 				<value>sample_name</value>
+				<value>sample_type</value>
 				<value>sample_thickness</value>
 				<value>motor</value>
 			</set>
