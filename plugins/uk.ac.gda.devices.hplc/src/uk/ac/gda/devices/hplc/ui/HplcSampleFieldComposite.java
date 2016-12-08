@@ -219,6 +219,21 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			}
 		});
 		columns.get("Time per\n  Frame").setOutputFormat("%5.3f s");
+		columns.put("Total\nDuration", new Column<HplcBean, Double>(50, tableViewer, rbeditor, ColumnType.DOUBLE) {
+			@Override
+			public Double getRealValue(HplcBean element) {
+				return element.getTotalDuration();
+			}
+			@Override
+			public void setNewValue(HplcBean element, String value) {
+				try {
+					double time = Double.valueOf(value);
+					element.setTotalDuration(time);
+				} catch (NumberFormatException nfe) {
+				}
+			}
+		});
+		columns.get("Total\nDuration").setOutputFormat("%.1f min");
 		columns.put("Buffers", new Column<HplcBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
 			public String getRealValue(HplcBean element) {
