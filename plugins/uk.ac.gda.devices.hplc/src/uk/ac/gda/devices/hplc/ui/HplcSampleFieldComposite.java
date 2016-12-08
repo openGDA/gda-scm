@@ -18,10 +18,6 @@
 
 package uk.ac.gda.devices.hplc.ui;
 
-import gda.configuration.properties.LocalProperties;
-import gda.data.PathConstructor;
-import gda.jython.InterfaceProvider;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.gef.dnd.SimpleObjectTransfer;
 import org.apache.commons.beanutils.BeanUtils;
+import org.eclipse.gef.dnd.SimpleObjectTransfer;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -69,6 +65,9 @@ import org.eclipse.swt.widgets.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gda.configuration.properties.LocalProperties;
+import gda.data.PathConstructor;
+import gda.jython.InterfaceProvider;
 import uk.ac.gda.devices.hatsaxs.beans.LocationBean;
 import uk.ac.gda.devices.hatsaxs.beans.Plate;
 import uk.ac.gda.devices.hatsaxs.ui.Column;
@@ -104,7 +103,7 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			return new int[] { TYPE_ID };
 		}
 
-		@Override	
+		@Override
 		protected String[] getTypeNames() {
 			return new String[] { TYPE_NAME };
 		}
@@ -139,8 +138,9 @@ public class HplcSampleFieldComposite extends FieldComposite {
 			@Override
 			public void handleEvent(Event event) {
 				event.detail &= ~SWT.HOT;
-				if ((event.detail & SWT.SELECTED) == 0)
-					return; 
+				if ((event.detail & SWT.SELECTED) == 0) {
+					return;
+				}
 				GC gc = event.gc;
 				Rectangle rect = event.getBounds();
 				gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
@@ -354,11 +354,13 @@ public class HplcSampleFieldComposite extends FieldComposite {
 					DragSource ds = (DragSource) event.widget;
 					Table table = (Table) ds.getControl();
 					TableItem[] selection = table.getSelection();
-					if (selection.length == 0)
+					if (selection.length == 0) {
 						logger.debug("selection empty");
+					}
 					for (TableItem element : selection) {
-						if (!getList().remove(element.getData()))
+						if (!getList().remove(element.getData())) {
 							logger.debug("data not there or not removed");
+						}
 					}
 
 					sampleCount.setText(String.valueOf(getList().size()));
@@ -449,8 +451,9 @@ public class HplcSampleFieldComposite extends FieldComposite {
 
 	@SuppressWarnings("unchecked")
 	private List<HplcBean> getList() {
-		if (value == null)
+		if (value == null) {
 			setValue(new ArrayList<HplcBean>());
+		}
 		return (List<HplcBean>) value;
 	}
 
@@ -489,7 +492,7 @@ public class HplcSampleFieldComposite extends FieldComposite {
 		tableViewer.refresh();
 		rbeditor.valueChangePerformed(new ValueEvent("", ""));
 	}
-	
+
 	private Map<String,Column<HplcBean,?>> getLocationColumns(final String prefix, final ColumnHelper<HplcBean, LocationBean> helper) {
 		Map<String,Column<HplcBean,?>> columns = new LinkedHashMap<>();
 		if (HplcSessionBean.HPLC_PLATES.getPlates().size() != 1) {
