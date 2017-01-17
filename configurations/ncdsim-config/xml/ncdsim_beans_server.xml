@@ -386,7 +386,6 @@
 		<property name="gdaVarDirectory" value="${gda.config}/var" />
 		<property name="cacheDirectory" value="${gda.config}/var/jythonCache" />
 		<property name="remotePort" value="9999" />
-		<property name="remoteServerUsesJline" value="true" />
 	</bean>
 
 	<bean class="gda.device.scannable.DummyMultiElementScannable" id="dummystage">
