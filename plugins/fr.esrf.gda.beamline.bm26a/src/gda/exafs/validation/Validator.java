@@ -18,12 +18,11 @@
 
 package gda.exafs.validation;
 
-import gda.exafs.scan.ExafsValidator;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import gda.exafs.scan.ExafsValidator;
 import uk.ac.gda.beans.exafs.ISampleParameters;
 import uk.ac.gda.beans.exafs.IScanParameters;
 import uk.ac.gda.beans.exafs.XanesScanParameters;
@@ -84,6 +83,7 @@ public class Validator extends ExafsValidator {
 		return errors;
 	}
 
+	@Override
 	protected List<InvalidBeanMessage> validateISampleParameters(ISampleParameters sampleParameters) {
 
 		if (sampleParameters instanceof SampleParameters) {
@@ -118,7 +118,7 @@ public class Validator extends ExafsValidator {
 		if (s == null) {
 			return Collections.emptyList();
 		}
-		
+
 		final List<InvalidBeanMessage> errors = new ArrayList<InvalidBeanMessage>(31);
 		if (!s.isShouldValidate()) {
 			return errors;
@@ -141,7 +141,17 @@ public class Validator extends ExafsValidator {
 		if (bean != null) {
 			setFileName(errors, bean.getSampleFileName());
 		}
-		
+
 		return errors;
+	}
+
+	@Override
+	protected double getMinEnergy() {
+		return MINENERGY;
+	}
+
+	@Override
+	protected double getMaxEnergy() {
+		return MAXENERGY;
 	}
 }
