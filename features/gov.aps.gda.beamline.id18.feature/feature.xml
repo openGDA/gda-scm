@@ -2,7 +2,7 @@
 <feature
       id="gov.aps.gda.beamline.id18.feature"
       label="id18 Feature"
-      version="8.62.0.qualifier"
+      version="8.64.0.qualifier"
       provider-name="APS &amp; Daresbury Laboratory">
 
    <description url="http://www.example.com/description">
