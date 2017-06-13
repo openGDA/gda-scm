@@ -26,7 +26,7 @@
 		<constructor-arg ref="command_server" />
 	</bean>
 	<bean id="bcm"
-		class="gda.server.beamlineConfigurationManager.BeamlineConfigurationManager" />
+		class="uk.ac.diamond.daq.persistence.bcm.BeamlineConfigurationManager" />
 	<bean id="FileRegistrar" class="gda.data.fileregistrar.FileRegistrar">
 		<property name="name" value="FileRegistrar" />
 		<property name="directory" value="/tmp/lab11-" />
