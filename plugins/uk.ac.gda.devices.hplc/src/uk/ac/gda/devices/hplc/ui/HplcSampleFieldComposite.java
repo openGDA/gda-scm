@@ -244,6 +244,20 @@ public class HplcSampleFieldComposite extends FieldComposite {
 				element.setBuffers(value);
 			}
 		});
+		columns.put("Column\nType", new Column<HplcBean, String>(100, tableViewer, rbeditor, ColumnType.CHOICE) {
+
+			@Override
+			public String getRealValue(HplcBean element) {
+				return element.getColumnType();
+			}
+
+			@Override
+			public void setNewValue(HplcBean element, String value) {
+				element.setColumnType(value);
+			}
+
+		});
+		columns.get("Column\nType").setInput(HplcSessionBean.HPLC_PLATES.getAvailableCapillaries());
 		columns.put("Comment", new Column<HplcBean, String>(100, tableViewer, rbeditor, ColumnType.TEXT) {
 			@Override
 			public String getRealValue(HplcBean element) {

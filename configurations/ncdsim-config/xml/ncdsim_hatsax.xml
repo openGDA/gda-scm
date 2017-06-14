@@ -46,6 +46,7 @@
 		<property name="plates">
 			<ref bean="hplcPlate" />
 		</property>
+		<property name="availableCapillaries" value="KW-403,KW-402.5,KW-404,KW-405,Superdex 200,Superose 6,other"></property>
 	</bean>
 	<bean id="hplcPlate" class="uk.ac.gda.devices.hatsaxs.beans.Plate">
 		<constructor-arg index="0" value="I"/>
