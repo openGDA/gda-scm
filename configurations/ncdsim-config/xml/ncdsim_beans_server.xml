@@ -381,12 +381,24 @@
 	<bean id="scanListFileWriter" class="uk.ac.gda.server.ncd.data.scan.ScanListDataWriterExtender">
 		<property name="filename" value="scanlist.csv" />
 	</bean>
+
+	<bean id="autoPostProcessing" class="uk.ac.gda.server.ncd.data.scan.MetaDataProcessingScanListener">
+		<property name="detector" ref="ncddetectors"/>
+		<property name="runner">
+			<bean class="uk.ac.gda.server.ncd.data.AutoProcessingRunner">
+				<property name="scriptPath" value="/scratch/postProc"/>
+			</bean>
+		</property>
+		<property name="enabled" value="true" />
+	</bean>
+
 	<bean id="DataWriterFactory" class="gda.data.scan.datawriter.DefaultDataWriterFactory">
 		<property name="name" value="DataWriterFactory" />
 		<property name="dataWriterExtenders">
 			<list>
 				<ref bean="FileRegistrar" />
 				<ref bean="twodscan"/>
+				<ref bean="autoPostProcessing" />
 <!-- 				<ref bean="ncddetectorsProcessingListener" /> -->
 				<!-- <ref bean="scan2elog" /> -->
 			</list>
