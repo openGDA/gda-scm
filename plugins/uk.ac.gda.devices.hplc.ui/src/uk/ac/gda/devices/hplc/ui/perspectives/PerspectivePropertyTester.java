@@ -1,4 +1,4 @@
-package uk.ac.gda.devices.hplc.perspectives;
+package uk.ac.gda.devices.hplc.ui.perspectives;
 
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.ui.IPerspectiveDescriptor;

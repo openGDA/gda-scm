@@ -16,7 +16,7 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.devices.hplc.perspectives;
+package uk.ac.gda.devices.hplc.ui.perspectives;
 
 
 import org.eclipse.swt.widgets.Display;
