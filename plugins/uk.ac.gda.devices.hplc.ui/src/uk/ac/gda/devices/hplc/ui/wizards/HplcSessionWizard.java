@@ -1,4 +1,4 @@
-package uk.ac.gda.devices.hplc.wizards;
+package uk.ac.gda.devices.hplc.ui.wizards;
 
 import java.io.InputStream;
 import java.util.ArrayList;

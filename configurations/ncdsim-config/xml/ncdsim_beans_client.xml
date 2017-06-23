@@ -37,6 +37,15 @@
 		id="detectorInfoPath"
 		serviceUrl="gda/detectorInfoPath"
 		serviceInterface="uk.ac.gda.server.ncd.beans.StoredDetectorInfo" />
+	<gda:rmi-import
+		id="syringe"
+		serviceUrl="gda/syringe"
+		serviceInterface="gda.device.syringepump.Syringe" />
+	
+	<gda:rmi-import
+		id="syringe2"
+		serviceUrl="gda/syringe2"
+		serviceInterface="gda.device.syringepump.Syringe" />
 	
 	<bean id="commandQueueProcessor" class="uk.ac.gda.remoting.client.GdaRmiProxyFactoryBean">
 		<!-- host should better be autodiscovered -->
