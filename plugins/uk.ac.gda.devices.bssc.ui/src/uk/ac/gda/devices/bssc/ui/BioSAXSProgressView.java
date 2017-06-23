@@ -45,7 +45,7 @@ import uk.ac.gda.devices.bssc.Activator;
 import uk.ac.gda.devices.bssc.beans.BioSAXSProgressController;
 
 public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
-	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressComposite.class);
+	private static final Logger logger = LoggerFactory.getLogger(BioSAXSProgressView.class);
 	public static final String ID = "uk.ac.gda.devices.bssc.biosaxsprogressview";
 	private BioSAXSProgressComposite bioSAXSComposite;
 	private IListChangeListener listChangedListener;
@@ -66,16 +66,12 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 
 			@Override
 			public void handleListChange(ListChangeEvent event) {
-				// TODO Auto-generated method stub
-
 			}
 		};
 		controllerObserver = new IObserver() {
 
 			@Override
 			public void update(Object source, Object arg) {
-				// TODO Auto-generated method stub
-
 			}
 		};
 		// model.addListChangeListener(listChangedListener);
@@ -90,8 +86,6 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -122,7 +116,7 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 			}
 		};
 
-		scrollLockAction.setImageDescriptor(getImageDescriptor("scrollLock.gif"));
+		scrollLockAction.setImageDescriptor(getImageDescriptor("scrollLock.jpeg"));
 		scrollLockAction.setChecked(false);
 	}
 
@@ -134,7 +128,7 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 
 		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
 		ImageDescriptor scrollLockImageDesriptor = ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path(
-				iconPath + "scrollLock.jpeg"), null));
+				iconPath + relativePath), null));
 
 		return scrollLockImageDesriptor;
 	}
@@ -164,37 +158,26 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
-
 	}
 
 	@Override
 	public void partBroughtToTop(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void partDeactivated(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void partOpened(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void partHidden(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -206,7 +189,5 @@ public class BioSAXSProgressView extends ViewPart implements IPartListener2 {
 
 	@Override
 	public void partInputChanged(IWorkbenchPartReference partRef) {
-		// TODO Auto-generated method stub
-
 	}
 }
