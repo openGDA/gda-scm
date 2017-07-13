@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="syringeController"  class="gda.device.syringepump.DummySyringePumpController">
+		<property name="capacity" value="100" />
+		<property name="enabled" value="true" />
+		<property name="infuseRate" value="1" />
+		<property name="withdrawRate" value="1" />
+   	</bean>
+   	<bean id="syringe" class="gda.device.syringepump.SyringePump" >
+   		<property name="controller" ref="syringeController" />
+   		<property name="local" value="false" />
+   	</bean>
+	<bean id="syringe2Controller"  class="gda.device.syringepump.DummySyringePumpController">
+		<property name="capacity" value="120" />
+		<property name="enabled" value="true" />
+		<property name="infuseRate" value="1" />
+		<property name="withdrawRate" value="1" />
+   	</bean>
+   	<bean id="syringe2" class="gda.device.syringepump.SyringePump" >
+   		<property name="controller" ref="syringe2Controller" />
+   		<property name="local" value="false" />
+   	</bean>
+
+</beans>
+

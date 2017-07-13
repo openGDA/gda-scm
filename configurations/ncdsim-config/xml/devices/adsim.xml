@@ -89,6 +89,7 @@
         <property name="fileNameTemplate" value="" />
         <property name="fileNumberAtScanStart" value="-1" />
         <property name="setFileNameAndNumber" value="true" />
+        <property name="lazyOpen" value="true" />
 
     </bean>
     <bean id="adsim_collection" class="gda.device.detector.addetector.triggering.MultipleExposurePerCollectionStandard" >

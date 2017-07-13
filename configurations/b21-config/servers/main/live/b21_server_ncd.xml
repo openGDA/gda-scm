@@ -1,0 +1,132 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location"
+			value="file:${gda.config}/properties/java.properties" />
+	</bean>
+
+	<!--*************************************** -->
+	<!-- *** NCD devices section *** -->
+	<!--*************************************** -->
+
+	<bean id="DAServer" class="gda.device.detector.DAServer">
+		<property name="host" value="bl21b-ea-tfg2-01" />
+		<property name="port" value="1972" />
+		<property name="local" value="true" />
+		<property name="dataPort" value="20030" />
+		<property name="startupCommands">
+			<list>
+				<value>tfg config "etfg0" tfg2</value>
+				<value>tfg setup-cc-mode scaler64</value>
+				<value>tfg setup-cc-chan -1 edge</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="Tfg" class="gda.device.timer.Etfg">
+		<property name="daServerName" value="DAServer" />
+		<property name="showArmed" value="true" />
+	</bean>
+	<bean id="CalibMemory" class="gda.device.memory.Scaler">
+		<property name="daServerName" value="DAServer" />
+		<property name="width" value="9" />
+		<property name="height" value="1" />
+		<property name="openCommand" value="tfg open-cc" />
+	</bean>
+	<bean id="Scalers" class="uk.ac.gda.server.ncd.subdetector.NcdWireDetector">
+		<property name="detectorType" value="CALIB" />
+		<property name="memory" ref="CalibMemory" />
+		<property name="transposedData" value="true" />
+	</bean>
+	<bean id="TimesMemory" class="gda.device.memory.GdhistTimes">
+		<property name="daServerName" value="DAServer" />
+		<property name="width" value="8" />
+		<property name="height" value="1" />
+		<property name="openCommand" value="module open 'tfg_times' header" />
+	</bean>
+	<bean id="TfgTimes" class="uk.ac.gda.server.ncd.subdetector.NcdTimesDetector">
+		<property name="detectorType" value="TIMES" />
+		<property name="memory" ref="TimesMemory" />
+	</bean>
+
+	<bean id="It" class="uk.ac.gda.server.ncd.subdetector.SingleScalerWithScalingAndOffset">
+		<property name="detectorType" value="CALIB" />
+		<property name="memory" ref="CalibMemory" />
+		<property name="units" value="counts" />
+		<property name="channel" value="1" />
+		<property name="label" value="data" />
+		<property name="scalingAndOffset" ref="bsdiodegain" />
+	</bean>
+
+	<import resource="b21_pilatus_saxs.xml"/>
+
+	<bean id="ncddetectors" class="uk.ac.gda.server.ncd.detectorsystem.NcdDetectorSystem">
+		<property name="timer" ref="Tfg" />
+		<property name="detectors">
+			<list>
+				<ref bean="Pilatus2M" />
+				<ref bean="It" />
+				<!-- <ref bean="Hotwaxs" /> -->
+				<ref bean="Scalers" />
+				<ref bean="TfgTimes" />
+			</list>
+		</property>
+	</bean>
+	
+		<bean id="energy" class="uk.ac.gda.server.ncd.scannable.EnergyScannable">
+			<property name="bragg" ref="dmm_energy" />
+		</bean>
+
+	<bean id="ncdlistener" class="uk.ac.gda.server.ncd.plotting.ListenerDispatcher">
+		<property name="ncdDetector" ref="ncddetectors" />
+		<property name="energyScannable" ref="energy" />
+	</bean>
+
+	<bean id="bssc" class="uk.ac.gda.devices.bssc.BioSAXSSampleChanger"> 
+		<property name="hostname" value="b21-biosaxs.diamond.ac.uk"/> 
+		<property name="port" value="9555"/> 
+	</bean> 
+	<bean id="bsscscannable" class="uk.ac.gda.devices.bssc.scannable.BSSCScannable">
+		<property name="bssc" ref="bssc" /> 
+		<property name="local" value="false" />
+	</bean>
+	<bean class="uk.ac.gda.devices.bssc.ispyb.BioSAXSDBFactory">
+	       <property name="jdbcURL" value="jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb" />
+	       <!-- // protected String testURL = "jdbc:oracle:thin:@sci-serv2.diamond.ac.uk:1521:xe"; -->
+           <!-- // protected String liveURL = "jdbc:oracle:thin:@duoserv12.diamond.ac.uk:1521:ispyb"; -->
+           <property name="notifyObject" ref="ispybNotifier" />
+    </bean>
+	
+	<import resource="b21_biosaxscam.xml"/>
+	
+	<bean id="ispybNotifier" class="uk.ac.gda.devices.bssc.ispyb.NotifyISpyBObserversObject">
+		<constructor-arg value="b21-control.diamond.ac.uk" />
+		<constructor-arg value="9877" />
+	</bean>
+
+	<bean id="udplistener" class="uk.ac.gda.devices.bssc.ispyb.UDPListener">
+		<property name="port" value="9877" />
+		<property name="running" value="true" />
+		<property name="prefix" value="biosaxs" />
+	</bean>
+	
+	<bean id="biosaxsprocessingrunner" class="uk.ac.gda.server.ncd.data.BiosaxsProcessingRunner">
+		<property name="environment">
+			<map>
+				<entry key="GDA_CONFIG" value="${gda.config}" />
+				<entry key="DAWN" value="/dls_sw/b21/software/DawnDiamond-1.5.0.v20140425-2056-linux64/dawn" />
+				<entry key="MOML" value="${gda.config}/processing/ncd_model.moml" />
+				<entry key="ISPYBUPDATE" value="${gda.config}/processing/updateispyb.py" />
+			</map>
+		</property>
+		<property name="executablePath" value="${gda.config}/processing/biosaxs.sh" />
+		<property name="detectorInfo" ref="detectorInfoPath" />
+	</bean>
+	
+	<bean class="uk.ac.gda.server.ncd.beans.StoredDetectorInfoImpl" id="detectorInfoPath">
+		<property name="currentDataDirectoryUpdater" ref="observableSubdirectory"/>
+	</bean>
+	
+</beans>
