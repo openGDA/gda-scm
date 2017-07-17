@@ -16,23 +16,28 @@
  * with GDA. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.gda.devices.bssc.ui.actions;
+package uk.ac.gda.beamline.b21;
 
 import java.util.Properties;
 
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.intro.IIntroManager;
 import org.eclipse.ui.intro.IIntroPart;
 import org.eclipse.ui.intro.IIntroSite;
 import org.eclipse.ui.intro.config.IIntroAction;
 
-public class SwitchToBSSCPerspectiveAction implements IIntroAction {
+public class SwitchToSaxsPerspectivesAction implements IIntroAction {
 
-	public SwitchToBSSCPerspectiveAction() {
+	@Override
+	public void run(IIntroSite site, Properties params) {
+		IIntroManager iMan = PlatformUI.getWorkbench().getIntroManager();
+		System.out.println(iMan.closeIntro(iMan.getIntro()));
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().closeAllPerspectives(true, false);
 		// open the BBSSC setup perspective
 		for (String id : new String[] { "uk.ac.gda.client.scripting.JythonPerspective",
-						"gda.rcp.ncd.perspectives.SaxsProcessingPerspective",  // must precede the Saxs & Waxs Perspectives to avoid NPE error in [S|W]axs Data Source View 
-						"gda.rcp.ncd.perspectives.SaxsPerspective",                                        
+						"gda.rcp.ncd.perspectives.SaxsProcessingPerspective",  // must precede the Saxs & Waxs Perspectives to avoid NPE error in [S|W]axs Data Source View
+						"gda.rcp.ncd.perspectives.SaxsPerspective",
 						"gda.rcp.ncd.perspectives.WaxsPerspective",
 						"gda.rcp.ncd.perspectives.NcdDetectorPerspective",
 						"gda.rcp.ncd.perspectives.SetupPerspective" }) 		{
@@ -42,10 +47,6 @@ public class SwitchToBSSCPerspectiveAction implements IIntroAction {
 				// we see if that fails and it is not the end of the world
 			}
 		}
-	}
-
-	@Override
-	public void run(IIntroSite site, Properties params) {
 		final IIntroPart introPart = PlatformUI.getWorkbench().getIntroManager().getIntro();
 		PlatformUI.getWorkbench().getIntroManager().closeIntro(introPart);
 	}
