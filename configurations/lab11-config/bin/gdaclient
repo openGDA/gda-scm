@@ -1,7 +1,0 @@
-#! /bin/sh
-
-export BEAMLINE=lab11
-export GDA_CLIENT_LOG_DIR=/scratch/gda/logs
-export GDA_CLIENT=/scratch/gda/client/gda-$BEAMLINE
-exec /scratch/gda/workspace_git/gda-diamond.git/dls-config/bin/gdaclient $@ 
-

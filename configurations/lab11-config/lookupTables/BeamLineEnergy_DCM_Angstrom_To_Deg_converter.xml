@@ -1,7 +1,0 @@
-<JEPQuantityConverter>
-<ExpressionStoT>180*asin(X/6.2712)/3.14159265</ExpressionStoT>
-<ExpressionTtoS>6.2712*sin(3.14159265*X/180.)</ExpressionTtoS>
-<AcceptableSourceUnits>Ang</AcceptableSourceUnits>
-<AcceptableTargetUnits>Deg</AcceptableTargetUnits>
-</JEPQuantityConverter>
-
