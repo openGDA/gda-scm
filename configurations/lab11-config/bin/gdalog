@@ -1,9 +1,0 @@
-#! /bin/sh
-#
-#
-
-. /usr/share/Modules/init/bash
-
-. /scratch/gda/workspace_git/gda-diamond.git/dls-config/bin/loadjava.sh
-
-exec /scratch/gda/bin/gda logpanel
