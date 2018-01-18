@@ -1,7 +1,0 @@
-<JEPQuantityConverter>
-<ExpressionStoT>25./(2.*cos(X*3.1416/180.)) - 12.84</ExpressionStoT>
-<ExpressionTtoS>180.*acos(25./(2*(X+12.84)))/3.1416</ExpressionTtoS><!--Change constant from 13.7 to 12.84 due to difference in max on I02 compare to I04 -->
-<AcceptableSourceUnits>Deg</AcceptableSourceUnits>
-<AcceptableTargetUnits>mm</AcceptableTargetUnits>
-</JEPQuantityConverter>
-
