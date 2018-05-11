@@ -18,16 +18,16 @@
 
 package gda.device.scannable;
 
-import gda.device.DeviceException;
-import gda.device.Scannable;
-import gda.factory.FactoryException;
-
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GasInjectionScannable extends ScannableBase implements Scannable {
+import gda.device.DeviceException;
+import gda.device.Scannable;
+import gda.factory.FactoryException;
+
+public class GasInjectionScannable extends ScannableBase {
 
 	private Scannable purge_pressure;
 	private Scannable purge_period;
@@ -63,12 +63,12 @@ public class GasInjectionScannable extends ScannableBase implements Scannable {
 	public boolean isBusy() {
 		return false;
 	}
-	
+
 	public void log(String msg){
 		logger.info(msg);
 		System.out.println(msg);
 	}
-	
+
 	@Override
 	public void configure() throws FactoryException {
 		super.configure();
@@ -189,7 +189,7 @@ public class GasInjectionScannable extends ScannableBase implements Scannable {
 
 			waitUntilIdle(fillTimeout);
 
-			
+
 			log("Waiting for pressure to stabalize");
 			try {
 				Thread.sleep(5000);
