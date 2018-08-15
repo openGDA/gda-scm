@@ -1,4 +1,0 @@
-*.class
-
-# ignore auto generated gdaserver.py
-scripts/gdaserver.py
