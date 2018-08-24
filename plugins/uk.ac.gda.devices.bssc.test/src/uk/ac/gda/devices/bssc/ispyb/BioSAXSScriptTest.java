@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class BioSAXSScriptTest {
 	private List<ISAXSDataCollection> iSpyBSAXSDataCollections;
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	public static void setUpBeforeClass() {
 		new BioSAXSDBFactory()
 				.setJdbcURL("jdbc:oracle:thin:@ws096.diamond.ac.uk:1521:xe");
 		bioSAXSISPyB = BioSAXSDBFactory.makeAPI();
@@ -70,7 +71,7 @@ public class BioSAXSScriptTest {
 						14.0, (short) 1, (short) 1, (short) 9, 20.0f, 10, 1.0,
 						2.0, 5.0, 10.0, "viscosity", dataCollectionId4);
 		dataCollectionCount++;
-		
+
 		long dataCollectionId6 = bioSAXSISPyB.createSaxsDataCollection(
 				experimentId, (short) 1, (short) 1, (short) 1, "Test Sample 6",
 				10.0, 15.0, (short) 1, (short) 1, (short) 1, 20.0f, 10, 1.0, 2.0,
@@ -107,13 +108,13 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getProgress(), 0.0);
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
+
 		// Create buffer before run
 		long bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId1,
 				1.0, 20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 				1.0, getFilename(1), defaultDataPath);
 
-		
+
 		// Assert status values are as expected
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.RUNNING);
 		expectedCollectionStatusInfo.setProgress(33);
@@ -216,9 +217,9 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getFileNames().get(0));
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
-		
-		
+
+
+
 		//************Run data collection 2 **********************
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
 		expectedCollectionStatusInfo.setStatus(ISpyBStatus.NOT_STARTED);
@@ -247,7 +248,7 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getProgress(), 0.0);
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
+
 		// Create buffer before run
 		bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId2, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -291,10 +292,10 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getFileNames().get(0));
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
-		
-		
-		
+
+
+
+
 		//************Run data collection 3 **********************
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
@@ -325,7 +326,7 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getProgress(), 0.0);
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
+
 		// Create buffer before run
 		bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId3, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -439,9 +440,9 @@ public class BioSAXSScriptTest {
 		expectedCollectionStatusInfo.setProgress(0);
 		expectedCollectionStatusInfo.setMessage("");
 
-		
-		
-		
+
+
+
 		//************Run data collection 4 **********************
 		ispyBStatusInfo = bioSAXSISPyB
 				.getDataCollectionStatus(dataCollectionId4);
@@ -466,7 +467,7 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getProgress(), 0.0);
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
+
 		// Create buffer before run
 		bufferBeforeId = bioSAXSISPyB.createBufferRun(dataCollectionId4, 1.0,
 				20.0f, 20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -572,9 +573,9 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getFileNames().get(0));
 		assertEquals(expectedReductionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
-		
-		
+
+
+
 		//************ Run data collection 5 **********************
 		// Check status values are correct on data collection creation
 		expectedCollectionStatusInfo = new ISpyBStatusInfo();
@@ -609,7 +610,7 @@ public class BioSAXSScriptTest {
 				ispyBStatusInfo.getProgress(), 0.0);
 		assertEquals(expectedCollectionStatusInfo.getMessage(),
 				ispyBStatusInfo.getMessage());
-		
+
 		// Create sample run
 		sampleId = bioSAXSISPyB.createSampleRun(dataCollectionId5, 1.0, 20.0f,
 				20.0f, 10.0, 10, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,

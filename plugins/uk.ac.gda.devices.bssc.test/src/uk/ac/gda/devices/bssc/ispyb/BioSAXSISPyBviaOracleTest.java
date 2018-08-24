@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 public class BioSAXSISPyBviaOracleTest extends BioSAXSScriptTest {
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception{
+	public static void setUpBeforeClass() {
 		new BioSAXSDBFactory()
 				.setJdbcURL("jdbc:oracle:thin:@ws096.diamond.ac.uk:1521:xe");
 		BioSAXSDBFactory.setNotifyObject(new NotifyISpyBObserversObject("localhost", "9877"));
