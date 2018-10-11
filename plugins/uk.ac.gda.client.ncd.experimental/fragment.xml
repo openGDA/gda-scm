@@ -10,15 +10,8 @@
             name="New Time Frame Generator Configure"
             restorable="true">
       </view>
-      <view
-            category="gda.rcp.ncd"
-            class="gda.rcp.ncd.views.NcdTemperatureView"
-            id="uk.ac.gda.client.ncd.NcdTemperatureView"
-            name="Ncd Temperature Configure"
-            restorable="true">
-      </view>      
-         </extension>
-            <extension
+   </extension>
+   <extension
             point="org.eclipse.ui.preferencePages">
          <page
                category="uk.ac.gda.client.preferences.gdaroot"
